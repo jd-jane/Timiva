@@ -1,17 +1,18 @@
 ---
-
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="Timiva">
+	<!-- Setup Check｜Tailwind 與 BaseLayout 測試 -->
+	<section class="mx-auto flex min-h-screen max-w-5xl items-center px-6">
+		<div>
+			<p class="mb-4 text-sm uppercase tracking-[0.3em] text-slate-400">Timiva</p>
+			<h1 class="text-4xl font-semibold tracking-tight md:text-6xl">
+				Tailwind is ready.
+			</h1>
+			<p class="mt-4 max-w-xl text-base text-slate-300 md:text-lg">
+				This is only a setup check. Do not treat this as the final homepage design.
+			</p>
+		</div>
+	</section>
+</BaseLayout>

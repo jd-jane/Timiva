@@ -1,0 +1,176 @@
+---
+interface Props {
+	name:
+		| "calendar"
+		| "plus-square"
+		| "person"
+		| "progress"
+		| "target"
+		| "timer"
+		| "stopwatch";
+}
+
+const { name } = Astro.props;
+const iconClass = "h-6 w-6 shrink-0 text-slate-300";
+---
+
+{
+	name === "calendar" && (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 16 16"
+			fill="none"
+			class={iconClass}
+			aria-hidden="true"
+		>
+			<rect
+				x="2.5"
+				y="3.5"
+				width="11"
+				height="10"
+				rx="2"
+				stroke="currentColor"
+				stroke-width="1.5"
+			/>
+			<path
+				d="M5.5 2.5v2M10.5 2.5v2M2.5 6.5h11"
+				stroke="currentColor"
+				stroke-width="1.5"
+				stroke-linecap="round"
+			/>
+			<path
+				d="M8 9.5V8M8 8h.01"
+				stroke="currentColor"
+				stroke-width="1.5"
+				stroke-linecap="round"
+			/>
+		</svg>
+	)
+}
+{
+	name === "plus-square" && (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 16 16"
+			fill="none"
+			class={iconClass}
+			aria-hidden="true"
+		>
+			<rect
+				x="2.5"
+				y="2.5"
+				width="11"
+				height="11"
+				rx="2.5"
+				stroke="currentColor"
+				stroke-width="1.5"
+			/>
+			<path
+				d="M5.5 8h5M8 5.5v5"
+				stroke="currentColor"
+				stroke-width="1.5"
+				stroke-linecap="round"
+			/>
+		</svg>
+	)
+}
+{
+	name === "person" && (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 16 16"
+			fill="none"
+			class={iconClass}
+			aria-hidden="true"
+		>
+			<circle cx="8" cy="5.5" r="2" stroke="currentColor" stroke-width="1.5" />
+			<path
+				d="M4 13.5c0-2.2 1.8-4 4-4s4 1.8 4 4"
+				stroke="currentColor"
+				stroke-width="1.5"
+				stroke-linecap="round"
+			/>
+		</svg>
+	)
+}
+{
+	name === "progress" && (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 16 16"
+			fill="none"
+			class={iconClass}
+			aria-hidden="true"
+		>
+			<circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5" />
+			<path
+				d="M8 8V4.5"
+				stroke="currentColor"
+				stroke-width="1.5"
+				stroke-linecap="round"
+			/>
+			<circle cx="8" cy="8" r="1" fill="currentColor" />
+		</svg>
+	)
+}
+{
+	name === "target" && (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 16 16"
+			fill="none"
+			class={iconClass}
+			aria-hidden="true"
+		>
+			<circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.5" />
+			<circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.5" />
+			<circle cx="8" cy="8" r="1" fill="currentColor" />
+		</svg>
+	)
+}
+{
+	name === "timer" && (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 16 16"
+			fill="none"
+			class={iconClass}
+			aria-hidden="true"
+		>
+			<circle cx="8" cy="9" r="5" stroke="currentColor" stroke-width="1.5" />
+			<path
+				d="M8 5.5V9l2.5 1.5M6.5 2.5h3"
+				stroke="currentColor"
+				stroke-width="1.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+		</svg>
+	)
+}
+{
+	name === "stopwatch" && (
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 16 16"
+			fill="none"
+			class={iconClass}
+			aria-hidden="true"
+		>
+			<path
+				d="M6.5 2.5h3M8 2.5v1.5"
+				stroke="currentColor"
+				stroke-width="1.5"
+				stroke-linecap="round"
+			/>
+			<circle cx="8" cy="9.5" r="4.5" stroke="currentColor" stroke-width="1.5" />
+			<path
+				d="M8 7v3l1.5 1"
+				stroke="currentColor"
+				stroke-width="1.5"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+		</svg>
+	)
+}

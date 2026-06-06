@@ -1,0 +1,66 @@
+# Timiva Core Principles Rules
+
+## Purpose
+
+These rules define the core product principles Cursor must follow in the Timiva project.
+
+## Core direction
+
+Timiva is:
+
+```text
+Mobile-first
+Widget-like
+Low-maintenance
+SEO-aware but UX-first
+Small number of highly polished tools
+```
+
+Timiva is not:
+
+```text
+A traditional tool directory
+A dense SEO content site
+A feature-heavy productivity app
+A backend-heavy service
+A high-maintenance platform
+```
+
+## Required behavior
+
+Cursor must:
+
+```text
+1. Keep the main tool experience first.
+2. Avoid turning pages into traditional tool sites.
+3. Keep tools simple, clear, and mobile-friendly.
+4. Use existing components whenever possible.
+5. Preserve the Timiva brand feeling.
+6. Respect Owner Final Approval during Phase A.
+```
+
+## Do not
+
+Cursor must not:
+
+```text
+1. Rewrite the whole site in one task.
+2. Add unrelated features.
+3. Add backend, login, database, or cloud sync unless explicitly requested.
+4. Prioritize SEO text over the tool experience.
+5. Modify locked components without Owner approval.
+6. Commit or deploy during Phase A without explicit Owner confirmation.
+```
+
+## Official categories
+
+Use only these official categories:
+
+```text
+Important Dates
+Timers & Focus
+Daily Rhythm
+Life Progress
+```
+
+Do not use old category names.

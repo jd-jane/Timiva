@@ -1,0 +1,70 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+	title?: string;
+	headerVariant?: "home" | "inner";
+}
+
+const { title = "Timiva", headerVariant = "home" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+			rel="stylesheet"
+		/>
+		<title>{title}</title>
+	</head>
+	<body class="min-h-screen bg-slate-950 text-white antialiased">
+		<!-- Layout｜全站基礎骨架 -->
+		<div class="relative isolate min-h-screen">
+			<!-- Background｜全站背景層 -->
+			<div
+				aria-hidden="true"
+				class="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+			>
+				<div class="absolute inset-0 bg-slate-950"></div>
+				<div
+					class="absolute left-1/2 top-[-18%] h-[58vh] w-[92vw] max-w-none -translate-x-1/2 rounded-full bg-indigo-400/20 blur-[120px]"
+				>
+				</div>
+				<div
+					class="absolute -right-[10%] top-[-8%] h-[42vh] w-[55vw] rounded-full bg-violet-400/15 blur-[120px]"
+				>
+				</div>
+				<div
+					class="absolute -left-[8%] bottom-[18%] h-[36vh] w-[48vw] rounded-full bg-blue-600/10 blur-[120px]"
+				>
+				</div>
+				<div
+					class="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-slate-950/80 to-slate-950"
+				>
+				</div>
+				<div
+					class="absolute inset-x-0 bottom-0 h-52 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent"
+				>
+				</div>
+			</div>
+
+			<Header variant={headerVariant} />
+
+			<!-- Main｜頁面主要內容 -->
+			<main>
+				<slot />
+			</main>
+
+			<Footer />
+		</div>
+	</body>
+</html>

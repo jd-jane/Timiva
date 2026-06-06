@@ -1,0 +1,84 @@
+# Timiva SEO Rules
+
+## Purpose
+
+These rules define SEO, AEO, AI Search, FAQ, and internal linking behavior.
+
+## Core principle
+
+SEO supports the tool experience. SEO must not become the page's main experience.
+
+Correct order:
+
+```text
+Tool App
+Result
+Related Tools
+FAQ / SEO Content
+Footer
+```
+
+Incorrect order:
+
+```text
+FAQ / SEO Content
+Tool App
+Result
+Footer
+```
+
+## Required for each tool page
+
+Each tool page should include:
+
+```text
+H1
+Meta title
+Meta description
+Main tool area
+Related Tools
+FAQ
+FAQ Schema / JSON-LD
+Semantic HTML
+```
+
+## FAQ
+
+FAQ should:
+
+```text
+Answer real user questions
+Match visible page content
+Stay concise
+Use the correct language for the route
+```
+
+FAQ should not:
+
+```text
+Stuff keywords
+Describe features that do not exist
+Appear before the tool
+Become long marketing copy
+```
+
+## Related Tools
+
+Each tool page should recommend 2 to 4 related tools.
+
+Prioritize:
+
+```text
+Same category tools
+Complementary use cases
+```
+
+Do not overlink.
+
+## Language
+
+Do not mix English and Traditional Chinese content in the same localized page, except for official tool names when needed.
+
+## Ads and SEO
+
+Ads must not appear before the main result or inside the main tool flow.

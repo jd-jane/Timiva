@@ -1,0 +1,46 @@
+---
+import ToolCardIcon from "./ToolCardIcon.astro";
+
+interface Props {
+	href?: string;
+	name: string;
+	description: string;
+	icon?:
+		| "calendar"
+		| "plus-square"
+		| "person"
+		| "progress"
+		| "target"
+		| "timer"
+		| "stopwatch";
+}
+
+const { href = "#", name, description, icon } = Astro.props;
+---
+
+<a
+	href={href}
+	class="grid grid-cols-[auto_1fr_auto] items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/[0.07] md:gap-4"
+>
+	<div class="shrink-0">
+		{icon ? <ToolCardIcon name={icon} /> : <slot name="icon" />}
+	</div>
+	<div class="min-w-0 flex flex-col justify-center">
+		<p class="font-medium text-white">{name}</p>
+		<p class="mt-0.5 text-sm leading-snug text-slate-400">{description}</p>
+	</div>
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		viewBox="0 0 16 16"
+		fill="none"
+		class="h-4 w-4 shrink-0 text-slate-400"
+		aria-hidden="true"
+	>
+		<path
+			d="M3 8h8M9 5l3 3-3 3"
+			stroke="currentColor"
+			stroke-width="1.5"
+			stroke-linecap="round"
+			stroke-linejoin="round"></path>
+	</svg>
+</a>

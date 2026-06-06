@@ -1,0 +1,82 @@
+# Timiva Tailwind Rules
+
+## Purpose
+
+These rules define how Cursor must write Tailwind CSS in the Timiva project.
+
+## Core rules
+
+Cursor must:
+
+```text
+1. Use Tailwind CSS as the main styling tool.
+2. Keep HTML semantic.
+3. Add Chinese comments for major sections.
+4. Write RWD by component, not all desktop first and all mobile later.
+5. Use @apply only for repeated semantic component patterns.
+6. Avoid random one-off hard-coded visual values.
+```
+
+## Semantic HTML
+
+Prefer:
+
+```html
+<header>
+<nav>
+<main>
+<section>
+<article>
+<footer>
+```
+
+Use `div` only when it is a layout wrapper without stronger semantic meaning.
+
+## Chinese comments
+
+Major sections must include Chinese comments, such as:
+
+```astro
+<!-- Header｜桌機版主導覽 -->
+<!-- Header｜手機版主導覽 -->
+<!-- Tool｜桌機版工具主體 -->
+<!-- Tool｜手機版工具主體 -->
+<!-- Footer｜桌機版頁尾 -->
+<!-- Footer｜手機版頁尾 -->
+```
+
+## RWD order
+
+Correct:
+
+```text
+Header desktop
+Header mobile
+
+Tool desktop
+Tool mobile
+
+Footer desktop
+Footer mobile
+```
+
+Incorrect:
+
+```text
+All desktop sections first
+All mobile sections at the end
+```
+
+## Forbidden
+
+Cursor must not use:
+
+```text
+inline style
+!important
+CSS id selector
+random hard-coded colors
+page-specific duplicate layout systems
+```
+
+IDs may be used for accessibility or JavaScript, but not as CSS selectors.

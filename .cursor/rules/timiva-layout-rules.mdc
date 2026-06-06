@@ -1,0 +1,81 @@
+# Timiva Layout Rules
+
+## Purpose
+
+These rules define how Cursor must handle layout in the Timiva project.
+
+## Page structure
+
+All pages must follow:
+
+```text
+Header
+Main
+Footer
+```
+
+Use semantic HTML:
+
+```html
+<header>
+<main>
+<footer>
+```
+
+## Page types
+
+Timiva has four primary page types:
+
+```text
+Home Page
+Tool Page
+All Tools Page
+Legal / Text Page
+```
+
+## Locked components
+
+After Owner approval, the following are locked components:
+
+```text
+Header
+Footer
+Base Layout
+Global background
+Shared container
+```
+
+Cursor must not modify locked components unless explicitly instructed by Owner.
+
+If modification seems necessary, Cursor must stop and report:
+
+```text
+Component:
+Reason:
+Affected pages:
+Alternative:
+Regression testing needed:
+Owner approval needed:
+```
+
+## Tool page order
+
+Tool pages should follow:
+
+```text
+Tool Hero / H1
+Tool App Area
+Main Result / Status Area
+Input / Control Area
+Related Tools
+FAQ / SEO Content
+Footer
+```
+
+Do not place FAQ, SEO text, or ads before the main tool experience.
+
+## Legal pages
+
+Legal / Text pages must not include ads.
+
+They should use a narrow reading layout and consistent Footer.

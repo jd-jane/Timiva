@@ -1,0 +1,446 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import RelatedToolRow from "../../components/RelatedToolRow.astro";
+import ToolCard from "../../components/ToolCard.astro";
+
+const relatedTools = [
+	{
+		name: "Date Range Calculator",
+		description: "Calculate days between two dates quickly.",
+		icon: "plus-square",
+	},
+	{
+		name: "Age Calculator",
+		description: "Find exact age from a birthday.",
+		icon: "person",
+	},
+	{
+		name: "Life Progress Bar",
+		description: "See how much of the year has passed.",
+		icon: "progress",
+	},
+] as const;
+---
+
+<BaseLayout title="Layout Preview — Tool" headerVariant="inner">
+	<div data-preview-tool-page>
+	<!-- Preview｜Main Tool 第一屏（100dvh + Header overlay，主工具區在此排版） -->
+	<section data-preview-main-tool class="preview-tool-main-section px-6">
+		<div class="preview-tool-first-screen">
+			<div class="preview-tool-stage mx-auto w-full max-w-md md:max-w-lg">
+				<div class="preview-tool-result-group text-center">
+					<p class="preview-tool-landscape-hide text-sm text-slate-400">Layout Preview</p>
+					<h1
+						class="preview-tool-landscape-compact-title mt-2 text-sm font-medium tracking-normal text-slate-300 md:text-base"
+					>
+						Event Countdown
+					</h1>
+
+					<!-- Preview｜主結果（128 為視覺核心，label 在數字下方） -->
+					<div class="preview-tool-result-block mt-6 md:mt-8">
+						<p
+							class="preview-tool-result-number text-[160px] leading-none font-normal tracking-tight md:text-[240px]"
+						>
+							128
+						</p>
+						<p class="preview-tool-result-label mt-3 text-xs text-slate-400 md:mt-4 md:text-sm">
+							Days remaining
+						</p>
+						<p class="preview-tool-result-sub mt-2 text-lg text-slate-300 md:mt-3 md:text-xl">
+							Until your next milestone
+						</p>
+					</div>
+				</div>
+
+				<!-- Preview｜Controls bar（preview-only placeholder，非 fixed bottom） -->
+				<div
+					class="preview-tool-controls flex flex-wrap justify-center gap-3 md:gap-4"
+					aria-label="Tool controls preview"
+				>
+					<button
+						type="button"
+						class="preview-tool-control-btn inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm md:min-h-11 md:px-5 md:py-2.5"
+					>
+						Edit
+					</button>
+					<button
+						type="button"
+						class="preview-tool-control-btn inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm md:min-h-11 md:px-5 md:py-2.5"
+					>
+						Theme
+					</button>
+					<button
+						type="button"
+						class="preview-tool-control-btn inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm md:min-h-11 md:px-5 md:py-2.5"
+					>
+						Share
+					</button>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Preview｜寬桌機 Drawer（fixed 右側、全 viewport 高、300px、毛玻璃、可覆蓋 Footer） -->
+	<aside
+		data-preview-drawer
+		data-open="true"
+		aria-label="Related tools drawer"
+		class="pointer-events-none fixed inset-y-0 right-0 z-20 hidden xl:block"
+	>
+		<span class="hidden translate-x-[300px]" aria-hidden="true"></span>
+		<div
+			data-preview-drawer-shell
+			data-open="true"
+			class="preview-tool-drawer-frosted pointer-events-auto relative flex h-dvh rounded-tl-3xl rounded-bl-3xl border-l border-white/10 shadow-2xl shadow-black/25 ring-1 ring-inset ring-white/[0.04] transition-transform duration-200 ease-out"
+		>
+			<!-- Preview｜Drawer handle（與主體同一 shell、無分隔線） -->
+			<button
+				type="button"
+				data-preview-drawer-toggle
+				aria-expanded="true"
+				class="relative z-10 flex w-14 shrink-0 items-center justify-center self-stretch text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+				aria-label="Toggle related tools drawer"
+			>
+				<svg
+					data-drawer-arrow-open
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="none"
+					class="h-7 w-7"
+					aria-hidden="true"
+				>
+					<path
+						d="M10 3L5 8l5 5"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+				<svg
+					data-drawer-arrow-closed
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="none"
+					class="hidden h-7 w-7"
+					aria-hidden="true"
+				>
+					<path
+						d="M6 3l5 5-5 5"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+			</button>
+
+			<!-- Preview｜Drawer panel（300px，無不透明滿版背景） -->
+			<div
+				data-preview-drawer-panel
+				class="relative z-10 flex h-full w-[300px] shrink-0 flex-col"
+			>
+				<div class="px-5 pb-3 pt-5">
+					<h2 class="text-lg font-semibold text-white">Related tools</h2>
+				</div>
+				<div class="flex-1 space-y-3 overflow-y-auto px-5 pb-5">
+					{
+						relatedTools.map((tool) => (
+							<div>
+								<ToolCard
+									name={tool.name}
+									description={tool.description}
+									icon={tool.icon}
+								/>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</div>
+	</aside>
+
+	<!-- Preview｜工具下方內容（置中 max-w-3xl ≈ 768px、區塊內左對齊） -->
+	<div class="mx-auto max-w-3xl px-6 pb-20 text-left">
+		<!-- Preview｜About 區塊 -->
+		<section class="pb-12">
+			<h2 class="mb-2 text-lg font-semibold text-white">About this tool</h2>
+			<p class="text-sm leading-relaxed text-slate-400">
+				SEO / description placeholder. This container stays centered on the page axis
+				while text remains left-aligned for comfortable reading.
+			</p>
+		</section>
+
+		<!-- Preview｜下方 Related Tools（Drawer 展開時 xl 隱藏；收合 / 小螢幕顯示） -->
+		<section data-preview-related-tools class="pb-12 xl:hidden">
+			<h2 class="mb-4 text-lg font-semibold text-white">Related tools</h2>
+			<div class="space-y-3">
+				{
+					relatedTools.map((tool) => (
+						<RelatedToolRow
+							name={tool.name}
+							description={tool.description}
+							icon={tool.icon}
+						/>
+					))
+				}
+			</div>
+		</section>
+
+		<!-- Preview｜FAQ 區塊（分隔線式 accordion） -->
+		<section>
+			<h2 class="mb-4 text-lg font-semibold text-white">FAQ</h2>
+			<div class="border-t border-white/20">
+				<details class="group border-b border-white/20 py-4">
+					<summary
+						class="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden"
+					>
+						<span>Question placeholder one</span>
+						<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 16 16"
+								fill="none"
+								class="h-4 w-4 group-open:hidden"
+								aria-hidden="true"
+							>
+								<path
+									d="M8 3.5v9M3.5 8h9"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"></path>
+							</svg>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 16 16"
+								fill="none"
+								class="hidden h-4 w-4 group-open:block"
+								aria-hidden="true"
+							>
+								<path
+									d="M3.5 8h9"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"></path>
+							</svg>
+						</span>
+					</summary>
+					<p class="mt-3 text-sm leading-relaxed text-slate-300">
+						Answer placeholder for layout preview only.
+					</p>
+				</details>
+				<details class="group border-b border-white/20 py-4">
+					<summary
+						class="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden"
+					>
+						<span>Question placeholder two</span>
+						<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 16 16"
+								fill="none"
+								class="h-4 w-4 group-open:hidden"
+								aria-hidden="true"
+							>
+								<path
+									d="M8 3.5v9M3.5 8h9"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"></path>
+							</svg>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 16 16"
+								fill="none"
+								class="hidden h-4 w-4 group-open:block"
+								aria-hidden="true"
+							>
+								<path
+									d="M3.5 8h9"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"></path>
+							</svg>
+						</span>
+					</summary>
+					<p class="mt-3 text-sm leading-relaxed text-slate-300">
+						Answer placeholder for layout preview only.
+					</p>
+				</details>
+			</div>
+		</section>
+	</div>
+	</div>
+
+	<!-- Preview｜Drawer layout state（最小開合互動，無 LocalStorage） -->
+	<script is:inline>
+		document.addEventListener("DOMContentLoaded", () => {
+			const drawer = document.querySelector("[data-preview-drawer]");
+			const shell = document.querySelector("[data-preview-drawer-shell]");
+			const toggle = document.querySelector("[data-preview-drawer-toggle]");
+			const related = document.querySelector("[data-preview-related-tools]");
+			const arrowOpen = document.querySelector("[data-drawer-arrow-open]");
+			const arrowClosed = document.querySelector("[data-drawer-arrow-closed]");
+
+			if (!drawer || !shell || !toggle) return;
+
+			let isOpen = drawer.dataset.open !== "false";
+
+			const sync = () => {
+				drawer.dataset.open = isOpen ? "true" : "false";
+				shell.dataset.open = isOpen ? "true" : "false";
+				shell.classList.toggle("translate-x-[300px]", !isOpen);
+				related?.classList.toggle("xl:hidden", isOpen);
+				arrowOpen?.classList.toggle("hidden", !isOpen);
+				arrowClosed?.classList.toggle("hidden", isOpen);
+				toggle.setAttribute("aria-expanded", String(isOpen));
+			};
+
+			sync();
+
+			toggle.addEventListener("click", (event) => {
+				event.preventDefault();
+				isOpen = !isOpen;
+				sync();
+			});
+		});
+	</script>
+
+	<!-- Preview｜Drawer frosted glass（明確 backdrop-filter，避免 Tailwind v4 variable 失效） -->
+	<style is:global>
+		body:has([data-preview-tool-page]) header {
+			position: relative;
+			z-index: 30;
+		}
+
+		.preview-tool-drawer-frosted {
+			background-color: rgb(5 8 31 / 0.6);
+			-webkit-backdrop-filter: blur(4px) saturate(150%);
+			backdrop-filter: blur(4px) saturate(150%);
+		}
+
+		.preview-tool-result-number {
+			font-weight: 400;
+		}
+
+		.preview-tool-main-section {
+			--preview-header-height: 3.75rem;
+			position: relative;
+			z-index: 10;
+			margin-top: calc(-1 * var(--preview-header-height));
+			min-height: 100dvh;
+		}
+
+		.preview-tool-first-screen {
+			box-sizing: border-box;
+			display: grid;
+			min-height: 100dvh;
+			place-items: center;
+			width: 100%;
+		}
+
+		.preview-tool-stage {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			width: 100%;
+		}
+
+		.preview-tool-controls {
+			margin-top: 2rem;
+		}
+
+		@media (min-width: 768px) {
+			.preview-tool-main-section {
+				--preview-header-height: 4.25rem;
+			}
+
+			.preview-tool-controls {
+				margin-top: 2.5rem;
+			}
+		}
+
+		@media (max-width: 767px) and (orientation: portrait) {
+			.preview-tool-first-screen {
+				place-items: stretch;
+			}
+
+			.preview-tool-stage {
+				display: grid;
+				grid-template-rows: minmax(0, 1fr) auto;
+				min-height: 100dvh;
+				width: 100%;
+			}
+
+			.preview-tool-result-group {
+				align-self: center;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				width: 100%;
+			}
+
+			.preview-tool-controls {
+				align-self: center;
+				margin-top: 0;
+				padding-bottom: 1rem;
+			}
+		}
+
+		@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+			.preview-tool-first-screen {
+				place-items: center;
+			}
+
+			.preview-tool-stage {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 0.75rem;
+				min-height: 0;
+			}
+
+			.preview-tool-landscape-hide {
+				display: none;
+			}
+
+			.preview-tool-landscape-compact-title {
+				margin-top: 0;
+				font-size: 0.875rem;
+				line-height: 1.25rem;
+			}
+
+			.preview-tool-result-block {
+				margin-top: 0.5rem;
+			}
+
+			.preview-tool-result-number {
+				font-size: 7.5rem;
+				line-height: 1;
+			}
+
+			.preview-tool-result-label {
+				margin-top: 0.25rem;
+				font-size: 0.75rem;
+				line-height: 1rem;
+			}
+
+			.preview-tool-result-sub {
+				margin-top: 0.25rem;
+				font-size: 1rem;
+				line-height: 1.25rem;
+			}
+
+			.preview-tool-controls {
+				margin-top: 0;
+				padding-bottom: 0;
+				gap: 0.5rem;
+			}
+
+			.preview-tool-control-btn {
+				min-height: 2rem;
+				padding: 0.375rem 0.75rem;
+				font-size: 0.75rem;
+				line-height: 1rem;
+			}
+		}
+	</style>
+</BaseLayout>

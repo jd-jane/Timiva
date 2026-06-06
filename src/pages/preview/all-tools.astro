@@ -1,0 +1,97 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ToolCard from "../../components/ToolCard.astro";
+
+const categories = [
+	{
+		title: "Dates & Events",
+		tools: [
+			{
+				name: "Event Countdown",
+				description: "Count down to dates that matter.",
+				icon: "calendar",
+			},
+			{
+				name: "Date Range Calculator",
+				description: "Calculate days between two dates.",
+				icon: "plus-square",
+			},
+			{
+				name: "Age Calculator",
+				description: "Find exact age from a birthday.",
+				icon: "person",
+			},
+		],
+	},
+	{
+		title: "Momentum",
+		tools: [
+			{
+				name: "Life Progress Bar",
+				description: "See time progress at a glance.",
+				icon: "progress",
+			},
+			{
+				name: "Goal Check-in",
+				description: "Track small progress toward a goal.",
+				icon: "target",
+			},
+		],
+	},
+	{
+		title: "Focus & Rhythm",
+		tools: [
+			{
+				name: "Pomodoro Timer",
+				description: "Stay focused with simple work sessions.",
+				icon: "timer",
+			},
+			{
+				name: "Stopwatch",
+				description: "Measure time clearly and quickly.",
+				icon: "stopwatch",
+			},
+		],
+	},
+];
+---
+
+<BaseLayout title="Layout Preview — All Tools" headerVariant="inner">
+	<!-- Preview｜工具總覽 main content（Hero + 分類區，pb-20 統一 Footer 前距離） -->
+	<div class="mx-auto mb-0 flex max-w-5xl flex-col gap-12 px-6 pb-20 pt-10 md:gap-16 md:pt-12">
+		<!-- Preview｜Page Hero -->
+		<section>
+			<div class="text-left md:text-center">
+				<div class="space-y-4">
+					<p class="text-sm uppercase tracking-[0.2em] text-slate-400">
+						Layout Preview
+					</p>
+					<h1 class="text-3xl font-semibold tracking-normal md:text-4xl">All tools</h1>
+					<p class="preview-page-hero-subtitle text-sm leading-relaxed text-slate-400 md:mx-auto md:text-base">
+						Browse simple tools for dates, focus, and daily rhythm.
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- Preview｜工具分類區 -->
+		{
+			categories.map((category) => (
+				<section class="flex flex-col gap-5">
+					<h2 class="text-left text-lg font-semibold text-white">
+						{category.title}
+					</h2>
+					<div class="grid grid-cols-2 items-stretch gap-4 md:gap-5">
+						{category.tools.map((tool) => (
+							<ToolCard
+								name={tool.name}
+								description={tool.description}
+								icon={tool.icon}
+							/>
+						))}
+					</div>
+				</section>
+			))
+		}
+	</div>
+</BaseLayout>

@@ -1,0 +1,99 @@
+---
+interface Props {
+	variant?: "home" | "inner";
+}
+
+const { variant = "home" } = Astro.props;
+---
+
+<!-- Header｜全站頁首 -->
+
+{
+	variant === "home" ? (
+		<>
+			<!-- Header｜桌機版主導覽（首頁 wordmark） -->
+			<header class="hidden md:block">
+				<nav aria-label="Main navigation" class="mx-auto max-w-5xl px-6 pt-6">
+					<a href="/">
+						<img
+							src="/brand/logo-white.svg"
+							alt="Timiva"
+							class="h-7 w-auto"
+							width="76"
+							height="28"
+						/>
+					</a>
+				</nav>
+			</header>
+
+			<!-- Header｜手機版主導覽（首頁 wordmark） -->
+			<header class="block md:hidden">
+				<nav aria-label="Main navigation" class="px-4 pt-4">
+					<a href="/">
+						<img
+							src="/brand/logo-white.svg"
+							alt="Timiva"
+							class="h-7 w-auto"
+							width="76"
+							height="28"
+						/>
+					</a>
+				</nav>
+			</header>
+		</>
+	) : (
+		<>
+			<!-- Header｜桌機版主導覽（內頁膠囊返回） -->
+			<header class="hidden md:block">
+				<nav aria-label="Main navigation" class="mx-auto max-w-5xl px-6 pt-6">
+					<a
+						href="/"
+						class="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/10"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 16 16"
+							fill="none"
+							class="h-4 w-4 shrink-0"
+							aria-hidden="true"
+						>
+							<path
+								d="M10 3L5 8l5 5"
+								stroke="currentColor"
+								stroke-width="1.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"></path>
+						</svg>
+						Timiva
+					</a>
+				</nav>
+			</header>
+
+			<!-- Header｜手機版主導覽（內頁膠囊返回） -->
+			<header class="block md:hidden">
+				<nav aria-label="Main navigation" class="px-4 pt-4">
+					<a
+						href="/"
+						class="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/10"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 16 16"
+							fill="none"
+							class="h-4 w-4 shrink-0"
+							aria-hidden="true"
+						>
+							<path
+								d="M10 3L5 8l5 5"
+								stroke="currentColor"
+								stroke-width="1.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"></path>
+						</svg>
+						Timiva
+					</a>
+				</nav>
+			</header>
+		</>
+	)
+}

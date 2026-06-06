@@ -1,0 +1,77 @@
+# Timiva QA Rules
+
+## Purpose
+
+These rules define the required quality checks before commit or deploy.
+
+## Required checks
+
+Before commit or deploy, Cursor must check:
+
+```text
+npm run build
+Home Page
+All Tools Page
+Completed tool pages
+Privacy Policy
+Terms of Use
+Contact
+English routes
+Traditional Chinese routes
+Mobile portrait
+Mobile landscape
+Desktop
+Header
+Footer
+Console errors
+```
+
+## Tool page QA
+
+Each tool page must pass:
+
+```text
+Main function works
+Default state works
+Empty state works
+Invalid input does not crash
+Mobile portrait works
+Mobile landscape works
+Desktop works
+FAQ / SEO is valid
+Related Tools links are correct
+Header / Footer are intact
+```
+
+## Tailwind / HTML QA
+
+Check:
+
+```text
+No inline style
+No !important
+No CSS id selector
+Semantic HTML
+Chinese comments for major sections
+RWD organized by component
+```
+
+## Locked components
+
+If locked components were modified without Owner approval, block the task.
+
+Locked components:
+
+```text
+Header
+Footer
+Base Layout
+Global background
+Shared container
+```
+
+## Phase A rule
+
+During Phase A, passing QA does not mean automatic commit or deploy.
+
+Cursor must wait for Owner Final Approval.

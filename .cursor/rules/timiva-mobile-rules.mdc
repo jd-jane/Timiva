@@ -1,0 +1,74 @@
+# Timiva Mobile Rules
+
+## Purpose
+
+These rules define mobile behavior for Timiva.
+
+## Mobile-first
+
+Timiva is mobile-first. Cursor must prioritize:
+
+```text
+Mobile portrait
+Mobile landscape
+Desktop
+```
+
+Desktop is important, but mobile usability is the core experience.
+
+## Mobile portrait
+
+Cursor must ensure:
+
+```text
+Main result is visible
+CTA is clear
+Touch targets are comfortable
+Inputs do not overflow
+Bottom Control does not hide required content
+Bottom Sheet can open and close
+Footer does not feel detached
+```
+
+## Mobile landscape
+
+Mobile landscape must be tested separately.
+
+Do not assume portrait works means landscape works.
+
+Cursor must check:
+
+```text
+Main result remains visible
+Inputs do not overflow
+Long text does not break layout
+Bottom Sheet is not too tall
+Bottom Control does not collide with Footer
+Returning to portrait restores layout
+Ads do not compress the main tool
+```
+
+## Bottom Sheet
+
+Bottom Sheet must:
+
+```text
+Open and close reliably
+Allow background click to close
+Avoid ads
+Avoid long SEO content
+Avoid hiding essential results
+Allow inner scroll when content is long
+```
+
+## Block conditions
+
+Block if:
+
+```text
+Mobile main task cannot be completed
+Main result is hidden
+Inputs overflow
+Bottom Sheet cannot close
+Landscape layout is severely broken
+```
