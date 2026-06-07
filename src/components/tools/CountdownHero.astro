@@ -1,0 +1,164 @@
+---
+import type { Locale } from "../../i18n/config";
+import { getEventCountdownClientI18n } from "../../i18n/clientMessages";
+import { getMessages } from "../../i18n/messages";
+import ToolPageShell from "./ToolPageShell.astro";
+import ToolRelatedTools from "../ToolRelatedTools.astro";
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = "en" } = Astro.props;
+const m = getMessages(locale).eventCountdown;
+const clientI18n = getEventCountdownClientI18n(locale);
+---
+
+<ToolPageShell locale={locale} toolRootClass="countdown-page theme-aurora">
+  <div slot="background">
+    <div class="tool-glow countdown-glow" aria-hidden="true"></div>
+  </div>
+
+  <div
+    slot="firstScreen"
+    class="tool-hero-preview countdown-main-preview countdown-first-screen-shell"
+    id="countdown-main-preview"
+  >
+    <div class="countdown-first-screen">
+      <div class="countdown-first-screen-stage">
+        <div class="countdown-content countdown-result-group">
+          <p class="tool-kicker countdown-kicker countdown-landscape-hide">{m.kicker}</p>
+
+          <section class="tool-result countdown-result-block">
+            <div class="tool-result-main">
+              <div class="tool-result-number countdown-number">124</div>
+              <div class="tool-result-label countdown-label">{m.daysLeft}</div>
+            </div>
+          </section>
+
+          <h1 class="countdown-title" id="event-title">
+            {m.defaultTitle}
+          </h1>
+
+          <p class="countdown-date" id="event-date">
+            {m.defaultDateLabel}
+          </p>
+        </div>
+
+        <div class="mobile-bottom-control countdown-first-screen-controls">
+          <div class="mobile-bottom-control-inner countdown-actions">
+            <button class="mobile-bottom-action" id="edit-button">{m.edit}</button>
+            <button class="mobile-bottom-action" id="theme-button">{m.theme}</button>
+            <button class="mobile-bottom-action" id="share-button">{m.share}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <Fragment slot="overlays">
+    <div class="tool-sheet-overlay" id="countdown-sheet-overlay" aria-hidden="true"></div>
+
+    <div class="tool-bottom-sheet edit-sheet" id="edit-sheet">
+      <div class="tool-bottom-sheet-handle sheet-handle"></div>
+
+      <div class="tool-bottom-sheet-content sheet-content">
+        <div class="quick-templates sheet-row-full">
+          <div class="quick-templates-scroll">
+            <button type="button" class="quick-template-btn" data-quick-template="birthday">
+              {m.quickTemplates.birthday}
+            </button>
+            <button type="button" class="quick-template-btn" data-quick-template="trip">
+              {m.quickTemplates.trip}
+            </button>
+            <button type="button" class="quick-template-btn" data-quick-template="concert">
+              {m.quickTemplates.concert}
+            </button>
+            <button type="button" class="quick-template-btn" data-quick-template="graduation">
+              {m.quickTemplates.graduation}
+            </button>
+          </div>
+        </div>
+
+        <label>
+          <span>{m.eventName}</span>
+          <input id="title-input" type="text" value={m.defaultTitle} />
+        </label>
+
+        <label>
+          <span>{m.eventDate}</span>
+          <input id="date-input" type="date" value="2026-12-31" />
+        </label>
+      </div>
+    </div>
+  </Fragment>
+
+  <div slot="lowerContent" class="tool-content-preview" id="countdown-content-scroll">
+    <section class="tool-content">
+      <ToolRelatedTools locale={locale} currentToolId="event-countdown" />
+
+      <section class="tool-howto countdown-guide" aria-labelledby="countdown-about-heading">
+        <h2 id="countdown-about-heading">{m.about.heading}</h2>
+        <p>{m.about.body}</p>
+      </section>
+
+      <section class="tool-howto countdown-guide" aria-labelledby="countdown-use-heading">
+        <h2 id="countdown-use-heading">{m.howTo.heading}</h2>
+        <p>{m.howTo.body}</p>
+      </section>
+
+      <section class="tool-howto countdown-ideas" aria-labelledby="countdown-ideas-heading">
+        <h2 id="countdown-ideas-heading">{m.commonUses.heading}</h2>
+        <ul class="tool-keyword-list" role="list">
+          {m.commonUses.items.map((item) => (
+            <li class="tool-keyword-chip">{item}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section
+        class="tool-faq countdown-faq"
+        aria-labelledby="countdown-faq-heading"
+        data-tool-faq-accordion="single"
+      >
+        <h2 id="countdown-faq-heading">{m.faq.heading}</h2>
+
+        {
+          m.faq.items.map((item, index) => {
+            const itemIndex = index + 1;
+            const triggerId = `countdown-faq-trigger-${itemIndex}`;
+            const panelId = `countdown-faq-panel-${itemIndex}`;
+
+            return (
+              <div class="tool-faq-item countdown-faq-item">
+                <button
+                  type="button"
+                  class="tool-faq-trigger"
+                  id={triggerId}
+                  aria-expanded="false"
+                  aria-controls={panelId}
+                >
+                  {item.question}
+                </button>
+                <div
+                  class="tool-faq-panel"
+                  id={panelId}
+                  role="region"
+                  aria-labelledby={triggerId}
+                  hidden
+                >
+                  <p>{item.answer}</p>
+                </div>
+              </div>
+            );
+          })
+        }
+      </section>
+    </section>
+  </div>
+</ToolPageShell>
+
+<script type="application/json" id="countdown-i18n" set:html={JSON.stringify(clientI18n)} />
+
+<script is:inline src="/scripts/countdown.js?v=cd13"></script>
+<script is:inline src="/scripts/tool-faq-accordion.js"></script>

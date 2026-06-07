@@ -1,0 +1,19 @@
+---
+import "../../styles/tools/event-countdown-v2.css";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import EventCountdownV2 from "../../components/tools/event-countdown-v2/EventCountdownV2.astro";
+import { getMessages } from "../../i18n/messages";
+
+const messages = getMessages("en");
+---
+
+<BaseLayout
+	title={messages.meta.eventCountdown.title}
+	description={messages.meta.eventCountdown.description}
+	robots="noindex, nofollow"
+	headerVariant="inner"
+	locale="en"
+>
+	<EventCountdownV2 locale="en" mode="preview" />
+	<script src="/scripts/countdown-v2.js" defer></script>
+</BaseLayout>

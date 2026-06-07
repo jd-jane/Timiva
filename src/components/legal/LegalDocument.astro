@@ -1,0 +1,44 @@
+---
+import type { Locale } from "../../i18n/config";
+import { getMessages } from "../../i18n/messages";
+
+interface Props {
+  locale: Locale;
+  page: "privacy" | "terms" | "contact";
+}
+
+const { locale, page } = Astro.props;
+const messages = getMessages(locale);
+const content = messages.legal[page];
+---
+
+<main class="inner-content-page legal-page">
+  <header class="inner-content-page__intro legal-page__intro">
+    <h1>{content.heading}</h1>
+    {
+      page !== "contact" && (
+        <p class="legal-page__updated">{content.updated}</p>
+      )
+    }
+  </header>
+
+  <div class="inner-content-page__body inner-content-page__body--text legal-page__body">
+    {
+      page === "contact" ? (
+        locale === "zh" ? (
+          <p>
+            {content.intro}
+            <a href={`mailto:${content.email}`}>{content.email}</a>。
+          </p>
+        ) : (
+          <p>
+            {content.intro}{" "}
+            <a href={`mailto:${content.email}`}>{content.email}</a>.
+          </p>
+        )
+      ) : (
+        content.paragraphs.map((paragraph) => <p>{paragraph}</p>)
+      )
+    }
+  </div>
+</main>

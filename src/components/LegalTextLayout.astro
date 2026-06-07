@@ -1,0 +1,35 @@
+---
+import InnerPageShell from "./InnerPageShell.astro";
+import type { Locale } from "../i18n/config";
+
+interface Props {
+	locale: Locale;
+	heading: string;
+	metaLine?: string;
+}
+
+const { locale, heading, metaLine } = Astro.props;
+void locale;
+---
+
+<InnerPageShell>
+	<section>
+		<div class="text-left md:text-center">
+			<div class="space-y-4">
+				<h1 class="text-3xl font-semibold tracking-normal md:text-4xl">{heading}</h1>
+				{
+					metaLine && (
+						<p class="mx-auto max-w-xl text-sm leading-relaxed text-slate-500 md:text-base">
+							{metaLine}
+						</p>
+					)
+				}
+			</div>
+		</div>
+	</section>
+	<section>
+		<div class="mx-auto max-w-3xl space-y-6 text-left text-base leading-relaxed text-slate-300">
+			<slot />
+		</div>
+	</section>
+</InnerPageShell>

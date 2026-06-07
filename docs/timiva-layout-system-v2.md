@@ -300,7 +300,7 @@ md:p-6
 * **`h-full`**：配合 grid `items-stretch` 達成同列等高
 * **`min-h-0`**：不使用過大的 `min-h-[156px]` / `md:min-h-[192px]`
 * 卡片高度由 **icon + title + description + arrow + padding + gap** 自然決定
-* 同列等高到 **該列最高卡片**，較矮卡片剩餘空白在 arrow 下方
+* 同列等高到 **該列最高卡片**；較矮卡片由 **`mt-auto`** 把 arrow 推至卡片底部，空白留在 description 與 arrow 之間
 
 ### 8.4 Description 規則
 
@@ -318,14 +318,20 @@ mt-2 hidden text-sm leading-relaxed text-slate-400 md:block
 ### 8.5 Arrow 規則
 
 ```text
-mt-4 flex justify-end
+mt-auto flex justify-end pt-4
 ```
 
 | 允許 | 禁止 |
 |---|---|
 | normal flow | `absolute bottom-right` |
-| 與 description 固定距離（`mt-4`） | `mt-auto` 在 description 與 arrow 間撐大空白 |
-| 靠右 | 壓到 description 文字 |
+| `mt-auto`：同列等高時 arrow 底部對齊 | 僅用 `mt-4` 固定距離（同列被撐高時 arrow 無法底對齊） |
+| `pt-4`：arrow 與上方內容保留合理間距 | 壓到 description 文字 |
+| 靠右 | 脫離 normal flow |
+
+**行為說明：**
+
+* 單卡自然高度時，description 與 arrow 距離接近一般 `mt-4` 視覺
+* Grid `items-stretch` + `h-full` 使同列等高時，所有卡片 arrow 對齊在卡片底部
 
 ### 8.6 同列等高
 
@@ -346,7 +352,6 @@ Drawer 內每張 ToolCard 必須包一層 neutral `<div>`：
 ❌ 不要用 description min-height 撐兩行
 ❌ 不要用 description max-width 造成亂斷行
 ❌ 不要讓 arrow absolute bottom-right
-❌ 不要用 mt-auto 把 arrow 推到底部（在 description 與 arrow 間留大空白）
 ❌ 不要用 min-h-[156px] / md:min-h-[192px] 硬撐所有卡片
 ❌ 不要讓 Drawer 卡片被 h-full 撐滿整個 drawer
 ❌ 不要為 home / all-tools / drawer 發明三套不同 ToolCard
@@ -561,7 +566,7 @@ pt-10 (40px)  pt-12 (48px)  pb-20 (80px)
 
 - [ ] ToolCard：三處視覺一致
 - [ ] ToolCard：無 description min-height / max-width
-- [ ] ToolCard：arrow normal flow + `mt-4`
+- [ ] ToolCard：arrow normal flow + `mt-auto` + `pt-4`（同列 arrow 底對齊）
 - [ ] ToolCard：同列等高靠 grid stretch + h-full
 - [ ] RelatedToolRow：3 張、三欄置中、省高度
 

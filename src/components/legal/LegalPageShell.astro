@@ -1,0 +1,15 @@
+---
+import InnerContentPageShell from "../InnerContentPageShell.astro";
+import type { Locale } from "../../i18n/config";
+
+interface Props {
+  locale: Locale;
+  pathname: string;
+}
+
+const { locale, pathname } = Astro.props;
+---
+
+<InnerContentPageShell locale={locale} pathname={pathname}>
+  <slot />
+</InnerContentPageShell>

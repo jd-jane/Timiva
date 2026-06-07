@@ -1,0 +1,987 @@
+/* ============================================================
+   Timiva Tool Design System V1
+   Baseline: Event Countdown
+   ============================================================ */
+
+@import "./timiva-tokens.css";
+
+/* ==============================
+   Tool page shell
+============================== */
+
+.tool-page,
+.countdown-page,
+.date-range-page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  min-height: 100svh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  font-family: inherit;
+  color: var(--timiva-text-primary);
+  overflow-x: hidden;
+}
+
+.tool-page.theme-aurora,
+.countdown-page.theme-aurora,
+.date-range-page.theme-aurora {
+  background: transparent;
+}
+
+.tool-glow,
+.countdown-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(255, 255, 255, 0.16),
+      transparent 28%
+    );
+  filter: blur(40px);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* ==============================
+   Back link
+============================== */
+
+.tool-back-link,
+.tool-home-link,
+.countdown-home-link {
+  position: fixed;
+  top: max(14px, env(safe-area-inset-top));
+  left: max(14px, env(safe-area-inset-left));
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.58);
+  text-decoration: none;
+  background: rgba(15, 23, 42, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
+}
+
+.tool-back-link:hover,
+.tool-back-link:focus-visible,
+.tool-home-link:hover,
+.tool-home-link:focus-visible,
+.countdown-home-link:hover,
+.countdown-home-link:focus-visible {
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(15, 23, 42, 0.38);
+  border-color: rgba(255, 255, 255, 0.12);
+  outline: none;
+}
+
+/* ==============================
+   Tool kicker
+   legacy alias: .countdown-kicker
+============================== */
+
+.tool-kicker,
+.countdown-kicker {
+  margin: 0 0 20px;
+  font-size: 0.8rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--timiva-text-secondary);
+  opacity: 0.72;
+}
+
+/* ==============================
+   Tool hero / preview (sheet open)
+============================== */
+
+.tool-hero-preview {
+  position: relative;
+  z-index: var(--z-main);
+  transform: translateY(var(--tool-preview-offset-y, 0px))
+    scale(var(--tool-preview-scale, 1));
+  transform-origin: top center;
+  transition:
+    transform 320ms ease,
+    opacity 320ms ease;
+}
+
+.tool-hero {
+  width: 100%;
+  max-width: 520px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.tool-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.tool-header--compact {
+  margin-bottom: 16px;
+}
+
+/* ==============================
+   Result hero
+============================== */
+
+.tool-result {
+  margin-bottom: var(--space-result-gap);
+  text-align: center;
+}
+
+.tool-result-main {
+  margin-bottom: 18px;
+}
+
+.tool-result-number {
+  font-size: clamp(3.4rem, 18vw, 4.6rem);
+  line-height: 0.86;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  background: var(--timiva-result-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: font-size 320ms ease;
+}
+
+.tool-result-label {
+  margin-top: 8px;
+  font-size: clamp(0.68rem, 2.8vw, 0.78rem);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+.tool-result-secondary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tool-result-secondary-item {
+  text-align: center;
+}
+
+.tool-result-secondary-number {
+  font-size: clamp(1.85rem, 9vw, 2.35rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  background: var(--timiva-result-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tool-result-secondary-label {
+  margin-top: 8px;
+  font-size: clamp(0.68rem, 2.8vw, 0.78rem);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+/* ==============================
+   Desktop tool control / panel cluster
+============================== */
+
+.tool-desktop-cluster {
+  width: 100%;
+  max-width: 660px;
+  margin-inline: auto;
+  padding-inline: var(--space-page-x-desktop);
+  box-sizing: border-box;
+}
+
+.desktop-tool-control {
+  margin-bottom: var(--space-control-gap);
+}
+
+.desktop-tool-panel {
+  margin-bottom: 0;
+}
+
+.tool-input-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: var(--radius-card);
+  text-align: left;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.tool-input-card__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  color: rgba(220, 218, 240, 0.88);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.tool-input-card__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.tool-input-card__text {
+  margin: 0;
+  font-size: clamp(0.88rem, 3.6vw, 0.96rem);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--timiva-text-secondary);
+}
+
+.calendar-panel {
+  padding: 14px 12px 12px;
+  border-radius: 18px;
+  background: linear-gradient(
+    165deg,
+    rgba(110, 98, 200, 0.22),
+    rgba(70, 88, 160, 0.18)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ==============================
+   Mobile bottom control
+   Outer capsule family shared by:
+   - Event Countdown: multi-action (.mobile-bottom-action × N)
+   - Date Range Calculator: Mobile Bottom Capsule Control (single action)
+     See docs/timiva-tool-design-system-v1.md
+============================== */
+
+.mobile-bottom-control {
+  position: relative;
+  z-index: var(--z-bottom-control);
+  transition:
+    opacity 240ms ease,
+    visibility 240ms ease;
+}
+
+.mobile-bottom-control-inner,
+.countdown-actions {
+  position: fixed;
+  left: 50%;
+  bottom: max(20px, calc(16px + var(--safe-bottom)));
+  z-index: var(--z-bottom-control);
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--timiva-glass-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--timiva-glass-bg);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 10px 32px rgba(8, 6, 24, 0.22);
+}
+
+.mobile-bottom-control--card {
+  left: 16px;
+  right: 16px;
+  width: auto;
+  transform: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.mobile-bottom-control--card .tool-input-card {
+  min-height: 52px;
+  border-radius: var(--radius-control);
+  background: var(--timiva-glass-bg-strong);
+  border: 1px solid var(--timiva-glass-border);
+  box-shadow: 0 10px 32px rgba(8, 6, 24, 0.28);
+}
+
+.mobile-bottom-action,
+.countdown-actions button {
+  border-radius: var(--radius-pill);
+  padding: 10px 16px;
+  color: white;
+  background: var(--button-bg, rgba(255, 255, 255, 0.06));
+  border: 0;
+  transition: background 200ms ease;
+}
+
+.mobile-bottom-action:hover,
+.countdown-actions button:hover {
+  background: var(--button-hover-bg, rgba(255, 255, 255, 0.12));
+}
+
+/* ==============================
+   Bottom Sheet shell
+   legacy alias: .range-sheet-backdrop → .tool-sheet-overlay
+   legacy alias: .range-sheet, .edit-sheet → .tool-bottom-sheet
+   legacy alias: .sheet-handle → .tool-bottom-sheet-handle
+   legacy alias: .sheet-content → .tool-bottom-sheet-content
+============================== */
+
+.tool-sheet-overlay,
+.range-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  background: var(--timiva-overlay);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 240ms ease;
+}
+
+.tool-sheet-overlay.is-visible,
+.range-sheet-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.tool-bottom-sheet,
+.range-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-sheet);
+  display: flex;
+  flex-direction: column;
+  max-height: min(78svh, 580px);
+  max-height: min(78dvh, 580px);
+  overflow: hidden;
+  padding:
+    10px
+    var(--space-page-x-mobile)
+    calc(20px + var(--safe-bottom));
+  border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+  background: linear-gradient(
+    180deg,
+    var(--timiva-sheet-bg),
+    var(--timiva-sheet-bg-end)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 0;
+  box-shadow: 0 -20px 56px rgba(8, 6, 24, 0.45);
+  backdrop-filter: blur(20px);
+  transform: translateY(100%);
+  transition: transform 320ms ease;
+  pointer-events: auto;
+  isolation: isolate;
+}
+
+/* Event Countdown：保留主題 sheet 底色 */
+.edit-sheet.tool-bottom-sheet,
+.edit-sheet {
+  background: var(--sheet-bg, linear-gradient(180deg, var(--timiva-sheet-bg), var(--timiva-sheet-bg-end)));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+  box-shadow: 0 -24px 80px rgba(0, 0, 0, 0.32);
+  border-radius: 28px 28px 0 0;
+  padding:
+    14px
+    20px
+    max(20px, var(--safe-bottom));
+}
+
+.tool-bottom-sheet.is-open,
+.edit-sheet.is-open,
+.range-sheet.is-open {
+  transform: translateY(0);
+}
+
+.tool-bottom-sheet-handle,
+.sheet-handle,
+.range-sheet-handle {
+  flex-shrink: 0;
+  width: 48px;
+  height: 5px;
+  margin: 0 auto 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.tool-bottom-sheet-content,
+.sheet-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  pointer-events: auto;
+}
+
+.tool-bottom-sheet-footer {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  padding-top: 2px;
+}
+
+/* ==============================
+   Sheet open state
+============================== */
+
+.tool-sheet-open,
+.countdown-page.sheet-open,
+.countdown-page.tool-sheet-open,
+.date-range-page.sheet-open,
+.date-range-page.tool-sheet-open {
+  overflow: hidden;
+  height: 100svh;
+  height: 100dvh;
+  --tool-preview-offset-y: var(--tool-sheet-preview-offset-y);
+  --tool-preview-scale: var(--tool-sheet-preview-scale);
+}
+
+.tool-sheet-open .tool-hero-preview,
+.countdown-page.sheet-open .countdown-content,
+.date-range-page.sheet-open .tool-hero-preview {
+  opacity: var(--tool-sheet-preview-opacity);
+  pointer-events: none;
+}
+
+.tool-sheet-open .tool-content-preview,
+.tool-sheet-open .tool-content-scroll,
+.countdown-page.sheet-open .tool-content-preview,
+.countdown-page.sheet-open .tool-content-scroll,
+.date-range-page.sheet-open .tool-content-preview,
+.date-range-page.sheet-open .tool-content-scroll {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.tool-sheet-open .mobile-bottom-control,
+.countdown-page.sheet-open .mobile-bottom-control,
+.date-range-page.sheet-open .mobile-bottom-control {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.tool-sheet-open,
+body.range-sheet-open {
+  overflow: hidden;
+}
+
+/* Countdown：保留 translateY 預覽（視覺基準），opacity 由 countdown.css 覆寫 */
+.countdown-page.sheet-open {
+  --content-offset-y: -14vh;
+}
+
+/* Countdown overlay：使用 .tool-sheet-overlay（legacy ::after 已移除） */
+.countdown-page .tool-sheet-overlay.is-visible {
+  pointer-events: none;
+}
+
+/* ==============================
+   Tool content: shared lower column (FAQ, Related Tools, SEO)
+============================== */
+
+.tool-content-preview {
+  position: relative;
+  z-index: var(--z-main);
+  width: 100%;
+}
+
+.tool-content-preview > .tool-content {
+  position: relative;
+  z-index: var(--z-main);
+  width: 100%;
+  max-width: var(--tool-content-max-width);
+  margin-inline: auto;
+  padding:
+    var(--space-content-gap)
+    var(--space-page-x-mobile)
+    24px;
+  box-sizing: border-box;
+}
+
+/* Standalone section outside .tool-content wrapper (legacy) */
+.tool-content-section {
+  position: relative;
+  z-index: var(--z-main);
+  width: 100%;
+  max-width: var(--tool-content-max-width);
+  margin-inline: auto;
+  padding:
+    var(--space-content-gap)
+    var(--space-page-x-mobile)
+    24px;
+  box-sizing: border-box;
+}
+
+.tool-howto,
+.tool-faq {
+  margin-bottom: var(--space-content-gap);
+}
+
+.tool-howto h2,
+.tool-faq h2 {
+  margin: 0 0 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(244, 243, 248, 0.72);
+}
+
+.tool-howto p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--timiva-text-muted);
+}
+
+.tool-faq-item {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tool-faq-item:last-of-type {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tool-faq-item .tool-faq-trigger {
+  cursor: pointer;
+  padding: 14px 0;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(244, 243, 248, 0.86);
+  display: block;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.tool-faq-item .tool-faq-trigger::after {
+  content: "+";
+  float: right;
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgba(244, 243, 248, 0.42);
+}
+
+.tool-faq-item .tool-faq-trigger[aria-expanded="true"]::after {
+  content: "−";
+}
+
+.tool-faq-item p {
+  margin: 0 0 14px;
+  padding-right: 8px;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: rgba(244, 243, 248, 0.56);
+}
+
+.tool-faq-panel[hidden] {
+  display: none;
+}
+
+.tool-keyword-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tool-keyword-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: rgba(244, 243, 248, 0.72);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* ==============================
+   Mobile Landscape Compact Mode (shared)
+   Gate: (orientation: landscape) and (max-height: 700px) and (max-width: 1200px)
+   See docs/timiva-tool-design-system-v1.md
+   Verify with computed style on real device — do not assume CSS wrote = applied.
+============================== */
+
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+  .tool-page,
+  .countdown-page,
+  .date-range-page {
+    --ml-section-title-size: 13px;
+    --ml-faq-heading-size: 13px;
+    --ml-faq-question-size: 13px;
+    --ml-body-size: 14px;
+    --ml-faq-answer-size: 14px;
+    --ml-chip-size: 13px;
+    --ml-line-height-body: 1.45;
+    --ml-line-height-faq: 1.35;
+    --ml-faq-padding-y: 8px;
+    --ml-content-padding-bottom: calc(96px + var(--safe-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .countdown-page .tool-howto,
+  .countdown-page .tool-faq,
+  .date-range-page .tool-howto,
+  .date-range-page .tool-faq {
+    margin-bottom: 14px;
+  }
+
+  .countdown-page .tool-content h2,
+  .date-range-page .tool-content h2,
+  .countdown-page .tool-howto h2,
+  .date-range-page .tool-howto h2,
+  .countdown-page .tool-faq h2,
+  .date-range-page .tool-faq h2 {
+    margin-bottom: 6px;
+    font-size: var(--ml-section-title-size);
+    line-height: 1.25;
+  }
+
+  .countdown-page .tool-content p,
+  .date-range-page .tool-content p,
+  .countdown-page .tool-howto p,
+  .date-range-page .tool-howto p {
+    font-size: var(--ml-body-size);
+    line-height: var(--ml-line-height-body);
+  }
+
+  .countdown-page .tool-keyword-list,
+  .date-range-page .tool-keyword-list {
+    gap: 6px;
+  }
+
+  .countdown-page .tool-keyword-chip,
+  .date-range-page .tool-keyword-chip {
+    padding: 6px 12px;
+    font-size: var(--ml-chip-size);
+    line-height: 1.35;
+  }
+
+  .countdown-page .tool-faq-item .tool-faq-trigger,
+  .date-range-page .tool-faq-item .tool-faq-trigger {
+    padding-block: var(--ml-faq-padding-y);
+    font-size: var(--ml-faq-question-size);
+    line-height: var(--ml-line-height-faq);
+  }
+
+  .countdown-page .tool-faq-item p,
+  .date-range-page .tool-faq-item p {
+    margin-bottom: 6px;
+    font-size: var(--ml-faq-answer-size);
+    line-height: var(--ml-line-height-body);
+  }
+
+  .countdown-page .tool-content-preview > .tool-content,
+  .date-range-page .tool-content-preview > .tool-content {
+    padding-top: 16px;
+    padding-bottom: 24px;
+    padding-inline: var(--space-page-x-mobile);
+  }
+}
+
+/* ==============================
+   Mobile
+============================== */
+
+@media (max-width: 600px) {
+  .tool-hero .tool-hero-content,
+  .tool-hero-preview .tool-hero-content,
+  /* legacy */
+  .tool-hero .tool-content,
+  .tool-hero-preview .tool-content {
+    padding-top: var(--space-hero-top-mobile);
+    padding-bottom: calc(120px + var(--safe-bottom));
+    padding-inline: var(--space-page-x-mobile);
+  }
+
+  .tool-kicker,
+  .countdown-kicker {
+    max-width: 100%;
+    padding-inline: 4px;
+    line-height: 1.35;
+  }
+
+  .mobile-bottom-control--card {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: calc(16px + var(--safe-bottom));
+  }
+
+  /* 手機：desktop-tool-panel 不影響 fixed sheet 排版 */
+  .desktop-tool-panel {
+    display: contents;
+  }
+
+  .countdown-actions {
+    bottom: max(28px, calc(16px + var(--safe-bottom)));
+  }
+
+  .tool-bottom-sheet,
+  .edit-sheet,
+  .range-sheet {
+    max-height: min(72svh, 520px);
+    max-height: min(72dvh, 520px);
+  }
+
+  .countdown-page.sheet-open {
+    --content-offset-y: -18vh;
+  }
+}
+
+/* ==============================
+   Desktop
+============================== */
+
+@media (min-width: 601px) {
+  .tool-hero-preview {
+    transform: none;
+  }
+
+  .tool-result--multi {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    align-items: end;
+    margin-bottom: var(--space-result-gap);
+  }
+
+  .tool-result--multi .tool-result-main {
+    margin-bottom: 0;
+  }
+
+  .tool-result--multi .tool-result-number {
+    font-size: clamp(4.2rem, 9vw, 5.4rem);
+  }
+
+  .tool-result--multi .tool-result-secondary {
+    display: contents;
+  }
+
+  .tool-result--multi .tool-result-secondary-number {
+    font-size: clamp(1.7rem, 3.8vw, 2.1rem);
+  }
+
+  .desktop-tool-control .tool-input-card {
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .desktop-tool-panel {
+    margin-bottom: 0;
+  }
+
+  .desktop-tool-control,
+  .desktop-tool-panel,
+  .tool-bottom-sheet.range-sheet,
+  .range-sheet {
+    position: static;
+    z-index: auto;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    transform: none;
+  }
+
+  .tool-sheet-overlay,
+  .range-sheet-backdrop,
+  .tool-bottom-sheet-handle,
+  .range-sheet-handle,
+  .tool-bottom-sheet-footer,
+  .range-sheet-footer {
+    display: none;
+  }
+
+  .tool-content-preview > .tool-content,
+  .tool-content-section {
+    padding-top: var(--space-section-gap);
+    padding-inline: var(--space-page-x-desktop);
+    padding-bottom: 48px;
+  }
+
+  .date-range-page .tool-header--compact {
+    margin-bottom: 28px;
+  }
+}
+
+/* Footer inside tool page — spacing via content, not footer width or page shell padding-bottom */
+.tool-page > .site-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+.tool-page:has(> .site-footer) .tool-content-preview > .tool-content {
+  padding-bottom: 24px;
+}
+
+@media (max-width: 600px), ((orientation: landscape) and (max-height: 700px) and (max-width: 1200px)) {
+  .tool-page:has(> .site-footer) > .tool-content-preview {
+    padding-bottom: var(--tool-content-bottom-clearance);
+  }
+}
+
+/* Related tools — inside shared tool content column */
+
+.related-tools {
+  margin-bottom: var(--space-content-gap);
+}
+
+.related-tools:first-child {
+  margin-top: 0;
+}
+
+.related-tools h2 {
+  margin: 0 0 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(244, 243, 248, 0.72);
+}
+
+.related-tools__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.related-tools__card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-card);
+  background: rgba(255, 255, 255, 0.03);
+  text-decoration: none;
+  color: inherit;
+}
+
+.related-tools__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: rgba(244, 243, 248, 0.82);
+}
+
+.related-tools__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.related-tools__name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(248, 247, 252, 0.96);
+}
+
+.related-tools__desc {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--timiva-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.related-tools__arrow {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: rgba(244, 243, 248, 0.58);
+}
+
+.related-tools__arrow svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.related-tools__all {
+  margin: 16px 0 0;
+}
+
+.related-tools__all a {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--timiva-text-muted);
+  text-decoration: none;
+}
+
+.related-tools--compact .related-tools__list {
+  gap: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-card);
+  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+
+.related-tools--compact .related-tools__card {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.related-tools--compact .related-tools__all {
+  margin-top: 12px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .related-tools__card:hover {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .related-tools__all a:hover {
+    color: var(--timiva-text-secondary);
+  }
+}

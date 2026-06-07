@@ -1,0 +1,39 @@
+---
+import RelatedToolRow from "./RelatedToolRow.astro";
+import { catalogIconMap } from "../lib/catalogIcons";
+import { getRelatedTools, type CatalogToolId } from "../data/toolsCatalog";
+import { getLocalizedPath, type Locale } from "../i18n/config";
+import { getMessages } from "../i18n/messages";
+
+interface Props {
+	locale: Locale;
+	currentToolId: CatalogToolId;
+}
+
+const { locale, currentToolId } = Astro.props;
+const messages = getMessages(locale);
+const relatedTools = getRelatedTools(currentToolId);
+
+const toolCopy = {
+	"event-countdown": messages.tools.eventCountdown,
+	"date-range": messages.tools.dateRange,
+	"age-calculator": messages.tools.ageCalculator,
+	"life-progress": messages.tools.lifeProgress,
+};
+---
+
+<section class="tool-related-tools pb-12">
+	<h2 class="mb-4 text-lg font-semibold text-white">{messages.relatedTools.heading}</h2>
+	<div class="space-y-3">
+		{
+			relatedTools.map((tool) => (
+				<RelatedToolRow
+					href={getLocalizedPath(locale, `/${tool.slug}/`)}
+					name={toolCopy[tool.id].title}
+					description={toolCopy[tool.id].relatedDescription}
+					icon={catalogIconMap[tool.id]}
+				/>
+			))
+		}
+	</div>
+</section>

@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import LegalTextLayout from "../../../components/LegalTextLayout.astro";
+import { type Locale } from "../../../i18n/config";
+import { getMessages } from "../../../i18n/messages";
+
+const locale: Locale = "zh";
+const messages = getMessages(locale);
+const content = messages.legal.contact;
+---
+
+<BaseLayout
+	title={messages.meta.contact.title}
+	description={messages.meta.contact.description}
+	headerVariant="inner"
+	locale={locale}
+>
+	<LegalTextLayout locale={locale} heading={content.heading}>
+		<p>
+			{content.intro}
+			<a
+				href={`mailto:${content.email}`}
+				class="text-slate-200 underline decoration-white/20 underline-offset-4 transition-colors hover:text-white"
+			>
+				{content.email}
+			</a>。
+		</p>
+	</LegalTextLayout>
+</BaseLayout>

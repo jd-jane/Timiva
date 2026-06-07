@@ -1,18 +1,32 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
+// Root locale redirect — reads preferredLocale from localStorage only on `/`.
 ---
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Timiva</title>
+		<meta name="robots" content="noindex" />
+		<link rel="canonical" href="https://timiva.app/en/" />
+	</head>
+	<body>
+		<script is:inline>
+			(function () {
+				var locale = "en";
 
-<BaseLayout title="Timiva">
-	<!-- Setup Check｜Tailwind 與 BaseLayout 測試 -->
-	<section class="mx-auto flex min-h-screen max-w-5xl items-center px-6">
-		<div>
-			<p class="mb-4 text-sm uppercase tracking-[0.3em] text-slate-400">Timiva</p>
-			<h1 class="text-4xl font-semibold tracking-tight md:text-6xl">
-				Tailwind is ready.
-			</h1>
-			<p class="mt-4 max-w-xl text-base text-slate-300 md:text-lg">
-				This is only a setup check. Do not treat this as the final homepage design.
-			</p>
-		</div>
-	</section>
-</BaseLayout>
+				try {
+					var stored = localStorage.getItem("preferredLocale");
+					if (stored === "zh" || stored === "en") {
+						locale = stored;
+					}
+				} catch (e) {}
+
+				window.location.replace("/" + locale + "/");
+			})();
+		</script>
+		<noscript>
+			<p><a href="/en/">Continue to Timiva</a></p>
+		</noscript>
+	</body>
+</html>

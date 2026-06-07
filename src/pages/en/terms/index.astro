@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import LegalTextLayout from "../../../components/LegalTextLayout.astro";
+import { type Locale } from "../../../i18n/config";
+import { getMessages } from "../../../i18n/messages";
+
+const locale: Locale = "en";
+const messages = getMessages(locale);
+const content = messages.legal.terms;
+---
+
+<BaseLayout
+	title={messages.meta.terms.title}
+	description={messages.meta.terms.description}
+	headerVariant="inner"
+	locale={locale}
+>
+	<LegalTextLayout locale={locale} heading={content.heading} metaLine={content.updated}>
+		{content.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+	</LegalTextLayout>
+</BaseLayout>

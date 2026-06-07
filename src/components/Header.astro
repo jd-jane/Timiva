@@ -1,9 +1,13 @@
 ---
+import { getLocalizedPath, routePaths, type Locale } from "../i18n/config";
+
 interface Props {
 	variant?: "home" | "inner";
+	locale?: Locale;
 }
 
-const { variant = "home" } = Astro.props;
+const { variant = "home", locale = "en" } = Astro.props;
+const innerHomeHref = getLocalizedPath(locale, routePaths.home);
 ---
 
 <!-- Header｜全站頁首 -->
@@ -12,7 +16,7 @@ const { variant = "home" } = Astro.props;
 	variant === "home" ? (
 		<>
 			<!-- Header｜桌機版主導覽（首頁 wordmark） -->
-			<header class="hidden md:block">
+			<header class="site-header hidden md:block">
 				<nav aria-label="Main navigation" class="mx-auto max-w-5xl px-6 pt-6">
 					<a href="/">
 						<img
@@ -27,7 +31,7 @@ const { variant = "home" } = Astro.props;
 			</header>
 
 			<!-- Header｜手機版主導覽（首頁 wordmark） -->
-			<header class="block md:hidden">
+			<header class="site-header block md:hidden">
 				<nav aria-label="Main navigation" class="px-4 pt-4">
 					<a href="/">
 						<img
@@ -44,10 +48,10 @@ const { variant = "home" } = Astro.props;
 	) : (
 		<>
 			<!-- Header｜桌機版主導覽（內頁膠囊返回） -->
-			<header class="hidden md:block">
+			<header class="site-header hidden md:block">
 				<nav aria-label="Main navigation" class="mx-auto max-w-5xl px-6 pt-6">
 					<a
-						href="/"
+						href={innerHomeHref}
 						class="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/10"
 					>
 						<svg
@@ -70,10 +74,10 @@ const { variant = "home" } = Astro.props;
 			</header>
 
 			<!-- Header｜手機版主導覽（內頁膠囊返回） -->
-			<header class="block md:hidden">
+			<header class="site-header block md:hidden">
 				<nav aria-label="Main navigation" class="px-4 pt-4">
 					<a
-						href="/"
+						href={innerHomeHref}
 						class="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/10"
 					>
 						<svg

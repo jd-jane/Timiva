@@ -20,14 +20,14 @@ const { href = "#", name, description, icon } = Astro.props;
 
 <a
 	href={href}
-	class="relative flex h-full min-h-0 flex-col rounded-2xl border border-white/10 bg-white/5 p-5 transition-colors hover:bg-white/[0.07] md:p-6"
+	class="relative flex h-full min-h-0 flex-col rounded-2xl border border-white/10 bg-white/5 p-5 transition-[transform,background-color,border-color] duration-[360ms] ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform hover:-translate-y-2 hover:bg-white/[0.07] md:p-6"
 >
 	{icon ? <ToolCardIcon name={icon} /> : <slot name="icon" />}
 	<p class="mt-4 text-base font-medium text-white">{name}</p>
 	<p class="mt-2 hidden text-sm leading-relaxed text-slate-400 md:block">
 		{description}
 	</p>
-	<div class="mt-4 flex justify-end">
+	<div class="mt-auto flex justify-end pt-4">
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			viewBox="0 0 16 16"

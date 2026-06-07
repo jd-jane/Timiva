@@ -1,0 +1,48 @@
+/* Tool Page Shell — shared outer structure */
+
+/*
+ * Stacking (low → high):
+ * BaseLayout global background (-z-10)
+ * ToolPageShell background layer (fixed, z-index 1)
+ * ToolPageShell content (relative, z-index 2)
+ * Header (transparent, z-index 30)
+ * Tool sheets / overlays (fixed, --z-overlay / --z-sheet)
+ */
+
+.tool-page-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100svh;
+  min-height: 100dvh;
+  margin-top: calc(-1 * var(--site-header-height));
+  z-index: 0;
+}
+
+.tool-page-shell__background {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: transparent;
+}
+
+.tool-page-shell__first-screen {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+.tool-page-shell__overlays {
+  position: relative;
+  z-index: 2;
+}
+
+.tool-page-shell__lower {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  width: 100%;
+}

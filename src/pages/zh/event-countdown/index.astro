@@ -1,0 +1,24 @@
+---
+import "../../../styles/tools/reset.css";
+import "../../../styles/tools/timiva-tokens.css";
+import "../../../styles/tools/tool-design-system.css";
+import "../../../styles/tools/tool-page.css";
+import "../../../styles/tool-page-shell.css";
+import "../../../styles/tools/countdown.css";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import CountdownHero from "../../../components/tools/CountdownHero.astro";
+import { type Locale } from "../../../i18n/config";
+import { getMessages } from "../../../i18n/messages";
+
+const locale: Locale = "zh";
+const messages = getMessages(locale);
+---
+
+<BaseLayout
+	title={messages.meta.eventCountdown.title}
+	description={messages.meta.eventCountdown.description}
+	headerVariant="inner"
+	locale={locale}
+>
+	<CountdownHero locale={locale} />
+</BaseLayout>

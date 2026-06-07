@@ -1,0 +1,29 @@
+---
+import "../../../styles/tools/event-countdown-v2.css";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import EventCountdownV2 from "../../../components/tools/event-countdown-v2/EventCountdownV2.astro";
+import {
+	getAlternatePaths,
+	getCanonicalUrl,
+	routePaths,
+	type Locale,
+} from "../../../i18n/config";
+import { getMessages } from "../../../i18n/messages";
+
+const locale: Locale = "en";
+const messages = getMessages(locale);
+const alternates = getAlternatePaths(routePaths.eventCountdown);
+const canonicalUrl = getCanonicalUrl(routePaths.eventCountdown, locale);
+---
+
+<BaseLayout
+	title={messages.meta.eventCountdown.title}
+	description={messages.meta.eventCountdown.description}
+	canonicalUrl={canonicalUrl}
+	alternateUrls={alternates}
+	headerVariant="inner"
+	locale={locale}
+>
+	<EventCountdownV2 locale={locale} mode="production" />
+	<script src="/scripts/countdown-v2.js" defer></script>
+</BaseLayout>

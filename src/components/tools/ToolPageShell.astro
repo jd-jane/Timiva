@@ -1,0 +1,32 @@
+---
+import "../../styles/tool-page-shell.css";
+import type { Locale } from "../../i18n/config";
+
+interface Props {
+	locale?: Locale;
+	toolRootClass?: string;
+}
+
+const { locale = "en", toolRootClass = "" } = Astro.props;
+
+const rootClasses = ["tool-page", "tool-page-shell", ...toolRootClass.split(/\s+/).filter(Boolean)];
+---
+
+<!-- Tool Page Shell｜工具頁外層骨架 -->
+<section class:list={rootClasses} data-locale={locale} data-tool-page-shell>
+	<div class="tool-page-shell__background" aria-hidden="true" data-tool-page-background>
+		<slot name="background" />
+	</div>
+
+	<div class="tool-page-shell__first-screen">
+		<slot name="firstScreen" />
+	</div>
+
+	<div class="tool-page-shell__overlays">
+		<slot name="overlays" />
+	</div>
+
+	<div class="tool-page-shell__lower">
+		<slot name="lowerContent" />
+	</div>
+</section>

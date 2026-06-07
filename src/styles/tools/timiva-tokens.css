@@ -1,0 +1,110 @@
+/* ============================================================
+   Timiva Design Tokens
+   Shared by tool pages (tool-design-system.css) and homepage (layout.css).
+   See docs/timiva-tool-design-system-v1.md — Color & Token Guidelines
+   ============================================================ */
+
+:root {
+  /* Background */
+  --timiva-bg-start: #0f172a;
+  --timiva-bg-mid: #1e1b4b;
+  --timiva-bg-end: #111827;
+
+  /* Text */
+  --timiva-text-primary: rgba(248, 247, 252, 0.96);
+  --timiva-text-secondary: rgba(244, 243, 248, 0.88);
+  --timiva-text-muted: rgba(244, 243, 248, 0.58);
+
+  /* Glass surfaces & borders */
+  --timiva-glass-bg: rgba(15, 23, 42, 0.46);
+  --timiva-glass-bg-strong: rgba(15, 23, 42, 0.72);
+  --timiva-glass-border: rgba(255, 255, 255, 0.14);
+  --timiva-glass-border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Accent */
+  --timiva-accent: rgba(99, 102, 241, 0.62);
+  --timiva-accent-soft: rgba(99, 102, 241, 0.22);
+
+  /* Overlay & sheet */
+  --timiva-overlay: rgba(8, 12, 28, 0.42);
+  --timiva-sheet-bg: rgb(28, 26, 68);
+  --timiva-sheet-bg-end: rgb(18, 22, 48);
+
+  /* Result display */
+  --timiva-result-gradient: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 1),
+    rgba(210, 214, 230, 0.82),
+    rgba(255, 255, 255, 0.96)
+  );
+
+  /* Tool card & status */
+  --timiva-status-open: rgba(210, 205, 240, 0.96);
+  --timiva-status-disabled: rgba(155, 153, 180, 0.92);
+  --timiva-status-open-arrow-opacity: 0.75;
+
+  /* Glass action buttons (primary / secondary hierarchy) */
+  --timiva-action-primary-text: #ffffff;
+  --timiva-action-primary-bg: linear-gradient(
+    165deg,
+    rgba(99, 102, 241, 0.38),
+    rgba(255, 255, 255, 0.12)
+  );
+  --timiva-action-primary-border: rgba(199, 210, 254, 0.42);
+  --timiva-action-secondary-text: rgba(236, 234, 248, 0.82);
+  --timiva-action-secondary-bg: rgba(255, 255, 255, 0.04);
+  --timiva-action-secondary-border: rgba(255, 255, 255, 0.1);
+
+  /* Focus glow & inset rings */
+  --timiva-focus-glow: rgba(129, 140, 248, 0.16);
+  --timiva-focus-glow-strong: rgba(79, 70, 229, 0.28);
+  --timiva-focus-ring-inset: rgba(165, 180, 252, 0.14);
+  --timiva-focus-ring-hover: rgba(165, 180, 252, 0.18);
+
+  /* Radius */
+  --radius-pill: 999px;
+  --radius-card: 16px;
+  --radius-sheet: 24px;
+  --radius-control: 20px;
+
+  /* Spacing */
+  --space-page-x-mobile: 20px;
+  --space-page-x-desktop: 24px;
+  --space-hero-top-mobile: max(72px, calc(env(safe-area-inset-top) + 52px));
+  --space-hero-top-desktop: max(48px, calc(env(safe-area-inset-top) + 44px));
+  --space-result-gap: 32px;
+  --space-control-gap: 20px;
+  --space-section-gap: 84px;
+  --space-content-gap: 28px;
+  --tool-content-max-width: 620px;
+  --tool-content-bottom-clearance: calc(120px + var(--safe-bottom));
+  --footer-max-width: 1200px;
+  --footer-padding-inline: var(--space-page-x-mobile);
+  --footer-border-color: rgba(255, 255, 255, 0.06);
+  --footer-padding-block-start: 14px;
+  --footer-padding-block-end: calc(8px + var(--safe-bottom));
+  --legal-content-max-width: 720px;
+  --inner-intro-max-width: 720px;
+  --inner-text-max-width: 720px;
+  --inner-list-max-width: 960px;
+  --inner-content-max-width: var(--inner-list-max-width);
+  --inner-intro-body-gap: 32px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Z-index */
+  --z-main: 1;
+  --z-bottom-control: 20;
+  --z-overlay: 50;
+  --z-sheet: 60;
+
+  /* Page backgrounds */
+  --timiva-bg-aurora:
+    radial-gradient(circle at 22% 18%, rgba(125, 211, 252, 0.24), transparent 28%),
+    radial-gradient(circle at 78% 72%, rgba(168, 85, 247, 0.24), transparent 34%),
+    linear-gradient(135deg, var(--timiva-bg-start), var(--timiva-bg-mid) 52%, var(--timiva-bg-end));
+
+  /* Sheet open preview */
+  --tool-sheet-preview-scale: 0.9;
+  --tool-sheet-preview-offset-y: -20px;
+  --tool-sheet-preview-opacity: 0.52;
+}

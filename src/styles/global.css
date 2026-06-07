@@ -24,6 +24,39 @@
 }
 
 @layer components {
+	:root {
+		--site-header-height: 3.75rem;
+	}
+
+	@media (min-width: 768px) {
+		:root {
+			--site-header-height: 4.25rem;
+		}
+	}
+
+	.site-header {
+		@apply relative z-30 bg-transparent;
+	}
+
+	/*
+	 * Site footer — transparent wrapper; unified page background paints behind it.
+	 * Border-top, spacing, and link styles live in Footer.astro.
+	 * Pages with custom background layers may scope z-index only (e.g. event-countdown-v2).
+	 */
+	footer {
+		@apply relative bg-transparent;
+	}
+
+	/* Legacy footer hook used by tool/home/legal layout CSS */
+	.site-footer {
+		background: transparent;
+	}
+
+	/* Legacy tool pages without ToolPageShell (e.g. Date Range Calculator). */
+	.site-main:has(.tool-page:not(.tool-page-shell)) {
+		margin-top: calc(-1 * var(--site-header-height));
+	}
+
 	.preview-page-hero-subtitle {
 		max-width: 36rem;
 	}
@@ -31,6 +64,16 @@
 	@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
 		.preview-page-hero-subtitle {
 			max-width: min(47.5rem, 100%);
+		}
+	}
+
+	.zh-hero-mobile-break {
+		display: none;
+	}
+
+	@media (orientation: portrait) and (max-width: 767px) {
+		.zh-hero-mobile-break {
+			display: block;
 		}
 	}
 }

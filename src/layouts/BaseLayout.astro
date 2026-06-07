@@ -2,22 +2,72 @@
 import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import { siteUrl, type Locale } from "../i18n/config";
 
 interface Props {
 	title?: string;
+	description?: string;
+	robots?: string;
+	canonicalUrl?: string;
+	alternateUrls?: Partial<Record<Locale, string>>;
 	headerVariant?: "home" | "inner";
+	locale?: Locale;
 }
 
-const { title = "Timiva", headerVariant = "home" } = Astro.props;
+const {
+	title = "Timiva",
+	description,
+	robots,
+	canonicalUrl,
+	alternateUrls,
+	headerVariant = "home",
+	locale = "en",
+} = Astro.props;
+
+const htmlLang = locale === "zh" ? "zh-Hant" : "en";
+
+function toAbsoluteUrl(path: string) {
+	if (path.startsWith("http://") || path.startsWith("https://")) {
+		return path;
+	}
+
+	return `${siteUrl}${path.startsWith("/") ? path : `/${path}`}`;
+}
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={htmlLang}>
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
+		{description && <meta name="description" content={description} />}
+		{robots && <meta name="robots" content={robots} />}
+		{canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+		{
+			alternateUrls?.en && (
+				<link rel="alternate" hreflang="en" href={toAbsoluteUrl(alternateUrls.en)} />
+			)
+		}
+		{
+			alternateUrls?.zh && (
+				<link
+					rel="alternate"
+					hreflang="zh-Hant"
+					href={toAbsoluteUrl(alternateUrls.zh)}
+				/>
+			)
+		}
+		{
+			alternateUrls?.en && (
+				<link
+					rel="alternate"
+					hreflang="x-default"
+					href={toAbsoluteUrl(alternateUrls.en)}
+				/>
+			)
+		}
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -57,14 +107,14 @@ const { title = "Timiva", headerVariant = "home" } = Astro.props;
 				</div>
 			</div>
 
-			<Header variant={headerVariant} />
+			<Header variant={headerVariant} locale={locale} />
 
 			<!-- Main｜頁面主要內容 -->
-			<main>
+			<main class="site-main">
 				<slot />
 			</main>
 
-			<Footer />
+			<Footer locale={locale} />
 		</div>
 	</body>
 </html>

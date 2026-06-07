@@ -1,0 +1,23 @@
+---
+import "../../../styles/tools/reset.css";
+import "../../../styles/tools/timiva-tokens.css";
+import "../../../styles/tools/tool-design-system.css";
+import "../../../styles/tools/tool-page.css";
+import "../../../styles/tools/date-range.css";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import DateRangeCalculator from "../../../components/tools/DateRangeCalculator.astro";
+import { type Locale } from "../../../i18n/config";
+import { getMessages } from "../../../i18n/messages";
+
+const locale: Locale = "zh";
+const messages = getMessages(locale);
+---
+
+<BaseLayout
+	title={messages.meta.dateRangeCalculator.title}
+	description={messages.meta.dateRangeCalculator.description}
+	headerVariant="inner"
+	locale={locale}
+>
+	<DateRangeCalculator locale={locale} />
+</BaseLayout>

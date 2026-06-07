@@ -1,0 +1,317 @@
+---
+import type { Locale } from "../../i18n/config";
+import { getDateRangeClientI18n } from "../../i18n/clientMessages";
+import { getMessages } from "../../i18n/messages";
+import ToolRelatedTools from "../ToolRelatedTools.astro";
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = "en" } = Astro.props;
+const m = getMessages(locale).dateRangeCalculator;
+const clientI18n = getDateRangeClientI18n(locale);
+---
+
+<section
+  class="tool-page date-range-page theme-aurora"
+  id="date-range-page"
+  data-locale={locale}
+>
+  <div class="tool-glow" aria-hidden="true"></div>
+
+  <div class="tool-desktop-main">
+    <div class="tool-hero-preview range-main-preview" id="range-main-preview">
+      <section class="tool-hero">
+        <main class="tool-hero-content">
+          <header class="tool-header tool-header--compact">
+            <h1 class="tool-kicker">{m.kicker}</h1>
+          </header>
+
+          <section
+            class="tool-result tool-result--multi"
+            aria-live="polite"
+            aria-label={m.resultsLabel}
+          >
+            <div class="tool-result-main">
+              <div class="tool-result-number" id="stat-total">0</div>
+              <div class="tool-result-label">{m.totalDays}</div>
+            </div>
+
+            <div class="tool-result-secondary">
+              <div class="tool-result-secondary-item">
+                <div class="tool-result-secondary-number" id="stat-workdays">0</div>
+                <div class="tool-result-secondary-label">{m.workdays}</div>
+              </div>
+              <div class="tool-result-secondary-item">
+                <div class="tool-result-secondary-number" id="stat-weekends">0</div>
+                <div class="tool-result-secondary-label">{m.weekends}</div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </section>
+    </div>
+
+    <div class="tool-desktop-cluster">
+      <div class="desktop-tool-control">
+        <div class="tool-input-card tool-date-card" aria-hidden="true">
+          <span class="tool-input-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="5" width="18" height="16" rx="3"></rect>
+              <path d="M8 3v4M16 3v4M7 11h10" stroke-linecap="round"></path>
+            </svg>
+          </span>
+          <p class="tool-input-card__text" id="range-display-text-desktop">
+            {m.dateRangePlaceholder}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-bottom-control">
+      <div class="mobile-bottom-control-inner">
+        <button
+          type="button"
+          class="tool-input-card tool-date-card"
+          id="range-display-trigger"
+          aria-label={m.chooseDateRange}
+          aria-haspopup="dialog"
+          aria-controls="range-sheet"
+        >
+          <span class="tool-input-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="5" width="18" height="16" rx="3"></rect>
+              <path d="M8 3v4M16 3v4M7 11h10" stroke-linecap="round"></path>
+            </svg>
+          </span>
+          <p class="tool-input-card__text" id="range-display-text">
+            {m.dateRangePlaceholder}
+          </p>
+        </button>
+      </div>
+    </div>
+
+    <div
+      class="range-compact-overlay"
+      id="range-compact-overlay"
+      hidden
+      aria-hidden="true"
+    ></div>
+
+    <div
+      class="range-landscape-panel range-compact-panel"
+      id="range-landscape-panel"
+      hidden
+      aria-label={m.chooseDateRange}
+    >
+      <div class="range-landscape-panel-inner">
+        <label class="range-landscape-field">
+          <span class="range-landscape-label">{m.startDate}</span>
+          <input
+            type="date"
+            class="range-landscape-input"
+            id="range-landscape-start"
+            aria-label={m.startDate}
+          />
+        </label>
+        <label class="range-landscape-field">
+          <span class="range-landscape-label">{m.endDate}</span>
+          <input
+            type="date"
+            class="range-landscape-input"
+            id="range-landscape-end"
+            aria-label={m.endDate}
+          />
+        </label>
+        <button
+          type="button"
+          class="calendar-clear-btn calendar-clear-btn--ghost range-landscape-clear"
+          data-clear-dates
+        >
+          {m.clearDates}
+        </button>
+      </div>
+    </div>
+
+    <div class="tool-sheet-overlay range-sheet-backdrop" id="range-sheet-backdrop" aria-hidden="true"></div>
+
+    <section class="desktop-tool-panel">
+      <div
+        class="tool-bottom-sheet range-sheet"
+        id="range-sheet"
+        role="dialog"
+        aria-modal="true"
+        aria-label={m.calendarLabel}
+        aria-hidden="true"
+      >
+        <div class="tool-bottom-sheet-handle range-sheet-handle" aria-hidden="true"></div>
+
+        <div class="tool-bottom-sheet-content">
+          <div class="calendar-panel calendar-card range-sheet-calendar">
+            <div class="calendar-toolbar">
+              <button
+                type="button"
+                class="calendar-nav-btn"
+                id="prev-month"
+                aria-label={m.previousMonth}
+              >
+                ‹
+              </button>
+              <h2 class="calendar-month-label" id="month-label">—</h2>
+              <button
+                type="button"
+                class="calendar-nav-btn"
+                id="next-month"
+                aria-label={m.nextMonth}
+              >
+                ›
+              </button>
+            </div>
+
+            <div class="calendar-weekdays" aria-hidden="true">
+              {m.weekdays.map((day) => <span>{day}</span>)}
+            </div>
+
+            <div class="calendar-grid" id="calendar-grid"></div>
+
+            <button
+              type="button"
+              class="calendar-clear-btn calendar-clear-btn--inline"
+              id="clear-range-desktop"
+              data-clear-dates
+            >
+              {m.clearDates}
+            </button>
+          </div>
+        </div>
+
+        <div class="tool-bottom-sheet-footer range-sheet-footer">
+          <button
+            type="button"
+            class="calendar-clear-btn calendar-clear-btn--ghost"
+            id="clear-range"
+            data-clear-dates
+          >
+            {m.clearDates}
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="tool-hero-preview tool-content-preview" id="range-content-scroll">
+    <section class="tool-content">
+      <ToolRelatedTools locale={locale} currentToolId="date-range" />
+
+      <section class="tool-howto range-guide" aria-labelledby="range-about-heading">
+        <h2 id="range-about-heading">{m.about.heading}</h2>
+        <p>{m.about.body}</p>
+      </section>
+
+      <section class="tool-howto range-guide" aria-labelledby="range-guide-heading">
+        <h2 id="range-guide-heading">{m.howTo.heading}</h2>
+        <p>{m.howTo.body}</p>
+      </section>
+
+      <section class="tool-howto range-uses" aria-labelledby="range-uses-heading">
+        <h2 id="range-uses-heading">{m.commonUses.heading}</h2>
+        <ul class="tool-keyword-list" role="list">
+          {m.commonUses.items.map((item) => (
+            <li class="tool-keyword-chip">{item}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section
+        class="tool-faq range-faq"
+        aria-labelledby="range-faq-heading"
+        data-tool-faq-accordion="single"
+      >
+        <h2 id="range-faq-heading">{m.faq.heading}</h2>
+
+        {
+          m.faq.items.map((item, index) => {
+            const itemIndex = index + 1;
+            const triggerId = `range-faq-trigger-${itemIndex}`;
+            const panelId = `range-faq-panel-${itemIndex}`;
+
+            return (
+              <div class="tool-faq-item range-faq-item">
+                <button
+                  type="button"
+                  class="tool-faq-trigger"
+                  id={triggerId}
+                  aria-expanded="false"
+                  aria-controls={panelId}
+                >
+                  {item.question}
+                </button>
+                <div
+                  class="tool-faq-panel"
+                  id={panelId}
+                  role="region"
+                  aria-labelledby={triggerId}
+                  hidden
+                >
+                  <p>{item.answer}</p>
+                </div>
+              </div>
+            );
+          })
+        }
+      </section>
+    </section>
+  </div>
+</section>
+
+<script type="application/json" id="date-range-i18n" set:html={JSON.stringify(clientI18n)} />
+
+<script is:inline>
+  (function () {
+    var page = document.getElementById("date-range-page");
+    if (page) page.dataset.drJs = "dr12";
+
+    function resetDateRangeOrientation() {
+      var sheet = document.getElementById("range-sheet");
+      var backdrop = document.getElementById("range-sheet-backdrop");
+      var panel = document.getElementById("range-landscape-panel");
+      var overlay = document.getElementById("range-compact-overlay");
+
+      sheet?.classList.remove("is-open");
+      backdrop?.classList.remove("is-visible");
+      if (backdrop) backdrop.setAttribute("aria-hidden", "true");
+
+      if (panel) panel.hidden = true;
+      if (overlay) {
+        overlay.hidden = true;
+        overlay.setAttribute("aria-hidden", "true");
+      }
+
+      page?.classList.remove(
+        "sheet-open",
+        "tool-sheet-open",
+        "date-range-scroll-lock",
+        "date-range-compact-open"
+      );
+      document.body.classList.remove("range-sheet-open", "tool-sheet-open");
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+
+      if (page && window.matchMedia("(orientation: portrait)").matches) {
+        page.dataset.rangeLayout = "portrait";
+      }
+    }
+
+    if (page && window.matchMedia("(orientation: portrait)").matches) {
+      page.dataset.rangeLayout = "portrait";
+    }
+
+    window.addEventListener("orientationchange", function () {
+      setTimeout(resetDateRangeOrientation, 200);
+      setTimeout(resetDateRangeOrientation, 550);
+    });
+  })();
+</script>
+<script is:inline src="/scripts/date-range.js?v=dr13"></script>
+<script is:inline src="/scripts/tool-faq-accordion.js"></script>

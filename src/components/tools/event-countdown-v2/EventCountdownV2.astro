@@ -1,0 +1,410 @@
+---
+import RelatedToolRow from "../../RelatedToolRow.astro";
+import ToolCard from "../../ToolCard.astro";
+import { catalogIconMap } from "../../../lib/catalogIcons";
+import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
+import { getRelatedTools, type CatalogToolId } from "../../../data/toolsCatalog";
+import { getLocalizedPath, type Locale } from "../../../i18n/config";
+import { getMessages } from "../../../i18n/messages";
+
+interface Props {
+	locale?: Locale;
+	mode?: "preview" | "production";
+}
+
+const { locale = "en", mode = "preview" } = Astro.props;
+const storageKey =
+	mode === "production"
+		? "timiva.eventCountdown.state"
+		: "timiva.eventCountdownV2.state";
+const messages = getMessages(locale);
+const m = messages.eventCountdown;
+const relatedTools = getRelatedTools("event-countdown");
+
+const toolCopy: Record<
+	CatalogToolId,
+	{ title: string; relatedDescription: string }
+> = {
+	"event-countdown": messages.tools.eventCountdown,
+	"date-range": messages.tools.dateRange,
+	"age-calculator": messages.tools.ageCalculator,
+	"life-progress": messages.tools.lifeProgress,
+};
+
+const relatedToolItems = relatedTools.map((tool) => ({
+	href: getLocalizedPath(locale, `/${tool.slug}/`),
+	name: toolCopy[tool.id].title,
+	description: toolCopy[tool.id].relatedDescription,
+	icon: catalogIconMap[tool.id],
+}));
+
+const faqSchema = buildFaqPageJsonLd(m.faq.items);
+---
+
+<div
+	data-event-countdown-v2
+	data-ecv2-mode={mode}
+	data-ecv2-storage-key={storageKey}
+	data-ecv2-theme="aurora"
+	data-event-title={m.defaultTitle}
+	data-event-date="2026-12-31"
+>
+	<div class="ecv2-theme-backdrop" aria-hidden="true"></div>
+	<section data-preview-main-tool class="preview-tool-main-section px-6">
+		<div class="preview-tool-first-screen">
+			<div class="preview-tool-stage mx-auto w-full max-w-md md:max-w-lg">
+				<div class="preview-tool-result-group text-center">
+					<h1
+						class="preview-tool-landscape-compact-title ecv2-tool-name text-sm font-medium tracking-normal text-slate-300 md:text-base"
+					>
+						{m.kicker}
+					</h1>
+
+					<div class="preview-tool-result-block mt-6 md:mt-8">
+						<p
+							class="preview-tool-result-number leading-none font-normal tracking-tight"
+							data-ecv2-days-count
+						></p>
+						<p class="preview-tool-result-label text-xs text-slate-400 md:text-sm">
+							{m.daysLeft}
+						</p>
+						<span class="ecv2-result-divider" aria-hidden="true"></span>
+						<p class="ecv2-event-title" data-ecv2-title>{m.defaultTitle}</p>
+						<p class="ecv2-event-date" data-ecv2-date-label></p>
+					</div>
+				</div>
+
+				<div
+					class="preview-tool-controls flex flex-wrap justify-center gap-3 md:gap-4"
+					aria-label="Tool controls"
+				>
+					<button
+						type="button"
+						id="edit-button"
+						data-ecv2-edit-button
+						class="preview-tool-control-btn inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm md:min-h-11 md:px-5 md:py-2.5"
+					>
+						{m.edit}
+					</button>
+					<button
+						type="button"
+						data-ecv2-theme-button
+						class="preview-tool-control-btn inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm md:min-h-11 md:px-5 md:py-2.5"
+					>
+						{m.theme}
+					</button>
+					<button
+						type="button"
+						data-ecv2-share-button
+						class="preview-tool-control-btn inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm md:min-h-11 md:px-5 md:py-2.5"
+						aria-label={m.share}
+					>
+						{m.share}
+					</button>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<div
+		class="ecv2-sheet-overlay"
+		data-ecv2-sheet-overlay
+		aria-hidden="true"
+		hidden
+	></div>
+
+	<div
+		class="ecv2-sheet"
+		data-ecv2-sheet
+		role="dialog"
+		aria-modal="true"
+		aria-label="Edit event"
+		aria-hidden="true"
+		hidden
+	>
+		<div class="ecv2-sheet-handle" aria-hidden="true"></div>
+
+		<div class="ecv2-sheet-body">
+			<div class="ecv2-sheet-templates" data-ecv2-sheet-templates>
+				<div
+					class="ecv2-sheet-template-list"
+					role="group"
+					aria-label="Quick templates"
+				>
+					<button
+						type="button"
+						class="ecv2-sheet-template-chip"
+						data-ecv2-template-button
+						data-template-title="New Year 2027"
+						data-template-date="2027-01-01"
+						aria-label="Use New Year template"
+					>
+						New Year
+					</button>
+					<button
+						type="button"
+						class="ecv2-sheet-template-chip"
+						data-ecv2-template-button
+						data-template-title="Christmas 2026"
+						data-template-date="2026-12-25"
+						aria-label="Use Christmas template"
+					>
+						Christmas
+					</button>
+					<button
+						type="button"
+						class="ecv2-sheet-template-chip"
+						data-ecv2-template-button
+						data-template-title="Valentine's Day 2027"
+						data-template-date="2027-02-14"
+						aria-label="Use Valentine's Day template"
+					>
+						Valentine's Day
+					</button>
+				</div>
+			</div>
+
+			<div class="ecv2-sheet-fields">
+				<label class="ecv2-sheet-field">
+					<span class="ecv2-sheet-label">{m.eventName}</span>
+					<span class="ecv2-sheet-input-shell">
+						<span class="ecv2-sheet-input-prefix" aria-hidden="true">Title</span>
+						<input
+							class="ecv2-sheet-input"
+							type="text"
+							data-ecv2-title-input
+							value={m.defaultTitle}
+							autocomplete="off"
+						/>
+					</span>
+				</label>
+
+				<label class="ecv2-sheet-field ecv2-sheet-date-field" data-ecv2-date-field>
+					<span class="ecv2-sheet-label">{m.eventDate}</span>
+					<span class="ecv2-sheet-input-shell">
+						<span class="ecv2-sheet-input-prefix" aria-hidden="true">Date</span>
+						<input
+							class="ecv2-sheet-input ecv2-sheet-date-input"
+							type="date"
+							data-ecv2-date-input
+							value="2026-12-31"
+						/>
+					</span>
+				</label>
+			</div>
+		</div>
+	</div>
+
+	<aside
+		data-preview-drawer
+		data-open="true"
+		aria-label="Related tools drawer"
+		class="pointer-events-none fixed inset-y-0 right-0 z-20 hidden xl:block"
+	>
+		<span class="hidden translate-x-[300px]" aria-hidden="true"></span>
+		<div
+			data-preview-drawer-shell
+			data-open="true"
+			class="preview-tool-drawer-frosted pointer-events-auto relative flex h-dvh rounded-tl-3xl rounded-bl-3xl border-l border-white/10 shadow-2xl shadow-black/25 ring-1 ring-inset ring-white/[0.04] transition-transform duration-200 ease-out"
+		>
+			<button
+				type="button"
+				data-preview-drawer-toggle
+				aria-expanded="true"
+				class="relative z-10 flex w-14 shrink-0 items-center justify-center self-stretch text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+				aria-label="Toggle related tools drawer"
+			>
+				<svg
+					data-drawer-arrow-open
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="none"
+					class="h-7 w-7"
+					aria-hidden="true"
+				>
+					<path
+						d="M10 3L5 8l5 5"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+				<svg
+					data-drawer-arrow-closed
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="none"
+					class="hidden h-7 w-7"
+					aria-hidden="true"
+				>
+					<path
+						d="M6 3l5 5-5 5"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+			</button>
+
+			<div
+				data-preview-drawer-panel
+				class="relative z-10 flex h-full w-[300px] shrink-0 flex-col"
+			>
+				<div class="px-5 pb-3 pt-5">
+					<h2 class="text-lg font-semibold text-white">
+						{messages.relatedTools.heading}
+					</h2>
+				</div>
+				<div class="flex-1 space-y-3 overflow-y-auto px-5 pb-5">
+					{
+						relatedToolItems.map((tool) => (
+							<div>
+								<ToolCard
+									href={tool.href}
+									name={tool.name}
+									description={tool.description}
+									icon={tool.icon}
+								/>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</div>
+	</aside>
+
+	<div class="mx-auto max-w-3xl px-6 pb-20 text-left" data-ecv2-lower-content>
+		<section
+			data-preview-related-tools
+			class="pb-12 xl:hidden"
+			aria-labelledby="ecv2-related-heading"
+		>
+			<h2 id="ecv2-related-heading" class="mb-4 text-lg font-semibold text-white">
+				{messages.relatedTools.heading}
+			</h2>
+			<div class="space-y-3">
+				{
+					relatedToolItems.map((tool) => (
+						<RelatedToolRow
+							href={tool.href}
+							name={tool.name}
+							description={tool.description}
+							icon={tool.icon}
+						/>
+					))
+				}
+			</div>
+		</section>
+
+		<section class="pb-12" aria-labelledby="ecv2-about-heading">
+			<h2 id="ecv2-about-heading" class="mb-2 text-lg font-semibold text-white">
+				{m.about.heading}
+			</h2>
+			<p class="text-sm leading-relaxed text-slate-400">{m.about.body}</p>
+		</section>
+
+		<section class="pb-12" aria-labelledby="ecv2-howto-heading">
+			<h2 id="ecv2-howto-heading" class="mb-2 text-lg font-semibold text-white">
+				{m.howTo.heading}
+			</h2>
+			<p class="text-sm leading-relaxed text-slate-400">{m.howTo.body}</p>
+		</section>
+
+		<section class="pb-12" aria-labelledby="ecv2-ideas-heading">
+			<h2 id="ecv2-ideas-heading" class="mb-4 text-lg font-semibold text-white">
+				{m.commonUses.heading}
+			</h2>
+			<ul class="ecv2-keyword-list" role="list">
+				{
+					m.commonUses.items.map((item) => (
+						<li class="ecv2-keyword-chip">{item}</li>
+					))
+				}
+			</ul>
+		</section>
+
+		<section aria-labelledby="ecv2-faq-heading">
+			<h2 id="ecv2-faq-heading" class="mb-4 text-lg font-semibold text-white">
+				{m.faq.heading}
+			</h2>
+			<div class="border-t border-white/20">
+				{
+					m.faq.items.map((item) => (
+						<details class="group border-b border-white/20 py-4">
+							<summary
+								class="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden"
+							>
+								<span>{item.question}</span>
+								<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 16 16"
+										fill="none"
+										class="h-4 w-4 group-open:hidden"
+										aria-hidden="true"
+									>
+										<path
+											d="M8 3.5v9M3.5 8h9"
+											stroke="currentColor"
+											stroke-width="1.5"
+											stroke-linecap="round"></path>
+									</svg>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 16 16"
+										fill="none"
+										class="hidden h-4 w-4 group-open:block"
+										aria-hidden="true"
+									>
+										<path
+											d="M3.5 8h9"
+											stroke="currentColor"
+											stroke-width="1.5"
+											stroke-linecap="round"></path>
+									</svg>
+								</span>
+							</summary>
+							<p class="mt-3 text-sm leading-relaxed text-slate-300">{item.answer}</p>
+						</details>
+					))
+				}
+			</div>
+		</section>
+	</div>
+
+	<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+</div>
+
+<script is:inline>
+	document.addEventListener("DOMContentLoaded", () => {
+		const root = document.querySelector("[data-event-countdown-v2]");
+		const drawer = root?.querySelector("[data-preview-drawer]");
+		const shell = root?.querySelector("[data-preview-drawer-shell]");
+		const toggle = root?.querySelector("[data-preview-drawer-toggle]");
+		const related = root?.querySelector("[data-preview-related-tools]");
+		const arrowOpen = root?.querySelector("[data-drawer-arrow-open]");
+		const arrowClosed = root?.querySelector("[data-drawer-arrow-closed]");
+
+		if (!drawer || !shell || !toggle) return;
+
+		let isOpen = drawer.dataset.open !== "false";
+
+		const sync = () => {
+			drawer.dataset.open = isOpen ? "true" : "false";
+			shell.dataset.open = isOpen ? "true" : "false";
+			shell.classList.toggle("translate-x-[300px]", !isOpen);
+			related?.classList.toggle("xl:hidden", isOpen);
+			arrowOpen?.classList.toggle("hidden", !isOpen);
+			arrowClosed?.classList.toggle("hidden", isOpen);
+			toggle.setAttribute("aria-expanded", String(isOpen));
+		};
+
+		sync();
+
+		toggle.addEventListener("click", (event) => {
+			event.preventDefault();
+			isOpen = !isOpen;
+			sync();
+		});
+	});
+</script>

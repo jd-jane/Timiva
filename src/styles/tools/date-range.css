@@ -1,0 +1,995 @@
+/* Date Range Calculator — 工具專屬樣式（Design System V1 見 tool-design-system.css） */
+
+.date-range-page.theme-aurora {
+  --sheet-bg: rgba(8, 13, 30, 0.9);
+  --border-color: rgba(255, 255, 255, 0.08);
+}
+
+.date-range-page {
+  --date-range-tool-max: 552px;
+}
+
+/* Desktop layout gate — do not use min-width alone (see design system Mobile Landscape Rule) */
+/* @media (min-width: 900px) and (min-height: 700px) and (hover: hover) */
+
+/* ==============================
+   桌機：工具主體同寬 + 垂直置中
+============================== */
+
+@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
+  .date-range-page {
+    display: block;
+  }
+
+  .date-range-page .tool-desktop-main {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: var(--date-range-tool-max);
+    margin-inline: auto;
+    padding-inline: var(--space-page-x-desktop);
+    padding-top: max(52px, calc(env(safe-area-inset-top) + 40px));
+    padding-bottom: 48px;
+    box-sizing: border-box;
+    min-height: 100svh;
+    min-height: 100dvh;
+    justify-content: center;
+  }
+
+  .date-range-page .tool-desktop-main .range-main-preview,
+  .date-range-page .tool-desktop-main .tool-hero,
+  .date-range-page .tool-desktop-main .tool-hero-content,
+  .date-range-page .tool-desktop-main .tool-desktop-cluster,
+  .date-range-page .tool-desktop-main .desktop-tool-control,
+  .date-range-page .tool-desktop-main .desktop-tool-panel,
+  .date-range-page .tool-desktop-main .range-sheet {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: 0;
+    box-sizing: border-box;
+  }
+
+  .date-range-page .tool-desktop-main .calendar-panel {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    box-sizing: border-box;
+    padding: 22px 28px 18px;
+    background: linear-gradient(
+      165deg,
+      rgba(120, 108, 210, 0.18),
+      rgba(78, 96, 170, 0.14)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: none;
+  }
+
+  .date-range-page .tool-desktop-main .calendar-panel .calendar-toolbar {
+    margin-bottom: 12px;
+  }
+
+  .date-range-page .tool-desktop-main .calendar-panel .calendar-clear-btn--inline {
+    margin-top: 12px;
+  }
+
+  .date-range-page .tool-desktop-main .tool-hero-content {
+    padding: 0;
+  }
+
+  .date-range-page .tool-desktop-cluster {
+    display: block;
+  }
+
+  /* kicker → 結果：24px */
+  .date-range-page .tool-header--compact {
+    margin-bottom: 24px;
+  }
+
+  /* 結果 → 日期卡：28px */
+  .date-range-page .tool-result--multi {
+    display: block;
+    margin-bottom: 28px;
+  }
+
+  .date-range-page .tool-result--multi .tool-result-main {
+    margin-bottom: 20px;
+  }
+
+  .date-range-page .tool-result--multi .tool-result-number {
+    font-size: clamp(4.8rem, 7.5vw, 6rem);
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+  }
+
+  .date-range-page .tool-result--multi .tool-result-label {
+    margin-top: 10px;
+    font-size: clamp(0.78rem, 1.3vw, 0.88rem);
+    letter-spacing: 0.2em;
+  }
+
+  .date-range-page .tool-result--multi .tool-result-secondary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    max-width: 280px;
+    margin-inline: auto;
+  }
+
+  .date-range-page .tool-result--multi .tool-result-secondary-number {
+    font-size: clamp(1.45rem, 2.6vw, 1.7rem);
+  }
+
+  .date-range-page .tool-result--multi .tool-result-secondary-label {
+    opacity: 0.62;
+  }
+
+  /* 日期卡 → 月曆：18px */
+  .date-range-page .desktop-tool-control {
+    margin-bottom: 18px;
+  }
+
+  .date-range-page .desktop-tool-panel {
+    margin-bottom: 0;
+  }
+
+  .date-range-page .desktop-tool-control .tool-input-card {
+    width: 100%;
+    min-height: 44px;
+    padding: 9px 12px;
+    background: rgba(255, 255, 255, 0.035);
+    border-color: rgba(255, 255, 255, 0.07);
+  }
+
+  .date-range-page .desktop-tool-control .tool-input-card__icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+  }
+
+  .date-range-page .desktop-tool-control .tool-input-card__icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .date-range-page .desktop-tool-control .tool-input-card__text {
+    font-size: 0.86rem;
+    color: rgba(244, 243, 248, 0.72);
+  }
+
+  /* 月曆 → How to use：84px（內容區，不在置中主體內） */
+  .date-range-page .tool-content-preview > .tool-content {
+    padding-top: 84px;
+  }
+}
+
+@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
+  .date-range-page .mobile-bottom-control {
+    display: none;
+  }
+}
+
+/* ==============================
+   手機：對齊 Event Countdown 節奏
+   Portrait: max-width 600px
+   Landscape: limited height — mobile-first even when width is wider
+============================== */
+
+@media (max-width: 600px), ((orientation: landscape) and (max-height: 700px) and (max-width: 1200px)) {
+  .date-range-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    min-height: 100dvh;
+  }
+
+  .date-range-page .tool-desktop-main {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .date-range-page .tool-desktop-cluster {
+    display: none;
+  }
+
+  /* 首屏：結果 + 底部操作，FAQ 需往下滑才看到 */
+  .date-range-page .range-main-preview {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100svh;
+    min-height: 100dvh;
+  }
+
+  .date-range-page .tool-hero {
+    width: 100%;
+  }
+
+  .date-range-page .tool-hero-preview .tool-hero-content {
+    padding-top: max(44px, calc(env(safe-area-inset-top) + 40px));
+    padding-bottom: calc(100px + var(--safe-bottom));
+    padding-inline: 28px;
+  }
+
+  .date-range-page .tool-header--compact {
+    margin-bottom: 16px;
+  }
+
+  .date-range-page .tool-kicker {
+    margin-bottom: 16px;
+  }
+
+  .date-range-page .tool-result {
+    margin-bottom: 0;
+  }
+
+  .date-range-page .tool-result-main {
+    margin-bottom: 18px;
+  }
+
+  .date-range-page .tool-result-number {
+    font-size: clamp(6.4rem, 36vw, 8.5rem);
+    line-height: 0.85;
+    letter-spacing: -0.035em;
+    opacity: 0.96;
+  }
+
+  .date-range-page .tool-result-label {
+    margin-top: 12px;
+    font-size: clamp(0.85rem, 3vw, 1rem);
+    letter-spacing: 0.22em;
+    opacity: 0.78;
+  }
+
+  .date-range-page .tool-result-secondary {
+    gap: 16px;
+    max-width: min(100%, 320px);
+    margin-inline: auto;
+  }
+
+  .date-range-page .tool-result-secondary-number {
+    font-size: clamp(2.55rem, 10.6vw, 3.02rem);
+    line-height: 0.92;
+    opacity: 0.94;
+  }
+
+  .date-range-page .tool-result-secondary-label {
+    margin-top: 8px;
+    font-size: clamp(0.68rem, 2.6vw, 0.76rem);
+    letter-spacing: 0.16em;
+    opacity: 0.72;
+  }
+
+  /* Sheet 開啟：整組往上縮小預覽（對齊 Event Countdown） */
+  .date-range-page.sheet-open {
+    --tool-preview-offset-y: -18vh;
+    --tool-preview-scale: 0.92;
+  }
+
+  .date-range-page.sheet-open .range-main-preview {
+    opacity: 0.4;
+    transform: translateY(var(--tool-preview-offset-y, -18vh))
+      scale(var(--tool-preview-scale, 0.92));
+    transform-origin: top center;
+    pointer-events: none;
+  }
+
+  .date-range-page.sheet-open .tool-result-number {
+    font-size: clamp(2.6rem, 14vw, 3.4rem);
+  }
+
+  .date-range-page.sheet-open .tool-result-secondary-number {
+    font-size: clamp(1.85rem, 8.5vw, 2.32rem);
+  }
+
+  .date-range-page .tool-content-preview > .tool-content {
+    padding-top: 36px;
+  }
+
+  /* Mobile Bottom Capsule Control — baseline spec, do not change visuals here.
+     See docs/timiva-tool-design-system-v1.md */
+  .date-range-page .mobile-bottom-control-inner {
+    bottom: max(28px, calc(16px + var(--safe-bottom)));
+  }
+
+  .date-range-page .mobile-bottom-control-inner .tool-input-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: auto;
+    min-height: 44px;
+    margin: 0;
+    padding: 10px 16px;
+    cursor: pointer;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: var(--button-bg, rgba(255, 255, 255, 0.06));
+    box-shadow: none;
+    backdrop-filter: none;
+    white-space: nowrap;
+    transition: background 200ms ease;
+  }
+
+  .date-range-page .mobile-bottom-control-inner .tool-input-card__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .date-range-page .mobile-bottom-control-inner .tool-input-card__icon svg {
+    width: 16px;
+    height: 16px;
+    opacity: 0.72;
+  }
+
+  .date-range-page .mobile-bottom-control-inner .tool-input-card__text {
+    margin: 0;
+    font-size: 0.84rem;
+    font-weight: 500;
+    line-height: 1.2;
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  .date-range-page .mobile-bottom-control-inner .tool-input-card:active {
+    transform: scale(0.98);
+    background: var(--button-hover-bg, rgba(255, 255, 255, 0.12));
+  }
+
+  /* Bottom Sheet 外殼：主題視覺 + portrait 預設高度；landscape 由下方 gate 覆寫 */
+  .date-range-page .range-sheet.tool-bottom-sheet {
+    background: var(--sheet-bg);
+    border: 1px solid var(--border-color);
+    border-bottom: 0;
+    border-radius: 28px 28px 0 0;
+    box-shadow: 0 -24px 80px rgba(0, 0, 0, 0.32);
+    padding:
+      14px
+      20px
+      max(20px, var(--safe-bottom));
+    max-height: min(62svh, 440px);
+    max-height: min(62dvh, 440px);
+  }
+
+  .date-range-page .range-sheet .tool-bottom-sheet-handle {
+    width: 48px;
+    height: 5px;
+    margin: 0 auto 14px;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  .date-range-page.sheet-open .mobile-bottom-control {
+    display: none;
+  }
+
+  /* Safari：避免 fixed bottom control 與 sheet footer 重疊攔截觸控 */
+  .date-range-page .desktop-tool-panel {
+    display: block;
+    position: static;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .date-range-page .desktop-tool-panel .range-sheet {
+    pointer-events: auto;
+  }
+
+  .date-range-page .range-sheet .tool-bottom-sheet-footer {
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+    margin-top: 10px;
+    padding-bottom: calc(12px + var(--safe-bottom));
+    pointer-events: auto;
+  }
+
+  .date-range-page .range-sheet .calendar-clear-btn--ghost {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px 20px;
+    pointer-events: auto;
+  }
+
+  .date-range-page .range-sheet .tool-bottom-sheet-content {
+    padding-bottom: 6px;
+  }
+
+  .date-range-page .range-sheet .calendar-panel {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  /*
+   * Override tool-design-system.css @media (min-width: 601px) on phone landscape.
+   * Width alone must not switch Date Range to desktop inline calendar.
+   */
+  .date-range-page .tool-result--multi {
+    display: block;
+    margin-bottom: 0;
+  }
+
+  .date-range-page .tool-result--multi .tool-result-secondary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .date-range-page .tool-content-preview > .tool-content {
+    padding-top: 0;
+    padding-inline: var(--space-page-x-mobile);
+  }
+
+  .date-range-page .range-sheet.tool-bottom-sheet,
+  .date-range-page .desktop-tool-panel .range-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-sheet);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    transform: translateY(100%);
+    pointer-events: auto;
+    isolation: isolate;
+  }
+
+  .date-range-page .range-sheet.tool-bottom-sheet.is-open,
+  .date-range-page .desktop-tool-panel .range-sheet.is-open {
+    transform: translateY(0);
+  }
+
+  .date-range-page .tool-sheet-overlay,
+  .date-range-page .range-sheet-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-overlay);
+  }
+
+  .date-range-page .range-sheet .tool-bottom-sheet-handle,
+  .date-range-page .range-sheet .range-sheet-handle {
+    display: block;
+  }
+
+  .date-range-page .range-sheet .tool-bottom-sheet-footer,
+  .date-range-page .range-sheet .range-sheet-footer {
+    display: flex;
+  }
+
+  .date-range-page .tool-content-preview {
+    position: relative;
+    z-index: var(--z-main);
+  }
+}
+
+/* ==============================
+   月曆互動（工具專屬）
+============================== */
+
+.calendar-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.calendar-month-label {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: rgba(252, 251, 255, 0.98);
+}
+
+.calendar-nav-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: rgba(252, 251, 255, 0.98);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  pointer-events: auto;
+}
+
+.calendar-clear-btn {
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: rgba(244, 243, 248, 0.82);
+  background: transparent;
+  border: 0;
+  pointer-events: auto;
+}
+
+.calendar-clear-btn--inline {
+  width: 100%;
+  margin-top: 10px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.calendar-clear-btn--ghost {
+  min-height: 44px;
+  padding: 8px 16px;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.calendar-weekdays span {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(228, 226, 248, 0.92);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.calendar-cell--empty {
+  min-height: 40px;
+}
+
+.calendar-day {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 40px;
+  border: 0;
+  border-radius: 10px;
+  font-size: 0.94rem;
+  font-weight: 500;
+  color: rgba(252, 251, 255, 0.98);
+  background: transparent;
+  pointer-events: auto;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.calendar-day.is-today {
+  box-shadow: inset 0 0 0 1.5px rgba(165, 180, 252, 0.9);
+}
+
+.calendar-day.is-in-range {
+  border-radius: 0;
+  background: var(--timiva-accent-soft);
+}
+
+.calendar-day.is-range-start,
+.calendar-day.is-range-end,
+.calendar-day.is-range-single {
+  color: #fff;
+  background: var(--timiva-accent);
+  box-shadow: inset 0 0 0 1px rgba(210, 218, 255, 0.4);
+  z-index: 1;
+}
+
+.calendar-day.is-range-start {
+  border-radius: 10px 0 0 10px;
+}
+
+.calendar-day.is-range-end {
+  border-radius: 0 10px 10px 0;
+}
+
+.calendar-day.is-range-single,
+.calendar-day.is-range-start.is-range-end {
+  border-radius: 10px;
+}
+
+.calendar-day:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 600px), ((orientation: landscape) and (max-height: 700px) and (max-width: 1200px)) {
+  .calendar-clear-btn--inline {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
+  .calendar-cell--empty,
+  .calendar-day {
+    min-height: 38px;
+  }
+
+  .calendar-day {
+    border-radius: 10px;
+    font-size: 0.86rem;
+  }
+
+  .calendar-day.is-range-start {
+    border-radius: 10px 0 0 10px;
+  }
+
+  .calendar-day.is-range-end {
+    border-radius: 0 10px 10px 0;
+  }
+
+  .calendar-day.is-range-single,
+  .calendar-day.is-range-start.is-range-end {
+    border-radius: 10px;
+  }
+}
+
+@media (hover: hover) {
+  .calendar-nav-btn:hover {
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .calendar-clear-btn:hover {
+    color: rgba(244, 243, 248, 0.96);
+  }
+
+  .date-range-page .mobile-bottom-control-inner .tool-input-card:hover {
+    background: var(--button-hover-bg, rgba(255, 255, 255, 0.12));
+  }
+
+  .date-range-page .desktop-tool-control .tool-input-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .calendar-day:hover:not(.is-in-range):not(.is-range-start):not(.is-range-end):not(.is-range-single) {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* ==============================
+   手機橫向：Landscape Date Panel（非 bottom sheet）
+============================== */
+
+.range-landscape-panel {
+  display: none;
+}
+
+.range-compact-overlay {
+  display: none;
+}
+
+.range-landscape-panel-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 6px 10px;
+  align-items: end;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.range-landscape-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.range-landscape-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(244, 243, 248, 0.58);
+}
+
+.range-landscape-input {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  height: 38px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(252, 251, 255, 0.96);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color-scheme: dark;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.range-landscape-input:focus {
+  outline: 0;
+  border-color: rgba(165, 180, 252, 0.55);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.range-landscape-input::-webkit-calendar-picker-indicator {
+  opacity: 0.72;
+  cursor: pointer;
+}
+
+.range-landscape-clear {
+  min-height: 38px;
+  padding: 8px 12px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+  .date-range-page .tool-desktop-main {
+    flex: 0 0 auto;
+  }
+
+  .date-range-page .range-main-preview {
+    flex: 0 0 auto;
+    min-height: auto;
+    justify-content: flex-start;
+  }
+
+  /* 橫向：完全停用 bottom sheet 月曆（需與上方 mobile interaction 同 specificity，靠 cascade 覆寫 display:flex） */
+  .date-range-page .range-sheet.tool-bottom-sheet,
+  .date-range-page .range-sheet-backdrop,
+  .date-range-page .desktop-tool-panel .range-sheet {
+    display: none;
+  }
+
+  .date-range-page .range-compact-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    background: transparent;
+    cursor: default;
+  }
+
+  .date-range-page.date-range-compact-open .range-compact-overlay:not([hidden]) {
+    display: block;
+  }
+
+  .date-range-page:not(.date-range-compact-open) .range-compact-overlay {
+    display: none;
+  }
+
+  .date-range-page .range-landscape-panel:not([hidden]),
+  .date-range-page .range-compact-panel:not([hidden]) {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+    box-sizing: border-box;
+    max-height: 150px;
+    padding:
+      10px 14px
+      max(10px, calc(8px + var(--safe-bottom)));
+    border-radius: 20px 20px 0 0;
+    background: linear-gradient(
+      180deg,
+      rgba(12, 18, 40, 0.96),
+      rgba(8, 13, 30, 0.98)
+    );
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 0;
+    box-shadow: 0 -12px 40px rgba(8, 6, 24, 0.4);
+    backdrop-filter: blur(18px);
+  }
+
+  .date-range-page.date-range-compact-open .mobile-bottom-control {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .date-range-page .tool-kicker {
+    margin-bottom: 6px;
+    font-size: 0.68rem;
+  }
+
+  .date-range-page .tool-header--compact {
+    margin-bottom: 10px;
+  }
+
+  .date-range-page .tool-result-main {
+    margin-bottom: 8px;
+  }
+
+  .date-range-page .tool-result-number {
+    font-size: clamp(2.5rem, 14vh, 3.75rem);
+    line-height: 0.88;
+    letter-spacing: -0.03em;
+  }
+
+  .date-range-page .tool-result-label {
+    margin-top: 4px;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+  }
+
+  .date-range-page .tool-result-secondary {
+    gap: 8px;
+    max-width: min(100%, 260px);
+    margin-inline: auto;
+    margin-bottom: 0;
+  }
+
+  .date-range-page .tool-result-secondary-number {
+    font-size: clamp(1.25rem, 6.5vh, 1.65rem);
+    line-height: 0.92;
+  }
+
+  .date-range-page .tool-result-secondary-label {
+    margin-top: 2px;
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+  }
+
+  .date-range-page .tool-hero-preview .tool-hero-content {
+    padding-top: max(20px, calc(env(safe-area-inset-top) + 12px));
+    padding-bottom: calc(72px + var(--safe-bottom));
+    padding-inline: 20px;
+  }
+
+  .date-range-page .mobile-bottom-control-inner {
+    bottom: max(12px, calc(8px + var(--safe-bottom)));
+  }
+
+  .date-range-page.date-range-compact-open .tool-hero-preview .tool-hero-content {
+    padding-bottom: calc(160px + var(--safe-bottom));
+  }
+}
+
+@media (orientation: landscape) and (max-height: 320px) and (max-width: 1200px) {
+  .date-range-page .range-landscape-panel:not([hidden]) {
+    max-height: 132px;
+    padding:
+      8px 12px
+      max(8px, calc(6px + var(--safe-bottom)));
+  }
+
+  .date-range-page .range-landscape-panel-inner {
+    gap: 4px 8px;
+  }
+
+  .date-range-page .range-landscape-label {
+    font-size: 11px;
+  }
+
+  .date-range-page .range-landscape-input {
+    min-height: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .date-range-page .range-landscape-clear {
+    min-height: 36px;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}
+
+.date-range-page[data-range-layout="portrait"] .range-landscape-panel {
+  display: none;
+}
+
+.date-range-page[data-range-layout="landscape-date"] .range-landscape-panel:not([hidden]) {
+  display: block;
+}
+
+/* Mobile portrait — full calendar sheet */
+@media (max-width: 600px) and (orientation: portrait) {
+  .date-range-page .range-landscape-panel,
+  .date-range-page .range-compact-panel,
+  .date-range-page .range-compact-overlay {
+    display: none;
+  }
+
+  .date-range-page .range-sheet-calendar {
+    display: block;
+  }
+
+  .date-range-page:not(.sheet-open) .range-main-preview.tool-hero-preview {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+
+  .date-range-page:not(.sheet-open) {
+    height: auto;
+    overflow: visible;
+  }
+
+  .date-range-page .mobile-bottom-control {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .date-range-page .mobile-bottom-control-inner {
+    bottom: max(28px, calc(16px + var(--safe-bottom)));
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+  }
+
+  .date-range-page .range-sheet.tool-bottom-sheet,
+  .date-range-page .desktop-tool-panel .range-sheet {
+    top: auto;
+    bottom: 0;
+    height: auto;
+    max-height: min(62svh, 440px);
+    max-height: min(62dvh, 440px);
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding:
+      14px
+      20px
+      max(20px, var(--safe-bottom));
+    transform: translateY(100%);
+  }
+
+  .date-range-page .range-sheet.tool-bottom-sheet.is-open,
+  .date-range-page .desktop-tool-panel .range-sheet.is-open {
+    transform: translateY(0);
+  }
+
+  .date-range-page .range-sheet .tool-bottom-sheet-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: none;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .date-range-page .range-sheet .calendar-panel,
+  .date-range-page .range-sheet .calendar-grid,
+  .date-range-page .range-sheet .calendar-weekdays {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+.date-range-page.date-range-scroll-lock {
+  overflow: hidden;
+}
+
+/* Date Range: avoid 100dvh height lock on page root — rotation bugs */
+.date-range-page.sheet-open,
+.date-range-page.tool-sheet-open {
+  height: auto;
+  min-height: 100svh;
+  min-height: 100dvh;
+}

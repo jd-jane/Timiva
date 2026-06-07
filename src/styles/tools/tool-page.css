@@ -1,0 +1,41 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap");
+@import "./tool-design-system.css";
+
+/* Timiva 工具頁共用版型（Design System V1 見 tool-design-system.css） */
+
+:root {
+  font-family:
+    "Manrope",
+    "Noto Sans TC",
+    "PingFang TC",
+    sans-serif;
+  color: white;
+  color-scheme: dark;
+}
+
+button {
+  font: inherit;
+}
+
+/* Hero 主內容區（結果 + 主操作上方內容） */
+
+.tool-hero-content {
+  position: relative;
+  z-index: var(--z-main);
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding:
+    var(--space-hero-top-desktop)
+    var(--space-page-x-desktop)
+    calc(72px + var(--safe-bottom));
+}
+
+@media (max-width: 600px) {
+  .tool-hero-content {
+    padding:
+      max(44px, calc(env(safe-area-inset-top) + 40px))
+      var(--space-page-x-mobile)
+      calc(76px + var(--safe-bottom));
+  }
+}
