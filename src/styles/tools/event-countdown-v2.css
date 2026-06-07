@@ -408,6 +408,10 @@ body:has([data-event-countdown-v2]) header {
 		inset: -0.5rem;
 		z-index: -1;
 	}
+
+	[data-event-countdown-v2] [data-ecv2-lower-content] {
+		margin-top: 3rem;
+	}
 }
 
 @media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
