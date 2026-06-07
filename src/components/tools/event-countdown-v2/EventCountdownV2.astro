@@ -5,6 +5,7 @@ import { catalogIconMap } from "../../../lib/catalogIcons";
 import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
 import { getRelatedTools, type CatalogToolId } from "../../../data/toolsCatalog";
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
+import { getEventCountdownClientI18n } from "../../../i18n/clientMessages";
 import { getMessages } from "../../../i18n/messages";
 
 interface Props {
@@ -19,6 +20,7 @@ const storageKey =
 		: "timiva.eventCountdownV2.state";
 const messages = getMessages(locale);
 const m = messages.eventCountdown;
+const clientI18n = getEventCountdownClientI18n(locale);
 const relatedTools = getRelatedTools("event-countdown");
 
 const toolCopy: Record<
@@ -76,7 +78,7 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 
 				<div
 					class="preview-tool-controls flex flex-wrap justify-center gap-3 md:gap-4"
-					aria-label="Tool controls"
+					aria-label={m.controlsAriaLabel}
 				>
 					<button
 						type="button"
@@ -118,7 +120,7 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 		data-ecv2-sheet
 		role="dialog"
 		aria-modal="true"
-		aria-label="Edit event"
+		aria-label={m.editSheetAriaLabel}
 		aria-hidden="true"
 		hidden
 	>
@@ -129,38 +131,22 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 				<div
 					class="ecv2-sheet-template-list"
 					role="group"
-					aria-label="Quick templates"
+					aria-label={m.quickTemplatesAriaLabel}
 				>
-					<button
-						type="button"
-						class="ecv2-sheet-template-chip"
-						data-ecv2-template-button
-						data-template-title="New Year 2027"
-						data-template-date="2027-01-01"
-						aria-label="Use New Year template"
-					>
-						New Year
-					</button>
-					<button
-						type="button"
-						class="ecv2-sheet-template-chip"
-						data-ecv2-template-button
-						data-template-title="Christmas 2026"
-						data-template-date="2026-12-25"
-						aria-label="Use Christmas template"
-					>
-						Christmas
-					</button>
-					<button
-						type="button"
-						class="ecv2-sheet-template-chip"
-						data-ecv2-template-button
-						data-template-title="Valentine's Day 2027"
-						data-template-date="2027-02-14"
-						aria-label="Use Valentine's Day template"
-					>
-						Valentine's Day
-					</button>
+					{
+						m.v2HolidayTemplates.map((template) => (
+							<button
+								type="button"
+								class="ecv2-sheet-template-chip"
+								data-ecv2-template-button
+								data-template-title={template.title}
+								data-template-date={template.date}
+								aria-label={template.ariaLabel}
+							>
+								{template.label}
+							</button>
+						))
+					}
 				</div>
 			</div>
 
@@ -168,7 +154,9 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 				<label class="ecv2-sheet-field">
 					<span class="ecv2-sheet-label">{m.eventName}</span>
 					<span class="ecv2-sheet-input-shell">
-						<span class="ecv2-sheet-input-prefix" aria-hidden="true">Title</span>
+						<span class="ecv2-sheet-input-prefix" aria-hidden="true">
+							{m.inputPrefixTitle}
+						</span>
 						<input
 							class="ecv2-sheet-input"
 							type="text"
@@ -182,7 +170,9 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 				<label class="ecv2-sheet-field ecv2-sheet-date-field" data-ecv2-date-field>
 					<span class="ecv2-sheet-label">{m.eventDate}</span>
 					<span class="ecv2-sheet-input-shell">
-						<span class="ecv2-sheet-input-prefix" aria-hidden="true">Date</span>
+						<span class="ecv2-sheet-input-prefix" aria-hidden="true">
+							{m.inputPrefixDate}
+						</span>
 						<input
 							class="ecv2-sheet-input ecv2-sheet-date-input"
 							type="date"
@@ -198,7 +188,7 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 	<aside
 		data-preview-drawer
 		data-open="true"
-		aria-label="Related tools drawer"
+		aria-label={m.relatedToolsDrawerAriaLabel}
 		class="pointer-events-none fixed inset-y-0 right-0 z-20 hidden xl:block"
 	>
 		<span class="hidden translate-x-[300px]" aria-hidden="true"></span>
@@ -212,7 +202,7 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 				data-preview-drawer-toggle
 				aria-expanded="true"
 				class="relative z-10 flex w-14 shrink-0 items-center justify-center self-stretch text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
-				aria-label="Toggle related tools drawer"
+				aria-label={m.toggleRelatedToolsDrawerAriaLabel}
 			>
 				<svg
 					data-drawer-arrow-open
@@ -372,6 +362,7 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 		</section>
 	</div>
 
+	<script type="application/json" id="countdown-v2-i18n" set:html={JSON.stringify(clientI18n)} />
 	<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 </div>
 

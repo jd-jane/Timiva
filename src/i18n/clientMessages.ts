@@ -25,6 +25,7 @@ export function getEventCountdownClientI18n(locale: Locale) {
     share: m.share,
     copied: m.copied,
     copyFailed: m.copyFailed,
+    untilLabelPrefix: m.untilLabelPrefix,
     intlLocale: locale === "zh" ? "zh-TW" : "en-US",
     templateTitles: m.templateTitles,
   };

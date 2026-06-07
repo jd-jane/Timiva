@@ -1,24 +1,23 @@
 ---
-import "../../../styles/tools/reset.css";
-import "../../../styles/tools/timiva-tokens.css";
-import "../../../styles/tools/tool-design-system.css";
-import "../../../styles/tools/tool-page.css";
-import "../../../styles/tool-page-shell.css";
-import "../../../styles/tools/countdown.css";
+// 中文版 Event Countdown 正式頁｜V2 production entry
+import "../../../styles/tools/event-countdown-v2.css";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import CountdownHero from "../../../components/tools/CountdownHero.astro";
+import EventCountdownV2 from "../../../components/tools/event-countdown-v2/EventCountdownV2.astro";
+import { getEventCountdownRouteMeta } from "../../../lib/eventCountdownRouteMeta";
 import { type Locale } from "../../../i18n/config";
-import { getMessages } from "../../../i18n/messages";
 
 const locale: Locale = "zh";
-const messages = getMessages(locale);
+const routeMeta = getEventCountdownRouteMeta(locale);
 ---
 
 <BaseLayout
-	title={messages.meta.eventCountdown.title}
-	description={messages.meta.eventCountdown.description}
+	title={routeMeta.title}
+	description={routeMeta.description}
+	canonicalUrl={routeMeta.canonicalUrl}
+	alternateUrls={routeMeta.alternateUrls}
 	headerVariant="inner"
 	locale={locale}
 >
-	<CountdownHero locale={locale} />
+	<EventCountdownV2 locale={locale} mode="production" />
+	<script src="/scripts/countdown-v2.js" defer></script>
 </BaseLayout>

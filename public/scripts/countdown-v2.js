@@ -17,11 +17,37 @@
   const themeButton = root.querySelector("[data-ecv2-theme-button]");
   const shareButton = root.querySelector("[data-ecv2-share-button]");
 
-  const DEFAULT_TITLE = "My Event";
+  function loadCountdownV2I18n() {
+    const fallback = {
+      locale: "en",
+      defaultDisplayTitle: "My Event",
+      share: "Share",
+      copied: "Copied",
+      copyFailed: "Copy failed",
+      untilLabelPrefix: "Until",
+      intlLocale: "en-US",
+    };
+
+    try {
+      const node = document.getElementById("countdown-v2-i18n");
+
+      if (!node?.textContent) {
+        return fallback;
+      }
+
+      return { ...fallback, ...JSON.parse(node.textContent) };
+    } catch (error) {
+      console.warn("[countdown-v2] Failed to read client i18n:", error);
+      return fallback;
+    }
+  }
+
+  const clientI18n = loadCountdownV2I18n();
+  const DEFAULT_TITLE = clientI18n.defaultDisplayTitle;
   const DEFAULT_DATE = "2026-12-31";
-  const SHARE_LABEL = "Share";
-  const COPIED_LABEL = "Copied";
-  const SHARE_FAILED_LABEL = "Copy failed";
+  const SHARE_LABEL = clientI18n.share;
+  const COPIED_LABEL = clientI18n.copied;
+  const SHARE_FAILED_LABEL = clientI18n.copyFailed;
   const SHARE_FEEDBACK_MS = 1200;
   const TITLE_SAVE_DEBOUNCE_MS = 300;
   const PREVIEW_STORAGE_KEY = "timiva.eventCountdownV2.state";
@@ -100,13 +126,13 @@
   }
 
   function formatUntilLabel(target) {
-    const formatted = new Intl.DateTimeFormat("en", {
+    const formatted = new Intl.DateTimeFormat(clientI18n.intlLocale, {
       month: "short",
       day: "numeric",
       year: "numeric",
     }).format(target);
 
-    return `Until ${formatted}`;
+    return `${clientI18n.untilLabelPrefix} ${formatted}`;
   }
 
   function getDisplayTitle(value) {
@@ -689,7 +715,7 @@
 
     shareFeedbackTimer = window.setTimeout(() => {
       shareButton.textContent = SHARE_LABEL;
-      shareButton.setAttribute("aria-label", "Share event countdown");
+      shareButton.setAttribute("aria-label", SHARE_LABEL);
       shareFeedbackTimer = null;
     }, SHARE_FEEDBACK_MS);
   }
