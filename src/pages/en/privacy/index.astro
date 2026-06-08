@@ -2,20 +2,25 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import LegalTextLayout from "../../../components/LegalTextLayout.astro";
 import { type Locale } from "../../../i18n/config";
-import { getMessages } from "../../../i18n/messages";
+import { Content, frontmatter } from "../../../content/legal/en/privacy.md";
 
 const locale: Locale = "en";
-const messages = getMessages(locale);
-const content = messages.legal.privacy;
+const pageTitle = `${frontmatter.title} | Timiva`;
+const [, updatedYear, updatedMonth] =
+	frontmatter.lastUpdated.match(/^(\d{4})-(\d{2})$/) ?? [];
+const metaLine =
+	updatedYear && updatedMonth
+		? `Last updated: ${new Date(Number(updatedYear), Number(updatedMonth) - 1, 1).toLocaleDateString("en", { month: "long", year: "numeric" })}`
+		: undefined;
 ---
 
 <BaseLayout
-	title={messages.meta.privacy.title}
-	description={messages.meta.privacy.description}
+	title={pageTitle}
+	description={frontmatter.description}
 	headerVariant="inner"
 	locale={locale}
 >
-	<LegalTextLayout locale={locale} heading={content.heading} metaLine={content.updated}>
-		{content.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+	<LegalTextLayout locale={locale} heading={frontmatter.title} metaLine={metaLine}>
+		<Content />
 	</LegalTextLayout>
 </BaseLayout>
