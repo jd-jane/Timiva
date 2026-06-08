@@ -1,5 +1,10 @@
 ---
-import { getLocalizedPath, routePaths, type Locale } from "../i18n/config";
+import {
+	getAlternatePaths,
+	getLocalizedPath,
+	routePaths,
+	type Locale,
+} from "../i18n/config";
 import { getMessages } from "../i18n/messages";
 
 interface Props {
@@ -16,8 +21,16 @@ const toolsHref = getLocalizedPath(locale, routePaths.allTools);
 const privacyHref = getLocalizedPath(locale, routePaths.privacy);
 const termsHref = getLocalizedPath(locale, routePaths.terms);
 const contactHref = getLocalizedPath(locale, routePaths.contact);
-const enHref = getLocalizedPath("en", routePaths.home);
-const zhHref = getLocalizedPath("zh", routePaths.home);
+
+const pathname = Astro.url.pathname;
+const isLocalizedPath =
+	pathname === "/zh/" ||
+	pathname.startsWith("/zh/") ||
+	pathname === "/en/" ||
+	pathname.startsWith("/en/");
+const alternatePaths = isLocalizedPath ? getAlternatePaths(pathname) : null;
+const enHref = alternatePaths?.en ?? getLocalizedPath("en", routePaths.home);
+const zhHref = alternatePaths?.zh ?? getLocalizedPath("zh", routePaths.home);
 const currentLocaleLabel = locale === "zh" ? nav.chinese : nav.english;
 ---
 
