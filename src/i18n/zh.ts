@@ -218,6 +218,7 @@ export const zh: Messages = {
     clearDates: "清除日期",
     chooseDateRange: "選擇日期區間",
     changeDateRange: "變更日期區間",
+    controlsAriaLabel: "工具控制項",
     calendarLabel: "日期區間日曆",
     resultsLabel: "日期區間結果",
     previousMonth: "上一個月",
@@ -244,6 +245,8 @@ export const zh: Messages = {
         "活動日期規劃",
       ],
     },
+    relatedToolsDrawerAriaLabel: "相關工具抽屜",
+    toggleRelatedToolsDrawerAriaLabel: "切換相關工具抽屜",
     faq: {
       heading: "日期區間計算器 FAQ",
       items: [

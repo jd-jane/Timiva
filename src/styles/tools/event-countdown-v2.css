@@ -408,10 +408,6 @@ body:has([data-event-countdown-v2]) header {
 		inset: -0.5rem;
 		z-index: -1;
 	}
-
-	[data-event-countdown-v2] [data-ecv2-lower-content] {
-		margin-top: 3rem;
-	}
 }
 
 @media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
@@ -573,29 +569,7 @@ body:has([data-event-countdown-v2]) header {
 	}
 }
 
-/* Edit sheet — Step 3 */
-
-body.ecv2-sheet-open {
-	position: fixed;
-	width: 100%;
-	overflow: hidden;
-	touch-action: none;
-}
-
-body:has([data-event-countdown-v2]) [data-ecv2-sheet-overlay] {
-	position: fixed;
-	inset: 0;
-	z-index: 50;
-	background-color: rgb(8 12 28 / 0.42);
-	opacity: 0;
-	pointer-events: none;
-	transition: opacity 200ms ease;
-}
-
-body:has([data-event-countdown-v2]) [data-ecv2-sheet-overlay].is-open {
-	opacity: 1;
-	pointer-events: auto;
-}
+/* Edit sheet — Step 3 (panel shell; overlay + scroll lock in tool-overlay-v2-baseline.css) */
 
 body:has([data-event-countdown-v2]) [data-ecv2-sheet]:not(.is-open) {
 	pointer-events: none;

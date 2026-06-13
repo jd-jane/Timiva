@@ -55,7 +55,7 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 	<div class="ecv2-theme-backdrop" aria-hidden="true"></div>
 	<section data-preview-main-tool class="preview-tool-main-section px-6">
 		<div class="preview-tool-first-screen">
-			<div class="preview-tool-stage mx-auto w-full max-w-md md:max-w-lg">
+			<div class="preview-tool-stage tool-stage mx-auto w-full max-w-md md:max-w-lg">
 				<div class="preview-tool-result-group text-center">
 					<h1
 						class="preview-tool-landscape-compact-title ecv2-tool-name text-sm font-medium tracking-normal text-slate-300 md:text-base"
@@ -110,8 +110,9 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 	</section>
 
 	<div
-		class="ecv2-sheet-overlay"
+		class="tool-operation-overlay ecv2-sheet-overlay"
 		data-ecv2-sheet-overlay
+		data-tool-operation-overlay
 		aria-hidden="true"
 		hidden
 	></div>
@@ -266,7 +267,7 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 		</div>
 	</aside>
 
-	<div class="mx-auto max-w-3xl px-6 pb-20 text-left" data-ecv2-lower-content>
+	<div class="tool-lower-content mx-auto max-w-3xl px-6 pb-20 text-left" data-ecv2-lower-content>
 		<!-- 主內容廣告預留｜結果區下方、Related Tools 上方 -->
 		<ToolAdSlot variant="main" locale={locale} state="is-disabled" />
 		<section

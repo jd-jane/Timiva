@@ -233,6 +233,7 @@ export const en = {
     clearDates: "Clear dates",
     chooseDateRange: "Choose date range",
     changeDateRange: "Change date range",
+    controlsAriaLabel: "Tool controls",
     calendarLabel: "Date range calendar",
     resultsLabel: "Date range results",
     previousMonth: "Previous month",
@@ -259,6 +260,8 @@ export const en = {
         "Event planning dates",
       ],
     },
+    relatedToolsDrawerAriaLabel: "Related tools drawer",
+    toggleRelatedToolsDrawerAriaLabel: "Toggle related tools drawer",
     faq: {
       heading: "Date Range Calculator FAQ",
       items: [

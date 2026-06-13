@@ -472,12 +472,12 @@
 
   function lockBodyScroll() {
     savedScrollY = window.scrollY;
-    document.body.classList.add(SHEET_OPEN_CLASS);
+    document.body.classList.add(SHEET_OPEN_CLASS, "tool-operation-open");
     document.body.style.top = `-${savedScrollY}px`;
   }
 
   function unlockBodyScroll() {
-    document.body.classList.remove(SHEET_OPEN_CLASS);
+    document.body.classList.remove(SHEET_OPEN_CLASS, "tool-operation-open");
     document.body.style.top = "";
     window.scrollTo(0, savedScrollY);
   }

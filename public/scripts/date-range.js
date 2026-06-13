@@ -330,8 +330,12 @@ function forceUnlockBodyScroll() {
   document.documentElement.style.overflow = "";
   document.body.style.overflow = "";
 
-  dateRangePage?.classList.remove("date-range-scroll-lock");
-  document.body.classList.remove("range-sheet-open", "tool-sheet-open");
+  dateRangePage?.classList.remove("date-range-scroll-lock", "tool-operation-open");
+  document.body.classList.remove(
+    "tool-operation-open",
+    "range-sheet-open",
+    "tool-sheet-open"
+  );
 
   const restoreY = savedScrollY;
   savedScrollY = 0;
@@ -343,9 +347,14 @@ function forceUnlockBodyScroll() {
 
 function closeCompactDatePanel() {
   rangeLandscapePanel?.setAttribute("hidden", "");
+  rangeCompactOverlay?.classList.remove("is-visible");
   rangeCompactOverlay?.setAttribute("hidden", "");
   rangeCompactOverlay?.setAttribute("aria-hidden", "true");
   dateRangePage?.classList.remove("date-range-compact-open");
+
+  if (!rangeSheet?.classList.contains("is-open")) {
+    forceUnlockBodyScroll();
+  }
 }
 
 function isCompactDatePanelOpen() {
@@ -361,9 +370,11 @@ function openCompactDatePanel() {
 
   closeRangeSheetFully();
   rangeCompactOverlay?.removeAttribute("hidden");
+  rangeCompactOverlay?.classList.add("is-visible");
   rangeCompactOverlay?.setAttribute("aria-hidden", "false");
   rangeLandscapePanel.removeAttribute("hidden");
   dateRangePage?.classList.add("date-range-compact-open");
+  lockBodyScroll();
   syncLandscapeInputsFromState();
   rangeLandscapeStart?.focus();
 }
@@ -504,8 +515,12 @@ function lockBodyScroll() {
   savedScrollY = window.scrollY;
   document.documentElement.style.overflow = "hidden";
   document.body.style.overflow = "hidden";
-  dateRangePage?.classList.add("date-range-scroll-lock");
-  document.body.classList.add("range-sheet-open", "tool-sheet-open");
+  dateRangePage?.classList.add("date-range-scroll-lock", "tool-operation-open");
+  document.body.classList.add(
+    "tool-operation-open",
+    "range-sheet-open",
+    "tool-sheet-open"
+  );
 }
 
 function openRangeSheet() {
@@ -721,6 +736,26 @@ rangeLandscapeEnd?.addEventListener("change", applyLandscapeInputsToRange);
 
 rangeLandscapePanel?.addEventListener("click", (event) => {
   event.stopPropagation();
+});
+
+document.querySelectorAll("[data-date-range-v2] .drv2-landscape-date-field").forEach((field) => {
+  field.addEventListener("click", (event) => {
+    const input = field.querySelector(".drv2-landscape-date-input");
+
+    if (!input || event.target === input) {
+      return;
+    }
+
+    input.focus({ preventScroll: true });
+
+    if (typeof input.showPicker === "function") {
+      try {
+        input.showPicker();
+      } catch {
+        input.focus({ preventScroll: true });
+      }
+    }
+  });
 });
 
 rangeCompactOverlay?.addEventListener("click", () => {

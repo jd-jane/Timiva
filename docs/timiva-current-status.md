@@ -1,8 +1,8 @@
 ﻿# Timiva Current Status
 
 > 用途：這是每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。  
-> 更新日期：2026-06-10  
-> 狀態來源：整合既有 Timiva docs 與 `docs/handovers/2026-06-10-event-countdown-legal-pages-handoff.md`。
+> 更新日期：2026-06-13  
+> 狀態來源：整合既有 Timiva docs、`docs/handovers/2026-06-10-event-countdown-legal-pages-handoff.md`、Home Content & Animation final validation report、Owner EN / ZH real-device final check，以及首頁已 deploy 結果。
 
 ---
 
@@ -39,7 +39,63 @@ Four-Agent review model
 CEO Workflow
 ```
 
-### 2.2 Completed / verified tool pages
+### 2.2 Home pages completed and deployed
+
+The English and Traditional Chinese home pages have completed the Home Content & Animation task, passed final check, and have been deployed.
+
+Completed home scope:
+
+```text
+/en/
+/zh/
+Hero title / subtitle updated
+Hero CTA buttons removed
+Hero chips added as visual-only, non-interactive labels
+Featured tool cards updated to 4 tools:
+Event Countdown → Date Range Calculator → Countdown Timer → Life Progress Bar
+View all tools retained
+FAQ & Help added with 7 Q&A per locale
+Ad Container implemented but production state is-disabled
+Home JSON-LD added:
+WebSite
+Organization
+ItemList
+FAQPage
+Home entrance animation added with prefers-reduced-motion support
+```
+
+Home page verification:
+
+```text
+Owner real-device testing passed for both English and Traditional Chinese home pages.
+Mobile portrait passed.
+Mobile landscape passed.
+Desktop passed.
+npm run build passed.
+Final check passed.
+Deployed.
+```
+
+Home animation decision:
+
+```text
+Lightweight entrance animation remains enabled.
+Existing ToolCard hover remains unchanged.
+Animated glow overlay was tested and disabled because it made the page feel slow to load.
+Do not re-enable Home / All Tools animated glow overlay in V1 unless a new performance-focused task explicitly approves it.
+Static glow can be discussed later, but animated glow overlay is currently out of scope.
+```
+
+Deferred from home task:
+
+```text
+Tool page WebApplication schema
+Countdown Timer / Life Progress unavailable-card UX
+All Tools page content update
+Live ads / AdSense integration
+```
+
+### 2.3 Completed / verified tool pages
 
 ```text
 Event Countdown
@@ -63,7 +119,7 @@ Tool is treated as completed / verified from prior rounds.
 Do not redesign or rewrite unless a new task explicitly targets it.
 ```
 
-### 2.3 Legal pages completed
+### 2.4 Legal pages completed
 
 The following six pages are completed as independent Markdown content files loaded through `LegalTextLayout`:
 
@@ -95,7 +151,7 @@ English page H1 / meta title: Terms of Use.
 Legal / Text pages do not contain ads.
 ```
 
-### 2.4 Footer language switch completed
+### 2.5 Footer language switch completed
 
 Footer language switch keeps the user on the corresponding page route.
 
@@ -141,7 +197,14 @@ If a task seems to require touching these areas, Cursor must stop and ask for Ow
 Recommended next task:
 
 ```text
-Timiva Pre Deploy Final Check
+Timiva V1 Pre Deploy Final Check
+```
+
+Note:
+
+```text
+Home pages have already passed final check and have been deployed.
+The next pre-deploy pass should verify the full V1 surface after the home deployment.
 ```
 
 Minimum scope:
@@ -180,7 +243,7 @@ Choose one after Pre Deploy Final Check:
 
 ```text
 1. Cloudflare Pages / formal domain final confirmation
-2. Home / All Tools final content check
+2. All Tools final content check
 3. Age Calculator task planning
 4. Life Progress Bar task planning
 5. Ad placeholder strategy only; ads remain disabled
@@ -197,6 +260,7 @@ Do not redesign Event Countdown V2.
 Do not rewrite Legal Pages layout.
 Do not add ads to live pages yet.
 Do not add ads to Legal / Text pages ever.
+Do not re-enable Home / All Tools animated glow overlay in V1 unless Owner explicitly starts a new performance task.
 Do not modify Footer visual layout.
 Do not modify BaseLayout or global background.
 Do not add member system, backend, database, login, cloud sync, social features, leaderboard, or push backend.
@@ -225,7 +289,8 @@ Paste this short context:
 
 ```text
 這是 Timiva 專案。請以 AGENTS.md 和 docs/timiva-current-status.md 為主要上下文。
-目前 Timiva 已完成 Event Countdown V2 中文正式切換、Legal Pages Markdown 架構與正式文案、Footer 語系切換同頁對應。
-目前建議下一步是 Timiva Pre Deploy Final Check。
+目前 Timiva 已完成 Event Countdown V2 中文正式切換、Legal Pages Markdown 架構與正式文案、Footer 語系切換同頁對應，以及 EN / ZH 首頁內容與輕量動畫更新並已部署。
+首頁 animated glow overlay 已因實機 loading 體感變慢而停用；V1 不要重新啟用。
+目前建議下一步是 Timiva V1 Pre Deploy Final Check。
 請不要重新推翻已驗收設計，也不要主動建議修改 locked components。
 ```

@@ -1,5 +1,11 @@
 /* ToolAdSlot — 工具頁廣告預留區 */
 
+.tool-ad-slot-main {
+	margin-top: var(--tool-main-ad-top-spacing, 48px);
+	margin-bottom: 48px;
+	padding-bottom: 0;
+}
+
 @media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
 	.tool-ad-slot-main {
 		display: none;

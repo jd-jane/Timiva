@@ -1,0 +1,83 @@
+/**
+ * Tool Overlay V2 Baseline
+ * Shared backdrop, scroll lock, and opened-state rhythm for V2 tool pages.
+ */
+
+:root {
+	--tool-operation-overlay-bg: rgb(8 12 28 / 0.42);
+	--tool-operation-overlay-z: 50;
+	--tool-operation-panel-z: 60;
+	--tool-operation-overlay-transition: opacity 240ms ease;
+}
+
+/* Shared backdrop — portrait sheet, landscape compact panel, ECv2 edit sheet */
+:is([data-date-range-v2], [data-event-countdown-v2]) .tool-operation-overlay,
+:is([data-date-range-v2], [data-event-countdown-v2]) .tool-sheet-overlay,
+:is([data-date-range-v2], [data-event-countdown-v2]) .range-sheet-backdrop,
+:is([data-date-range-v2], [data-event-countdown-v2]) .range-compact-overlay,
+:is([data-date-range-v2], [data-event-countdown-v2]) [data-tool-operation-overlay] {
+	position: fixed;
+	inset: 0;
+	z-index: var(--tool-operation-overlay-z);
+	background-color: var(--tool-operation-overlay-bg);
+	opacity: 0;
+	pointer-events: none;
+	transition: var(--tool-operation-overlay-transition);
+}
+
+:is([data-date-range-v2], [data-event-countdown-v2]) .tool-operation-overlay.is-visible,
+:is([data-date-range-v2], [data-event-countdown-v2]) .tool-operation-overlay.is-open,
+:is([data-date-range-v2], [data-event-countdown-v2]) .tool-sheet-overlay.is-visible,
+:is([data-date-range-v2], [data-event-countdown-v2]) .range-sheet-backdrop.is-visible,
+:is([data-date-range-v2], [data-event-countdown-v2]) .range-compact-overlay.is-visible,
+:is([data-date-range-v2], [data-event-countdown-v2]) [data-tool-operation-overlay].is-open,
+:is([data-date-range-v2], [data-event-countdown-v2]) [data-tool-operation-overlay].is-visible {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* Scroll lock — unified opened operation state */
+html:has(body.tool-operation-open),
+html:has(body.tool-sheet-open),
+html:has(body.range-sheet-open),
+html:has(body.ecv2-sheet-open) {
+	overflow: hidden;
+}
+
+body.tool-operation-open,
+body.tool-sheet-open,
+body.range-sheet-open,
+body.ecv2-sheet-open {
+	position: fixed;
+	width: 100%;
+	overflow: hidden;
+	touch-action: none;
+}
+
+[data-date-range-v2] .date-range-page.date-range-scroll-lock,
+[data-date-range-v2] .date-range-page.tool-operation-open {
+	overflow: hidden;
+}
+
+/*
+ * Event Countdown V2 teleports overlay + sheet to document.body.
+ * Baseline rules scoped under [data-event-countdown-v2] do not apply after mount.
+ */
+body:has([data-event-countdown-v2]) > [data-ecv2-sheet-overlay],
+body:has([data-event-countdown-v2]) > [data-tool-operation-overlay] {
+	position: fixed;
+	inset: 0;
+	z-index: var(--tool-operation-overlay-z);
+	background-color: var(--tool-operation-overlay-bg);
+	opacity: 0;
+	pointer-events: none;
+	transition: var(--tool-operation-overlay-transition);
+}
+
+body:has([data-event-countdown-v2]) > [data-ecv2-sheet-overlay].is-open,
+body:has([data-event-countdown-v2]) > [data-ecv2-sheet-overlay].is-visible,
+body:has([data-event-countdown-v2]) > [data-tool-operation-overlay].is-open,
+body:has([data-event-countdown-v2]) > [data-tool-operation-overlay].is-visible {
+	opacity: 1;
+	pointer-events: auto;
+}

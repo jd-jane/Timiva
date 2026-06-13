@@ -1,0 +1,521 @@
+---
+import RelatedToolRow from "../../RelatedToolRow.astro";
+import ToolAdSlot from "../../ToolAdSlot.astro";
+import ToolCard from "../../ToolCard.astro";
+import { catalogIconMap } from "../../../lib/catalogIcons";
+import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
+import { getRelatedTools, type CatalogToolId } from "../../../data/toolsCatalog";
+import { getLocalizedPath, type Locale } from "../../../i18n/config";
+import { getDateRangeClientI18n } from "../../../i18n/clientMessages";
+import { getMessages } from "../../../i18n/messages";
+
+interface Props {
+	locale?: Locale;
+}
+
+const { locale = "en" } = Astro.props;
+const messages = getMessages(locale);
+const m = messages.dateRangeCalculator;
+const clientI18n = getDateRangeClientI18n(locale);
+const relatedTools = getRelatedTools("date-range");
+
+const toolCopy: Record<
+	CatalogToolId,
+	{ title: string; relatedDescription: string }
+> = {
+	"event-countdown": messages.tools.eventCountdown,
+	"date-range": messages.tools.dateRange,
+	"age-calculator": messages.tools.ageCalculator,
+	"life-progress": messages.tools.lifeProgress,
+};
+
+const relatedToolItems = relatedTools.map((tool) => ({
+	href: getLocalizedPath(locale, `/${tool.slug}/`),
+	name: toolCopy[tool.id].title,
+	description: toolCopy[tool.id].relatedDescription,
+	icon: catalogIconMap[tool.id],
+}));
+
+const faqSchema = buildFaqPageJsonLd(m.faq.items);
+---
+
+<div data-date-range-v2>
+	<!-- 首屏工具區 -->
+	<section data-drv2-main-tool class="preview-tool-main-section px-6">
+		<section
+			class="tool-page date-range-page theme-aurora"
+			id="date-range-page"
+			data-locale={locale}
+		>
+			<div class="tool-desktop-main">
+				<div class="preview-tool-first-screen">
+					<div class="preview-tool-stage tool-stage mx-auto w-full max-w-md md:max-w-lg">
+						<div
+							class="tool-hero-preview range-main-preview preview-tool-result-group text-center"
+							id="range-main-preview"
+						>
+							<section class="tool-hero">
+								<main class="tool-hero-content">
+									<div class="tool-result-stack">
+										<header class="tool-header tool-header--compact">
+											<h1
+												class="tool-title preview-tool-landscape-compact-title drv2-tool-name text-sm font-medium tracking-normal text-slate-300 md:text-base"
+											>
+												{m.kicker}
+											</h1>
+										</header>
+
+										<section
+											class="tool-result tool-result--multi preview-tool-result-block mt-6 md:mt-0"
+											aria-live="polite"
+											aria-label={m.resultsLabel}
+										>
+										<div class="tool-result-main">
+											<div
+												class="preview-tool-result-number leading-none font-normal tracking-tight tabular-nums"
+												id="stat-total"
+											>
+												0
+											</div>
+											<div class="preview-tool-result-label text-xs text-slate-400 md:text-sm">{m.totalDays}</div>
+										</div>
+
+										<div class="tool-result-secondary drv2-result-secondary">
+											<div class="tool-result-secondary-item">
+												<div class="tool-result-secondary-number" id="stat-workdays">0</div>
+												<div class="preview-tool-result-label tool-result-secondary-label text-xs text-slate-400/85 md:text-sm">{m.workdays}</div>
+											</div>
+											<div class="tool-result-secondary-item">
+												<div class="tool-result-secondary-number" id="stat-weekends">0</div>
+												<div class="preview-tool-result-label tool-result-secondary-label text-xs text-slate-400/85 md:text-sm">{m.weekends}</div>
+											</div>
+										</div>
+									</section>
+									</div>
+								</main>
+							</section>
+						</div>
+
+						<div class="tool-desktop-cluster">
+							<div class="desktop-tool-control">
+								<div class="tool-input-card tool-date-card" aria-hidden="true">
+									<span class="tool-input-card__icon" aria-hidden="true">
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+											<rect x="3" y="5" width="18" height="16" rx="3"></rect>
+											<path d="M8 3v4M16 3v4M7 11h10" stroke-linecap="round"></path>
+										</svg>
+									</span>
+									<p class="tool-input-card__text" id="range-display-text-desktop">
+										{m.dateRangePlaceholder}
+									</p>
+								</div>
+							</div>
+						</div>
+
+						<div
+							class="preview-tool-controls flex flex-wrap justify-center gap-3 md:gap-4"
+							aria-label={m.controlsAriaLabel}
+						>
+							<button
+								type="button"
+								id="range-display-trigger"
+								data-drv2-date-trigger
+								class="preview-tool-control-btn inline-flex max-w-[min(100%,20rem)] items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm"
+								aria-label={m.chooseDateRange}
+								aria-haspopup="dialog"
+								aria-controls="range-sheet"
+							>
+								<span class="drv2-date-trigger-icon shrink-0" aria-hidden="true">
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+										<rect x="3" y="5" width="18" height="16" rx="3"></rect>
+										<path d="M8 3v4M16 3v4M7 11h10" stroke-linecap="round"></path>
+									</svg>
+								</span>
+								<span id="range-display-text" class="truncate">{m.dateRangePlaceholder}</span>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<div
+					class="tool-operation-overlay range-compact-overlay"
+					id="range-compact-overlay"
+					hidden
+					aria-hidden="true"
+				>
+				</div>
+
+				<div
+					class="range-landscape-panel range-compact-panel drv2-landscape-panel"
+					id="range-landscape-panel"
+					hidden
+					aria-label={m.chooseDateRange}
+				>
+					<div class="drv2-landscape-panel-handle" aria-hidden="true"></div>
+					<div class="range-landscape-panel-inner drv2-landscape-panel-inner">
+						<div class="drv2-landscape-panel-row">
+							<label class="drv2-landscape-date-field">
+								<span class="drv2-landscape-input-shell">
+									<span class="drv2-landscape-input-prefix">{m.startDate}</span>
+									<input
+										type="date"
+										class="drv2-landscape-date-input range-landscape-input"
+										id="range-landscape-start"
+										aria-label={m.startDate}
+									/>
+								</span>
+							</label>
+							<label class="drv2-landscape-date-field">
+								<span class="drv2-landscape-input-shell">
+									<span class="drv2-landscape-input-prefix">{m.endDate}</span>
+									<input
+										type="date"
+										class="drv2-landscape-date-input range-landscape-input"
+										id="range-landscape-end"
+										aria-label={m.endDate}
+									/>
+								</span>
+							</label>
+						</div>
+						<button
+							type="button"
+							class="drv2-landscape-clear-text"
+							data-clear-dates
+						>
+							{m.clearDates}
+						</button>
+					</div>
+				</div>
+
+				<div
+					class="tool-operation-overlay tool-sheet-overlay range-sheet-backdrop"
+					id="range-sheet-backdrop"
+					aria-hidden="true"
+				>
+				</div>
+
+				<section class="desktop-tool-panel">
+					<div
+						class="tool-bottom-sheet range-sheet"
+						id="range-sheet"
+						role="dialog"
+						aria-modal="true"
+						aria-label={m.calendarLabel}
+						aria-hidden="true"
+					>
+						<div class="tool-bottom-sheet-handle range-sheet-handle" aria-hidden="true"></div>
+
+						<div class="tool-bottom-sheet-content">
+							<div class="calendar-panel calendar-card range-sheet-calendar">
+								<div class="calendar-toolbar">
+									<button
+										type="button"
+										class="calendar-nav-btn"
+										id="prev-month"
+										aria-label={m.previousMonth}
+									>
+										‹
+									</button>
+									<h2 class="calendar-month-label" id="month-label">—</h2>
+									<button
+										type="button"
+										class="calendar-nav-btn"
+										id="next-month"
+										aria-label={m.nextMonth}
+									>
+										›
+									</button>
+								</div>
+
+								<div class="calendar-weekdays" aria-hidden="true">
+									{m.weekdays.map((day) => <span>{day}</span>)}
+								</div>
+
+								<div class="calendar-grid" id="calendar-grid"></div>
+
+								<button
+									type="button"
+									class="calendar-clear-btn calendar-clear-btn--inline"
+									id="clear-range-desktop"
+									data-clear-dates
+								>
+									{m.clearDates}
+								</button>
+							</div>
+						</div>
+
+						<div class="tool-bottom-sheet-footer range-sheet-footer">
+							<button
+								type="button"
+								class="calendar-clear-btn calendar-clear-btn--ghost"
+								id="clear-range"
+								data-clear-dates
+							>
+								{m.clearDates}
+							</button>
+						</div>
+					</div>
+				</section>
+			</div>
+		</section>
+	</section>
+
+	<!-- Desktop drawer｜Related Tools + Sidebar Ad -->
+	<aside
+		data-drv2-drawer
+		data-open="true"
+		aria-label={m.relatedToolsDrawerAriaLabel}
+		class="pointer-events-none fixed inset-y-0 right-0 z-20 hidden xl:block"
+	>
+		<span class="hidden translate-x-[300px]" aria-hidden="true"></span>
+		<div
+			data-drv2-drawer-shell
+			data-open="true"
+			class="preview-tool-drawer-frosted pointer-events-auto relative flex h-dvh rounded-tl-3xl rounded-bl-3xl border-l border-white/10 shadow-2xl shadow-black/25 ring-1 ring-inset ring-white/[0.04] transition-transform duration-200 ease-out"
+		>
+			<button
+				type="button"
+				data-drv2-drawer-toggle
+				aria-expanded="true"
+				class="relative z-10 flex w-14 shrink-0 items-center justify-center self-stretch text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+				aria-label={m.toggleRelatedToolsDrawerAriaLabel}
+			>
+				<svg
+					data-drawer-arrow-open
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="none"
+					class="h-7 w-7"
+					aria-hidden="true"
+				>
+					<path
+						d="M10 3L5 8l5 5"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+				<svg
+					data-drawer-arrow-closed
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="none"
+					class="hidden h-7 w-7"
+					aria-hidden="true"
+				>
+					<path
+						d="M6 3l5 5-5 5"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+			</button>
+
+			<div data-drv2-drawer-panel class="relative z-10 flex h-full w-[300px] shrink-0 flex-col">
+				<div class="px-5 pb-3 pt-5">
+					<h2 class="text-lg font-semibold text-white">{messages.relatedTools.heading}</h2>
+				</div>
+				<!-- 側欄廣告預留｜Related Tools 上方 -->
+				<ToolAdSlot variant="sidebar" locale={locale} state="is-reserved" />
+				<div class="flex-1 space-y-3 overflow-y-auto px-5 pb-5">
+					{
+						relatedToolItems.map((tool) => (
+							<div>
+								<ToolCard
+									href={tool.href}
+									name={tool.name}
+									description={tool.description}
+									icon={tool.icon}
+								/>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</div>
+	</aside>
+
+	<!-- 下方內容區 -->
+	<div class="tool-lower-content mx-auto max-w-3xl px-6 pb-20 text-left" data-drv2-lower-content>
+		<!-- 主內容廣告預留｜結果區下方、Related Tools 上方 -->
+		<ToolAdSlot variant="main" locale={locale} state="is-reserved" />
+		<section
+			data-drv2-related-tools
+			class="pb-12 xl:hidden"
+			aria-labelledby="drv2-related-heading"
+		>
+			<h2 id="drv2-related-heading" class="mb-4 text-lg font-semibold text-white">
+				{messages.relatedTools.heading}
+			</h2>
+			<div class="space-y-3">
+				{
+					relatedToolItems.map((tool) => (
+						<RelatedToolRow
+							href={tool.href}
+							name={tool.name}
+							description={tool.description}
+							icon={tool.icon}
+						/>
+					))
+				}
+			</div>
+		</section>
+
+		<section class="pb-12" aria-labelledby="drv2-about-heading">
+			<h2 id="drv2-about-heading" class="mb-2 text-lg font-semibold text-white">
+				{m.about.heading}
+			</h2>
+			<p class="text-sm leading-relaxed text-slate-400">{m.about.body}</p>
+		</section>
+
+		<section class="pb-12" aria-labelledby="drv2-howto-heading">
+			<h2 id="drv2-howto-heading" class="mb-2 text-lg font-semibold text-white">
+				{m.howTo.heading}
+			</h2>
+			<p class="text-sm leading-relaxed text-slate-400">{m.howTo.body}</p>
+		</section>
+
+		<section class="pb-12" aria-labelledby="drv2-uses-heading">
+			<h2 id="drv2-uses-heading" class="mb-4 text-lg font-semibold text-white">
+				{m.commonUses.heading}
+			</h2>
+			<ul class="drv2-keyword-list" role="list">
+				{m.commonUses.items.map((item) => <li class="drv2-keyword-chip">{item}</li>)}
+			</ul>
+		</section>
+
+		<section aria-labelledby="drv2-faq-heading">
+			<h2 id="drv2-faq-heading" class="mb-4 text-lg font-semibold text-white">
+				{m.faq.heading}
+			</h2>
+			<div class="border-t border-white/20">
+				{
+					m.faq.items.map((item) => (
+						<details class="group border-b border-white/20 py-4">
+							<summary
+								class="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden"
+							>
+								<span>{item.question}</span>
+								<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 16 16"
+										fill="none"
+										class="h-4 w-4 group-open:hidden"
+										aria-hidden="true"
+									>
+										<path
+											d="M8 3.5v9M3.5 8h9"
+											stroke="currentColor"
+											stroke-width="1.5"
+											stroke-linecap="round"></path>
+									</svg>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 16 16"
+										fill="none"
+										class="hidden h-4 w-4 group-open:block"
+										aria-hidden="true"
+									>
+										<path
+											d="M3.5 8h9"
+											stroke="currentColor"
+											stroke-width="1.5"
+											stroke-linecap="round"></path>
+									</svg>
+								</span>
+							</summary>
+							<p class="mt-3 text-sm leading-relaxed text-slate-300">{item.answer}</p>
+						</details>
+					))
+				}
+			</div>
+		</section>
+	</div>
+
+	<script type="application/json" id="date-range-i18n" set:html={JSON.stringify(clientI18n)} />
+	<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+</div>
+
+<script is:inline>
+	(function () {
+		var page = document.getElementById("date-range-page");
+		if (page) page.dataset.drJs = "dr13";
+
+		function resetDateRangeOrientation() {
+			var sheet = document.getElementById("range-sheet");
+			var backdrop = document.getElementById("range-sheet-backdrop");
+			var panel = document.getElementById("range-landscape-panel");
+			var overlay = document.getElementById("range-compact-overlay");
+
+			sheet?.classList.remove("is-open");
+			backdrop?.classList.remove("is-visible");
+			if (backdrop) backdrop.setAttribute("aria-hidden", "true");
+
+			if (panel) panel.hidden = true;
+			if (overlay) {
+				overlay.hidden = true;
+				overlay.setAttribute("aria-hidden", "true");
+			}
+
+			page?.classList.remove(
+				"sheet-open",
+				"tool-sheet-open",
+				"date-range-scroll-lock",
+				"date-range-compact-open"
+			);
+			document.body.classList.remove("range-sheet-open", "tool-sheet-open");
+			document.body.style.overflow = "";
+			document.documentElement.style.overflow = "";
+
+			if (page && window.matchMedia("(orientation: portrait)").matches) {
+				page.dataset.rangeLayout = "portrait";
+			}
+		}
+
+		if (page && window.matchMedia("(orientation: portrait)").matches) {
+			page.dataset.rangeLayout = "portrait";
+		}
+
+		window.addEventListener("orientationchange", function () {
+			setTimeout(resetDateRangeOrientation, 200);
+			setTimeout(resetDateRangeOrientation, 550);
+		});
+	})();
+</script>
+<script is:inline src="/scripts/date-range.js?v=dr13"></script>
+
+<script is:inline>
+	document.addEventListener("DOMContentLoaded", () => {
+		const root = document.querySelector("[data-date-range-v2]");
+		const drawer = root?.querySelector("[data-drv2-drawer]");
+		const shell = root?.querySelector("[data-drv2-drawer-shell]");
+		const toggle = root?.querySelector("[data-drv2-drawer-toggle]");
+		const related = root?.querySelector("[data-drv2-related-tools]");
+		const arrowOpen = root?.querySelector("[data-drawer-arrow-open]");
+		const arrowClosed = root?.querySelector("[data-drawer-arrow-closed]");
+
+		if (!drawer || !shell || !toggle) return;
+
+		let isOpen = drawer.dataset.open !== "false";
+
+		const sync = () => {
+			drawer.dataset.open = isOpen ? "true" : "false";
+			shell.dataset.open = isOpen ? "true" : "false";
+			shell.classList.toggle("translate-x-[300px]", !isOpen);
+			related?.classList.toggle("xl:hidden", isOpen);
+			arrowOpen?.classList.toggle("hidden", !isOpen);
+			arrowClosed?.classList.toggle("hidden", isOpen);
+			toggle.setAttribute("aria-expanded", String(isOpen));
+		};
+
+		sync();
+
+		toggle.addEventListener("click", (event) => {
+			event.preventDefault();
+			isOpen = !isOpen;
+			sync();
+		});
+	});
+</script>

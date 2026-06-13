@@ -1,0 +1,113 @@
+/**
+ * Tool Result V2 Baseline
+ * Shared vertical rhythm for new tool pages.
+ *
+ * Desktop: tool title → main result = 24px (--tool-result-stack-gap-desktop)
+ * Mobile portrait / landscape: title → result unchanged (per-tool mt-* preserved)
+ */
+
+:root {
+	--tool-result-stack-gap-desktop: 8px;
+	--tool-main-ad-top-spacing: 48px;
+	--tool-stage-to-lower-content-spacing: 48px;
+	--tool-mobile-portrait-control-min-height: 3.5rem;
+	--tool-mobile-portrait-control-padding-x: 1rem;
+	--tool-mobile-portrait-control-padding-y: 0.75rem;
+	--tool-mobile-portrait-control-gap: 0.5rem;
+	--tool-mobile-portrait-control-icon-size: 1.125rem;
+}
+
+.tool-result-stack {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	text-align: center;
+}
+
+.tool-title {
+	margin: 0;
+}
+
+.tool-lower-content,
+.tool-content-after-stage {
+	width: 100%;
+}
+
+/*
+ * Tool stage → lower content spacing baseline (48px / 4px grid)
+ * Applies to Event Countdown V2, Date Range V2, and future V2 tool pages.
+ * Main ToolAdSlot top spacing is owned here — not duplicated on the ad slot.
+ */
+:is([data-date-range-v2], [data-event-countdown-v2]) .tool-lower-content,
+:is([data-date-range-v2], [data-event-countdown-v2]) .tool-content-after-stage {
+	margin-top: var(--tool-stage-to-lower-content-spacing);
+}
+
+:is([data-date-range-v2], [data-event-countdown-v2]) .tool-lower-content > .tool-ad-slot-main:first-child {
+	margin-top: 0;
+}
+
+/* Mobile landscape compact mode — independent spacing; do not apply stage baseline */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+	:is([data-date-range-v2], [data-event-countdown-v2]) .tool-lower-content,
+	:is([data-date-range-v2], [data-event-countdown-v2]) .tool-content-after-stage {
+		margin-top: 0;
+	}
+}
+
+@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
+	.tool-result-stack {
+		gap: var(--tool-result-stack-gap-desktop);
+	}
+
+	.tool-result-stack .tool-header,
+	.tool-result-stack .tool-header--compact {
+		margin-bottom: 0;
+	}
+
+	.tool-result-stack .preview-tool-result-block,
+	.tool-result-stack .tool-result,
+	.tool-result-stack .tool-result--multi {
+		margin-top: 0;
+	}
+}
+
+/* Mobile portrait — shared bottom control touch target (≥ Back Timiva pill) */
+@media (orientation: portrait) and (max-width: 899px),
+	(orientation: portrait) and (max-height: 699px),
+	(orientation: portrait) and (hover: none) {
+	:is([data-date-range-v2], [data-event-countdown-v2]) .preview-tool-control-btn {
+		min-height: var(--tool-mobile-portrait-control-min-height);
+		min-width: var(--tool-mobile-portrait-control-min-height);
+		padding: var(--tool-mobile-portrait-control-padding-y)
+			var(--tool-mobile-portrait-control-padding-x);
+		gap: var(--tool-mobile-portrait-control-gap);
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	[data-date-range-v2] .drv2-date-trigger-icon {
+		width: var(--tool-mobile-portrait-control-icon-size);
+		height: var(--tool-mobile-portrait-control-icon-size);
+	}
+
+	[data-date-range-v2] .drv2-date-trigger-icon svg {
+		width: var(--tool-mobile-portrait-control-icon-size);
+		height: var(--tool-mobile-portrait-control-icon-size);
+	}
+
+	/*
+	 * Tool stage → lower content (48px) on mobile portrait.
+	 * Padding on the stage section avoids margin collapse with in-stage controls.
+	 */
+	:is([data-date-range-v2], [data-event-countdown-v2]) .preview-tool-main-section {
+		padding-bottom: var(--tool-stage-to-lower-content-spacing);
+		box-sizing: border-box;
+	}
+
+	:is([data-date-range-v2], [data-event-countdown-v2]) .tool-lower-content,
+	:is([data-date-range-v2], [data-event-countdown-v2]) .tool-content-after-stage {
+		margin-top: 0;
+	}
+}
