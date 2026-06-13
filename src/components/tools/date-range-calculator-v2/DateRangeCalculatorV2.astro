@@ -317,7 +317,7 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 					<h2 class="text-lg font-semibold text-white">{messages.relatedTools.heading}</h2>
 				</div>
 				<!-- 側欄廣告預留｜Related Tools 上方 -->
-				<ToolAdSlot variant="sidebar" locale={locale} state="is-reserved" />
+				<ToolAdSlot variant="sidebar" locale={locale} state="is-disabled" />
 				<div class="flex-1 space-y-3 overflow-y-auto px-5 pb-5">
 					{
 						relatedToolItems.map((tool) => (
@@ -339,7 +339,7 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 	<!-- 下方內容區 -->
 	<div class="tool-lower-content mx-auto max-w-3xl px-6 pb-20 text-left" data-drv2-lower-content>
 		<!-- 主內容廣告預留｜結果區下方、Related Tools 上方 -->
-		<ToolAdSlot variant="main" locale={locale} state="is-reserved" />
+		<ToolAdSlot variant="main" locale={locale} state="is-disabled" />
 		<section
 			data-drv2-related-tools
 			class="pb-12 xl:hidden"
