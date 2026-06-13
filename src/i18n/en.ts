@@ -137,6 +137,10 @@ export const en = {
     heading: "You may also need",
     viewAllTools: "View all tools →",
   },
+  toolAds: {
+    sponsored: "Sponsored",
+    ad: "Ad",
+  },
   allTools: {
     heading: "All Tools",
     lead: "Every finished Timiva tool in one place—pick what you need and start in seconds.",

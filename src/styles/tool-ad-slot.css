@@ -1,0 +1,7 @@
+/* ToolAdSlot — 工具頁廣告預留區 */
+
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+	.tool-ad-slot-main {
+		display: none;
+	}
+}

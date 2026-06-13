@@ -126,6 +126,10 @@ export const zh: Messages = {
     heading: "你可能也會需要",
     viewAllTools: "查看全部工具 →",
   },
+  toolAds: {
+    sponsored: "廣告",
+    ad: "廣告",
+  },
   allTools: {
     heading: "全部工具",
     lead: "這裡整理 Timiva 目前已完成的工具，選一個就能立即開始使用。",

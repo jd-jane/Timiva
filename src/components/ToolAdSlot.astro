@@ -1,0 +1,68 @@
+---
+import "../styles/tool-ad-slot.css";
+import type { Locale } from "../i18n/config";
+import { getMessages } from "../i18n/messages";
+
+type ToolAdSlotVariant = "main" | "sidebar";
+type ToolAdSlotState = "is-reserved" | "is-disabled";
+
+interface Props {
+	variant: ToolAdSlotVariant;
+	locale: Locale;
+	state?: ToolAdSlotState;
+}
+
+const { variant, locale, state = "is-reserved" } = Astro.props;
+const messages = getMessages(locale);
+const isMain = variant === "main";
+---
+
+{
+	state !== "is-disabled" && (
+		<aside
+			class:list={[
+				"tool-ad-slot w-full",
+				isMain &&
+					"tool-ad-slot-main mx-auto w-full max-w-[320px] pb-12 md:w-[728px] md:max-w-[728px]",
+				!isMain && "tool-ad-slot-sidebar px-5 pb-3",
+			]}
+			data-ad-variant={variant}
+			data-ad-state={state}
+			aria-label={messages.toolAds.sponsored}
+		>
+			<div
+				class:list={[
+					"tool-ad-slot-frame flex flex-col items-center justify-center rounded-2xl text-center",
+					isMain &&
+						"min-h-[100px] w-full border border-dashed border-white/15 bg-white/[0.03] md:min-h-[90px]",
+					!isMain &&
+						"min-h-[140px] w-full max-w-full border border-white/10 bg-white/[0.04] backdrop-blur-sm",
+				]}
+			>
+				<p class="tool-ad-slot-label flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-slate-400">
+					<span>{messages.toolAds.sponsored}</span>
+					{locale === "en" && (
+						<span class="tool-ad-slot-label-secondary text-[0.625rem] font-normal normal-case tracking-normal text-slate-500">
+							{messages.toolAds.ad}
+						</span>
+					)}
+				</p>
+				{state === "is-reserved" && (
+					<p
+						class="tool-ad-slot-size mt-2 text-[0.625rem] text-slate-500"
+						aria-hidden="true"
+					>
+						{isMain ? (
+							<>
+								<span class="tool-ad-slot-size-portrait md:hidden">320 × 100</span>
+								<span class="tool-ad-slot-size-desktop hidden md:inline">728 × 90</span>
+							</>
+						) : (
+							<span>Sidebar reserved</span>
+						)}
+					</p>
+				)}
+			</div>
+		</aside>
+	)
+}
