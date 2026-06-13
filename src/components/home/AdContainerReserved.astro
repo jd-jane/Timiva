@@ -1,0 +1,29 @@
+---
+type AdContainerState = "is-disabled" | "is-reserved" | "is-active";
+
+interface Props {
+	state?: AdContainerState;
+}
+
+const { state = "is-disabled" } = Astro.props;
+---
+
+{
+	state !== "is-disabled" && (
+		<div
+			class:list={[
+				"ad-container-reserved mx-auto w-full max-w-[320px] md:max-w-[728px]",
+				state === "is-reserved" && "min-h-[100px] md:min-h-[90px]",
+			]}
+			data-ad-state={state}
+			aria-hidden={state === "is-reserved" ? "true" : undefined}
+		>
+			{state === "is-reserved" && (
+				<div class="flex min-h-[100px] items-center justify-center rounded-2xl border border-dashed border-white/15 bg-white/[0.04] text-xs text-slate-400 md:min-h-[90px]">
+					<span class="md:hidden">320 × 100 · Ad reserved</span>
+					<span class="hidden md:inline">728 × 90 · Ad reserved</span>
+				</div>
+			)}
+		</div>
+	)
+}

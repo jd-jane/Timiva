@@ -15,11 +15,11 @@ export const featuredTools = [
     category: "Date",
   },
   {
-    id: "age-calculator",
-    slug: "age-calculator",
+    id: "timer",
+    slug: "timer",
     available: false,
-    icon: "age-calculator",
-    category: "Date",
+    icon: "timer",
+    category: "Timer",
   },
   {
     id: "life-progress",

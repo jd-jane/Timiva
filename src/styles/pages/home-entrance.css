@@ -1,0 +1,82 @@
+@keyframes home-entrance-rise {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes home-entrance-fade {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+.home-entrance-title {
+	animation: home-entrance-rise 720ms ease both;
+}
+
+.home-entrance-subtitle {
+	animation: home-entrance-rise 720ms ease both;
+	animation-delay: 120ms;
+}
+
+.home-hero-chips {
+	animation: home-entrance-fade 720ms ease both;
+	animation-delay: 220ms;
+}
+
+.home-entrance-card {
+	animation: home-entrance-fade 680ms ease both;
+}
+
+.home-entrance-card:nth-child(1) {
+	animation-delay: 280ms;
+}
+
+.home-entrance-card:nth-child(2) {
+	animation-delay: 360ms;
+}
+
+.home-entrance-card:nth-child(3) {
+	animation-delay: 440ms;
+}
+
+.home-entrance-card:nth-child(4) {
+	animation-delay: 520ms;
+}
+
+.home-entrance-view-all {
+	animation: home-entrance-fade 680ms ease both;
+	animation-delay: 600ms;
+}
+
+.home-entrance-faq {
+	animation: home-entrance-fade 720ms ease both;
+	animation-delay: 680ms;
+}
+
+.home-faq-item {
+	transition: opacity 220ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.home-entrance-title,
+	.home-entrance-subtitle,
+	.home-hero-chips,
+	.home-entrance-card,
+	.home-entrance-view-all,
+	.home-entrance-faq {
+		animation: none;
+		opacity: 1;
+		transform: none;
+	}
+}

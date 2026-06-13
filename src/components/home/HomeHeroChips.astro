@@ -1,0 +1,21 @@
+---
+interface Props {
+	chips: readonly string[];
+	groupAriaLabel: string;
+}
+
+const { chips, groupAriaLabel } = Astro.props;
+---
+
+<ul
+	aria-label={groupAriaLabel}
+	class="home-hero-chips mt-6 flex flex-wrap gap-2 md:justify-center"
+>
+	{
+		chips.map((chip) => (
+			<li class="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-slate-400">
+				{chip}
+			</li>
+		))
+	}
+</ul>

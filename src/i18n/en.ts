@@ -3,7 +3,7 @@ export const en = {
     home: {
       title: "Timiva — Simple Time and Date Tools",
       description:
-        "Simple, mobile-friendly time and date tools for countdowns, date ranges, and everyday planning.",
+        "Simple, calm, mobile-friendly time tools for event countdowns, date ranges, timers, and life progress.",
     },
     eventCountdown: {
       title: "Event Countdown — Timiva",
@@ -42,9 +42,78 @@ export const en = {
     chinese: "中文",
   },
   home: {
-    heroTitle: "Make time easier to see and calculate",
+    heroTitle: "Make time visible, simple, and easier to use",
     heroLead:
-      "A simple collection of countdown, date calculation, and everyday time tools.",
+      "Simple, calm, mobile-friendly tools for important dates, focus, daily rhythm, and life progress.",
+    chipsGroupAriaLabel: "Timiva tool categories",
+    chips: [
+      "Important Dates",
+      "Date Calculations",
+      "Countdown Timer",
+      "Life Progress",
+    ],
+    featuredTools: {
+      "event-countdown": {
+        title: "Event Countdown",
+        description:
+          "Create a clean countdown for birthdays, trips, holidays, and important dates.",
+      },
+      "date-range": {
+        title: "Date Range Calculator",
+        description:
+          "Calculate the days, workdays, and weekends between two dates.",
+      },
+      timer: {
+        title: "Countdown Timer",
+        description:
+          "Set a simple timer for focus, cooking, workouts, breaks, or everyday tasks.",
+      },
+      "life-progress": {
+        title: "Life Progress Bar",
+        description:
+          "Turn years, months, life, or personal timelines into a visible progress bar.",
+      },
+    },
+    faq: {
+      heading: "FAQ & Help",
+      items: [
+        {
+          question: "What can I use Timiva for?",
+          answer:
+            "Timiva provides simple, calm, mobile-friendly time tools for creating event countdowns, calculating date ranges, setting countdown timers, and seeing progress across years, months, or life. The homepage highlights four main tools so the most useful time features stay easy to find.",
+        },
+        {
+          question: "What tools are available on Timiva?",
+          answer:
+            "The homepage currently includes Event Countdown, Date Range Calculator, Countdown Timer, and Life Progress Bar. These tools cover important dates, date calculations, timers and focus, and long-term time progress.",
+        },
+        {
+          question: "How do I start using a Timiva tool?",
+          answer:
+            "Choose a tool card from the homepage and open the tool you need. Each tool is designed mobile-first, with fewer input fields and simple controls so you can complete the main task quickly.",
+        },
+        {
+          question: "Can I use Timiva on mobile?",
+          answer:
+            "Yes. Timiva is designed for mobile use first, so tool cards, inputs, buttons, and result screens are optimized for both portrait and landscape phone browsing.",
+        },
+        {
+          question: "Does Timiva save my data?",
+          answer:
+            "Timiva mainly runs in your browser. Some tools may use local storage to remember your last input, but Timiva does not require sign-in or create an account database.",
+        },
+        {
+          question: "Why does Timiva keep only a few tools on the homepage?",
+          answer:
+            "Timiva is built around a simple idea: fewer tools, but each one should feel clear, useful, and comfortable. The homepage keeps four main tools so Timiva does not become a noisy tool directory.",
+        },
+        {
+          question: "Is Timiva free to use?",
+          answer:
+            "Yes. Timiva is currently free to use and does not require an account.",
+        },
+      ],
+    },
     ctaPrimary: "Create a countdown",
     ctaSecondary: "Calculate date range",
     toolsSectionLabel: "Featured time tools",

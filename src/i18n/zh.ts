@@ -5,7 +5,7 @@ export const zh: Messages = {
     home: {
       title: "Timiva — 簡單好用的時間與日期工具",
       description:
-        "Timiva 提供簡潔、適合手機使用的時間與日期小工具，包含日期倒數、日期區間計算與日常時間規劃。",
+        "Timiva 提供簡單、舒服、手機好用的時間工具，包含事件倒數、日期區間、倒數計時與人生進度。",
     },
     eventCountdown: {
       title: "事件倒數計時器 — Timiva",
@@ -44,7 +44,66 @@ export const zh: Messages = {
   },
   home: {
     heroTitle: "讓時間被看見，也更好計算",
-    heroLead: "簡潔的倒數、日期計算與日常時間工具集合。",
+    heroLead: "簡單、舒服、手機好用的時間與生活節奏工具。",
+    chipsGroupAriaLabel: "Timiva 工具類別",
+    chips: ["重要日子", "日期計算", "倒數計時", "人生進度"],
+    featuredTools: {
+      "event-countdown": {
+        title: "事件倒數",
+        description: "為生日、旅行、節日或重要日子建立清楚好看的倒數。",
+      },
+      "date-range": {
+        title: "日期區間計算機",
+        description: "快速計算兩個日期之間相差幾天、工作日與週末。",
+      },
+      timer: {
+        title: "倒數計時器",
+        description: "為專注、料理、運動或休息設定一段清楚的倒數時間。",
+      },
+      "life-progress": {
+        title: "人生進度條",
+        description: "把年份、月份或人生時間變成一條看得見的進度。",
+      },
+    },
+    faq: {
+      heading: "常見問題與協助",
+      items: [
+        {
+          question: "Timiva 可以用來做什麼？",
+          answer:
+            "Timiva 提供簡單、舒服、手機好用的時間工具，可以用來建立事件倒數、計算日期區間、設定倒數計時，也能看見年份、月份或人生進度。首頁目前固定提供四個主要工具，讓你快速選擇最常用的時間功能。",
+        },
+        {
+          question: "Timiva 有哪些工具？",
+          answer:
+            "目前首頁包含事件倒數、日期區間計算機、倒數計時器與人生進度條。這些工具分別對應重要日子、日期計算、計時與專注，以及長期時間進度。",
+        },
+        {
+          question: "如何開始使用 Timiva 的工具？",
+          answer:
+            "直接從首頁選擇一張工具卡片即可開始使用。每個工具都以手機優先設計，盡量減少輸入欄位與設定步驟，讓你打開後就能快速完成主要操作。",
+        },
+        {
+          question: "Timiva 可以在手機上使用嗎？",
+          answer:
+            "可以。Timiva 的工具卡片、輸入欄位、按鈕與結果畫面都優先考慮手機操作，讓你在手機直式或橫式瀏覽時都能清楚使用。",
+        },
+        {
+          question: "Timiva 會儲存我的資料嗎？",
+          answer:
+            "Timiva 主要在你的瀏覽器中運作。部分工具可能會使用本機儲存記住你上次輸入的內容，但不需要註冊或登入，也不會建立帳號資料庫。",
+        },
+        {
+          question: "為什麼 Timiva 不放很多工具在首頁？",
+          answer:
+            "Timiva 的理念是少工具，但每個都要簡單、清楚、舒服。首頁固定保留四個主要工具，是為了避免變成傳統工具大全，讓使用者可以更快找到真正需要的入口。",
+        },
+        {
+          question: "Timiva 是免費使用的嗎？",
+          answer: "是的，Timiva 目前可以免費使用，不需要註冊帳號。",
+        },
+      ],
+    },
     ctaPrimary: "建立倒數計時",
     ctaSecondary: "計算日期區間",
     toolsSectionLabel: "精選時間工具",

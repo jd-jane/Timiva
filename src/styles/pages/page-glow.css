@@ -1,0 +1,100 @@
+.page-glow-root .page-glow-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+.page-glow-blob {
+	position: absolute;
+	border-radius: 50%;
+	filter: blur(72px);
+	will-change: transform, opacity;
+}
+
+.page-glow-blob--one {
+	top: 4%;
+	left: 6%;
+	width: 48%;
+	height: 34%;
+	background: rgba(125, 211, 252, 0.18);
+	animation: page-glow-drift-a 34s ease-in-out infinite;
+}
+
+.page-glow-blob--two {
+	right: 4%;
+	bottom: 8%;
+	width: 42%;
+	height: 32%;
+	background: rgba(129, 140, 248, 0.15);
+	animation: page-glow-drift-b 38s ease-in-out infinite;
+}
+
+.page-glow-blob--three {
+	top: 40%;
+	left: 34%;
+	width: 32%;
+	height: 24%;
+	background: rgba(96, 165, 250, 0.12);
+	animation: page-glow-drift-c 28s ease-in-out infinite;
+}
+
+.page-glow-mist {
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(
+		circle at 50% 26%,
+		rgba(255, 255, 255, 0.06),
+		transparent 48%
+	);
+	opacity: 0.85;
+}
+
+@keyframes page-glow-drift-a {
+	0%,
+	100% {
+		transform: translate(0, 0);
+		opacity: 0.52;
+	}
+
+	50% {
+		transform: translate(2.5%, 1.5%);
+		opacity: 0.68;
+	}
+}
+
+@keyframes page-glow-drift-b {
+	0%,
+	100% {
+		transform: translate(0, 0);
+		opacity: 0.48;
+	}
+
+	50% {
+		transform: translate(-2%, -2.5%);
+		opacity: 0.64;
+	}
+}
+
+@keyframes page-glow-drift-c {
+	0%,
+	100% {
+		transform: translate(0, 0);
+		opacity: 0.38;
+	}
+
+	50% {
+		transform: translate(1.5%, -1%);
+		opacity: 0.52;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.page-glow-blob--one,
+	.page-glow-blob--two,
+	.page-glow-blob--three {
+		animation: none;
+		opacity: 0.55;
+	}
+}

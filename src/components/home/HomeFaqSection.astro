@@ -1,0 +1,61 @@
+---
+interface FaqItem {
+	question: string;
+	answer: string;
+}
+
+interface Props {
+	heading: string;
+	items: readonly FaqItem[];
+}
+
+const { heading, items } = Astro.props;
+---
+
+<section class="home-faq" aria-labelledby="home-faq-heading">
+	<h2 id="home-faq-heading" class="mb-4 text-lg font-semibold text-white">
+		{heading}
+	</h2>
+	<div class="border-t border-white/20">
+		{
+			items.map((item) => (
+				<details class="home-faq-item group border-b border-white/20 py-4">
+					<summary
+						class="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden"
+					>
+						<span>{item.question}</span>
+						<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 16 16"
+								fill="none"
+								class="h-4 w-4 group-open:hidden"
+								aria-hidden="true"
+							>
+								<path
+									d="M8 3.5v9M3.5 8h9"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"></path>
+							</svg>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								viewBox="0 0 16 16"
+								fill="none"
+								class="hidden h-4 w-4 group-open:block"
+								aria-hidden="true"
+							>
+								<path
+									d="M3.5 8h9"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"></path>
+							</svg>
+						</span>
+					</summary>
+					<p class="mt-3 text-sm leading-relaxed text-slate-300">{item.answer}</p>
+				</details>
+			))
+		}
+	</div>
+</section>
