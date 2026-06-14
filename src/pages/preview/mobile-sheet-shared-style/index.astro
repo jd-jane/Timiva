@@ -1,0 +1,20 @@
+---
+import "../../../styles/preview/tool-preview-first-screen.css";
+import "../../../styles/tools/timiva-tokens.css";
+import "../../../styles/tools/tool-result-v2-baseline.css";
+import "../../../styles/tools/tool-overlay-v2-baseline.css";
+import "../../../styles/tools/tool-mobile-sheet-v2-baseline.css";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import MobileSheetSharedStylePreview from "../../../components/preview/MobileSheetSharedStylePreview.astro";
+---
+
+<BaseLayout
+	title="Preview — Mobile Sheet Shared Style"
+	description="Preview-only sandbox for Timiva mobile sheet shared style baseline."
+	robots="noindex, nofollow"
+	headerVariant="inner"
+	locale="en"
+>
+	<MobileSheetSharedStylePreview />
+	<script src="/scripts/mobile-sheet-shared-style-preview.js" defer></script>
+</BaseLayout>

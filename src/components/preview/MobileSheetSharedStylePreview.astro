@@ -1,0 +1,160 @@
+---
+/**
+ * Preview-only sandbox for Timiva Mobile Sheet V2 baseline.
+ * Uses validated /preview/tool first-screen shell; tests sheet portal only.
+ */
+---
+
+<div data-preview-tool-page class="relative w-full text-slate-100">
+	<section
+		data-preview-main-tool
+		class="preview-tool-main-section px-6"
+		aria-label="Mobile sheet style preview stage"
+	>
+		<div class="preview-tool-first-screen">
+			<div class="preview-tool-stage mx-auto w-full max-w-md text-center">
+				<div class="preview-tool-result-group text-center">
+					<p class="preview-tool-landscape-hide text-sm text-slate-400">Sheet Preview</p>
+					<h1
+						class="preview-tool-landscape-compact-title mt-2 text-sm font-medium tracking-normal text-slate-300 md:text-base"
+					>
+						Mobile Sheet Preview
+					</h1>
+					<p class="preview-tool-landscape-hide mx-auto mt-3 max-w-sm text-xs leading-snug text-slate-400">
+						Preview-only sandbox. Tap the button below to open the shared sheet. Rotate your device to
+						compare portrait bottom sheet and landscape compact panel.
+					</p>
+				</div>
+
+				<div
+					class="preview-tool-controls flex flex-wrap justify-center gap-3 md:gap-4"
+					aria-label="Mobile sheet preview controls"
+				>
+					<button
+						type="button"
+						class="preview-tool-control-btn inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm md:min-h-11 md:px-5 md:py-2.5"
+						data-msb-open
+					>
+						Open custom time sheet
+					</button>
+				</div>
+			</div>
+		</div>
+	</section>
+</div>
+
+<!-- Portal host：overlay + sheet 掛到 body，避免 layout 祖先影響 fixed panel -->
+<div data-msb-portal data-mobile-sheet-baseline hidden aria-hidden="true">
+	<div
+		class="tool-operation-overlay"
+		data-msb-overlay
+		data-tool-operation-overlay
+		hidden
+		aria-hidden="true"
+	>
+	</div>
+
+	<div
+		class="msb-sheet"
+		data-msb-sheet
+		role="dialog"
+		aria-modal="true"
+		aria-label="Custom time"
+		aria-hidden="true"
+		inert
+	>
+		<div class="msb-sheet-handle" aria-hidden="true"></div>
+
+		<div class="msb-sheet-body">
+			<div class="msb-sheet-fields msb-sheet-fields--cols-3">
+				<label class="msb-field">
+					<span class="msb-input-shell">
+						<span class="msb-input-prefix">Hours</span>
+						<input
+							class="msb-input"
+							type="text"
+							inputmode="numeric"
+							pattern="[0-9]*"
+							autocomplete="off"
+							placeholder="00"
+							aria-label="Hours"
+						/>
+					</span>
+				</label>
+				<label class="msb-field">
+					<span class="msb-input-shell">
+						<span class="msb-input-prefix">Min</span>
+						<input
+							class="msb-input"
+							type="text"
+							inputmode="numeric"
+							pattern="[0-9]*"
+							autocomplete="off"
+							placeholder="00"
+							aria-label="Minutes"
+						/>
+					</span>
+				</label>
+				<label class="msb-field">
+					<span class="msb-input-shell">
+						<span class="msb-input-prefix">Sec</span>
+						<input
+							class="msb-input"
+							type="text"
+							inputmode="numeric"
+							pattern="[0-9]*"
+							autocomplete="off"
+							placeholder="00"
+							aria-label="Seconds"
+						/>
+					</span>
+				</label>
+			</div>
+
+			<div class="msb-sheet-fields msb-sheet-fields--demo-secondary">
+				<label class="msb-field">
+					<span class="msb-input-shell">
+						<span class="msb-input-prefix">Name</span>
+						<input
+							class="msb-input"
+							type="text"
+							autocomplete="off"
+							placeholder="Optional"
+							aria-label="Name"
+						/>
+					</span>
+				</label>
+			</div>
+
+			<div class="msb-sheet-fields msb-sheet-fields--landscape-duo msb-sheet-fields--demo-secondary">
+				<label class="msb-field">
+					<span class="msb-input-shell">
+						<span class="msb-input-prefix">Start</span>
+						<input class="msb-input" type="text" autocomplete="off" placeholder="Jun 13" aria-label="Start date" />
+					</span>
+				</label>
+				<label class="msb-field">
+					<span class="msb-input-shell">
+						<span class="msb-input-prefix">End</span>
+						<input class="msb-input" type="text" autocomplete="off" placeholder="Jun 20" aria-label="End date" />
+					</span>
+				</label>
+			</div>
+		</div>
+
+		<div class="msb-action-row">
+			<button type="button" class="msb-action-secondary" data-msb-cancel>Cancel</button>
+			<button type="button" class="msb-action-primary" data-msb-primary>Apply and start</button>
+		</div>
+	</div>
+</div>
+
+<script is:inline>
+	(function () {
+		const portal = document.querySelector("[data-msb-portal]");
+		if (!portal) return;
+		document.body.appendChild(portal);
+		portal.removeAttribute("hidden");
+		portal.setAttribute("aria-hidden", "false");
+	})();
+</script>

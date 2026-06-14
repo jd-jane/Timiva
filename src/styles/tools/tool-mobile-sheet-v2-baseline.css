@@ -1,0 +1,424 @@
+/**
+ * Tool Mobile Sheet V2 Baseline
+ * Shared mobile bottom sheet / landscape compact panel styles for V2 tool pages.
+ * Scoped under [data-mobile-sheet-baseline] (portal host).
+ */
+
+[data-mobile-sheet-baseline] {
+	--msb-sheet-bg-start: rgb(28 26 68 / 0.92);
+	--msb-sheet-bg-end: rgb(18 22 48 / 0.96);
+	--msb-sheet-border: rgb(255 255 255 / 0.1);
+	--msb-sheet-shadow: 0 -12px 40px rgb(0 0 0 / 0.35);
+	--msb-field-bg: rgb(255 255 255 / 0.05);
+	--msb-field-border: rgb(255 255 255 / 0.1);
+	--msb-field-border-focus: rgb(255 255 255 / 0.2);
+	--msb-label-color: rgb(255 255 255 / 0.58);
+	--msb-value-color: rgb(248 250 252);
+	--msb-secondary-action-color: rgb(203 213 225);
+	--msb-sheet-radius: 1.5rem;
+	box-sizing: border-box;
+}
+
+[data-msb-portal][data-mobile-sheet-baseline] {
+	width: auto;
+	min-height: 0;
+}
+
+/* Preview scroll lock — 不用 body position:fixed，避免 iOS input focus 跑版 */
+html.msb-scroll-lock {
+	overflow: hidden;
+	height: 100%;
+}
+
+body.msb-scroll-lock {
+	overflow: hidden;
+	width: 100%;
+	touch-action: none;
+}
+
+/* Portal overlay */
+[data-mobile-sheet-baseline] .tool-operation-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: var(--tool-operation-overlay-z, 50);
+	background-color: var(--tool-operation-overlay-bg, rgb(8 12 28 / 0.42));
+	opacity: 0;
+	pointer-events: none;
+	transition: var(--tool-operation-overlay-transition, opacity 240ms ease);
+}
+
+[data-mobile-sheet-baseline] .tool-operation-overlay.is-visible {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* Sheet / panel container */
+[data-mobile-sheet-baseline] .msb-sheet {
+	position: fixed;
+	inset-inline: 0;
+	inset-block-end: 0;
+	z-index: var(--tool-operation-panel-z, 60);
+	box-sizing: border-box;
+	display: flex;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	max-height: min(88dvh, 640px);
+	flex-direction: column;
+	overflow: hidden;
+	padding-inline: 1.5rem;
+	padding-block-end: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+	border-start-start-radius: var(--msb-sheet-radius);
+	border-start-end-radius: var(--msb-sheet-radius);
+	border: 1px solid var(--msb-sheet-border);
+	border-bottom: 0;
+	background: linear-gradient(180deg, var(--msb-sheet-bg-start), var(--msb-sheet-bg-end));
+	box-shadow: var(--msb-sheet-shadow);
+	transform: translate3d(0, 100%, 0);
+	visibility: hidden;
+	pointer-events: none;
+	transition:
+		transform 250ms ease,
+		visibility 0s linear 250ms;
+}
+
+[data-mobile-sheet-baseline] .msb-sheet.is-open {
+	transform: translate3d(0, 0, 0);
+	visibility: visible;
+	pointer-events: auto;
+	transition:
+		transform 250ms ease,
+		visibility 0s linear 0s;
+	-webkit-backdrop-filter: blur(8px);
+	backdrop-filter: blur(8px);
+}
+
+/* 鍵盤上推 sheet 時避免 transition 延遲 */
+[data-mobile-sheet-baseline].msb-keyboard-sync .msb-sheet.is-open {
+	transition: none;
+}
+
+[data-mobile-sheet-baseline] .msb-sheet-handle {
+	width: 2.5rem;
+	height: 0.25rem;
+	flex-shrink: 0;
+	margin-inline: auto;
+	margin-block-start: 0.75rem;
+	margin-block-end: 0.875rem;
+	border-radius: 999px;
+	background-color: rgb(255 255 255 / 0.2);
+}
+
+[data-mobile-sheet-baseline] .msb-sheet-core {
+	flex-shrink: 0;
+	min-width: 0;
+	width: 100%;
+}
+
+[data-mobile-sheet-baseline] .msb-sheet-body {
+	display: flex;
+	min-width: 0;
+	width: 100%;
+	flex: 0 1 auto;
+	flex-direction: column;
+	gap: 0.875rem;
+	overflow-x: hidden;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	-webkit-overflow-scrolling: touch;
+	padding-block-start: 0.125rem;
+	padding-block-end: 0.125rem;
+}
+
+[data-mobile-sheet-baseline] .msb-sheet-fields {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	min-width: 0;
+	width: 100%;
+}
+
+[data-mobile-sheet-baseline] .msb-sheet-fields--cols-2 {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.5rem;
+}
+
+[data-mobile-sheet-baseline] .msb-sheet-fields--cols-3 {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.5rem;
+}
+
+[data-mobile-sheet-baseline] .msb-field {
+	display: block;
+	min-width: 0;
+	width: 100%;
+}
+
+[data-mobile-sheet-baseline] .msb-input-shell {
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	width: 100%;
+	min-width: 0;
+	min-height: 2.75rem;
+	padding: 0.5rem 0.625rem;
+	border-radius: 0.75rem;
+	border: 1px solid var(--msb-field-border);
+	background-color: var(--msb-field-bg);
+	overflow: hidden;
+	cursor: text;
+}
+
+[data-mobile-sheet-baseline] .msb-input-shell:focus-within {
+	border-color: var(--msb-field-border-focus);
+}
+
+[data-mobile-sheet-baseline] .msb-input-prefix {
+	display: inline-flex;
+	flex: 0 0 auto;
+	align-items: center;
+	white-space: nowrap;
+	font-size: 0.75rem;
+	line-height: 1rem;
+	font-weight: 500;
+	color: var(--msb-label-color);
+}
+
+/* 16px — 避免 iOS Safari / Chrome focus 自動 zoom 造成跑版 */
+[data-mobile-sheet-baseline] .msb-input {
+	box-sizing: border-box;
+	flex: 1 1 0%;
+	width: auto;
+	min-width: 0;
+	max-width: 100%;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: var(--msb-value-color);
+	font: inherit;
+	font-size: 1rem;
+	line-height: 1.25rem;
+}
+
+[data-mobile-sheet-baseline] .msb-input:focus {
+	outline: none;
+}
+
+[data-mobile-sheet-baseline] .msb-input::placeholder {
+	color: rgb(148 163 184 / 0.72);
+}
+
+[data-mobile-sheet-baseline] .msb-sheet-core + .msb-sheet-body {
+	margin-block-start: 0.875rem;
+}
+
+[data-mobile-sheet-baseline] .msb-sheet-body + .msb-action-row {
+	margin-block-start: 0.875rem;
+}
+
+[data-mobile-sheet-baseline] .msb-action-row {
+	box-sizing: border-box;
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	width: 100%;
+	margin-top: 0;
+	padding-block-start: 0.25rem;
+}
+
+[data-mobile-sheet-baseline] .msb-action-secondary {
+	margin: 0;
+	padding: 0.25rem 0;
+	border: 0;
+	background: transparent;
+	font: inherit;
+	font-size: 0.75rem;
+	line-height: 1rem;
+	color: var(--msb-secondary-action-color);
+	cursor: pointer;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+[data-mobile-sheet-baseline] .msb-action-secondary:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.45);
+	outline-offset: 2px;
+	border-radius: 0.25rem;
+}
+
+[data-mobile-sheet-baseline] .msb-action-primary {
+	display: inline-flex;
+	min-height: 2.75rem;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	padding: 0.625rem 1rem;
+	border-radius: 9999px;
+	border: 1px solid rgb(255 255 255 / 0.1);
+	background: rgb(255 255 255 / 0.05);
+	color: rgb(226 232 240);
+	font: inherit;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	font-weight: 500;
+	backdrop-filter: blur(4px);
+	cursor: pointer;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+[data-mobile-sheet-baseline] .msb-action-primary:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.45);
+	outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	[data-mobile-sheet-baseline] .msb-action-secondary:hover {
+		color: rgb(226 232 240);
+	}
+
+	[data-mobile-sheet-baseline] .msb-action-secondary:active {
+		color: rgb(248 250 252);
+	}
+
+	[data-mobile-sheet-baseline] .msb-action-primary:hover {
+		background: rgb(255 255 255 / 0.1);
+		border-color: rgb(255 255 255 / 0.22);
+	}
+}
+
+/* Portrait bottom sheet density */
+@media (orientation: portrait), (max-width: 899px) {
+	[data-mobile-sheet-baseline] .msb-sheet.is-open {
+		max-height: min(72dvh, 28rem);
+		padding-block-end: calc(1.25rem + env(safe-area-inset-bottom, 0px) + 0.5rem);
+	}
+
+	[data-mobile-sheet-baseline] .msb-sheet-fields--landscape-duo {
+		display: none;
+	}
+}
+
+/* Landscape compact panel — handle + scrollable body + fixed action row */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+	[data-mobile-sheet-baseline] {
+		--msb-landscape-handle-block: 0.75rem;
+		--msb-landscape-input-row-height: 2.125rem;
+		--msb-landscape-action-row-height: 2rem;
+		--msb-landscape-panel-padding-block: 0.625rem;
+		--msb-landscape-panel-min-height: calc(
+			var(--msb-landscape-handle-block) + var(--msb-landscape-input-row-height) +
+				var(--msb-landscape-action-row-height) + var(--msb-landscape-panel-padding-block) +
+				env(safe-area-inset-bottom, 0px)
+		);
+		--msb-landscape-panel-max-height: min(52dvh, 14rem);
+	}
+
+	[data-mobile-sheet-baseline] .msb-sheet.is-open {
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		height: min(52dvh, 14rem);
+		min-height: var(--msb-landscape-panel-min-height);
+		max-height: min(52dvh, 14rem);
+		overflow: hidden;
+		padding-inline: 1rem;
+		padding-block-start: 0.125rem;
+		padding-block-end: calc(0.375rem + env(safe-area-inset-bottom, 0px));
+		touch-action: pan-y;
+	}
+
+	[data-mobile-sheet-baseline] .msb-sheet-core {
+		display: none;
+	}
+
+	[data-mobile-sheet-baseline] .msb-sheet-handle {
+		width: 2rem;
+		height: 0.1875rem;
+		flex-shrink: 0;
+		margin-block-start: 0.0625rem;
+		margin-block-end: 0.125rem;
+	}
+
+	[data-mobile-sheet-baseline] .msb-sheet-body + .msb-action-row {
+		flex-shrink: 0;
+		margin-block-start: 0.125rem;
+	}
+
+	[data-mobile-sheet-baseline] .msb-sheet-body {
+		display: flex;
+		flex: 1 1 0%;
+		min-height: var(--msb-landscape-input-row-height);
+		width: 100%;
+		flex-direction: column;
+		gap: 0.25rem;
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		-webkit-overflow-scrolling: touch;
+		touch-action: pan-y;
+		padding-block: 0;
+	}
+
+	[data-mobile-sheet-baseline] .msb-sheet-fields {
+		flex-shrink: 0;
+		gap: 0.25rem;
+	}
+
+	[data-mobile-sheet-baseline] .msb-sheet-fields--cols-3 {
+		gap: 0.25rem;
+	}
+
+	[data-mobile-sheet-baseline] .msb-sheet-fields--landscape-duo {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 0.25rem;
+	}
+
+	[data-mobile-sheet-baseline] .msb-input-shell {
+		min-height: var(--msb-landscape-input-row-height);
+		padding: 0.25rem 0.4375rem;
+	}
+
+	[data-mobile-sheet-baseline] .msb-input-prefix {
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	[data-mobile-sheet-baseline] .msb-input {
+		font-size: 1rem;
+		line-height: 1.25rem;
+	}
+
+	[data-mobile-sheet-baseline] .msb-action-row {
+		flex-shrink: 0;
+		margin-block-start: 0;
+		padding-block-start: 0;
+		padding-block-end: 0;
+		gap: 0.5rem;
+	}
+
+	[data-mobile-sheet-baseline] .msb-action-secondary {
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	[data-mobile-sheet-baseline] .msb-action-primary {
+		min-height: var(--msb-landscape-action-row-height);
+		padding: 0.25rem 0.625rem;
+		font-size: 0.875rem;
+		line-height: 1.125rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[data-mobile-sheet-baseline] .msb-sheet,
+	[data-mobile-sheet-baseline] .tool-operation-overlay {
+		transition: none;
+	}
+}
