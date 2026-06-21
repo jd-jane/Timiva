@@ -6,6 +6,8 @@
  * Mobile portrait / landscape: title → result unchanged (per-tool mt-* preserved)
  */
 
+@import "./tool-drawer-v2-baseline.css";
+
 :root {
 	--tool-result-stack-gap-desktop: 8px;
 	--tool-main-ad-top-spacing: 48px;

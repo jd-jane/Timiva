@@ -155,16 +155,6 @@ body:has([data-event-countdown-v2][data-ecv2-theme="midnight"]) {
 	z-index: 25;
 }
 
-/* Drawer ToolCard — no translateY hover; Tailwind v4 uses `translate`, not transform */
-@media (hover: hover) and (pointer: fine) {
-	[data-event-countdown-v2] [data-preview-drawer] a:hover {
-		transform: none;
-		translate: none;
-		border-color: rgb(255 255 255 / 0.16);
-		background-color: rgb(255 255 255 / 0.07);
-	}
-}
-
 /*
  * V2 page background shell
  * Theme gradient uses fixed attachment on root/html/body for scroll continuity.

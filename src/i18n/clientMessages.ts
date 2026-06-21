@@ -30,3 +30,24 @@ export function getEventCountdownClientI18n(locale: Locale) {
     templateTitles: m.templateTitles,
   };
 }
+
+export function getCountdownTimerClientI18n(locale: Locale) {
+  const m = getMessages(locale).countdownTimer;
+
+  return {
+    locale,
+    kicker: m.kicker,
+    cancel: m.cancel,
+    start: m.start,
+    pause: m.pause,
+    resume: m.resume,
+    done: m.done,
+    timesUp: m.timesUp,
+    last: m.last,
+    soundOff: m.soundOff,
+    soundOn: m.soundOn,
+    quickStartLabels: m.quickStartLabels,
+    quickStartSeconds: [30, 60, 300, 600, 1500, 3600],
+    intlLocale: locale === "zh" ? "zh-TW" : "en-US",
+  };
+}

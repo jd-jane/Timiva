@@ -15,6 +15,11 @@ export const en = {
       description:
         "Calculate the number of days between two dates with a simple, mobile-friendly date range tool.",
     },
+    countdownTimer: {
+      title: "Countdown Timer — Timiva",
+      description:
+        "Set a simple countdown timer for any duration. Mobile-friendly, calm, and easy to use.",
+    },
     privacy: {
       title: "Privacy Policy — Timiva",
       description: "How Timiva handles your data and privacy.",
@@ -289,6 +294,93 @@ export const en = {
           question: "Can I use this for travel, projects, or deadlines?",
           answer:
             "Absolutely. Use it for trip length, project timelines, countdowns, or any date span you need to measure quickly.",
+        },
+      ],
+    },
+  },
+  countdownTimer: {
+    kicker: "Countdown Timer",
+    cancel: "Cancel",
+    start: "Start",
+    pause: "Pause",
+    resume: "Resume",
+    done: "Done",
+    timesUp: "Time's up",
+    last: "Last",
+    setTimerDuration: "Set timer duration",
+    setTimerMinutes: "Set timer minutes",
+    customSheetAriaLabel: "Custom time",
+    hoursLabel: "Hours",
+    minutesLabel: "Minutes",
+    secondsLabel: "Seconds",
+    applyAndStart: "Apply and start",
+    maximumDuration: "Maximum duration is 9:59:59",
+    zeroDuration: "Set a duration greater than 0",
+    controlsAriaLabel: "Timer controls",
+    soundOff: "Sound off",
+    soundOn: "Sound on",
+    quickStartAriaLabel: "Quick start options",
+    quickStartLabels: ["30s", "1m", "5m", "10m", "25m", "1h"],
+    relatedToolsDrawerAriaLabel: "Related tools drawer",
+    toggleRelatedToolsDrawerAriaLabel: "Toggle related tools drawer",
+    about: {
+      heading: "About Countdown Timer",
+      body: "Countdown Timer helps you start a simple timer for short focus sessions, breaks, cooking, workouts, or any moment where you need time to count down clearly.",
+    },
+    howTo: {
+      heading: "How to use Countdown Timer",
+      steps: [
+        "Choose a quick duration or set a custom time.",
+        "Start the countdown.",
+        "Pause, resume, or cancel when needed.",
+        "When time is up, press Done to return to the initial state.",
+      ],
+    },
+    commonUses: {
+      heading: "Common countdown timer uses",
+      items: [
+        "Focus timer",
+        "Break timer",
+        "Cooking timer",
+        "Workout timer",
+        "Meeting timer",
+        "Study timer",
+        "Power nap timer",
+        "Screen time timer",
+      ],
+    },
+    faq: {
+      heading: "Countdown Timer FAQ",
+      items: [
+        {
+          question: "What is Countdown Timer for?",
+          answer:
+            "Countdown Timer is for short timed sessions—focus blocks, breaks, cooking, workouts, or any task where you want a clear remaining-time countdown.",
+        },
+        {
+          question: "Can I use it for focus or breaks?",
+          answer:
+            "Yes. It is designed for simple short timers such as a focus session or a short break, without turning into a Pomodoro or stopwatch app.",
+        },
+        {
+          question: "What is the difference between Countdown Timer and Event Countdown?",
+          answer:
+            "Countdown Timer counts down a duration you choose, such as 15 minutes. Event Countdown counts down to a specific calendar date or event, such as a birthday or trip.",
+        },
+        {
+          question: "Will the timer keep running if I leave the page?",
+          answer:
+            "If you switch away and return while the page stays open, remaining time is recalculated from the timer end time. Refreshing the page does not resume an active countdown.",
+        },
+        {
+          question: "Does Countdown Timer save my last duration?",
+          answer:
+            "Yes. After you actually start a countdown, that duration can appear as Last in Quick Start on your next visit. It is saved locally on your device.",
+        },
+        {
+          question: "Does it play a sound when time is up?",
+          answer:
+            "Alert sound is off by default. You can turn sound on during a countdown, and Time's up will follow your current sound setting.",
         },
       ],
     },

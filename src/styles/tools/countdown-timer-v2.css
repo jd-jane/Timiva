@@ -1,0 +1,1507 @@
+/* Countdown Timer V2 — layout shell + B1B static first-screen visuals */
+
+[data-countdown-timer-v2] {
+	position: relative;
+	background: transparent;
+	--ctv2-ring-size: min(92vw, 23rem, calc(100dvh - 17.5rem));
+	--ctv2-ring-stroke: 1;
+	--ctv2-tick-short: rgb(129 140 248 / 0.28);
+	--ctv2-tick-mid: rgb(129 140 248 / 0.38);
+	--ctv2-tick-long: rgb(129 140 248 / 0.44);
+	--ctv2-tick-main: rgb(165 180 252 / 0.62);
+	--ctv2-tick-origin: rgb(165 180 252 / 0.62);
+	--ctv2-tick-quarter: rgb(129 140 248 / 0.5);
+	--ctv2-tick-five: rgb(129 140 248 / 0.4);
+	--ctv2-tick-minute: rgb(129 140 248 / 0.26);
+	--ctv2-tick-length-short: 5;
+	--ctv2-tick-length-medium: 8;
+	--ctv2-tick-length-major: 11;
+	--ctv2-tick-length-main: 14;
+	--ctv2-tick-active-stroke: rgb(129 140 248 / 0.58);
+	--ctv2-tick-pressed-stroke: rgb(165 180 252 / 0.72);
+	--ctv2-progress-base: rgb(129 140 248 / 0.16);
+	--ctv2-progress-accent: 56 189 248;
+	--ctv2-progress-ring-stroke: rgb(var(--ctv2-progress-accent) / 0.54);
+	--ctv2-progress-button-bg: rgb(var(--ctv2-progress-accent) / 0.46);
+	--ctv2-progress-button-bg-hover: rgb(var(--ctv2-progress-accent) / 0.56);
+	--ctv2-progress-active: var(--ctv2-progress-ring-stroke);
+	--ctv2-progress-base-stroke: 1;
+	--ctv2-progress-active-stroke: 2.5;
+	--ctv2-primary-fill: var(--timiva-accent);
+	--ctv2-secondary-fill: rgb(100 116 139 / 0.52);
+	--ctv2-pause-fill: var(--ctv2-progress-button-bg);
+	--ctv2-pause-fill-hover: var(--ctv2-progress-button-bg-hover);
+	--ctv2-quick-start-gap: 0.625rem;
+	--ctv2-quick-start-ring-gap: clamp(0.75rem, 3dvh, 2.25rem);
+}
+
+body:has([data-countdown-timer-v2]) footer {
+	z-index: 2;
+}
+
+body:has([data-countdown-timer-v2]) header {
+	position: relative;
+	z-index: 30;
+}
+
+[data-countdown-timer-v2] .preview-tool-drawer-frosted {
+	background-color: rgb(5 8 31 / 0.6);
+	-webkit-backdrop-filter: blur(4px) saturate(150%);
+	backdrop-filter: blur(4px) saturate(150%);
+}
+
+[data-countdown-timer-v2] .preview-tool-main-section {
+	--preview-header-height: 3.75rem;
+	position: relative;
+	z-index: 10;
+	margin-top: calc(-1 * var(--preview-header-height));
+	min-height: 100dvh;
+}
+
+[data-countdown-timer-v2] .preview-tool-first-screen {
+	box-sizing: border-box;
+	display: grid;
+	min-height: 100dvh;
+	place-items: center;
+	width: 100%;
+}
+
+[data-countdown-timer-v2] .ctv2-stage {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+[data-countdown-timer-v2] .ctv2-stage-center {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	text-align: center;
+}
+
+[data-countdown-timer-v2] .ct-v2-tool-name {
+	margin-top: 0;
+}
+
+/* Ring — static tick ring (future progress ring hooks on same SVG) */
+[data-countdown-timer-v2] .ctv2-ring-block {
+	margin-top: 1.5rem;
+}
+
+[data-countdown-timer-v2] .ctv2-ring-shell {
+	position: relative;
+	width: var(--ctv2-ring-size);
+	height: var(--ctv2-ring-size);
+	margin-inline: auto;
+}
+
+[data-countdown-timer-v2] .ctv2-ring-svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+[data-countdown-timer-v2] .ctv2-tick-ring {
+	transform-origin: center;
+}
+
+[data-countdown-timer-v2] .ctv2-tick {
+	stroke-linecap: round;
+	vector-effect: non-scaling-stroke;
+}
+
+[data-countdown-timer-v2] .ctv2-tick--short {
+	stroke: var(--ctv2-tick-short);
+	stroke-width: 1;
+}
+
+[data-countdown-timer-v2] .ctv2-tick--mid {
+	stroke: var(--ctv2-tick-mid);
+	stroke-width: 1;
+}
+
+[data-countdown-timer-v2] .ctv2-tick--long {
+	stroke: var(--ctv2-tick-long);
+	stroke-width: 1;
+}
+
+[data-countdown-timer-v2] .ctv2-tick--main {
+	stroke: var(--ctv2-tick-main);
+	stroke-width: 1.15;
+}
+
+[data-countdown-timer-v2] .ctv2-tick-ring {
+	transform-origin: center;
+	transition: opacity 180ms ease;
+}
+
+[data-countdown-timer-v2] .ctv2-tick-ring--portrait {
+	display: none;
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-portrait"] .ctv2-tick-ring--desktop {
+	display: none;
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-portrait"] .ctv2-tick-ring--portrait {
+	display: block;
+}
+
+[data-countdown-timer-v2] .ctv2-tick-ring--portrait .ctv2-tick {
+	transition:
+		stroke 120ms ease,
+		stroke-width 120ms ease;
+}
+
+[data-countdown-timer-v2] .ctv2-tick-ring--portrait .ctv2-tick--minute {
+	stroke: var(--ctv2-tick-minute);
+	stroke-width: 1;
+}
+
+[data-countdown-timer-v2] .ctv2-tick-ring--portrait .ctv2-tick--five {
+	stroke: var(--ctv2-tick-five);
+	stroke-width: 1;
+}
+
+[data-countdown-timer-v2] .ctv2-tick-ring--portrait .ctv2-tick--quarter {
+	stroke: var(--ctv2-tick-quarter);
+	stroke-width: 1.05;
+}
+
+[data-countdown-timer-v2] .ctv2-tick-ring--portrait .ctv2-tick--origin {
+	stroke: var(--ctv2-tick-origin);
+	stroke-width: 1.2;
+}
+
+[data-countdown-timer-v2][data-ctv2-ring-has-selection="true"]:not([data-ctv2-ring-active-minute="60"])
+	.ctv2-tick-ring--portrait
+	.ctv2-tick--origin:not(.ctv2-tick--active):not(.ctv2-tick--pressed) {
+	stroke: var(--ctv2-tick-quarter);
+	stroke-width: 1.05;
+}
+
+[data-countdown-timer-v2] .ctv2-tick-ring--portrait .ctv2-tick--active {
+	stroke: var(--ctv2-tick-active-stroke);
+	stroke-width: 1.25;
+}
+
+[data-countdown-timer-v2] .ctv2-tick-ring--portrait .ctv2-tick--pressed {
+	stroke: var(--ctv2-tick-pressed-stroke);
+	stroke-width: 1.4;
+}
+
+[data-countdown-timer-v2] .ctv2-tick-ring--portrait .ctv2-tick--active.ctv2-tick--pressed {
+	stroke: var(--ctv2-tick-pressed-stroke);
+	stroke-width: 1.4;
+}
+
+[data-countdown-timer-v2][data-ctv2-ring-mode="progress"] .ctv2-tick-ring {
+	opacity: 0;
+}
+
+[data-countdown-timer-v2][data-ctv2-ring-mode="complete"] .ctv2-tick-ring {
+	opacity: 0;
+}
+
+[data-countdown-timer-v2] .ctv2-progress-rings {
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+[data-countdown-timer-v2][data-ctv2-ring-mode="progress"] .ctv2-progress-rings {
+	opacity: 1;
+	visibility: visible;
+}
+
+[data-countdown-timer-v2][data-ctv2-ring-mode="complete"] .ctv2-progress-rings {
+	opacity: 1;
+	visibility: visible;
+}
+
+[data-countdown-timer-v2][data-ctv2-ring-mode="complete"] .ctv2-progress-active-ring {
+	opacity: 0;
+	visibility: hidden;
+}
+
+[data-countdown-timer-v2] .ctv2-progress-base-ring,
+[data-countdown-timer-v2] .ctv2-progress-active-ring {
+	fill: none;
+}
+
+[data-countdown-timer-v2] .ctv2-progress-base-ring {
+	stroke: var(--ctv2-progress-base);
+	stroke-width: var(--ctv2-progress-base-stroke);
+}
+
+[data-countdown-timer-v2] .ctv2-progress-active-ring {
+	stroke: var(--ctv2-progress-active);
+	stroke-width: var(--ctv2-progress-active-stroke);
+	stroke-linecap: round;
+}
+
+[data-countdown-timer-v2] .ctv2-ring-hit-btn {
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	pointer-events: none;
+	cursor: default;
+}
+
+[data-countdown-timer-v2] .ctv2-ring-hit-btn:disabled {
+	cursor: default;
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-portrait"][data-ctv2-ring-mode="ready"]:not(
+		[data-ctv2-sheet-open="true"]
+	):not([data-ctv2-edit-mode="editing"])
+	.ctv2-ring-hit-btn:not(:disabled) {
+	touch-action: none;
+}
+
+[data-countdown-timer-v2] .ctv2-ring-hit-svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+[data-countdown-timer-v2] .ctv2-ring-hit-area-circle {
+	fill: none;
+	stroke: transparent;
+	pointer-events: none;
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-portrait"][data-ctv2-ring-mode="ready"]:not(
+		[data-ctv2-sheet-open="true"]
+	):not([data-ctv2-edit-mode="editing"])
+	.ctv2-ring-hit-area-circle {
+	pointer-events: stroke;
+}
+
+[data-countdown-timer-v2] .ctv2-ring-center {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	padding-inline: 1rem;
+}
+
+[data-countdown-timer-v2] .ctv2-ring-core {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+[data-countdown-timer-v2] .ctv2-sound-toggle {
+	position: absolute;
+	top: 19%;
+	left: 50%;
+	z-index: 1;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 1.75rem;
+	padding: 0;
+	border: 0;
+	border-radius: 9999px;
+	background: transparent;
+	cursor: pointer;
+	transform: translateX(-50%);
+	transition: color 160ms ease;
+}
+
+[data-countdown-timer-v2] .ctv2-sound-toggle:hover {
+	color: rgb(226 232 240 / 0.92);
+}
+
+[data-countdown-timer-v2] .ctv2-sound-toggle:focus {
+	outline: none;
+}
+
+[data-countdown-timer-v2] .ctv2-sound-toggle:focus-visible .ctv2-sound-toggle-row {
+	color: rgb(226 232 240 / 0.94);
+	box-shadow: 0 0 0 2px rgb(148 163 184 / 0.28);
+	border-radius: 9999px;
+}
+
+[data-countdown-timer-v2] .ctv2-sound-toggle-row {
+	display: inline-flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 0.375rem;
+	color: rgb(203 213 225 / 0.76);
+}
+
+[data-countdown-timer-v2] .ctv2-sound-icon-wrap {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.03125rem;
+	opacity: 0.62;
+}
+
+[data-countdown-timer-v2] .ctv2-sound-icon {
+	display: block;
+	flex-shrink: 0;
+}
+
+[data-countdown-timer-v2] .ctv2-sound-icon--speaker {
+	width: 0.625rem;
+	height: 0.9375rem;
+}
+
+[data-countdown-timer-v2] .ctv2-sound-icon--mute {
+	width: 0.6875rem;
+	height: 0.6875rem;
+}
+
+[data-countdown-timer-v2][data-ctv2-sound="on"] .ctv2-sound-icon--mute {
+	display: none;
+}
+
+[data-countdown-timer-v2] .ctv2-sound-label {
+	font-size: 0.75rem;
+	line-height: 1.125rem;
+	font-weight: 500;
+}
+
+[data-countdown-timer-v2] .ctv2-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+[data-countdown-timer-v2] .ctv2-time-stack {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+[data-countdown-timer-v2] .ctv2-time-shell {
+	position: relative;
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+[data-countdown-timer-v2] .ctv2-time-completion-status {
+	display: none;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: clamp(2rem, 10vw, 3.25rem);
+	line-height: 1;
+	font-weight: 400;
+	letter-spacing: -0.02em;
+	color: rgb(248 250 252 / 0.94);
+	text-align: center;
+	white-space: nowrap;
+}
+
+[data-countdown-timer-v2][data-ctv2-completion="visible"] .ctv2-time-grid {
+	visibility: hidden;
+	pointer-events: none;
+}
+
+[data-countdown-timer-v2][data-ctv2-completion="visible"] .ctv2-time-completion-status {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+}
+
+[data-countdown-timer-v2][data-ctv2-completion-pulse="active"] .ctv2-time-completion-status {
+	animation: ctv2-completion-pulse 4s ease-in-out 1 forwards;
+}
+
+
+[data-countdown-timer-v2] .ctv2-time-edit-trigger {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0.5rem;
+	background: transparent;
+	cursor: default;
+	pointer-events: none;
+}
+
+[data-countdown-timer-v2] .ctv2-time-edit-trigger:focus {
+	outline: none;
+}
+
+[data-countdown-timer-v2] .ctv2-keyboard-capture:focus {
+	outline: none;
+}
+
+@media (min-width: 768px) {
+	[data-countdown-timer-v2][data-ctv2-ring-mode="ready"] .ctv2-time-edit-trigger {
+		cursor: pointer;
+		pointer-events: auto;
+	}
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-portrait"][data-ctv2-ring-mode="ready"] .ctv2-time-edit-trigger,
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"][data-ctv2-ring-mode="ready"] .ctv2-time-edit-trigger {
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+[data-countdown-timer-v2][data-ctv2-raw-input="active"] .ctv2-time-underline--segment,
+[data-countdown-timer-v2][data-ctv2-raw-input="active"] .ctv2-time-underline-spacer {
+	display: none;
+}
+
+[data-countdown-timer-v2][data-ctv2-raw-input="active"] .ctv2-time-grid {
+	row-gap: 0;
+	padding-bottom: 0.5rem;
+	border-bottom: 1px solid rgb(255 255 255 / 0.34);
+}
+
+[data-countdown-timer-v2][data-ctv2-raw-input="active"] [data-ctv2-time-seconds].ctv2-time-raw-edit::after {
+	content: "";
+	display: inline-block;
+	width: 1px;
+	height: 0.72em;
+	margin-left: 0.05em;
+	vertical-align: baseline;
+	background-color: rgb(255 255 255 / 0.32);
+	animation: ctv2-edit-caret 1.15s step-end infinite;
+}
+
+@keyframes ctv2-edit-caret {
+	0%,
+	100% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0;
+	}
+}
+
+[data-countdown-timer-v2][data-ctv2-ring-mode="ready"][data-ctv2-edit-mode="editing"]:not([data-ctv2-raw-input="active"])
+	.ctv2-time-underline--segment {
+	animation: none;
+	background-color: rgb(255 255 255 / 0.34);
+	box-shadow: 0 0 8px rgb(255 255 255 / 0.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[data-countdown-timer-v2][data-ctv2-raw-input="active"] [data-ctv2-time-seconds].ctv2-time-raw-edit::after {
+		animation: none;
+		opacity: 0.7;
+	}
+}
+
+@media (min-width: 768px) {
+	[data-countdown-timer-v2] .ctv2-time-edit-validation {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		right: 0;
+		min-height: 1.125rem;
+		margin: 0;
+		padding-top: 0.625rem;
+		font-size: 0.75rem;
+		line-height: 1.125rem;
+		font-weight: 500;
+		color: rgb(203 213 225 / 0.76);
+		text-align: center;
+		visibility: hidden;
+	}
+
+	[data-countdown-timer-v2][data-ctv2-edit-validation="max"] .ctv2-time-edit-validation,
+	[data-countdown-timer-v2][data-ctv2-edit-validation="zero"] .ctv2-time-edit-validation {
+		visibility: visible;
+	}
+}
+
+@keyframes ctv2-completion-pulse {
+	0%,
+	100% {
+		opacity: 0.72;
+	}
+
+	50% {
+		opacity: 1;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[data-countdown-timer-v2][data-ctv2-completion-pulse="active"] .ctv2-time-completion-status {
+		animation: none;
+		opacity: 0.88;
+	}
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid {
+	display: inline-grid;
+	grid-template-columns: auto auto auto;
+	grid-template-rows: auto auto;
+	justify-items: center;
+	align-items: end;
+	row-gap: 0.5rem;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] {
+	grid-template-columns: auto auto auto auto auto;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="short"] .ctv2-time-hours,
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="short"] .ctv2-time-colon--lead,
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="short"] [data-ctv2-underline-hours],
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="short"] .ctv2-time-underline-spacer--lead {
+	display: none;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="short"] [data-ctv2-time-minutes] {
+	grid-column: 1;
+	grid-row: 1;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="short"] .ctv2-time-colon--mid {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="short"] [data-ctv2-time-seconds] {
+	grid-column: 3;
+	grid-row: 1;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="short"] [data-ctv2-underline-minutes],
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="short"] [data-ctv2-underline-seconds],
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] [data-ctv2-underline-minutes],
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] [data-ctv2-underline-seconds] {
+	width: 100%;
+	min-width: 2.5ch;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="short"] [data-ctv2-underline-minutes] {
+	grid-column: 1;
+	grid-row: 2;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="short"] .ctv2-time-underline-spacer--mid {
+	grid-column: 2;
+	grid-row: 2;
+	width: 0.55em;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="short"] [data-ctv2-underline-seconds] {
+	grid-column: 3;
+	grid-row: 2;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] [data-ctv2-time-hours] {
+	grid-column: 1;
+	grid-row: 1;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] .ctv2-time-colon--lead {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] [data-ctv2-time-minutes] {
+	grid-column: 3;
+	grid-row: 1;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] .ctv2-time-colon--mid {
+	grid-column: 4;
+	grid-row: 1;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] [data-ctv2-time-seconds] {
+	grid-column: 5;
+	grid-row: 1;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] [data-ctv2-underline-hours] {
+	grid-column: 1;
+	grid-row: 2;
+	width: 100%;
+	min-width: 1ch;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] .ctv2-time-underline-spacer--lead {
+	grid-column: 2;
+	grid-row: 2;
+	width: 0.55em;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] [data-ctv2-underline-minutes] {
+	grid-column: 3;
+	grid-row: 2;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] .ctv2-time-underline-spacer--mid {
+	grid-column: 4;
+	grid-row: 2;
+	width: 0.55em;
+}
+
+[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] [data-ctv2-underline-seconds] {
+	grid-column: 5;
+	grid-row: 2;
+}
+
+[data-countdown-timer-v2] .ctv2-time-hours {
+	display: inline-block;
+	min-width: 1ch;
+	text-align: center;
+}
+
+[data-countdown-timer-v2] .ctv2-time-segment {
+	display: inline-block;
+	min-width: 2.5ch;
+	text-align: center;
+}
+
+[data-countdown-timer-v2] .ctv2-time-display {
+	font-size: clamp(3.3rem, 16.8vw, 4.5rem);
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: -0.02em;
+	font-variant-numeric: tabular-nums;
+	color: rgb(248 250 252);
+}
+
+[data-countdown-timer-v2] .ctv2-time-colon {
+	padding-inline: 0.04em;
+}
+
+[data-countdown-timer-v2] .ctv2-time-underline--segment {
+	display: block;
+	height: 1px;
+	border-radius: 999px;
+	background-color: rgb(255 255 255 / 0.22);
+	transition: opacity 180ms ease;
+}
+
+[data-countdown-timer-v2][data-ctv2-ring-mode="ready"] .ctv2-time-underline--segment {
+	animation: ctv2-underline-hint 2.2s ease-in-out infinite;
+}
+
+[data-countdown-timer-v2][data-ctv2-ring-mode="progress"] .ctv2-time-underline--segment {
+	opacity: 0;
+	animation: none;
+}
+
+[data-countdown-timer-v2][data-ctv2-ring-mode="complete"] .ctv2-time-underline--segment {
+	opacity: 0;
+	animation: none;
+}
+
+@keyframes ctv2-underline-hint {
+	0%,
+	100% {
+		background-color: rgb(255 255 255 / 0.18);
+		box-shadow: 0 0 0 rgb(255 255 255 / 0);
+	}
+
+	50% {
+		background-color: rgb(255 255 255 / 0.3);
+		box-shadow: 0 0 6px rgb(255 255 255 / 0.04);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[data-countdown-timer-v2][data-ctv2-ring-mode="ready"] .ctv2-time-underline--segment {
+		animation: none;
+	}
+}
+
+/* Quick Start — static chips */
+[data-countdown-timer-v2] .ctv2-quick-start {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.625rem;
+	width: 100%;
+	margin-top: var(--ctv2-quick-start-ring-gap);
+}
+
+[data-countdown-timer-v2][data-ctv2-quick-start="hidden"] .ctv2-quick-start-row {
+	visibility: hidden;
+	pointer-events: none;
+}
+
+[data-countdown-timer-v2][data-ctv2-quick-start="hidden"] .ctv2-quick-start-btn {
+	pointer-events: none;
+}
+
+[data-countdown-timer-v2] .ctv2-quick-start-row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: var(--ctv2-quick-start-gap);
+}
+
+[data-countdown-timer-v2] .ctv2-quick-start-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	min-width: 4rem;
+	width: auto;
+	min-height: 2.5rem;
+	padding: 0.5rem 1.125rem;
+	border-radius: 9999px;
+	border: 1px solid rgb(255 255 255 / 0.14);
+	background: rgb(255 255 255 / 0.08);
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05);
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	font-weight: 500;
+	color: rgb(226 232 240 / 0.94);
+	white-space: nowrap;
+	cursor: pointer;
+	transition:
+		background-color 160ms ease,
+		border-color 160ms ease,
+		box-shadow 160ms ease,
+		color 160ms ease;
+}
+
+[data-countdown-timer-v2] .ctv2-quick-start-btn:not(:disabled):hover {
+	transform: none;
+	background: rgb(255 255 255 / 0.12);
+	border-color: rgb(255 255 255 / 0.22);
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+	color: rgb(248 250 252 / 0.98);
+}
+
+[data-countdown-timer-v2] .ctv2-quick-start-btn:disabled {
+	opacity: 0.42;
+	cursor: not-allowed;
+}
+
+/* Main controls — Countdown Timer filled capsule styles */
+[data-countdown-timer-v2] .ctv2-main-controls {
+	margin-top: 2rem;
+}
+
+[data-countdown-timer-v2] .ctv2-btn-cancel {
+	border: 0;
+	background: var(--ctv2-secondary-fill);
+	color: rgb(248 250 252 / 0.9);
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+
+[data-countdown-timer-v2] .ctv2-btn-start,
+[data-countdown-timer-v2] .ctv2-btn-resume,
+[data-countdown-timer-v2] .ctv2-btn-done {
+	border: 0;
+	background: var(--ctv2-primary-fill);
+	color: rgb(255 255 255 / 0.98);
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
+}
+
+[data-countdown-timer-v2] .ctv2-btn-pause {
+	border: 0;
+	background: var(--ctv2-pause-fill);
+	color: rgb(248 250 252 / 0.94);
+	box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+
+[data-countdown-timer-v2] .ct-v2-control-btn {
+	transition:
+		transform 160ms ease,
+		background-color 160ms ease,
+		box-shadow 160ms ease,
+		filter 160ms ease,
+		opacity 160ms ease;
+}
+
+[data-countdown-timer-v2] .ct-v2-control-btn:not(:disabled) {
+	cursor: pointer;
+}
+
+[data-countdown-timer-v2] .ct-v2-control-btn:focus {
+	outline: none;
+}
+
+[data-countdown-timer-v2] .ct-v2-control-btn:focus-visible {
+	outline: 2px solid rgb(148 163 184 / 0.42);
+	outline-offset: 2px;
+}
+
+[data-countdown-timer-v2] .ct-v2-control-btn:not(:disabled):hover {
+	transform: translateY(-1px);
+	filter: brightness(1.05);
+}
+
+[data-countdown-timer-v2] .ctv2-btn-cancel:not(:disabled):hover {
+	background: rgb(100 116 139 / 0.62);
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.1),
+		0 0 0 1px rgb(255 255 255 / 0.06);
+}
+
+[data-countdown-timer-v2] .ctv2-btn-start:not(:disabled):hover,
+[data-countdown-timer-v2] .ctv2-btn-resume:not(:disabled):hover,
+[data-countdown-timer-v2] .ctv2-btn-done:not(:disabled):hover {
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.16),
+		0 0 0 1px rgb(255 255 255 / 0.08);
+}
+
+[data-countdown-timer-v2] .ctv2-btn-pause:not(:disabled):hover {
+	background: var(--ctv2-pause-fill-hover);
+	box-shadow:
+		inset 0 1px 0 rgb(255 255 255 / 0.11),
+		0 0 0 1px rgb(var(--ctv2-progress-accent) / 0.14);
+}
+
+[data-countdown-timer-v2] .ct-v2-control-btn:disabled,
+[data-countdown-timer-v2] .ctv2-quick-start-btn:disabled {
+	cursor: not-allowed;
+}
+
+[data-countdown-timer-v2] .ct-v2-control-btn:disabled,
+[data-countdown-timer-v2] .ct-v2-control-btn:disabled:hover {
+	transform: none;
+	filter: none;
+	opacity: 0.42;
+}
+
+[data-countdown-timer-v2] .tool-lower-content {
+	margin-top: var(--tool-stage-to-lower-content-spacing, 48px);
+}
+
+@media (min-width: 768px) {
+	[data-countdown-timer-v2] {
+		--ctv2-ring-size: 30rem;
+		--ctv2-time-digit-height: 5.625rem;
+		--ctv2-time-optical-offset-y: -2px;
+		--ctv2-time-font-size-short: 5.625rem;
+		--ctv2-time-font-size-long: calc(var(--ctv2-time-font-size-short) * 0.8);
+		--ctv2-time-colon-padding-long: 0.02em;
+		--ctv2-time-underline-min-long: calc(2.5rem * 0.8);
+	}
+
+	[data-countdown-timer-v2] .ctv2-ring-center {
+		display: block;
+	}
+
+	[data-countdown-timer-v2] .ctv2-ring-core {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		display: block;
+		transform: translateX(-50%)
+			translateY(
+				calc(-0.5 * var(--ctv2-time-digit-height) + var(--ctv2-time-optical-offset-y))
+			);
+	}
+
+	[data-countdown-timer-v2] .preview-tool-main-section {
+		--preview-header-height: 4.25rem;
+	}
+
+	[data-countdown-timer-v2] .preview-tool-first-screen {
+		overflow: visible;
+	}
+
+	[data-countdown-timer-v2] .preview-tool-stage {
+		max-width: 36rem;
+		overflow: visible;
+	}
+
+	[data-countdown-timer-v2] .ctv2-stage-center {
+		overflow: visible;
+	}
+
+	[data-countdown-timer-v2] .ctv2-ring-block {
+		margin-top: 1.75rem;
+	}
+
+	[data-countdown-timer-v2] .ctv2-time-display {
+		font-size: var(--ctv2-time-font-size-short);
+	}
+
+	[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] {
+		font-size: var(--ctv2-time-font-size-long);
+	}
+
+	[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] .ctv2-time-display {
+		font-size: 1em;
+	}
+
+	[data-countdown-timer-v2] .ctv2-time-completion-status {
+		font-size: calc(var(--ctv2-time-font-size-short) * 0.58 * 1.12);
+		line-height: 1;
+		letter-spacing: 0.02em;
+	}
+
+	[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] .ctv2-time-colon {
+		padding-inline: var(--ctv2-time-colon-padding-long);
+	}
+
+	[data-countdown-timer-v2] [data-ctv2-underline-minutes],
+	[data-countdown-timer-v2] [data-ctv2-underline-seconds] {
+		min-width: 2.5rem;
+	}
+
+	[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] [data-ctv2-underline-minutes],
+	[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] [data-ctv2-underline-seconds] {
+		min-width: var(--ctv2-time-underline-min-long);
+	}
+
+	[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] .ctv2-time-underline-spacer--lead,
+	[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] .ctv2-time-underline-spacer--mid {
+		width: 0.5em;
+	}
+
+	[data-countdown-timer-v2] .ctv2-quick-start {
+		width: max-content;
+		max-width: none;
+		align-self: center;
+		flex-direction: row;
+		flex-wrap: wrap;
+		justify-content: center;
+		margin-top: 2.25rem;
+	}
+
+	[data-countdown-timer-v2] .ctv2-quick-start-btn {
+		min-width: 4.25rem;
+		padding-inline: 1.25rem;
+	}
+
+	[data-countdown-timer-v2] .ctv2-quick-start-row,
+	[data-countdown-timer-v2] .ctv2-quick-start-row--primary {
+		display: contents;
+	}
+
+	[data-countdown-timer-v2] .ctv2-main-controls {
+		margin-top: 2rem;
+	}
+
+	[data-countdown-timer-v2] .ctv2-main-controls .preview-tool-control-btn {
+		width: auto;
+		min-width: 7.5rem;
+		min-height: 2.875rem;
+		padding-inline: 1.5rem;
+		font-size: 0.9375rem;
+	}
+}
+
+@media (max-width: 767px) and (orientation: portrait) {
+	[data-countdown-timer-v2] {
+		--ctv2-time-font-size-short: clamp(3.3rem, 16.8vw, 4.5rem);
+		--ctv2-time-colon-padding-long: 0.02em;
+		--ctv2-portrait-sheet-visual-scale: 0.9;
+		--ctv2-portrait-sheet-visual-shift-y: -10px;
+		--ctv2-portrait-long-time-scale: 0.8;
+		--ctv2-ring-size: min(92vw, 21rem, calc(100dvh - 21rem));
+		--ctv2-quick-start-gap: 0.5rem;
+		--ctv2-quick-start-ring-gap: clamp(0.625rem, 2.5dvh, 1.5rem);
+	}
+
+	[data-countdown-timer-v2] .preview-tool-first-screen {
+		place-items: stretch;
+		box-sizing: border-box;
+		height: 100dvh;
+		max-height: 100dvh;
+		min-height: 100dvh;
+		overflow: hidden;
+	}
+
+	[data-countdown-timer-v2] .ctv2-stage {
+		display: grid;
+		grid-template-rows: minmax(0, 1fr) auto;
+		box-sizing: border-box;
+		height: 100%;
+		max-height: 100%;
+		min-height: 0;
+		width: 100%;
+	}
+
+	[data-countdown-timer-v2] .ctv2-stage-center {
+		align-self: center;
+		justify-content: center;
+		min-height: 0;
+		max-height: none;
+		overflow: visible;
+	}
+
+	[data-countdown-timer-v2] .ctv2-ring-block {
+		flex-shrink: 1;
+		min-height: 0;
+		transform-origin: center center;
+		transition: transform 200ms ease;
+		will-change: transform;
+	}
+
+	[data-countdown-timer-v2][data-ctv2-sheet-open="true"] .ctv2-ring-block {
+		transform: scale(var(--ctv2-portrait-sheet-visual-scale))
+			translateY(var(--ctv2-portrait-sheet-visual-shift-y));
+	}
+
+	[data-countdown-timer-v2] .ctv2-main-controls {
+		align-self: center;
+		position: relative;
+		z-index: 25;
+		margin-top: 0;
+		padding-bottom: max(1rem, env(safe-area-inset-bottom));
+		gap: 0.75rem;
+	}
+
+	[data-countdown-timer-v2] .ctv2-main-controls .preview-tool-control-btn {
+		min-height: var(--tool-mobile-portrait-control-min-height, 3.5rem);
+		min-width: 6.5rem;
+		padding: var(--tool-mobile-portrait-control-padding-y, 0.75rem)
+			var(--tool-mobile-portrait-control-padding-x, 1rem);
+		font-size: 0.9375rem;
+	}
+
+	[data-countdown-timer-v2] .ctv2-time-display {
+		font-size: var(--ctv2-time-font-size-short);
+	}
+
+	/* Long h:mm:ss — 0.8× on each digit (beats global clamp; reliable on real Safari) */
+	[data-countdown-timer-v2]
+		.ctv2-time-grid[data-ctv2-time-format="long"]
+		.ctv2-time-display {
+		font-size: calc(var(--ctv2-time-font-size-short) * var(--ctv2-portrait-long-time-scale));
+	}
+
+	[data-countdown-timer-v2] .ctv2-time-shell[data-ctv2-time-format="long"] {
+		max-width: calc(var(--ctv2-ring-size) - 2.75rem);
+	}
+
+	[data-countdown-timer-v2] .ctv2-time-grid[data-ctv2-time-format="long"] .ctv2-time-colon {
+		padding-inline: var(--ctv2-time-colon-padding-long);
+	}
+
+	[data-countdown-timer-v2] .ctv2-main-controls {
+		box-sizing: border-box;
+		flex-shrink: 0;
+		width: 100%;
+		max-width: 100%;
+		padding-inline: 0;
+		transition: opacity 200ms ease;
+	}
+
+	[data-countdown-timer-v2][data-ctv2-sheet-open="true"] .ctv2-quick-start {
+		opacity: 0.68;
+	}
+
+	[data-countdown-timer-v2] .ctv2-quick-start-row {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		width: 100%;
+		max-width: 100%;
+	}
+
+	[data-countdown-timer-v2] .ctv2-quick-start-btn {
+		flex-shrink: 0;
+		min-width: 3.5rem;
+		padding-inline: 0.875rem;
+	}
+
+	[data-countdown-timer-v2] .ctv2-quick-start-btn[data-ctv2-last-chip] {
+		font-size: 0.8125rem;
+		line-height: 1.2;
+		padding-inline: 0.625rem;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		[data-countdown-timer-v2] .ctv2-ring-block,
+		[data-countdown-timer-v2] .ctv2-quick-start {
+			transition: none;
+		}
+	}
+}
+
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+	[data-countdown-timer-v2] {
+		--ctv2-visual-height: 100dvh;
+		--ctv2-quick-start-ring-gap: 0;
+		--ctv2-landscape-sheet-visual-scale: 0.9;
+		--ctv2-landscape-sheet-visual-shift-y: -10px;
+		--ctv2-landscape-control-min-width: 5.5rem;
+		--ctv2-landscape-control-padding-inline: 1rem;
+		--ctv2-landscape-control-max-width: min(11rem, 42vw);
+	}
+
+	[data-countdown-timer-v2] .preview-tool-main-section {
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		min-height: auto;
+		height: var(--ctv2-visual-height);
+		max-height: var(--ctv2-visual-height);
+		overflow: hidden;
+	}
+
+	[data-countdown-timer-v2] .preview-tool-first-screen {
+		display: flex;
+		flex: 1 1 auto;
+		align-items: stretch;
+		justify-content: center;
+		min-height: 0;
+		height: 100%;
+		place-items: stretch;
+	}
+
+	[data-countdown-timer-v2] .ctv2-stage {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		grid-template-rows: 1fr;
+		align-items: end;
+		flex: 0 1 auto;
+		min-height: 0;
+		width: 100%;
+		max-width: min(100%, 19rem);
+		margin-inline: auto;
+		padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+	}
+
+	[data-countdown-timer-v2] .ctv2-stage-center {
+		grid-column: 2;
+		grid-row: 1;
+		align-self: center;
+		justify-self: center;
+	}
+
+	[data-countdown-timer-v2] .ct-v2-tool-name {
+		margin-bottom: 0.375rem;
+		font-size: 0.8125rem;
+		line-height: 1.125rem;
+	}
+
+	[data-countdown-timer-v2] .ctv2-ring-block {
+		margin-top: 0;
+	}
+
+	[data-countdown-timer-v2] .ctv2-ring-shell {
+		width: auto;
+		height: auto;
+	}
+
+	[data-countdown-timer-v2] .ctv2-ring-svg {
+		display: none;
+	}
+
+	[data-countdown-timer-v2] .ctv2-ring-hit-btn {
+		display: none;
+	}
+
+	[data-countdown-timer-v2] .ctv2-sound-toggle {
+		display: none;
+	}
+
+	[data-countdown-timer-v2] .ctv2-ring-center {
+		position: static;
+		display: block;
+		padding-inline: 0;
+	}
+
+	[data-countdown-timer-v2] .ctv2-ring-core {
+		display: block;
+	}
+
+	[data-countdown-timer-v2] .ctv2-time-display {
+		font-size: 5rem;
+	}
+
+	[data-countdown-timer-v2] .ctv2-quick-start {
+		display: none;
+	}
+
+	[data-countdown-timer-v2] .ctv2-main-controls {
+		display: contents;
+		margin-top: 0;
+		padding-bottom: 0;
+	}
+
+	[data-countdown-timer-v2] [data-ctv2-cancel],
+	[data-countdown-timer-v2] [data-ctv2-primary] {
+		box-sizing: border-box;
+		width: max-content;
+		inline-size: max-content;
+		min-width: var(--ctv2-landscape-control-min-width);
+		max-width: var(--ctv2-landscape-control-max-width);
+		padding-inline: var(--ctv2-landscape-control-padding-inline);
+		white-space: nowrap;
+		word-break: keep-all;
+		overflow-wrap: normal;
+		writing-mode: horizontal-tb;
+		flex-shrink: 0;
+	}
+
+	[data-countdown-timer-v2] [data-ctv2-cancel] {
+		grid-column: 1;
+		grid-row: 1;
+		justify-self: end;
+		align-self: end;
+		margin-inline-end: 0.375rem;
+		min-height: 2.25rem;
+		padding-block: 0.375rem;
+		font-size: 0.8125rem;
+		line-height: 1.25;
+	}
+
+	[data-countdown-timer-v2] [data-ctv2-primary] {
+		grid-column: 3;
+		grid-row: 1;
+		justify-self: start;
+		align-self: end;
+		margin-inline-start: 0.375rem;
+		min-height: 2.25rem;
+		padding-block: 0.375rem;
+		font-size: 0.8125rem;
+		line-height: 1.25;
+	}
+
+	[data-countdown-timer-v2] [data-ctv2-pause-preview] {
+		display: none;
+	}
+
+	[data-countdown-timer-v2] .tool-lower-content {
+		margin-top: 0;
+	}
+
+	[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] .ctv2-time-shell {
+		transform-origin: center center;
+		transition: transform 200ms ease;
+	}
+
+	[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"][data-ctv2-sheet-open="true"]
+		.ctv2-time-shell {
+		transform: scale(var(--ctv2-landscape-sheet-visual-scale))
+			translateY(var(--ctv2-landscape-sheet-visual-shift-y));
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] .ctv2-time-shell {
+			transition: none;
+		}
+	}
+}
+
+/* Lower content — keyword chips (scoped to V2 content area) */
+[data-countdown-timer-v2] .ctv2-keyword-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+[data-countdown-timer-v2] .ctv2-keyword-chip {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.5rem 0.875rem;
+	border-radius: 9999px;
+	font-size: 0.82rem;
+	line-height: 1.35;
+	color: rgb(244 243 248 / 0.72);
+	background: rgb(255 255 255 / 0.04);
+	border: 1px solid rgb(255 255 255 / 0.07);
+}
+
+/*
+ * Mobile portrait long format — anchored to JS layout mode (real-device reliable).
+ * Duplicates portrait MQ rules so they apply even if orientation media query differs.
+ */
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-portrait"] {
+	--ctv2-time-font-size-short: clamp(3.3rem, 16.8vw, 4.5rem);
+	--ctv2-portrait-long-time-scale: 0.8;
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-portrait"] .ctv2-time-display {
+	font-size: var(--ctv2-time-font-size-short);
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-portrait"]
+	.ctv2-time-grid[data-ctv2-time-format="long"]
+	.ctv2-time-display {
+	font-size: calc(var(--ctv2-time-font-size-short) * var(--ctv2-portrait-long-time-scale));
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-portrait"]
+	.ctv2-time-shell[data-ctv2-time-format="long"] {
+	max-width: calc(var(--ctv2-ring-size) - 2.75rem);
+}
+
+/*
+ * Countdown — mobile landscape sheet compact panel + keyboard viewport fit.
+ * Scoped to [data-ctv2-sheet-portal] so portrait / shared baseline stay unchanged.
+ */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+	[data-ctv2-sheet-portal][data-mobile-sheet-baseline] .msb-sheet.is-open {
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		height: auto;
+		min-height: 0;
+		max-height: min(38dvh, 10.5rem);
+		overflow: hidden;
+		padding-inline: 1rem;
+		padding-block-start: 0.125rem;
+		padding-block-end: calc(0.375rem + env(safe-area-inset-bottom, 0px));
+	}
+
+	[data-ctv2-sheet-portal][data-mobile-sheet-baseline] .msb-sheet-handle {
+		flex-shrink: 0;
+		margin-block-start: 0.0625rem;
+		margin-block-end: 0.25rem;
+	}
+
+	[data-ctv2-sheet-portal][data-mobile-sheet-baseline] .msb-sheet-body {
+		flex: 0 0 auto;
+		flex-grow: 0;
+		min-height: 0;
+		width: 100%;
+		overflow-x: hidden;
+		overflow-y: visible;
+		padding-block: 0;
+	}
+
+	[data-ctv2-sheet-portal][data-mobile-sheet-baseline] .msb-sheet-body + .msb-action-row {
+		flex-shrink: 0;
+		margin-block-start: 1.375rem;
+	}
+
+	[data-ctv2-sheet-portal][data-mobile-sheet-baseline].msb-keyboard-sync .msb-sheet.is-open {
+		height: auto;
+		max-height: var(--ctv2-landscape-sheet-vvh, 100dvh);
+	}
+
+	[data-ctv2-sheet-portal][data-mobile-sheet-baseline].msb-keyboard-sync .msb-sheet-body {
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	[data-ctv2-sheet-portal][data-mobile-sheet-baseline].msb-keyboard-sync .msb-action-row {
+		flex-shrink: 0;
+	}
+}
+
+/*
+ * Mobile landscape sheet-open — central time shrink (layout-mode anchored).
+ * Duplicates landscape MQ rule for reliable real-device application.
+ */
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] {
+	--ctv2-landscape-sheet-visual-scale: 0.9;
+	--ctv2-landscape-sheet-visual-shift-y: -10px;
+	--ctv2-landscape-control-min-width: 5.5rem;
+	--ctv2-landscape-control-padding-inline: 1rem;
+	--ctv2-landscape-control-max-width: min(11rem, 42vw);
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] .ctv2-stage {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+	grid-template-rows: 1fr;
+	align-items: end;
+	flex: 0 1 auto;
+	width: 100%;
+	max-width: min(100%, 19rem);
+	margin-inline: auto;
+	min-height: 0;
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] .ctv2-main-controls {
+	display: contents;
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] .ctv2-stage-center {
+	grid-column: 2;
+	grid-row: 1;
+	align-self: center;
+	justify-self: center;
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] [data-ctv2-cancel] {
+	grid-column: 1;
+	grid-row: 1;
+	justify-self: end;
+	align-self: end;
+	margin-inline-end: 0.375rem;
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] [data-ctv2-primary] {
+	grid-column: 3;
+	grid-row: 1;
+	justify-self: start;
+	align-self: end;
+	margin-inline-start: 0.375rem;
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] [data-ctv2-cancel],
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] [data-ctv2-primary] {
+	box-sizing: border-box;
+	width: max-content;
+	inline-size: max-content;
+	min-width: var(--ctv2-landscape-control-min-width);
+	max-width: var(--ctv2-landscape-control-max-width);
+	padding-inline: var(--ctv2-landscape-control-padding-inline);
+	white-space: nowrap;
+	word-break: keep-all;
+	overflow-wrap: normal;
+	writing-mode: horizontal-tb;
+	flex-shrink: 0;
+}
+
+@media (max-width: 640px) and (orientation: landscape) {
+	[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] {
+		--ctv2-landscape-control-padding-inline: 0.875rem;
+		--ctv2-landscape-control-max-width: min(10rem, 40vw);
+	}
+
+	[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] [data-ctv2-cancel],
+	[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] [data-ctv2-primary] {
+		font-size: 0.75rem;
+	}
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] .ctv2-time-shell {
+	transform-origin: center center;
+	transition: transform 200ms ease;
+}
+
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"][data-ctv2-sheet-open="true"]
+	.ctv2-time-shell {
+	transform: scale(var(--ctv2-landscape-sheet-visual-scale))
+		translateY(var(--ctv2-landscape-sheet-visual-shift-y));
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] .ctv2-time-shell {
+		transition: none;
+	}
+}

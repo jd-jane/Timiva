@@ -13,6 +13,7 @@ export const routePaths = {
   home: "/",
   eventCountdown: "/event-countdown/",
   dateRangeCalculator: "/date-range-calculator/",
+  countdownTimer: "/countdown-timer/",
   allTools: "/tools/",
   privacy: "/privacy/",
   terms: "/terms/",

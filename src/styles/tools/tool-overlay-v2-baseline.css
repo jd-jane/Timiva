@@ -15,7 +15,11 @@
 :is([data-date-range-v2], [data-event-countdown-v2]) .tool-sheet-overlay,
 :is([data-date-range-v2], [data-event-countdown-v2]) .range-sheet-backdrop,
 :is([data-date-range-v2], [data-event-countdown-v2]) .range-compact-overlay,
-:is([data-date-range-v2], [data-event-countdown-v2]) [data-tool-operation-overlay] {
+:is([data-date-range-v2], [data-event-countdown-v2]) [data-tool-operation-overlay],
+[data-ctv2-sheet-portal] .tool-operation-overlay,
+[data-ctv2-sheet-portal] [data-tool-operation-overlay],
+[data-countdown-timer-v2] .tool-operation-overlay,
+[data-countdown-timer-v2] [data-tool-operation-overlay] {
 	position: fixed;
 	inset: 0;
 	z-index: var(--tool-operation-overlay-z);
@@ -31,7 +35,11 @@
 :is([data-date-range-v2], [data-event-countdown-v2]) .range-sheet-backdrop.is-visible,
 :is([data-date-range-v2], [data-event-countdown-v2]) .range-compact-overlay.is-visible,
 :is([data-date-range-v2], [data-event-countdown-v2]) [data-tool-operation-overlay].is-open,
-:is([data-date-range-v2], [data-event-countdown-v2]) [data-tool-operation-overlay].is-visible {
+:is([data-date-range-v2], [data-event-countdown-v2]) [data-tool-operation-overlay].is-visible,
+[data-ctv2-sheet-portal] .tool-operation-overlay.is-visible,
+[data-ctv2-sheet-portal] [data-tool-operation-overlay].is-visible,
+[data-countdown-timer-v2] .tool-operation-overlay.is-visible,
+[data-countdown-timer-v2] [data-tool-operation-overlay].is-visible {
 	opacity: 1;
 	pointer-events: auto;
 }

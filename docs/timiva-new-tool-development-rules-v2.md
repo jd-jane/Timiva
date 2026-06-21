@@ -1,5 +1,7 @@
 # Timiva New Tool Development Rules V2
 
+> 最後更新：2026-06-21
+
 ## 文件目的
 
 本文件定義 Timiva 新增工具時的開發判斷、MVP 範圍、頁面結構、狀態設計、資料保存、SEO、Related Tools 與 QA 注意事項。
@@ -296,6 +298,73 @@ SEO Metadata
 
 每次只做一個 Atomic Component 或一個明確區塊。
 
+
+### 8.1 新工具建議實作順序（Layout-first）
+
+Timiva 新工具應優先採用以下順序，不要一開始就進入完整互動程式。
+
+```text
+1. 建立正確工具頁版型
+   - 建立 route
+   - 套用 V2 tool page shell
+   - 放好 Header / Footer
+   - 建立 first-screen container
+   - 建立 lower content area
+   - 建立 drawer / ToolAdSlot disabled 結構
+
+2. 補下方靜態內容
+   - About / 說明區
+   - How to use / 使用方式
+   - FAQ
+   - FAQ JSON-LD
+   - Related Tools
+   - EN / ZH 文案
+
+3. 做上方工具靜態畫面
+   - 先不寫互動
+   - 先確認 mobile portrait、mobile landscape、desktop 的視覺比例、節奏與層級
+   - 先讓頁面看起來像正式 Timiva 工具
+
+4. 最後才加互動與動態
+   - JS state machine
+   - 使用者操作
+   - LocalStorage
+   - Bottom sheet
+   - 動畫 / 音效 / 動態效果
+```
+
+原因：
+
+```text
+這個順序可以先確認頁面結構、內容完整性與視覺方向，再處理高風險互動程式。
+避免一開始就把 layout、SEO content、RWD、state machine、動畫混在同一批次，造成測試困難與回頭重修。
+```
+
+B0 scaffold 的定義：
+
+```text
+B0 不是空白頁。
+B0 應該是「V2 工具頁共用版型 scaffold」。
+至少要包含 Header、Footer、tool page root、first-screen / stage 結構、lower content area、drawer / ToolAdSlot disabled 等基礎結構。
+```
+
+批次命名建議：
+
+```text
+B0：V2 工具頁版型 scaffold
+B1A：下方內容層（About / How to use / FAQ / Related Tools）
+B1B：上方工具靜態畫面
+B2+：互動程式、state machine、sheet、動畫、音效與其他動態效果
+```
+
+限制：
+
+```text
+不要在同一批次混做版型、下方內容、上方靜態 UI、互動程式與動態效果，除非 Owner 明確批准。
+每個批次完成後都要先回報與驗收，再進下一批。
+```
+
+
 ---
 
 ## 9. 狀態設計
@@ -578,3 +647,21 @@ Owner 前期最終確認
 ```
 
 不要讓任何新工具讓 Timiva 變成傳統工具大全。
+
+---
+
+## 20. Countdown Timer 實作後的共用經驗（2026-06-21）
+
+以下為跨工具可重用經驗，不含 Countdown Timer 專屬 class 或實作細節：
+
+```text
+共用 Sheet 必須先經真機 keyboard / visualViewport 驗收；emulation 不足以單獨定案。
+Mobile portrait 與 landscape 可共用同一 Sheet 實作，但 layout mode 必須分開驗收。
+真機 input focus 不可只依 emulation；H / M / S 與 action row 可見性需實機確認。
+Scroll lock 不應任意混用 fixed-body 策略；新工具需明確選用 msb-scroll-lock / msb-sheet-open，避免不必要混用 tool-operation-open。
+Pointer-based ring interaction 的 touch-action: none 只能加在 hit area，不可加在整頁或 stage。
+互動刻度應直接改變既有視覺元素（例如 tick 線段），避免 overlay 疊加造成破圖感。
+多語系主操作按鈕應內容驅動寬度、單行顯示；避免 locale 固定寬度把 grid 撐破。
+Visual batch 通過 Owner 確認後應鎖定，避免後續功能 batch 重做已驗收的視覺。
+Related Tools drawer hover 規則應放在 shared drawer baseline，不要複製到各工具 CSS。
+```

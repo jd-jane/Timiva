@@ -17,6 +17,11 @@ export const zh: Messages = {
       description:
         "快速計算兩個日期之間相差幾天，適合行程安排、專案規劃與日常日期查詢。",
     },
+    countdownTimer: {
+      title: "倒數計時器 — Timiva",
+      description:
+        "設定任意時長的倒數計時，介面簡潔、適合手機使用，快速開始計時。",
+    },
     privacy: {
       title: "隱私權政策 — Timiva",
       description: "Timiva 如何處理您的資料與隱私。",
@@ -271,6 +276,93 @@ export const zh: Messages = {
           question: "可以用來規劃旅行、專案或截止日嗎？",
           answer:
             "可以。適合用於旅行天數、專案時程、倒數或任何需要快速計算日期區間的情境。",
+        },
+      ],
+    },
+  },
+  countdownTimer: {
+    kicker: "倒數計時器",
+    cancel: "取消",
+    start: "開始",
+    pause: "暫停",
+    resume: "繼續",
+    done: "完成",
+    timesUp: "時間到了",
+    last: "上次",
+    setTimerDuration: "設定倒數時間",
+    setTimerMinutes: "設定倒數分鐘",
+    customSheetAriaLabel: "自訂時間",
+    hoursLabel: "小時",
+    minutesLabel: "分鐘",
+    secondsLabel: "秒",
+    applyAndStart: "套用並開始",
+    maximumDuration: "最長可設定 9:59:59",
+    zeroDuration: "請設定大於 0 的時間",
+    controlsAriaLabel: "計時器控制項",
+    soundOff: "關閉提示音",
+    soundOn: "開啟提示音",
+    quickStartAriaLabel: "快速開始選項",
+    quickStartLabels: ["30秒", "1分", "5分", "10分", "25分", "1小時"],
+    relatedToolsDrawerAriaLabel: "相關工具側欄",
+    toggleRelatedToolsDrawerAriaLabel: "切換相關工具側欄",
+    about: {
+      heading: "關於倒數計時器",
+      body: "倒數計時器可以用來設定短時間倒數，例如專注、休息、料理、運動，或任何需要清楚看見剩餘時間的情境。",
+    },
+    howTo: {
+      heading: "如何使用倒數計時器",
+      steps: [
+        "選擇快速時間，或設定自訂時間。",
+        "開始倒數。",
+        "需要時可以暫停、繼續或取消。",
+        "時間到了後，點選「完成」回到初始狀態。",
+      ],
+    },
+    commonUses: {
+      heading: "常見倒數計時用途",
+      items: [
+        "專注計時",
+        "休息倒數",
+        "料理計時",
+        "運動計時",
+        "會議計時",
+        "讀書計時",
+        "小睡倒數",
+        "螢幕時間提醒",
+      ],
+    },
+    faq: {
+      heading: "倒數計時器 FAQ",
+      items: [
+        {
+          question: "倒數計時器可以用來做什麼？",
+          answer:
+            "倒數計時器適合短時間倒數，例如專注、休息、料理、運動，或任何需要清楚看見剩餘時間的情境。",
+        },
+        {
+          question: "這和番茄鐘（Pomodoro Timer）有什麼不同？",
+          answer:
+            "倒數計時器適合設定單次時長並倒數完成。番茄鐘通常包含固定的專注／休息週期與回合流程；這個工具只提供簡單倒數，不是完整的番茄鐘應用。",
+        },
+        {
+          question: "倒數計時器和事件倒數有什麼不同？",
+          answer:
+            "倒數計時器會倒數你設定的時長，例如 15 分鐘。事件倒數則是倒數到特定日期或事件，例如生日或旅行。",
+        },
+        {
+          question: "離開頁面後倒數還會繼續嗎？",
+          answer:
+            "若只是切換到其他 App 或分頁後再回來，且頁面未被重新整理，剩餘時間會依結束時間重新計算。重新整理頁面後，進行中的倒數不會恢復。",
+        },
+        {
+          question: "會記住上次使用的時間嗎？",
+          answer:
+            "會。在你實際開始一次倒數後，該時間可在下次使用時出現在上次快捷按鈕中，並保存在你的裝置上。",
+        },
+        {
+          question: "時間到了會有提示音嗎？",
+          answer:
+            "提示音預設為關閉。你可以在倒數中開啟提示音，時間到了會依當下的提示音設定顯示。",
         },
       ],
     },

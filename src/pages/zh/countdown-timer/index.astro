@@ -1,0 +1,26 @@
+---
+import "../../../styles/tools/timiva-tokens.css";
+import "../../../styles/tools/tool-result-v2-baseline.css";
+import "../../../styles/tools/tool-overlay-v2-baseline.css";
+import "../../../styles/tools/tool-mobile-sheet-v2-baseline.css";
+import "../../../styles/tools/countdown-timer-v2.css";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import CountdownTimerV2 from "../../../components/tools/countdown-timer-v2/CountdownTimerV2.astro";
+import { getCountdownTimerRouteMeta } from "../../../lib/countdownTimerRouteMeta";
+import { type Locale } from "../../../i18n/config";
+
+const locale: Locale = "zh";
+const routeMeta = getCountdownTimerRouteMeta(locale);
+---
+
+<BaseLayout
+	title={routeMeta.title}
+	description={routeMeta.description}
+	canonicalUrl={routeMeta.canonicalUrl}
+	alternateUrls={routeMeta.alternateUrls}
+	headerVariant="inner"
+	locale={locale}
+>
+	<CountdownTimerV2 locale={locale} />
+	<script src="/scripts/countdown-timer.js?v=b3p2c-main-length" defer></script>
+</BaseLayout>

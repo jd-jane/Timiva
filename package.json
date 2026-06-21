@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
+    "dev:mobile": "astro dev --host 0.0.0.0 --port 4325",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

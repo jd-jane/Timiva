@@ -1,0 +1,748 @@
+---
+import RelatedToolRow from "../../RelatedToolRow.astro";
+import ToolAdSlot from "../../ToolAdSlot.astro";
+import ToolCard from "../../ToolCard.astro";
+import { catalogIconMap } from "../../../lib/catalogIcons";
+import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
+import { getCatalogTool, type CatalogToolId } from "../../../data/toolsCatalog";
+import { getLocalizedPath, type Locale } from "../../../i18n/config";
+import { getMessages } from "../../../i18n/messages";
+
+interface Props {
+	locale?: Locale;
+}
+
+const { locale = "en" } = Astro.props;
+const messages = getMessages(locale);
+const m = messages.countdownTimer;
+
+const relatedToolIds: CatalogToolId[] = ["event-countdown", "date-range"];
+const relatedTools = relatedToolIds
+	.map((id) => getCatalogTool(id))
+	.filter((tool): tool is NonNullable<ReturnType<typeof getCatalogTool>> =>
+		Boolean(tool?.available),
+	);
+
+const toolCopy: Record<
+	"event-countdown" | "date-range",
+	{ title: string; relatedDescription: string }
+> = {
+	"event-countdown": messages.tools.eventCountdown,
+	"date-range": messages.tools.dateRange,
+};
+
+const relatedToolItems = relatedTools.map((tool) => ({
+	href: getLocalizedPath(locale, `/${tool.slug}/`),
+	name: toolCopy[tool.id].title,
+	description: toolCopy[tool.id].relatedDescription,
+	icon: catalogIconMap[tool.id],
+}));
+
+const faqSchema = buildFaqPageJsonLd(m.faq.items);
+
+const QUICK_START_SECONDS = [30, 60, 300, 600, 1500, 3600];
+const quickStartPresets = m.quickStartLabels.map((label, index) => ({
+	label,
+	seconds: QUICK_START_SECONDS[index],
+}));
+const quickStartPresetLabels = Object.fromEntries(
+	quickStartPresets.map((preset) => [String(preset.seconds), preset.label]),
+);
+const quickStartRow1 = quickStartPresets.slice(0, 4);
+const quickStartRow2 = quickStartPresets.slice(4);
+
+const TICK_CX = 120;
+const TICK_CY = 120;
+const TICK_RADIUS = 108;
+
+const DESKTOP_TICK_COUNT = 48;
+const DESKTOP_TICK_LONG_STEP = DESKTOP_TICK_COUNT / 8;
+
+const ctv2DesktopTicks = Array.from({ length: DESKTOP_TICK_COUNT }, (_, index) => {
+	const angleDeg = index * (360 / DESKTOP_TICK_COUNT) - 90;
+	const angleRad = (angleDeg * Math.PI) / 180;
+	const isMain = index === 0;
+	const isLong = index % DESKTOP_TICK_LONG_STEP === 0;
+	const isMid = !isMain && !isLong && index % DESKTOP_TICK_LONG_STEP === 3;
+
+	let length = 6;
+	let outerRadius = TICK_RADIUS;
+
+	if (isMain) {
+		length = 16;
+		outerRadius = TICK_RADIUS + 3;
+	} else if (isLong) {
+		length = 12;
+	} else if (isMid) {
+		length = 9;
+	}
+
+	const innerRadius = outerRadius - length;
+
+	return {
+		x1: TICK_CX + innerRadius * Math.cos(angleRad),
+		y1: TICK_CY + innerRadius * Math.sin(angleRad),
+		x2: TICK_CX + outerRadius * Math.cos(angleRad),
+		y2: TICK_CY + outerRadius * Math.sin(angleRad),
+		kind: isMain ? "main" : isLong ? "long" : isMid ? "mid" : "short",
+	};
+});
+
+const PORTRAIT_TICK_COUNT = 60;
+
+const ctv2PortraitTicks = Array.from({ length: PORTRAIT_TICK_COUNT }, (_, index) => {
+	const minute = index === 0 ? 60 : index;
+	const angleDeg = index * (360 / PORTRAIT_TICK_COUNT) - 90;
+	const angleRad = (angleDeg * Math.PI) / 180;
+	const isOrigin = index === 0;
+	const isQuarter = minute === 15 || minute === 30 || minute === 45;
+	const isFive = minute % 5 === 0 && !isOrigin;
+
+	let length = 5;
+	let outerRadius = TICK_RADIUS;
+
+	if (isOrigin) {
+		length = 14;
+		outerRadius = TICK_RADIUS + 2;
+	} else if (isQuarter) {
+		length = 11;
+		outerRadius = TICK_RADIUS + 1;
+	} else if (isFive) {
+		length = 8;
+	} else {
+		length = 5;
+	}
+
+	const innerRadius = outerRadius - length;
+
+	return {
+		minute,
+		x1: TICK_CX + innerRadius * Math.cos(angleRad),
+		y1: TICK_CY + innerRadius * Math.sin(angleRad),
+		x2: TICK_CX + outerRadius * Math.cos(angleRad),
+		y2: TICK_CY + outerRadius * Math.sin(angleRad),
+		kind: isOrigin ? "origin" : isQuarter ? "quarter" : isFive ? "five" : "minute",
+	};
+});
+---
+
+<div
+	data-countdown-timer-v2
+	data-ctv2-ring-mode="ready"
+	data-ctv2-label-start={m.start}
+	data-ctv2-label-pause={m.pause}
+	data-ctv2-label-resume={m.resume}
+	data-ctv2-label-done={m.done}
+	data-ctv2-label-times-up={m.timesUp}
+	data-ctv2-label-last={m.last}
+	data-ctv2-locale={locale}
+	data-ctv2-label-set-duration={m.setTimerDuration}
+	data-ctv2-label-set-minutes={m.setTimerMinutes}
+	data-ctv2-label-max-duration={m.maximumDuration}
+	data-ctv2-label-zero-duration={m.zeroDuration}
+	data-ctv2-label-sound-off={m.soundOff}
+	data-ctv2-label-sound-on={m.soundOn}
+	data-ctv2-preset-labels={JSON.stringify(quickStartPresetLabels)}
+>
+	<section data-ctv2-main-tool class="preview-tool-main-section px-6">
+		<div class="preview-tool-first-screen">
+			<div class="preview-tool-stage ctv2-stage mx-auto w-full max-w-md md:max-w-lg">
+				<div class="ctv2-stage-center">
+					<h1
+						class="preview-tool-landscape-compact-title ct-v2-tool-name text-sm font-medium tracking-normal text-slate-300 md:text-base"
+					>
+						{m.kicker}
+					</h1>
+
+					<div class="ctv2-ring-block">
+						<div class="ctv2-ring-shell">
+							<svg
+								class="ctv2-ring-svg"
+								viewBox="0 0 240 240"
+								aria-hidden="true"
+								focusable="false"
+								data-ctv2-tick-ring
+							>
+								<g
+									class="ctv2-tick-ring ctv2-tick-ring--desktop"
+									data-ctv2-tick-ring-track
+									data-ctv2-tick-ring-desktop
+								>
+									{
+										ctv2DesktopTicks.map((tick) => (
+											<line
+												class:list={[
+													"ctv2-tick",
+													tick.kind === "main" && "ctv2-tick--main",
+													tick.kind === "long" && "ctv2-tick--long",
+													tick.kind === "mid" && "ctv2-tick--mid",
+													tick.kind === "short" && "ctv2-tick--short",
+												]}
+												x1={tick.x1}
+												y1={tick.y1}
+												x2={tick.x2}
+												y2={tick.y2}
+											/>
+										))
+									}
+								</g>
+								<g
+									class="ctv2-tick-ring ctv2-tick-ring--portrait"
+									data-ctv2-tick-ring-portrait
+								>
+									{
+										ctv2PortraitTicks.map((tick) => (
+											<line
+												class:list={[
+													"ctv2-tick",
+													tick.kind === "origin" && "ctv2-tick--origin",
+													tick.kind === "quarter" && "ctv2-tick--quarter",
+													tick.kind === "five" && "ctv2-tick--five",
+													tick.kind === "minute" && "ctv2-tick--minute",
+												]}
+												data-ctv2-tick-minute={String(tick.minute)}
+												x1={tick.x1}
+												y1={tick.y1}
+												x2={tick.x2}
+												y2={tick.y2}
+											/>
+										))
+									}
+								</g>
+								<g class="ctv2-progress-rings" data-ctv2-progress-rings aria-hidden="true">
+									<circle
+										class="ctv2-progress-base-ring"
+										data-ctv2-progress-base-ring
+										cx="120"
+										cy="120"
+										r="108"
+									></circle>
+									<g class="ctv2-progress-active-wrap" transform="rotate(-90 120 120)">
+										<circle
+											class="ctv2-progress-active-ring"
+											data-ctv2-progress-active-ring
+											cx="120"
+											cy="120"
+											r="108"
+										></circle>
+									</g>
+								</g>
+							</svg>
+
+							<div class="ctv2-ring-center">
+								<button
+									type="button"
+									class="ctv2-sound-toggle"
+									data-ctv2-sound-toggle
+									aria-pressed="false"
+									aria-label={m.soundOff}
+								>
+									<span class="ctv2-sound-toggle-row">
+										<span class="ctv2-sound-icon-wrap" aria-hidden="true">
+											<svg
+												class="ctv2-sound-icon ctv2-sound-icon--speaker"
+												viewBox="0 0 10 16"
+												focusable="false"
+											>
+												<path
+													fill="currentColor"
+													d="M3.25 5.75A1.25 1.25 0 0 0 2 7v2a1.25 1.25 0 0 0 1.25 1.25H4.9l3.1 2.48A.625.625 0 0 0 9 12.34V3.66a.625.625 0 0 0-.96-.5L4.9 5.75H3.25Z"
+												></path>
+											</svg>
+											<svg
+												class="ctv2-sound-icon ctv2-sound-icon--mute"
+												viewBox="0 0 8 8"
+												focusable="false"
+											>
+												<path
+													fill="none"
+													stroke="currentColor"
+													stroke-linecap="round"
+													stroke-width="1.15"
+													d="M1.5 1.5 5.5 5.5M5.5 1.5 1.5 5.5"
+												></path>
+											</svg>
+										</span>
+										<span class="ctv2-sound-label">{m.soundOff}</span>
+									</span>
+								</button>
+
+								<div class="ctv2-ring-core">
+									<div class="ctv2-time-stack">
+										<div class="ctv2-time-shell" data-ctv2-time-shell>
+											<button
+												type="button"
+												class="ctv2-time-edit-trigger"
+												data-ctv2-time-edit-trigger
+												tabindex="-1"
+												aria-hidden="true"
+												aria-label={m.setTimerDuration}
+											></button>
+											<div class="ctv2-time-grid" data-ctv2-time-grid data-ctv2-time-format="short">
+												<span
+													class="preview-tool-result-number ctv2-time-display ctv2-time-hours leading-none font-normal tracking-tight tabular-nums"
+													data-ctv2-time-hours
+													aria-hidden="true"
+												></span>
+												<span
+													class="ctv2-time-colon ctv2-time-colon--lead ctv2-time-display leading-none font-normal tabular-nums"
+													aria-hidden="true">:</span>
+												<span
+													class="preview-tool-result-number ctv2-time-segment ctv2-time-display leading-none font-normal tracking-tight tabular-nums"
+													data-ctv2-time-minutes
+												>
+													00
+												</span>
+												<span
+													class="ctv2-time-colon ctv2-time-colon--mid ctv2-time-display leading-none font-normal tabular-nums"
+													>:</span
+												>
+												<span
+													class="preview-tool-result-number ctv2-time-segment ctv2-time-display leading-none font-normal tracking-tight tabular-nums"
+													data-ctv2-time-seconds
+												>
+													00
+												</span>
+												<span
+													class="ctv2-time-underline ctv2-time-underline--segment"
+													data-ctv2-underline-hours
+													aria-hidden="true"></span>
+												<span
+													class="ctv2-time-underline-spacer ctv2-time-underline-spacer--lead"
+													aria-hidden="true"></span>
+												<span
+													class="ctv2-time-underline ctv2-time-underline--segment"
+													data-ctv2-underline-minutes
+													aria-hidden="true"></span>
+												<span
+													class="ctv2-time-underline-spacer ctv2-time-underline-spacer--mid"
+													aria-hidden="true"></span>
+												<span
+													class="ctv2-time-underline ctv2-time-underline--segment"
+													data-ctv2-underline-seconds
+													aria-hidden="true"></span>
+											</div>
+											<p
+												id="ctv2-edit-validation"
+												class="ctv2-time-edit-validation"
+												data-ctv2-edit-validation
+												aria-live="polite"
+											></p>
+											<p
+												class="ctv2-time-completion-status"
+												data-ctv2-completion-status
+												aria-live="polite"
+												hidden
+											></p>
+											<input
+												type="text"
+												class="ctv2-keyboard-capture ctv2-sr-only"
+												data-ctv2-keyboard-capture
+												inputmode="numeric"
+												autocomplete="off"
+												spellcheck="false"
+												aria-label={m.setTimerDuration}
+												aria-describedby="ctv2-edit-validation"
+												aria-invalid="false"
+											/>
+										</div>
+										<p class="ctv2-sr-only" data-ctv2-time-display>00:00</p>
+									</div>
+								</div>
+							</div>
+
+							<button
+								type="button"
+								class="ctv2-ring-hit-btn"
+								data-ctv2-ring-hit-area
+								tabindex="-1"
+								disabled
+								aria-label={m.setTimerMinutes}
+							>
+								<svg
+									class="ctv2-ring-hit-svg"
+									viewBox="0 0 240 240"
+									aria-hidden="true"
+									focusable="false"
+								>
+									<circle
+										class="ctv2-ring-hit-area-circle"
+										cx="120"
+										cy="120"
+										r="100"
+										fill="none"
+										stroke="transparent"
+										stroke-width="36"
+									></circle>
+								</svg>
+							</button>
+						</div>
+					</div>
+
+					<div class="ctv2-quick-start" aria-label={m.quickStartAriaLabel}>
+						<div class="ctv2-quick-start-row ctv2-quick-start-row--primary">
+							{
+								quickStartRow1.map(({ label, seconds }) => (
+									<button
+										type="button"
+										class="ctv2-quick-start-btn"
+										data-ctv2-quick-start-seconds={String(seconds)}
+									>
+										{label}
+									</button>
+								))
+							}
+						</div>
+						<div class="ctv2-quick-start-row">
+							{
+								quickStartRow2.map(({ label, seconds }) => (
+									<button
+										type="button"
+										class="ctv2-quick-start-btn"
+										data-ctv2-quick-start-seconds={String(seconds)}
+									>
+										{label}
+									</button>
+								))
+							}
+						</div>
+					</div>
+				</div>
+
+				<div
+					class="ctv2-main-controls preview-tool-controls flex flex-wrap justify-center gap-3 md:gap-4"
+					aria-label={m.controlsAriaLabel}
+				>
+					<button
+						type="button"
+						class="preview-tool-control-btn ct-v2-control-btn ct-v2-secondary-control ctv2-btn-cancel inline-flex min-h-10 items-center justify-center rounded-full px-4 py-2 text-sm font-medium md:min-h-11 md:px-5 md:py-2.5"
+						disabled
+						data-ctv2-cancel
+					>
+						{m.cancel}
+					</button>
+					<button
+						type="button"
+						class="preview-tool-control-btn ct-v2-control-btn ct-v2-primary-control ctv2-btn-start inline-flex min-h-10 items-center justify-center rounded-full px-4 py-2 text-sm font-medium md:min-h-11 md:px-5 md:py-2.5"
+						data-ctv2-primary
+						data-ctv2-start
+					>
+						{m.start}
+					</button>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<aside
+		data-ctv2-drawer
+		data-open="true"
+		aria-label={m.relatedToolsDrawerAriaLabel}
+		class="pointer-events-none fixed inset-y-0 right-0 z-20 hidden xl:block"
+	>
+		<span class="hidden translate-x-[300px]" aria-hidden="true"></span>
+		<div
+			data-ctv2-drawer-shell
+			data-open="true"
+			class="preview-tool-drawer-frosted pointer-events-auto relative flex h-dvh rounded-tl-3xl rounded-bl-3xl border-l border-white/10 shadow-2xl shadow-black/25 ring-1 ring-inset ring-white/[0.04] transition-transform duration-200 ease-out"
+		>
+			<button
+				type="button"
+				data-ctv2-drawer-toggle
+				aria-expanded="true"
+				class="relative z-10 flex w-14 shrink-0 items-center justify-center self-stretch text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+				aria-label={m.toggleRelatedToolsDrawerAriaLabel}
+			>
+				<svg
+					data-drawer-arrow-open
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="none"
+					class="h-7 w-7"
+					aria-hidden="true"
+				>
+					<path
+						d="M10 3L5 8l5 5"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+				<svg
+					data-drawer-arrow-closed
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="none"
+					class="hidden h-7 w-7"
+					aria-hidden="true"
+				>
+					<path
+						d="M6 3l5 5-5 5"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+			</button>
+
+			<div
+				data-ctv2-drawer-panel
+				class="relative z-10 flex h-full w-[300px] shrink-0 flex-col"
+			>
+				<div class="px-5 pb-3 pt-5">
+					<h2 class="text-lg font-semibold text-white">{messages.relatedTools.heading}</h2>
+				</div>
+				<ToolAdSlot variant="sidebar" locale={locale} state="is-disabled" />
+				<div class="flex-1 space-y-3 overflow-y-auto px-5 pb-5">
+					{
+						relatedToolItems.map((tool) => (
+							<div>
+								<ToolCard
+									href={tool.href}
+									name={tool.name}
+									description={tool.description}
+									icon={tool.icon}
+								/>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</div>
+	</aside>
+
+	<div class="tool-lower-content mx-auto max-w-3xl px-6 pb-20 text-left" data-ctv2-lower-content>
+		<ToolAdSlot variant="main" locale={locale} state="is-disabled" />
+
+		<section
+			data-ctv2-related-tools
+			class="pb-12 xl:hidden"
+			aria-labelledby="ctv2-related-heading"
+		>
+			<h2 id="ctv2-related-heading" class="mb-4 text-lg font-semibold text-white">
+				{messages.relatedTools.heading}
+			</h2>
+			<div class="space-y-3">
+				{
+					relatedToolItems.map((tool) => (
+						<RelatedToolRow
+							href={tool.href}
+							name={tool.name}
+							description={tool.description}
+							icon={tool.icon}
+						/>
+					))
+				}
+			</div>
+		</section>
+
+		<section class="pb-12" aria-labelledby="ctv2-about-heading">
+			<h2 id="ctv2-about-heading" class="mb-2 text-lg font-semibold text-white">
+				{m.about.heading}
+			</h2>
+			<p class="text-sm leading-relaxed text-slate-400">{m.about.body}</p>
+		</section>
+
+		<section class="pb-12" aria-labelledby="ctv2-howto-heading">
+			<h2 id="ctv2-howto-heading" class="mb-2 text-lg font-semibold text-white">
+				{m.howTo.heading}
+			</h2>
+			<ol class="list-decimal space-y-2 pl-5 text-sm leading-relaxed text-slate-400">
+				{m.howTo.steps.map((step) => (
+					<li>{step}</li>
+				))}
+			</ol>
+		</section>
+
+		<section class="pb-12" aria-labelledby="ctv2-uses-heading">
+			<h2 id="ctv2-uses-heading" class="mb-4 text-lg font-semibold text-white">
+				{m.commonUses.heading}
+			</h2>
+			<ul class="ctv2-keyword-list" role="list">
+				{m.commonUses.items.map((item) => (
+					<li class="ctv2-keyword-chip">{item}</li>
+				))}
+			</ul>
+		</section>
+
+		<section aria-labelledby="ctv2-faq-heading">
+			<h2 id="ctv2-faq-heading" class="mb-4 text-lg font-semibold text-white">
+				{m.faq.heading}
+			</h2>
+			<div class="border-t border-white/20">
+				{
+					m.faq.items.map((item) => (
+						<details class="group border-b border-white/20 py-4">
+							<summary
+								class="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden"
+							>
+								<span>{item.question}</span>
+								<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 16 16"
+										fill="none"
+										class="h-4 w-4 group-open:hidden"
+										aria-hidden="true"
+									>
+										<path
+											d="M8 3.5v9M3.5 8h9"
+											stroke="currentColor"
+											stroke-width="1.5"
+											stroke-linecap="round"></path>
+									</svg>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 16 16"
+										fill="none"
+										class="hidden h-4 w-4 group-open:block"
+										aria-hidden="true"
+									>
+										<path
+											d="M3.5 8h9"
+											stroke="currentColor"
+											stroke-width="1.5"
+											stroke-linecap="round"></path>
+									</svg>
+								</span>
+							</summary>
+							<p class="mt-3 text-sm leading-relaxed text-slate-300">{item.answer}</p>
+						</details>
+					))
+				}
+			</div>
+		</section>
+	</div>
+
+	<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+</div>
+
+<div data-ctv2-sheet-portal data-mobile-sheet-baseline hidden aria-hidden="true">
+	<div
+		class="tool-operation-overlay"
+		data-ctv2-sheet-overlay
+		data-tool-operation-overlay
+		hidden
+		aria-hidden="true"
+	>
+	</div>
+
+	<div
+		class="msb-sheet"
+		data-ctv2-custom-sheet
+		role="dialog"
+		aria-modal="true"
+		aria-label={m.customSheetAriaLabel}
+		aria-hidden="true"
+		tabindex="-1"
+		inert
+	>
+		<div class="msb-sheet-handle" aria-hidden="true"></div>
+
+		<div class="msb-sheet-body">
+			<div class="msb-sheet-fields msb-sheet-fields--cols-3">
+				<label class="msb-field">
+					<span class="msb-input-shell">
+						<span class="msb-input-prefix">{m.hoursLabel}</span>
+						<input
+							class="msb-input"
+							type="text"
+							inputmode="numeric"
+							pattern="[0-9]*"
+							autocomplete="off"
+							placeholder="0"
+							aria-label={m.hoursLabel}
+							data-ctv2-sheet-hours
+						/>
+					</span>
+				</label>
+				<label class="msb-field">
+					<span class="msb-input-shell">
+						<span class="msb-input-prefix">{m.minutesLabel}</span>
+						<input
+							class="msb-input"
+							type="text"
+							inputmode="numeric"
+							pattern="[0-9]*"
+							autocomplete="off"
+							placeholder="0"
+							aria-label={m.minutesLabel}
+							data-ctv2-sheet-minutes
+						/>
+					</span>
+				</label>
+				<label class="msb-field">
+					<span class="msb-input-shell">
+						<span class="msb-input-prefix">{m.secondsLabel}</span>
+						<input
+							class="msb-input"
+							type="text"
+							inputmode="numeric"
+							pattern="[0-9]*"
+							autocomplete="off"
+							placeholder="0"
+							aria-label={m.secondsLabel}
+							data-ctv2-sheet-seconds
+						/>
+					</span>
+				</label>
+			</div>
+		</div>
+
+		<div class="msb-action-row">
+			<button type="button" class="msb-action-secondary" data-ctv2-sheet-cancel>
+				{m.cancel}
+			</button>
+			<button type="button" class="msb-action-primary" data-ctv2-sheet-apply disabled aria-disabled="true">
+				{m.applyAndStart}
+			</button>
+		</div>
+	</div>
+</div>
+
+<script is:inline>
+	(function () {
+		const portal = document.querySelector("[data-ctv2-sheet-portal]");
+		if (!portal) {
+			return;
+		}
+
+		document.body.appendChild(portal);
+		portal.removeAttribute("hidden");
+		portal.setAttribute("aria-hidden", "false");
+	})();
+</script>
+
+<script is:inline>
+	document.addEventListener("DOMContentLoaded", () => {
+		const root = document.querySelector("[data-countdown-timer-v2]");
+		const drawer = root?.querySelector("[data-ctv2-drawer]");
+		const shell = root?.querySelector("[data-ctv2-drawer-shell]");
+		const toggle = root?.querySelector("[data-ctv2-drawer-toggle]");
+		const related = root?.querySelector("[data-ctv2-related-tools]");
+		const arrowOpen = root?.querySelector("[data-drawer-arrow-open]");
+		const arrowClosed = root?.querySelector("[data-drawer-arrow-closed]");
+
+		if (!drawer || !shell || !toggle) return;
+
+		let isOpen = drawer.dataset.open !== "false";
+
+		const sync = () => {
+			drawer.dataset.open = isOpen ? "true" : "false";
+			shell.dataset.open = isOpen ? "true" : "false";
+			shell.classList.toggle("translate-x-[300px]", !isOpen);
+			related?.classList.toggle("xl:hidden", isOpen);
+			arrowOpen?.classList.toggle("hidden", !isOpen);
+			arrowClosed?.classList.toggle("hidden", isOpen);
+			toggle.setAttribute("aria-expanded", String(isOpen));
+		};
+
+		sync();
+
+		toggle.addEventListener("click", (event) => {
+			event.preventDefault();
+			isOpen = !isOpen;
+			sync();
+		});
+	});
+</script>
