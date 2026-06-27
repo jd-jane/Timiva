@@ -7,6 +7,7 @@
  */
 
 @import "./tool-drawer-v2-baseline.css";
+@import "./tool-utility-control-v2-baseline.css";
 
 :root {
 	--tool-result-stack-gap-desktop: 8px;
@@ -17,6 +18,7 @@
 	--tool-mobile-portrait-control-padding-y: 0.75rem;
 	--tool-mobile-portrait-control-gap: 0.5rem;
 	--tool-mobile-portrait-control-icon-size: 1.125rem;
+	--tool-mobile-portrait-utility-control-min-height: 3rem;
 }
 
 .tool-result-stack {
@@ -41,19 +43,22 @@
  * Applies to Event Countdown V2, Date Range V2, and future V2 tool pages.
  * Main ToolAdSlot top spacing is owned here — not duplicated on the ad slot.
  */
-:is([data-date-range-v2], [data-event-countdown-v2]) .tool-lower-content,
-:is([data-date-range-v2], [data-event-countdown-v2]) .tool-content-after-stage {
+:is([data-date-range-v2], [data-event-countdown-v2], [data-year-progress-v2]) .tool-lower-content,
+:is([data-date-range-v2], [data-event-countdown-v2], [data-year-progress-v2]) .tool-content-after-stage {
 	margin-top: var(--tool-stage-to-lower-content-spacing);
 }
 
-:is([data-date-range-v2], [data-event-countdown-v2]) .tool-lower-content > .tool-ad-slot-main:first-child {
+:is([data-date-range-v2], [data-event-countdown-v2], [data-year-progress-v2])
+	.tool-lower-content
+	> .tool-ad-slot-main:first-child {
 	margin-top: 0;
 }
 
 /* Mobile landscape compact mode — independent spacing; do not apply stage baseline */
 @media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
-	:is([data-date-range-v2], [data-event-countdown-v2]) .tool-lower-content,
-	:is([data-date-range-v2], [data-event-countdown-v2]) .tool-content-after-stage {
+	:is([data-date-range-v2], [data-event-countdown-v2], [data-year-progress-v2]) .tool-lower-content,
+	:is([data-date-range-v2], [data-event-countdown-v2], [data-year-progress-v2])
+		.tool-content-after-stage {
 		margin-top: 0;
 	}
 }
@@ -75,11 +80,25 @@
 	}
 }
 
-/* Mobile portrait — shared bottom control touch target (≥ Back Timiva pill) */
+/* Mobile portrait — control roles: utility (48px) vs primary task (56px) */
 @media (orientation: portrait) and (max-width: 899px),
 	(orientation: portrait) and (max-height: 699px),
 	(orientation: portrait) and (hover: none) {
-	:is([data-date-range-v2], [data-event-countdown-v2]) .preview-tool-control-btn {
+	/* Utility — Theme / Share / Edit (secondary actions) */
+	:is([data-event-countdown-v2], [data-year-progress-v2])
+		.preview-tool-controls
+		.preview-tool-control-btn {
+		min-height: var(--tool-mobile-portrait-utility-control-min-height);
+		min-width: var(--tool-mobile-portrait-utility-control-min-height);
+		padding: var(--tool-mobile-portrait-control-padding-y)
+			var(--tool-mobile-portrait-control-padding-x);
+		gap: var(--tool-mobile-portrait-control-gap);
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	/* Primary — Date Range start/end date capsule */
+	[data-date-range-v2] .preview-tool-controls .preview-tool-control-btn {
 		min-height: var(--tool-mobile-portrait-control-min-height);
 		min-width: var(--tool-mobile-portrait-control-min-height);
 		padding: var(--tool-mobile-portrait-control-padding-y)
@@ -103,13 +122,14 @@
 	 * Tool stage → lower content (48px) on mobile portrait.
 	 * Padding on the stage section avoids margin collapse with in-stage controls.
 	 */
-	:is([data-date-range-v2], [data-event-countdown-v2]) .preview-tool-main-section {
+	:is([data-date-range-v2], [data-event-countdown-v2], [data-year-progress-v2]) .preview-tool-main-section {
 		padding-bottom: var(--tool-stage-to-lower-content-spacing);
 		box-sizing: border-box;
 	}
 
-	:is([data-date-range-v2], [data-event-countdown-v2]) .tool-lower-content,
-	:is([data-date-range-v2], [data-event-countdown-v2]) .tool-content-after-stage {
+	:is([data-date-range-v2], [data-event-countdown-v2], [data-year-progress-v2]) .tool-lower-content,
+	:is([data-date-range-v2], [data-event-countdown-v2], [data-year-progress-v2])
+		.tool-content-after-stage {
 		margin-top: 0;
 	}
 }

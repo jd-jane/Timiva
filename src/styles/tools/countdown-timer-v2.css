@@ -315,7 +315,6 @@ body:has([data-countdown-timer-v2]) header {
 	border: 0;
 	border-radius: 9999px;
 	background: transparent;
-	cursor: pointer;
 	transform: translateX(-50%);
 	transition: color 160ms ease;
 }
@@ -456,14 +455,12 @@ body:has([data-countdown-timer-v2]) header {
 
 @media (min-width: 768px) {
 	[data-countdown-timer-v2][data-ctv2-ring-mode="ready"] .ctv2-time-edit-trigger {
-		cursor: pointer;
 		pointer-events: auto;
 	}
 }
 
 [data-countdown-timer-v2][data-ctv2-layout-mode="mobile-portrait"][data-ctv2-ring-mode="ready"] .ctv2-time-edit-trigger,
 [data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"][data-ctv2-ring-mode="ready"] .ctv2-time-edit-trigger {
-	cursor: pointer;
 	pointer-events: auto;
 }
 
@@ -778,7 +775,6 @@ body:has([data-countdown-timer-v2]) header {
 	font-weight: 500;
 	color: rgb(226 232 240 / 0.94);
 	white-space: nowrap;
-	cursor: pointer;
 	transition:
 		background-color 160ms ease,
 		border-color 160ms ease,
@@ -834,10 +830,6 @@ body:has([data-countdown-timer-v2]) header {
 		box-shadow 160ms ease,
 		filter 160ms ease,
 		opacity 160ms ease;
-}
-
-[data-countdown-timer-v2] .ct-v2-control-btn:not(:disabled) {
-	cursor: pointer;
 }
 
 [data-countdown-timer-v2] .ct-v2-control-btn:focus {
@@ -1146,7 +1138,7 @@ body:has([data-countdown-timer-v2]) header {
 		--ctv2-quick-start-ring-gap: 0;
 		--ctv2-landscape-sheet-visual-scale: 0.9;
 		--ctv2-landscape-sheet-visual-shift-y: -10px;
-		--ctv2-landscape-control-min-width: 5.5rem;
+		--ctv2-landscape-control-min-width: 6.5rem;
 		--ctv2-landscape-control-padding-inline: 1rem;
 		--ctv2-landscape-control-max-width: min(11rem, 42vw);
 	}
@@ -1243,14 +1235,18 @@ body:has([data-countdown-timer-v2]) header {
 		padding-bottom: 0;
 	}
 
-	[data-countdown-timer-v2] [data-ctv2-cancel],
-	[data-countdown-timer-v2] [data-ctv2-primary] {
+	[data-countdown-timer-v2] .ctv2-main-controls .preview-tool-control-btn[data-ctv2-cancel],
+	[data-countdown-timer-v2] .ctv2-main-controls .preview-tool-control-btn[data-ctv2-primary] {
 		box-sizing: border-box;
 		width: max-content;
 		inline-size: max-content;
 		min-width: var(--ctv2-landscape-control-min-width);
 		max-width: var(--ctv2-landscape-control-max-width);
+		min-height: var(--tool-mobile-portrait-control-min-height, 3.5rem);
+		padding-block: var(--tool-mobile-portrait-control-padding-y, 0.75rem);
 		padding-inline: var(--ctv2-landscape-control-padding-inline);
+		font-size: 0.9375rem;
+		line-height: 1.25rem;
 		white-space: nowrap;
 		word-break: keep-all;
 		overflow-wrap: normal;
@@ -1258,28 +1254,20 @@ body:has([data-countdown-timer-v2]) header {
 		flex-shrink: 0;
 	}
 
-	[data-countdown-timer-v2] [data-ctv2-cancel] {
+	[data-countdown-timer-v2] .ctv2-main-controls .preview-tool-control-btn[data-ctv2-cancel] {
 		grid-column: 1;
 		grid-row: 1;
 		justify-self: end;
 		align-self: end;
 		margin-inline-end: 0.375rem;
-		min-height: 2.25rem;
-		padding-block: 0.375rem;
-		font-size: 0.8125rem;
-		line-height: 1.25;
 	}
 
-	[data-countdown-timer-v2] [data-ctv2-primary] {
+	[data-countdown-timer-v2] .ctv2-main-controls .preview-tool-control-btn[data-ctv2-primary] {
 		grid-column: 3;
 		grid-row: 1;
 		justify-self: start;
 		align-self: end;
 		margin-inline-start: 0.375rem;
-		min-height: 2.25rem;
-		padding-block: 0.375rem;
-		font-size: 0.8125rem;
-		line-height: 1.25;
 	}
 
 	[data-countdown-timer-v2] [data-ctv2-pause-preview] {
@@ -1418,7 +1406,7 @@ body:has([data-countdown-timer-v2]) header {
 [data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] {
 	--ctv2-landscape-sheet-visual-scale: 0.9;
 	--ctv2-landscape-sheet-visual-shift-y: -10px;
-	--ctv2-landscape-control-min-width: 5.5rem;
+	--ctv2-landscape-control-min-width: 6.5rem;
 	--ctv2-landscape-control-padding-inline: 1rem;
 	--ctv2-landscape-control-max-width: min(11rem, 42vw);
 }
@@ -1462,14 +1450,18 @@ body:has([data-countdown-timer-v2]) header {
 	margin-inline-start: 0.375rem;
 }
 
-[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] [data-ctv2-cancel],
-[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] [data-ctv2-primary] {
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] .ctv2-main-controls .preview-tool-control-btn[data-ctv2-cancel],
+[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] .ctv2-main-controls .preview-tool-control-btn[data-ctv2-primary] {
 	box-sizing: border-box;
 	width: max-content;
 	inline-size: max-content;
 	min-width: var(--ctv2-landscape-control-min-width);
 	max-width: var(--ctv2-landscape-control-max-width);
+	min-height: var(--tool-mobile-portrait-control-min-height, 3.5rem);
+	padding-block: var(--tool-mobile-portrait-control-padding-y, 0.75rem);
 	padding-inline: var(--ctv2-landscape-control-padding-inline);
+	font-size: 0.9375rem;
+	line-height: 1.25rem;
 	white-space: nowrap;
 	word-break: keep-all;
 	overflow-wrap: normal;
@@ -1481,11 +1473,6 @@ body:has([data-countdown-timer-v2]) header {
 	[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] {
 		--ctv2-landscape-control-padding-inline: 0.875rem;
 		--ctv2-landscape-control-max-width: min(10rem, 40vw);
-	}
-
-	[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] [data-ctv2-cancel],
-	[data-countdown-timer-v2][data-ctv2-layout-mode="mobile-landscape"] [data-ctv2-primary] {
-		font-size: 0.75rem;
 	}
 }
 

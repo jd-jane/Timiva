@@ -21,7 +21,7 @@ const { heading, items } = Astro.props;
 			items.map((item) => (
 				<details class="home-faq-item group border-b border-white/20 py-4">
 					<summary
-						class="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden"
+						class="flex list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden"
 					>
 						<span>{item.question}</span>
 						<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">

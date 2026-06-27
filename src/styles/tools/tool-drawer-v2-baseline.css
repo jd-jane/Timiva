@@ -8,7 +8,8 @@
 	:is(
 			[data-event-countdown-v2] [data-preview-drawer],
 			[data-date-range-v2] [data-drv2-drawer],
-			[data-countdown-timer-v2] [data-ctv2-drawer]
+			[data-countdown-timer-v2] [data-ctv2-drawer],
+			[data-year-progress-v2] [data-ypv2-drawer]
 		)
 		a:hover {
 		transform: none;

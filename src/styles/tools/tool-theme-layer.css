@@ -1,0 +1,124 @@
+/**
+ * Tool Theme Layer — Year Progress page-level semantic tokens.
+ * Single palette source; backdrop gradients live in year-progress-v2.css.
+ */
+
+[data-year-progress-v2][data-tool-theme="mist"] {
+	--tool-theme-page-base: rgb(14 20 34);
+	--tool-theme-page-mid: rgb(10 14 26);
+	--tool-theme-page-fade: rgb(6 10 20);
+	--tool-theme-page-end: transparent;
+	--tool-theme-glow-top: rgb(100 116 139 / 0.32);
+	--tool-theme-glow-side: rgb(129 140 248 / 0.2);
+	--tool-theme-bg-accent: rgb(148 163 184 / 0.1);
+	--tool-theme-bg-band: transparent;
+	--tool-theme-bg-vignette: rgb(2 6 23 / 0.14);
+	--tool-theme-result-number: rgb(214 218 230);
+	--tool-theme-result-symbol: rgb(196 202 218);
+	--tool-theme-segment-active: rgb(148 163 184 / 0.58);
+	--tool-theme-segment-future: rgb(148 163 184 / 0.14);
+	--tool-theme-control-surface: rgb(28 34 46);
+	--tool-theme-control-surface-hover: rgb(36 42 56);
+	--tool-theme-control-surface-active: rgb(32 38 52);
+	--tool-theme-control-border: rgb(148 163 184 / 0.22);
+	--tool-theme-control-accent: rgb(148 163 184 / 0.42);
+	--tool-theme-control-text: rgb(203 213 225);
+	--tool-theme-control-text-hover: rgb(226 232 240);
+	--tool-theme-note: rgb(226 232 240 / 0.88);
+}
+
+[data-year-progress-v2][data-tool-theme="forest"] {
+	--tool-theme-page-base: rgb(10 22 16);
+	--tool-theme-page-mid: rgb(8 16 12);
+	--tool-theme-page-fade: rgb(5 12 9);
+	--tool-theme-page-end: transparent;
+	--tool-theme-glow-top: rgb(74 124 89 / 0.26);
+	--tool-theme-glow-side: rgb(52 98 72 / 0.22);
+	--tool-theme-bg-accent: rgb(86 120 96 / 0.12);
+	--tool-theme-bg-band: transparent;
+	--tool-theme-bg-vignette: rgb(2 8 6 / 0.16);
+	--tool-theme-result-number: rgb(210 220 214);
+	--tool-theme-result-symbol: rgb(192 206 198);
+	--tool-theme-segment-active: rgb(110 154 122 / 0.58);
+	--tool-theme-segment-future: rgb(110 154 122 / 0.14);
+	--tool-theme-control-surface: rgb(24 34 28);
+	--tool-theme-control-surface-hover: rgb(30 42 34);
+	--tool-theme-control-surface-active: rgb(28 38 32);
+	--tool-theme-control-border: rgb(110 154 122 / 0.22);
+	--tool-theme-control-accent: rgb(110 154 122 / 0.42);
+	--tool-theme-control-text: rgb(203 218 208);
+	--tool-theme-control-text-hover: rgb(224 236 228);
+	--tool-theme-note: rgb(220 236 224 / 0.88);
+}
+
+[data-year-progress-v2][data-tool-theme="aurora"] {
+	--tool-theme-page-base: rgb(8 12 32);
+	--tool-theme-page-mid: rgb(6 10 26);
+	--tool-theme-page-fade: rgb(4 8 20);
+	--tool-theme-page-end: transparent;
+	--tool-theme-glow-top: rgb(56 88 196 / 0.3);
+	--tool-theme-glow-side: rgb(109 92 196 / 0.22);
+	--tool-theme-bg-accent: rgb(34 168 198 / 0.12);
+	--tool-theme-bg-band: rgb(72 88 196 / 0.14);
+	--tool-theme-bg-vignette: rgb(2 6 23 / 0.18);
+	--tool-theme-result-number: rgb(208 222 236);
+	--tool-theme-result-symbol: rgb(190 208 226);
+	--tool-theme-segment-active: rgb(118 168 214 / 0.58);
+	--tool-theme-segment-future: rgb(118 168 214 / 0.14);
+	--tool-theme-control-surface: rgb(22 28 44);
+	--tool-theme-control-surface-hover: rgb(28 36 54);
+	--tool-theme-control-surface-active: rgb(26 32 50);
+	--tool-theme-control-border: rgb(118 168 214 / 0.22);
+	--tool-theme-control-accent: rgb(118 168 214 / 0.42);
+	--tool-theme-control-text: rgb(203 216 230);
+	--tool-theme-control-text-hover: rgb(224 234 246);
+	--tool-theme-note: rgb(224 236 248 / 0.88);
+}
+
+[data-year-progress-v2][data-tool-theme="sunset"] {
+	--tool-theme-page-base: rgb(24 10 18);
+	--tool-theme-page-mid: rgb(18 8 14);
+	--tool-theme-page-fade: rgb(12 6 10);
+	--tool-theme-page-end: transparent;
+	--tool-theme-glow-top: rgb(120 44 68 / 0.26);
+	--tool-theme-glow-side: rgb(168 72 98 / 0.22);
+	--tool-theme-bg-accent: rgb(186 118 72 / 0.16);
+	--tool-theme-bg-band: rgb(98 52 108 / 0.12);
+	--tool-theme-bg-vignette: rgb(8 2 6 / 0.2);
+	--tool-theme-result-number: rgb(228 210 212);
+	--tool-theme-result-symbol: rgb(210 192 196);
+	--tool-theme-segment-active: rgb(196 142 128 / 0.56);
+	--tool-theme-segment-future: rgb(196 142 128 / 0.14);
+	--tool-theme-control-surface: rgb(38 28 34);
+	--tool-theme-control-surface-hover: rgb(46 34 42);
+	--tool-theme-control-surface-active: rgb(42 30 38);
+	--tool-theme-control-border: rgb(196 142 128 / 0.22);
+	--tool-theme-control-accent: rgb(196 142 128 / 0.42);
+	--tool-theme-control-text: rgb(220 206 208);
+	--tool-theme-control-text-hover: rgb(236 224 226);
+	--tool-theme-note: rgb(244 228 224 / 0.88);
+}
+
+[data-year-progress-v2][data-tool-theme="midnight"] {
+	--tool-theme-page-base: rgb(4 8 22);
+	--tool-theme-page-mid: rgb(3 6 16);
+	--tool-theme-page-fade: rgb(2 4 12);
+	--tool-theme-page-end: transparent;
+	--tool-theme-glow-top: rgb(18 32 72 / 0.38);
+	--tool-theme-glow-side: rgb(48 96 168 / 0.2);
+	--tool-theme-bg-accent: rgb(36 64 128 / 0.14);
+	--tool-theme-bg-band: transparent;
+	--tool-theme-bg-vignette: rgb(0 0 0 / 0.24);
+	--tool-theme-result-number: rgb(208 214 232);
+	--tool-theme-result-symbol: rgb(188 196 218);
+	--tool-theme-segment-active: rgb(132 156 204 / 0.6);
+	--tool-theme-segment-future: rgb(132 156 204 / 0.16);
+	--tool-theme-control-surface: rgb(18 24 40);
+	--tool-theme-control-surface-hover: rgb(24 32 50);
+	--tool-theme-control-surface-active: rgb(22 28 46);
+	--tool-theme-control-border: rgb(132 156 204 / 0.24);
+	--tool-theme-control-accent: rgb(132 156 204 / 0.44);
+	--tool-theme-control-text: rgb(203 213 230);
+	--tool-theme-control-text-hover: rgb(224 230 244);
+	--tool-theme-note: rgb(220 228 244 / 0.88);
+}

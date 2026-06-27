@@ -51,3 +51,20 @@ export function getCountdownTimerClientI18n(locale: Locale) {
     intlLocale: locale === "zh" ? "zh-TW" : "en-US",
   };
 }
+
+export function getYearProgressClientI18n(locale: Locale) {
+  const m = getMessages(locale).yearProgress;
+
+  return {
+    locale,
+    yearHeadlineTemplate: m.staticYearHeadline.replace("2026", "{year}"),
+    daysPassedTemplate: m.staticDaysPassed.replace(/\d+/, "{count}"),
+    daysRemainingTemplate: m.staticDaysRemaining.replace(/\d+/, "{count}"),
+    daysSeparator: m.staticDaysSeparator,
+    noteFallback: m.resultPlaceholder,
+    share: m.share,
+    shareTitle: m.shareTitle,
+    copied: m.copied,
+    copyFailed: m.copyFailed,
+  };
+}

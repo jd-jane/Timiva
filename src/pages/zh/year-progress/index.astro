@@ -1,0 +1,23 @@
+---
+import "../../../styles/tools/tool-result-v2-baseline.css";
+import "../../../styles/tools/tool-theme-layer.css";
+import "../../../styles/tools/year-progress-v2.css";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import YearProgressV2 from "../../../components/tools/year-progress-v2/YearProgressV2.astro";
+import { getYearProgressRouteMeta } from "../../../lib/yearProgressRouteMeta";
+import { type Locale } from "../../../i18n/config";
+
+const locale: Locale = "zh";
+const routeMeta = getYearProgressRouteMeta(locale);
+---
+
+<BaseLayout
+	title={routeMeta.title}
+	description={routeMeta.description}
+	canonicalUrl={routeMeta.canonicalUrl}
+	alternateUrls={routeMeta.alternateUrls}
+	headerVariant="inner"
+	locale={locale}
+>
+	<YearProgressV2 locale={locale} />
+</BaseLayout>

@@ -308,32 +308,16 @@ body:has([data-event-countdown-v2]) header {
 	margin-top: 2rem;
 }
 
-[data-event-countdown-v2] .preview-tool-control-btn {
-	transition:
-		background-color 180ms ease,
-		border-color 180ms ease,
-		color 180ms ease,
-		transform 180ms ease,
-		box-shadow 180ms ease;
+[data-event-countdown-v2] .tool-utility-control:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.45);
+	outline-offset: 2px;
 }
 
-	[data-event-countdown-v2] .preview-tool-control-btn:focus-visible {
-		outline: 2px solid rgb(255 255 255 / 0.45);
-		outline-offset: 2px;
-	}
-
 @media (hover: hover) and (pointer: fine) {
-	[data-event-countdown-v2] .preview-tool-control-btn:hover {
+	[data-event-countdown-v2] .tool-utility-control:hover {
 		background-color: rgb(255 255 255 / 0.1);
 		border-color: rgb(255 255 255 / 0.22);
 		color: rgb(255 255 255 / 0.96);
-		transform: translateY(-2px);
-		box-shadow: 0 10px 28px rgb(0 0 0 / 0.18);
-	}
-
-	[data-event-countdown-v2] .preview-tool-control-btn:active {
-		transform: translateY(0);
-		box-shadow: 0 4px 14px rgb(0 0 0 / 0.12);
 	}
 }
 
@@ -378,7 +362,7 @@ body:has([data-event-countdown-v2]) header {
 		pointer-events: auto;
 	}
 
-	[data-event-countdown-v2] .preview-tool-control-btn {
+	[data-event-countdown-v2] .tool-utility-control {
 		position: relative;
 		pointer-events: auto;
 		touch-action: manipulation;
@@ -499,7 +483,7 @@ body:has([data-event-countdown-v2]) header {
 		pointer-events: auto;
 	}
 
-	[data-event-countdown-v2] .preview-tool-control-btn {
+	[data-event-countdown-v2] .tool-utility-control {
 		position: relative;
 		z-index: 1;
 		min-height: 1.75rem;
@@ -717,7 +701,6 @@ body:has([data-event-countdown-v2]) [data-ecv2-sheet] .ecv2-sheet-template-chip 
 	font: inherit;
 	font-size: 0.8125rem;
 	line-height: 1.125rem;
-	cursor: pointer;
 	touch-action: manipulation;
 	-webkit-tap-highlight-color: transparent;
 }
@@ -826,10 +809,6 @@ body:has([data-event-countdown-v2]) [data-ecv2-sheet] .ecv2-sheet-template-chip:
 		border: 1px solid rgb(255 255 255 / 0.1);
 		background-color: rgb(255 255 255 / 0.05);
 		overflow: hidden;
-	}
-
-	body:has([data-event-countdown-v2]) [data-ecv2-sheet] .ecv2-sheet-date-field .ecv2-sheet-input-shell {
-		cursor: pointer;
 	}
 
 	body:has([data-event-countdown-v2]) [data-ecv2-sheet] .ecv2-sheet-input-prefix {

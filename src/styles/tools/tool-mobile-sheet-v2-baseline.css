@@ -240,7 +240,6 @@ body.msb-scroll-lock {
 	font-size: 0.75rem;
 	line-height: 1rem;
 	color: var(--msb-secondary-action-color);
-	cursor: pointer;
 	touch-action: manipulation;
 	-webkit-tap-highlight-color: transparent;
 }
@@ -267,7 +266,6 @@ body.msb-scroll-lock {
 	line-height: 1.25rem;
 	font-weight: 500;
 	backdrop-filter: blur(4px);
-	cursor: pointer;
 	touch-action: manipulation;
 	-webkit-tap-highlight-color: transparent;
 }

@@ -875,7 +875,6 @@ body:has([data-date-range-v2]) header {
 		font-size: 0.75rem;
 		line-height: 1rem;
 		color: rgb(203 213 225);
-		cursor: pointer;
 		touch-action: manipulation;
 		-webkit-tap-highlight-color: transparent;
 	}

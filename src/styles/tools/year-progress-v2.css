@@ -1,0 +1,663 @@
+/* Year Progress V2 — B1B upper static visual */
+
+[data-year-progress-v2] {
+	--ypv2-page-backdrop-header-pull: 3.75rem;
+	position: relative;
+	background-color: rgb(2 6 23);
+}
+
+/* Drawer — frosted overlay (B0 baseline) */
+[data-year-progress-v2] .preview-tool-drawer-frosted {
+	background-color: rgb(5 8 31 / 0.6);
+	-webkit-backdrop-filter: blur(4px) saturate(150%);
+	backdrop-filter: blur(4px) saturate(150%);
+}
+
+[data-year-progress-v2] > [data-ypv2-drawer] {
+	position: fixed;
+	inset-block: 0;
+	inset-inline-end: 0;
+	z-index: 25;
+}
+
+/* First-screen shell — transparent over page theme; header overlap preserved */
+[data-year-progress-v2] .preview-tool-main-section {
+	--preview-header-height: 3.75rem;
+	position: relative;
+	z-index: 10;
+	margin-top: calc(-1 * var(--preview-header-height));
+	min-height: 100dvh;
+	background: transparent;
+}
+
+[data-year-progress-v2] .preview-tool-first-screen {
+	box-sizing: border-box;
+	display: grid;
+	min-height: 100dvh;
+	place-items: center;
+	width: 100%;
+}
+
+[data-year-progress-v2] .preview-tool-stage {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+[data-year-progress-v2] [data-ypv2-main-tool] {
+	position: relative;
+	background: transparent;
+}
+
+/* Page-level ambient theme — top-anchored; fades by viewport height, not page length */
+[data-year-progress-v2] .ypv2-page-theme-backdrop {
+	position: absolute;
+	top: calc(-1 * var(--ypv2-page-backdrop-header-pull));
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 0;
+	pointer-events: none;
+	background-color: transparent;
+	background-repeat: no-repeat;
+}
+
+[data-year-progress-v2] > [data-ypv2-main-tool],
+[data-year-progress-v2] > [data-ypv2-lower-content] {
+	position: relative;
+	z-index: 1;
+}
+
+[data-year-progress-v2][data-tool-theme="mist"] .ypv2-page-theme-backdrop {
+	background-image:
+		radial-gradient(
+			ellipse 140% min(90dvh, 720px) at 50% -4%,
+			var(--tool-theme-glow-top) 0%,
+			transparent 58%
+		),
+		radial-gradient(
+			circle at 88% min(18dvh, 180px),
+			var(--tool-theme-glow-side) 0%,
+			transparent 46%
+		),
+		radial-gradient(
+			circle at 12% min(58dvh, 520px),
+			var(--tool-theme-bg-accent) 0%,
+			transparent 42%
+		),
+		linear-gradient(
+			180deg,
+			var(--tool-theme-page-base) 0,
+			var(--tool-theme-page-mid) min(55dvh, 55vh),
+			var(--tool-theme-page-fade) min(110dvh, 110vh),
+			var(--tool-theme-page-end) min(180dvh, 180vh)
+		),
+		radial-gradient(
+			ellipse 120% min(80dvh, 640px) at 50% min(42dvh, 420px),
+			transparent 52%,
+			var(--tool-theme-bg-vignette) 100%
+		);
+}
+
+[data-year-progress-v2][data-tool-theme="forest"] .ypv2-page-theme-backdrop {
+	background-image:
+		radial-gradient(
+			ellipse 140% min(90dvh, 720px) at 48% -3%,
+			var(--tool-theme-glow-top) 0%,
+			transparent 56%
+		),
+		radial-gradient(
+			circle at 92% min(22dvh, 220px),
+			var(--tool-theme-glow-side) 0%,
+			transparent 44%
+		),
+		radial-gradient(
+			circle at 8% min(60dvh, 540px),
+			var(--tool-theme-bg-accent) 0%,
+			transparent 40%
+		),
+		linear-gradient(
+			180deg,
+			var(--tool-theme-page-base) 0,
+			var(--tool-theme-page-mid) min(55dvh, 55vh),
+			var(--tool-theme-page-fade) min(110dvh, 110vh),
+			var(--tool-theme-page-end) min(180dvh, 180vh)
+		),
+		radial-gradient(
+			ellipse 120% min(80dvh, 640px) at 50% min(44dvh, 440px),
+			transparent 54%,
+			var(--tool-theme-bg-vignette) 100%
+		);
+}
+
+[data-year-progress-v2][data-tool-theme="aurora"] .ypv2-page-theme-backdrop {
+	background-image:
+		radial-gradient(
+			circle at 78% min(6dvh, 60px),
+			var(--tool-theme-glow-side) 0%,
+			transparent 44%
+		),
+		radial-gradient(
+			ellipse 140% min(90dvh, 720px) at 50% -3%,
+			var(--tool-theme-glow-top) 0%,
+			transparent 54%
+		),
+		radial-gradient(
+			circle at 14% min(62dvh, 560px),
+			var(--tool-theme-bg-accent) 0%,
+			transparent 40%
+		),
+		linear-gradient(
+			152deg,
+			var(--tool-theme-bg-band) 0%,
+			transparent min(72dvh, 72vh)
+		),
+		linear-gradient(
+			180deg,
+			var(--tool-theme-page-base) 0,
+			var(--tool-theme-page-mid) min(55dvh, 55vh),
+			var(--tool-theme-page-fade) min(110dvh, 110vh),
+			var(--tool-theme-page-end) min(180dvh, 180vh)
+		),
+		radial-gradient(
+			ellipse 120% min(80dvh, 640px) at 50% min(42dvh, 420px),
+			transparent 52%,
+			var(--tool-theme-bg-vignette) 100%
+		);
+}
+
+[data-year-progress-v2][data-tool-theme="sunset"] .ypv2-page-theme-backdrop {
+	background-image:
+		radial-gradient(
+			circle at 88% min(72dvh, 640px),
+			var(--tool-theme-bg-accent) 0%,
+			transparent 42%
+		),
+		radial-gradient(
+			circle at 76% min(62dvh, 560px),
+			var(--tool-theme-glow-side) 0%,
+			transparent 44%
+		),
+		radial-gradient(
+			circle at 12% min(68dvh, 600px),
+			var(--tool-theme-bg-band) 0%,
+			transparent 38%
+		),
+		radial-gradient(
+			ellipse 140% min(90dvh, 720px) at 50% 0%,
+			var(--tool-theme-glow-top) 0%,
+			transparent 52%
+		),
+		linear-gradient(
+			180deg,
+			var(--tool-theme-page-base) 0,
+			var(--tool-theme-page-mid) min(55dvh, 55vh),
+			var(--tool-theme-page-fade) min(110dvh, 110vh),
+			var(--tool-theme-page-end) min(180dvh, 180vh)
+		),
+		radial-gradient(
+			ellipse 120% min(80dvh, 640px) at 50% min(46dvh, 460px),
+			transparent 50%,
+			var(--tool-theme-bg-vignette) 100%
+		);
+}
+
+[data-year-progress-v2][data-tool-theme="midnight"] .ypv2-page-theme-backdrop {
+	background-image:
+		radial-gradient(
+			circle at 96% min(14dvh, 140px),
+			var(--tool-theme-glow-side) 0%,
+			transparent 30%
+		),
+		radial-gradient(
+			circle at 96% min(68dvh, 600px),
+			var(--tool-theme-bg-accent) 0%,
+			transparent 26%
+		),
+		radial-gradient(
+			ellipse 140% min(90dvh, 720px) at 50% -2%,
+			var(--tool-theme-glow-top) 0%,
+			transparent 48%
+		),
+		linear-gradient(
+			180deg,
+			var(--tool-theme-page-base) 0,
+			var(--tool-theme-page-mid) min(55dvh, 55vh),
+			var(--tool-theme-page-fade) min(110dvh, 110vh),
+			var(--tool-theme-page-end) min(180dvh, 180vh)
+		),
+		radial-gradient(
+			ellipse 120% min(80dvh, 640px) at 50% min(44dvh, 440px),
+			transparent 48%,
+			var(--tool-theme-bg-vignette) 100%
+		);
+}
+
+/* Visual hierarchy — tool name reuses accepted V2 `text-slate-300` (see markup); no theme token override */
+[data-year-progress-v2] .ypv2-tool-name {
+	margin-top: 0;
+}
+
+[data-year-progress-v2] .ypv2-year-headline {
+	margin-top: 1.5rem;
+	min-height: 1.125rem;
+}
+
+[data-year-progress-v2] .ypv2-noscript-notice {
+	margin: 1rem 0 0;
+	font-size: 0.75rem;
+	line-height: 1.4;
+	color: rgb(100 116 139);
+}
+
+[data-year-progress-v2] .ypv2-percentage {
+	display: inline-flex;
+	align-items: flex-end;
+	justify-content: center;
+	min-height: 4.75rem;
+	margin-top: 0.5rem;
+	line-height: 1;
+	font-weight: 400;
+	letter-spacing: -0.03em;
+}
+
+[data-year-progress-v2] .ypv2-percent-value {
+	font-size: clamp(3.5rem, 16vw, 6.25rem);
+	line-height: 1;
+	color: var(--tool-theme-result-number);
+}
+
+[data-year-progress-v2] .ypv2-percent-symbol {
+	font-size: clamp(1.5rem, 6vw, 2.75rem);
+	line-height: 1;
+	margin-inline-start: 0.02em;
+	transform: translateY(-0.06em);
+	color: var(--tool-theme-result-symbol);
+}
+
+[data-year-progress-v2] .ypv2-days-row {
+	display: block;
+	margin-top: 0.25rem;
+	min-height: 1.125rem;
+	text-align: center;
+	white-space: nowrap;
+}
+
+[data-year-progress-v2] .ypv2-days-separator {
+	display: inline;
+}
+
+/* Matches accepted EC / DR result divider (.ecv2-result-divider) */
+[data-year-progress-v2] .ypv2-rhythm-divider {
+	display: none;
+}
+
+/* Monthly note + 12 segments — rhythm group */
+[data-year-progress-v2] .ypv2-rhythm-block {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	max-width: 22rem;
+	margin-top: 1.75rem;
+}
+
+[data-year-progress-v2] .ypv2-monthly-note {
+	margin: 0;
+	width: 100%;
+	max-width: 18rem;
+	min-height: 1.375rem;
+	font-size: 0.875rem;
+	line-height: 1.55;
+	color: var(--tool-theme-note);
+	text-wrap: balance;
+}
+
+[data-year-progress-v2] .ypv2-segments {
+	display: flex;
+	align-items: stretch;
+	gap: 0.3125rem;
+	width: 100%;
+	margin-top: 1rem;
+	min-height: 0.4375rem;
+}
+
+[data-year-progress-v2] .ypv2-segment {
+	flex: 1 1 0;
+	min-width: 0;
+	height: 0.4375rem;
+	border-radius: 9999px;
+	overflow: hidden;
+	background-color: var(--tool-theme-segment-future);
+}
+
+[data-year-progress-v2] .ypv2-segment-fill {
+	display: block;
+	height: 100%;
+	width: 0;
+	border-radius: inherit;
+	background-color: var(--tool-theme-segment-active);
+}
+
+[data-year-progress-v2][data-ypv2-hydrated="true"] .ypv2-segment-fill {
+	width: calc(var(--ypv2-segment-fill, 0) * 100%);
+}
+
+/* Controls */
+[data-year-progress-v2] .ypv2-controls {
+	margin-top: 2rem;
+}
+
+[data-year-progress-v2] .tool-utility-control {
+	border: 1px solid var(--tool-theme-control-border);
+	background-color: var(--tool-theme-control-surface);
+	color: var(--tool-theme-control-text);
+}
+
+[data-year-progress-v2] .tool-utility-control:focus-visible {
+	outline: 2px solid var(--tool-theme-control-accent);
+	outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	[data-year-progress-v2] .tool-utility-control:hover {
+		border-color: var(--tool-theme-control-accent);
+		background-color: var(--tool-theme-control-surface-hover);
+		color: var(--tool-theme-control-text-hover);
+	}
+}
+
+@media (hover: none) {
+	[data-year-progress-v2] .tool-utility-control:active {
+		border-color: var(--tool-theme-control-accent);
+		background-color: var(--tool-theme-control-surface-active);
+		color: var(--tool-theme-control-text-hover);
+	}
+}
+
+@media (min-width: 768px) {
+	[data-year-progress-v2] {
+		--ypv2-page-backdrop-header-pull: 4.25rem;
+	}
+
+	[data-year-progress-v2] .preview-tool-main-section {
+		--preview-header-height: 4.25rem;
+	}
+
+	[data-year-progress-v2] .ypv2-year-headline {
+		margin-top: 2.5rem;
+		font-size: 0.875rem;
+		line-height: 1.4;
+	}
+
+	[data-year-progress-v2] .ypv2-percentage {
+		min-height: 13rem;
+		margin-top: 0.75rem;
+	}
+
+	[data-year-progress-v2] .ypv2-percent-value {
+		font-size: 13rem;
+		line-height: 1;
+	}
+
+	[data-year-progress-v2] .ypv2-percent-symbol {
+		font-size: 3.75rem;
+		line-height: 1;
+		transform: translateY(-0.55rem);
+	}
+
+	[data-year-progress-v2] .ypv2-days-row {
+		display: block;
+		margin-top: 1rem;
+		min-height: 1.25rem;
+		text-align: center;
+		white-space: nowrap;
+	}
+
+	[data-year-progress-v2] .ypv2-days-separator {
+		display: inline;
+	}
+
+	[data-year-progress-v2] .ypv2-rhythm-divider {
+		display: block;
+		width: 3rem;
+		height: 1px;
+		margin-inline: auto;
+		margin-top: 1.5rem;
+		margin-bottom: 1.5rem;
+		border-radius: 999px;
+		background-color: rgb(255 255 255 / 0.18);
+	}
+
+	[data-year-progress-v2] .ypv2-rhythm-block {
+		max-width: none;
+		width: 100%;
+		margin-top: 0;
+	}
+
+	[data-year-progress-v2] .ypv2-monthly-note {
+		max-width: none;
+		width: auto;
+		font-size: 1rem;
+		line-height: 1.5;
+		white-space: nowrap;
+	}
+
+	[data-year-progress-v2] .ypv2-segments {
+		gap: 0.25rem;
+		min-height: 0.25rem;
+		margin-top: 1.125rem;
+		max-width: 24rem;
+	}
+
+	[data-year-progress-v2] .ypv2-segment {
+		height: 0.25rem;
+	}
+
+	[data-year-progress-v2] .ypv2-controls {
+		margin-top: 2.5rem;
+	}
+}
+
+/* Mobile portrait — result centered, controls at bottom */
+@media (max-width: 767px) and (orientation: portrait) {
+	[data-year-progress-v2] .preview-tool-first-screen {
+		place-items: stretch;
+	}
+
+	[data-year-progress-v2] .preview-tool-stage {
+		display: grid;
+		grid-template-rows: minmax(0, 1fr) auto;
+		min-height: 100dvh;
+		width: 100%;
+	}
+
+	[data-year-progress-v2] .preview-tool-result-group {
+		align-self: center;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		width: 100%;
+	}
+
+	[data-year-progress-v2] .ypv2-percentage {
+		min-height: clamp(7.5rem, 41vw, 10rem);
+		margin-top: 0.5rem;
+	}
+
+	[data-year-progress-v2] .ypv2-percent-value {
+		font-size: clamp(7.5rem, 41vw, 10rem);
+		line-height: 1;
+	}
+
+	[data-year-progress-v2] .ypv2-percent-symbol {
+		font-size: clamp(2.125rem, 11.75vw, 2.875rem);
+		line-height: 1;
+		transform: translateY(-0.12em);
+	}
+
+	[data-year-progress-v2] .ypv2-rhythm-divider {
+		display: block;
+		width: 3rem;
+		height: 1px;
+		margin-inline: auto;
+		margin-top: 1.25rem;
+		margin-bottom: 1.25rem;
+		border-radius: 999px;
+		background-color: rgb(255 255 255 / 0.18);
+	}
+
+	[data-year-progress-v2] .ypv2-rhythm-block {
+		margin-top: 0;
+		width: 100%;
+		max-width: 100%;
+	}
+
+	[data-year-progress-v2] .ypv2-monthly-note {
+		width: 100%;
+		max-width: none;
+		font-size: 0.875rem;
+		line-height: 1.55;
+		white-space: normal;
+		text-wrap: pretty;
+		color: var(--tool-theme-note);
+	}
+
+	[data-year-progress-v2] .ypv2-segments {
+		width: min(100%, 17.5rem);
+		max-width: 17.5rem;
+		gap: 0.25rem;
+		min-height: 0.25rem;
+		margin-top: 1rem;
+	}
+
+	[data-year-progress-v2] .ypv2-segment {
+		height: 0.25rem;
+	}
+
+	[data-year-progress-v2] .ypv2-controls {
+		align-self: center;
+		position: relative;
+		z-index: 25;
+		margin-top: 0;
+		padding-bottom: 1rem;
+		pointer-events: auto;
+	}
+
+	[data-year-progress-v2] .tool-utility-control {
+		position: relative;
+		pointer-events: auto;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	[data-year-progress-v2] [data-ypv2-theme-button]::after,
+	[data-year-progress-v2] [data-ypv2-share-button]::after {
+		content: "";
+		position: absolute;
+		inset: -0.5rem;
+		z-index: -1;
+	}
+}
+
+/* Mobile landscape — compact; hide note and segments */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+	[data-year-progress-v2] .preview-tool-first-screen {
+		place-items: center;
+	}
+
+	[data-year-progress-v2] .preview-tool-stage {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.75rem;
+		min-height: 0;
+	}
+
+	[data-year-progress-v2] .preview-tool-landscape-hide {
+		display: none;
+	}
+
+	[data-year-progress-v2] .preview-tool-landscape-compact-title,
+	[data-year-progress-v2] .ypv2-tool-name {
+		margin-top: 0;
+		font-size: 0.8125rem;
+		line-height: 1.125rem;
+	}
+
+	[data-year-progress-v2] .ypv2-year-headline {
+		margin-top: 0.125rem;
+		font-size: 0.6875rem;
+		line-height: 1rem;
+	}
+
+	[data-year-progress-v2] .ypv2-percentage {
+		margin-top: 0.125rem;
+		min-height: 6.5rem;
+	}
+
+	[data-year-progress-v2] .ypv2-percent-value {
+		font-size: 6.5rem;
+		line-height: 1;
+	}
+
+	[data-year-progress-v2] .ypv2-percent-symbol {
+		font-size: 2rem;
+		transform: translateY(-0.18rem);
+	}
+
+	[data-year-progress-v2] .ypv2-days-row {
+		display: block;
+		margin-top: 0.125rem;
+		font-size: 0.6875rem;
+		line-height: 1rem;
+		text-align: center;
+		white-space: nowrap;
+	}
+
+	[data-year-progress-v2] .ypv2-days-separator {
+		display: inline;
+	}
+
+	[data-year-progress-v2] .ypv2-controls {
+		margin-top: 0;
+		padding-bottom: 0;
+		gap: 0.5rem;
+	}
+
+	[data-year-progress-v2] .tool-utility-control {
+		min-height: 2rem;
+		padding: 0.375rem 0.75rem;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+}
+
+/* Lower content — keyword chips (B1A) */
+[data-year-progress-v2] .ypv2-keyword-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+[data-year-progress-v2] .ypv2-keyword-chip {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.5rem 0.875rem;
+	border-radius: 9999px;
+	font-size: 0.82rem;
+	line-height: 1.35;
+	color: rgb(244 243 248 / 0.72);
+	background: rgb(255 255 255 / 0.04);
+	border: 1px solid rgb(255 255 255 / 0.07);
+}
+
+/* Result stage — SSR pending until B2A hydration completes */
+[data-ypv2-result-stage].is-pending,
+[data-ypv2-result-stage].is-pending * {
+	visibility: hidden;
+}

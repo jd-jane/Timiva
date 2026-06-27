@@ -4,7 +4,7 @@ import ToolAdSlot from "../../ToolAdSlot.astro";
 import ToolCard from "../../ToolCard.astro";
 import { catalogIconMap } from "../../../lib/catalogIcons";
 import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
-import { getCatalogTool, type CatalogToolId } from "../../../data/toolsCatalog";
+import { getRelatedTools, type CatalogToolId } from "../../../data/toolsCatalog";
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getMessages } from "../../../i18n/messages";
 
@@ -16,19 +16,18 @@ const { locale = "en" } = Astro.props;
 const messages = getMessages(locale);
 const m = messages.countdownTimer;
 
-const relatedToolIds: CatalogToolId[] = ["event-countdown", "date-range"];
-const relatedTools = relatedToolIds
-	.map((id) => getCatalogTool(id))
-	.filter((tool): tool is NonNullable<ReturnType<typeof getCatalogTool>> =>
-		Boolean(tool?.available),
-	);
+const relatedTools = getRelatedTools("countdown-timer");
 
 const toolCopy: Record<
-	"event-countdown" | "date-range",
+	CatalogToolId,
 	{ title: string; relatedDescription: string }
 > = {
 	"event-countdown": messages.tools.eventCountdown,
 	"date-range": messages.tools.dateRange,
+	"countdown-timer": messages.tools.countdownTimer,
+	"year-progress": messages.tools.yearProgress,
+	"age-calculator": messages.tools.ageCalculator,
+	"life-progress": messages.tools.lifeProgress,
 };
 
 const relatedToolItems = relatedTools.map((tool) => ({
@@ -574,7 +573,7 @@ const ctv2PortraitTicks = Array.from({ length: PORTRAIT_TICK_COUNT }, (_, index)
 					m.faq.items.map((item) => (
 						<details class="group border-b border-white/20 py-4">
 							<summary
-								class="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden"
+								class="flex list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden"
 							>
 								<span>{item.question}</span>
 								<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">

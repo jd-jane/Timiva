@@ -304,7 +304,6 @@
     min-height: 44px;
     margin: 0;
     padding: 10px 16px;
-    cursor: pointer;
     border: 0;
     border-radius: var(--radius-pill);
     background: var(--button-bg, rgba(255, 255, 255, 0.06));

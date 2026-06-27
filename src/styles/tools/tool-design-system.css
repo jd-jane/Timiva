@@ -571,7 +571,6 @@ body.range-sheet-open {
 }
 
 .tool-faq-item .tool-faq-trigger {
-  cursor: pointer;
   padding: 14px 0;
   font-family: inherit;
   font-size: 0.92rem;
