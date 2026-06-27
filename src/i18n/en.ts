@@ -20,6 +20,11 @@ export const en = {
       description:
         "Set a simple countdown timer for any duration. Mobile-friendly, calm, and easy to use.",
     },
+    yearProgress: {
+      title: "Year Progress — See How Much of the Year Has Passed | Timiva",
+      description:
+        "See the current year's progress, days passed, days remaining, monthly rhythm, and a calm reminder—automatically based on your local time.",
+    },
     privacy: {
       title: "Privacy Policy — Timiva",
       description: "How Timiva handles your data and privacy.",
@@ -55,7 +60,7 @@ export const en = {
       "Important Dates",
       "Date Calculations",
       "Countdown Timer",
-      "Life Progress",
+      "Year Progress",
     ],
     featuredTools: {
       "event-countdown": {
@@ -73,10 +78,10 @@ export const en = {
         description:
           "Set a simple timer for focus, cooking, workouts, breaks, or everyday tasks.",
       },
-      "life-progress": {
-        title: "Life Progress Bar",
+      "year-progress": {
+        title: "Year Progress",
         description:
-          "Turn years, months, life, or personal timelines into a visible progress bar.",
+          "See how much of the current year has passed and how much remains, updated from your local time.",
       },
     },
     faq: {
@@ -90,7 +95,7 @@ export const en = {
         {
           question: "What tools are available on Timiva?",
           answer:
-            "The homepage currently includes Event Countdown, Date Range Calculator, Countdown Timer, and Life Progress Bar. These tools cover important dates, date calculations, timers and focus, and long-term time progress.",
+            "The homepage currently includes Event Countdown, Date Range Calculator, Countdown Timer, and Year Progress. These tools cover important dates, date calculations, timers and focus, and long-term time progress.",
         },
         {
           question: "How do I start using a Timiva tool?",
@@ -128,8 +133,7 @@ export const en = {
   },
   footer: {
     navLabel: "Site",
-    tagline:
-      "Simple tools for important dates, focus, daily rhythm, and life progress.",
+    tagline: "Simple tools for dates, focus, and daily rhythm.",
     allTools: "All Tools",
     copyright: "© 2026 Timiva",
     privacy: "Privacy",
@@ -172,6 +176,20 @@ export const en = {
         "Quickly calculate the days between two dates, including workdays and weekends.",
       compactDescription: "Count days between two dates.",
       relatedDescription: "Days between dates.",
+    },
+    countdownTimer: {
+      title: "Countdown Timer",
+      description:
+        "Set a simple timer for focus, cooking, workouts, breaks, or everyday tasks.",
+      compactDescription: "Set a countdown timer.",
+      relatedDescription: "Focus and daily timers.",
+    },
+    yearProgress: {
+      title: "Year Progress",
+      description:
+        "See how much of the current year has passed and how much remains, updated from your local time.",
+      compactDescription: "View the current year progress.",
+      relatedDescription: "See the year at a glance.",
     },
     ageCalculator: {
       title: "Age Calculator",
@@ -381,6 +399,69 @@ export const en = {
           question: "Does it play a sound when time is up?",
           answer:
             "Alert sound is off by default. You can turn sound on during a countdown, and Time's up will follow your current sound setting.",
+        },
+      ],
+    },
+  },
+  yearProgress: {
+    h1: "Year Progress",
+    resultPlaceholder: "—",
+    staticYearHeadline: "2026 has unfolded",
+    staticPercentValue: "46",
+    staticPercent: "46%",
+    staticDaysPassed: "156 days passed",
+    staticDaysRemaining: "209 days remaining",
+    staticDaysSeparator: " / ",
+    daysPassedLabel: "Days passed",
+    daysRemainingLabel: "Days remaining",
+    theme: "Theme",
+    share: "Share",
+    shareTitle: "Year Progress | Timiva",
+    copied: "Copied",
+    copyFailed: "Copy failed",
+    controlsAriaLabel: "Tool controls",
+    segmentsAriaLabel: "Monthly year progress",
+    relatedToolsDrawerAriaLabel: "Related tools drawer",
+    toggleRelatedToolsDrawerAriaLabel: "Toggle related tools drawer",
+    about: {
+      heading: "About Year Progress",
+      body: "Year Progress gives you a quiet glance at how much of the current year has passed and how much remains. It updates from your device's local time with no setup required.",
+    },
+    howTo: {
+      heading: "How to use Year Progress",
+      body: "Open the page to see the current year percentage, days passed, and days remaining. The monthly note and 12-month progress update automatically. You can also change the theme or share the current progress.",
+    },
+    tags: {
+      heading: "Year Progress tags",
+      items: ["Yearly reflection", "Time awareness", "Gentle reminder"],
+    },
+    faq: {
+      heading: "Year Progress FAQ",
+      items: [
+        {
+          question: "How is Year Progress calculated?",
+          answer:
+            "The tool uses your device's local date and time to calculate the elapsed portion between the start of this year and the start of the next year.",
+        },
+        {
+          question: "How are leap years calculated?",
+          answer:
+            "Leap years use 366 days and February uses 29 days. The visual still keeps 12 monthly segments.",
+        },
+        {
+          question: "Why doesn't it show 100% early on December 31?",
+          answer:
+            "To avoid showing completion before the year has actually ended, progress stays below 100% through the active year and switches to the new year at rollover.",
+        },
+        {
+          question: "Do I need to enter personal information?",
+          answer:
+            "No. The tool calculates from your device's local time and does not require a birthday, account, or other personal information.",
+        },
+        {
+          question: "Can I use this on mobile?",
+          answer:
+            "Yes. Mobile portrait shows the full year view, while mobile landscape keeps the primary result and controls compact.",
         },
       ],
     },

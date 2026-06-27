@@ -22,6 +22,11 @@ export const zh: Messages = {
       description:
         "設定任意時長的倒數計時，介面簡潔、適合手機使用，快速開始計時。",
     },
+    yearProgress: {
+      title: "今年進度－查看今年已過與剩餘比例 | Timiva",
+      description:
+        "快速查看今年已經走過多少、還剩多少天，以及 12 個月份的年度節奏。依照你的本地時間自動更新。",
+    },
     privacy: {
       title: "隱私權政策 — Timiva",
       description: "Timiva 如何處理您的資料與隱私。",
@@ -51,7 +56,7 @@ export const zh: Messages = {
     heroTitle: "讓時間被看見，也更好計算",
     heroLead: "簡單、舒服、手機好用的時間與生活節奏工具。",
     chipsGroupAriaLabel: "Timiva 工具類別",
-    chips: ["重要日子", "日期計算", "倒數計時", "人生進度"],
+    chips: ["重要日子", "日期計算", "倒數計時", "今年進度"],
     featuredTools: {
       "event-countdown": {
         title: "事件倒數",
@@ -65,9 +70,9 @@ export const zh: Messages = {
         title: "倒數計時器",
         description: "為專注、料理、運動或休息設定一段清楚的倒數時間。",
       },
-      "life-progress": {
-        title: "人生進度條",
-        description: "把年份、月份或人生時間變成一條看得見的進度。",
+      "year-progress": {
+        title: "今年進度",
+        description: "快速查看今年已經走過多少、還剩多少，依照你的本地時間自動更新。",
       },
     },
     faq: {
@@ -76,12 +81,12 @@ export const zh: Messages = {
         {
           question: "Timiva 可以用來做什麼？",
           answer:
-            "Timiva 提供簡單、舒服、手機好用的時間工具，可以用來建立事件倒數、計算日期區間、設定倒數計時，也能看見年份、月份或人生進度。首頁目前固定提供四個主要工具，讓你快速選擇最常用的時間功能。",
+            "Timiva 提供簡單、舒服、手機好用的時間工具，可以用來建立事件倒數、計算日期區間、設定倒數計時，也能看見今年進度。首頁目前固定提供四個主要工具，讓你快速選擇最常用的時間功能。",
         },
         {
           question: "Timiva 有哪些工具？",
           answer:
-            "目前首頁包含事件倒數、日期區間計算機、倒數計時器與人生進度條。這些工具分別對應重要日子、日期計算、計時與專注，以及長期時間進度。",
+            "目前首頁包含事件倒數、日期區間計算機、倒數計時器與今年進度。這些工具分別對應重要日子、日期計算、計時與專注，以及長期時間進度。",
         },
         {
           question: "如何開始使用 Timiva 的工具？",
@@ -118,7 +123,7 @@ export const zh: Messages = {
   },
   footer: {
     navLabel: "網站",
-    tagline: "簡單、舒服、手機好用的時間與生活節奏工具。",
+    tagline: "為日期、專注與日常節奏打造的簡單工具。",
     allTools: "全部工具",
     copyright: "© 2026 Timiva",
     privacy: "隱私權政策",
@@ -159,6 +164,18 @@ export const zh: Messages = {
       description: "快速計算兩個日期之間相差幾天，包含工作日與週末。",
       compactDescription: "計算兩日期間隔。",
       relatedDescription: "計算日期差。",
+    },
+    countdownTimer: {
+      title: "倒數計時器",
+      description: "為專注、料理、運動或休息設定一段清楚的倒數時間。",
+      compactDescription: "設定倒數計時。",
+      relatedDescription: "專注與日常計時。",
+    },
+    yearProgress: {
+      title: "今年進度",
+      description: "快速查看今年已經走過多少、還剩多少，依照你的本地時間自動更新。",
+      compactDescription: "查看今年進度。",
+      relatedDescription: "一眼看見今年進度。",
     },
     ageCalculator: {
       title: "年齡計算器",
@@ -363,6 +380,68 @@ export const zh: Messages = {
           question: "時間到了會有提示音嗎？",
           answer:
             "提示音預設為關閉。你可以在倒數中開啟提示音，時間到了會依當下的提示音設定顯示。",
+        },
+      ],
+    },
+  },
+  yearProgress: {
+    h1: "今年進度",
+    resultPlaceholder: "—",
+    staticYearHeadline: "2026 年已經走過",
+    staticPercentValue: "46",
+    staticPercent: "46%",
+    staticDaysPassed: "已過 156 天",
+    staticDaysRemaining: "剩餘 209 天",
+    staticDaysSeparator: " / ",
+    daysPassedLabel: "已過天數",
+    daysRemainingLabel: "剩餘天數",
+    theme: "主題",
+    share: "分享",
+    shareTitle: "今年進度 | Timiva",
+    copied: "已複製",
+    copyFailed: "複製失敗",
+    controlsAriaLabel: "工具控制項",
+    segmentsAriaLabel: "月份年度進度",
+    relatedToolsDrawerAriaLabel: "相關工具抽屜",
+    toggleRelatedToolsDrawerAriaLabel: "切換相關工具抽屜",
+    about: {
+      heading: "關於今年進度",
+      body: "今年進度讓你快速看見今年已經走過多少、還剩多少。頁面會依照裝置的本地時間自動更新，不需要輸入日期或設定目標。",
+    },
+    howTo: {
+      heading: "如何使用今年進度",
+      body: "打開頁面即可查看今年進度、已過天數與剩餘天數。當月提醒和 12 段月份進度會自動更新。你也可以切換主題，或分享目前的年度進度。",
+    },
+    tags: {
+      heading: "今年進度標籤",
+      items: ["年度回顧", "時間感", "輕量提醒"],
+    },
+    faq: {
+      heading: "今年進度 FAQ",
+      items: [
+        {
+          question: "今年進度是怎麼計算的？",
+          answer:
+            "工具會依照你裝置的本地日期與時間，計算從今年開始到明年開始之間已經經過的比例。",
+        },
+        {
+          question: "閏年會怎麼計算？",
+          answer: "閏年會以 366 天計算，2 月使用 29 天。畫面仍維持 12 段月份進度，不會增加第 13 段。",
+        },
+        {
+          question: "為什麼 12 月 31 日不會太早顯示 100%？",
+          answer:
+            "為了避免在一年真正結束前就顯示完成，工具會讓進度在年末持續接近 100%，並在跨年後切換到新年度。",
+        },
+        {
+          question: "需要輸入個人資料嗎？",
+          answer:
+            "不需要。工具會直接使用裝置的本地時間計算，不需要生日、帳號或其他個人資料。",
+        },
+        {
+          question: "可以在手機上使用嗎？",
+          answer:
+            "可以。手機直式會顯示完整年度資訊；手機橫式會保留主要數字與控制，減少畫面擁擠。",
         },
       ],
     },

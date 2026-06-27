@@ -12,6 +12,8 @@ export type ToolCategoryId = (typeof toolCategories)[number]["id"];
 export type CatalogToolId =
   | "event-countdown"
   | "date-range"
+  | "countdown-timer"
+  | "year-progress"
   | "age-calculator"
   | "life-progress";
 
@@ -33,7 +35,7 @@ export const catalogTools: CatalogTool[] = [
     available: true,
     featured: true,
     icon: "countdown",
-    relatedIds: ["date-range"],
+    relatedIds: ["date-range", "countdown-timer", "year-progress"],
   },
   {
     id: "date-range",
@@ -42,7 +44,25 @@ export const catalogTools: CatalogTool[] = [
     available: true,
     featured: true,
     icon: "date-range",
-    relatedIds: ["event-countdown"],
+    relatedIds: ["event-countdown", "countdown-timer", "year-progress"],
+  },
+  {
+    id: "countdown-timer",
+    slug: "countdown-timer",
+    categoryId: "productivity",
+    available: true,
+    featured: true,
+    icon: "timer",
+    relatedIds: ["event-countdown", "date-range", "year-progress"],
+  },
+  {
+    id: "year-progress",
+    slug: "year-progress",
+    categoryId: "momentum",
+    available: true,
+    featured: true,
+    icon: "year-progress",
+    relatedIds: ["event-countdown", "date-range", "countdown-timer"],
   },
   {
     id: "age-calculator",

@@ -30,6 +30,8 @@ const toolCopy: Record<
 > = {
 	"event-countdown": messages.tools.eventCountdown,
 	"date-range": messages.tools.dateRange,
+	"countdown-timer": messages.tools.countdownTimer,
+	"year-progress": messages.tools.yearProgress,
 	"age-calculator": messages.tools.ageCalculator,
 	"life-progress": messages.tools.lifeProgress,
 };
@@ -85,21 +87,21 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 						type="button"
 						id="edit-button"
 						data-ecv2-edit-button
-						class="preview-tool-control-btn inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm md:min-h-11 md:px-5 md:py-2.5"
+						class="preview-tool-control-btn tool-utility-control inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm md:min-h-11 md:px-5 md:py-2.5"
 					>
 						{m.edit}
 					</button>
 					<button
 						type="button"
 						data-ecv2-theme-button
-						class="preview-tool-control-btn inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm md:min-h-11 md:px-5 md:py-2.5"
+						class="preview-tool-control-btn tool-utility-control inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm md:min-h-11 md:px-5 md:py-2.5"
 					>
 						{m.theme}
 					</button>
 					<button
 						type="button"
 						data-ecv2-share-button
-						class="preview-tool-control-btn inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm md:min-h-11 md:px-5 md:py-2.5"
+						class="preview-tool-control-btn tool-utility-control inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm md:min-h-11 md:px-5 md:py-2.5"
 						aria-label={m.share}
 					>
 						{m.share}
@@ -328,7 +330,7 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 					m.faq.items.map((item) => (
 						<details class="group border-b border-white/20 py-4">
 							<summary
-								class="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden"
+								class="flex list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden"
 							>
 								<span>{item.question}</span>
 								<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">

@@ -16,16 +16,16 @@ export const featuredTools = [
   },
   {
     id: "timer",
-    slug: "timer",
-    available: false,
+    slug: "countdown-timer",
+    available: true,
     icon: "timer",
     category: "Timer",
   },
   {
-    id: "life-progress",
-    slug: "life-progress",
-    available: false,
-    icon: "life-progress",
+    id: "year-progress",
+    slug: "year-progress",
+    available: true,
+    icon: "year-progress",
     category: "Countdown",
   },
 ] as const;
