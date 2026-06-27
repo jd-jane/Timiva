@@ -29,24 +29,24 @@ docs/wireframes/
 目前使用：
 
 ```text
-01-home-mobile-portrait.jpg
-02-home-desktop.jpg
+approved-01-home-mobile-portrait.jpg
+approved-02-home-desktop.jpg
 
-03-all-tools-mobile-portrait.jpg
-04-all-tools-desktop.jpg
+approved-03-all-tools-mobile-portrait.jpg
+approved-04-all-tools-desktop.jpg
 
-05-text-page-mobile-portrait.jpg
-06-text-page-desktop.jpg
+approved-05-text-page-mobile-portrait.jpg
+approved-06-text-page-desktop.jpg
 
-07-tool-date-range-mobile-portrait.jpg
-08-tool-date-range-mobile-landscape.jpg
-09-tool-date-range-desktop.jpg
+approved-07-tool-date-range-mobile-portrait.jpg
+approved-08-tool-date-range-mobile-landscape.jpg
+approved-09-tool-date-range-desktop.jpg
 
-10-tool-event-mobile-portrait.jpg
-11-tool-event-mobile-landscape.jpg
+approved-10-tool-event-mobile-portrait.jpg
+approved-11-tool-event-mobile-landscape.jpg
 
-12-tool-desktop-sidebar.jpg
-13-tool-desktop-no-sidebar.jpg
+approved-12-tool-desktop-sidebar.jpg
+approved-13-tool-desktop-no-sidebar.jpg
 ```
 
 ---
@@ -55,19 +55,19 @@ docs/wireframes/
 
 | 編號 | 檔名 | Page | Viewport | 主要用途 |
 |---|---|---|---|---|
-| 01 | `01-home-mobile-portrait.jpg` | Home | Mobile Portrait 390 | 首頁手機直式 |
-| 02 | `02-home-desktop.jpg` | Home | Desktop 1440 | 首頁桌機版 |
-| 03 | `03-all-tools-mobile-portrait.jpg` | All Tools | Mobile Portrait 390 | 全部工具頁手機直式 |
-| 04 | `04-all-tools-desktop.jpg` | All Tools | Desktop 1440 | 全部工具頁桌機版 |
-| 05 | `05-text-page-mobile-portrait.jpg` | Text Page | Mobile Portrait 390 | 純文字頁手機直式，代表 Privacy / Terms / Contact |
-| 06 | `06-text-page-desktop.jpg` | Text Page | Desktop | 純文字頁桌機版，代表 Privacy / Terms / Contact |
-| 07 | `07-tool-date-range-mobile-portrait.jpg` | Tool Page | Mobile Portrait 390 | Date Range Calculator 手機直式 |
-| 08 | `08-tool-date-range-mobile-landscape.jpg` | Tool Page | Mobile Landscape | Date Range Calculator 手機橫式第一屏 compact layout |
-| 09 | `09-tool-date-range-desktop.jpg` | Tool Page | Desktop | Date Range Calculator 桌機版 |
-| 10 | `10-tool-event-mobile-portrait.jpg` | Tool Page | Mobile Portrait 390 | Event Countdown / 通用工具頁手機直式 |
-| 11 | `11-tool-event-mobile-landscape.jpg` | Tool Page | Mobile Landscape | Event Countdown / 通用工具頁手機橫式 |
-| 12 | `12-tool-desktop-sidebar.jpg` | Tool Page | Desktop Large | 工具頁桌機大螢幕，有右側 sidebar |
-| 13 | `13-tool-desktop-no-sidebar.jpg` | Tool Page | Desktop Small / Tablet | 工具頁桌機小螢幕或平板，無 sidebar |
+| 01 | `approved-01-home-mobile-portrait.jpg` | Home | Mobile Portrait 390 | 首頁手機直式 |
+| 02 | `approved-02-home-desktop.jpg` | Home | Desktop 1440 | 首頁桌機版 |
+| 03 | `approved-03-all-tools-mobile-portrait.jpg` | All Tools | Mobile Portrait 390 | 全部工具頁手機直式 |
+| 04 | `approved-04-all-tools-desktop.jpg` | All Tools | Desktop 1440 | 全部工具頁桌機版 |
+| 05 | `approved-05-text-page-mobile-portrait.jpg` | Text Page | Mobile Portrait 390 | 純文字頁手機直式，代表 Privacy / Terms / Contact |
+| 06 | `approved-06-text-page-desktop.jpg` | Text Page | Desktop | 純文字頁桌機版，代表 Privacy / Terms / Contact |
+| 07 | `approved-07-tool-date-range-mobile-portrait.jpg` | Tool Page | Mobile Portrait 390 | Date Range Calculator 手機直式 |
+| 08 | `approved-08-tool-date-range-mobile-landscape.jpg` | Tool Page | Mobile Landscape | Date Range Calculator 手機橫式第一屏 compact layout |
+| 09 | `approved-09-tool-date-range-desktop.jpg` | Tool Page | Desktop | Date Range Calculator 桌機版 |
+| 10 | `approved-10-tool-event-mobile-portrait.jpg` | Tool Page | Mobile Portrait 390 | Event Countdown / 通用工具頁手機直式 |
+| 11 | `approved-11-tool-event-mobile-landscape.jpg` | Tool Page | Mobile Landscape | Event Countdown / 通用工具頁手機橫式 |
+| 12 | `approved-12-tool-desktop-sidebar.jpg` | Tool Page | Desktop Large | 工具頁桌機大螢幕，有右側 sidebar |
+| 13 | `approved-13-tool-desktop-no-sidebar.jpg` | Tool Page | Desktop Small / Tablet | 工具頁桌機小螢幕或平板，無 sidebar |
 
 ---
 
@@ -80,8 +80,8 @@ Header 必須依照線稿，不得自行設計成傳統網站導覽列。
 適用線稿：
 
 ```text
-01-home-mobile-portrait.jpg
-02-home-desktop.jpg
+approved-01-home-mobile-portrait.jpg
+approved-02-home-desktop.jpg
 ```
 
 規則：
@@ -103,17 +103,17 @@ Header 必須依照線稿，不得自行設計成傳統網站導覽列。
 適用線稿：
 
 ```text
-03-all-tools-mobile-portrait.jpg
-04-all-tools-desktop.jpg
-05-text-page-mobile-portrait.jpg
-06-text-page-desktop.jpg
-07-tool-date-range-mobile-portrait.jpg
-08-tool-date-range-mobile-landscape.jpg
-09-tool-date-range-desktop.jpg
-10-tool-event-mobile-portrait.jpg
-11-tool-event-mobile-landscape.jpg
-12-tool-desktop-sidebar.jpg
-13-tool-desktop-no-sidebar.jpg
+approved-03-all-tools-mobile-portrait.jpg
+approved-04-all-tools-desktop.jpg
+approved-05-text-page-mobile-portrait.jpg
+approved-06-text-page-desktop.jpg
+approved-07-tool-date-range-mobile-portrait.jpg
+approved-08-tool-date-range-mobile-landscape.jpg
+approved-09-tool-date-range-desktop.jpg
+approved-10-tool-event-mobile-portrait.jpg
+approved-11-tool-event-mobile-landscape.jpg
+approved-12-tool-desktop-sidebar.jpg
+approved-13-tool-desktop-no-sidebar.jpg
 ```
 
 規則：
@@ -164,8 +164,8 @@ Footer 在工具頁、全部工具頁、純文字頁中都應保持一致。
 適用線稿：
 
 ```text
-01-home-mobile-portrait.jpg
-02-home-desktop.jpg
+approved-01-home-mobile-portrait.jpg
+approved-02-home-desktop.jpg
 ```
 
 ### Layout
@@ -206,8 +206,8 @@ If ad is disabled, no ad space is reserved.
 適用線稿：
 
 ```text
-03-all-tools-mobile-portrait.jpg
-04-all-tools-desktop.jpg
+approved-03-all-tools-mobile-portrait.jpg
+approved-04-all-tools-desktop.jpg
 ```
 
 ### Layout
@@ -248,8 +248,8 @@ All Tools Page 使用 inner page pill Header。
 適用線稿：
 
 ```text
-05-text-page-mobile-portrait.jpg
-06-text-page-desktop.jpg
+approved-05-text-page-mobile-portrait.jpg
+approved-06-text-page-desktop.jpg
 ```
 
 代表頁面：
@@ -288,9 +288,9 @@ Text Page 使用 inner page pill Header。
 適用線稿：
 
 ```text
-07-tool-date-range-mobile-portrait.jpg
-08-tool-date-range-mobile-landscape.jpg
-09-tool-date-range-desktop.jpg
+approved-07-tool-date-range-mobile-portrait.jpg
+approved-08-tool-date-range-mobile-landscape.jpg
+approved-09-tool-date-range-desktop.jpg
 ```
 
 ### Mobile Portrait Layout
@@ -334,10 +334,10 @@ Use the shared Tool Page ad placement rule.
 適用線稿：
 
 ```text
-10-tool-event-mobile-portrait.jpg
-11-tool-event-mobile-landscape.jpg
-12-tool-desktop-sidebar.jpg
-13-tool-desktop-no-sidebar.jpg
+approved-10-tool-event-mobile-portrait.jpg
+approved-11-tool-event-mobile-landscape.jpg
+approved-12-tool-desktop-sidebar.jpg
+approved-13-tool-desktop-no-sidebar.jpg
 ```
 
 ### Mobile Portrait Layout
@@ -408,7 +408,7 @@ If ad is disabled, no ad space is reserved.
 Sidebar 只適用於：
 
 ```text
-12-tool-desktop-sidebar.jpg
+approved-12-tool-desktop-sidebar.jpg
 ```
 
 規則：
@@ -436,7 +436,7 @@ All Tools Page
 
 ## 12. Ad Placement 規則
 
-廣告版位依線稿與 `docs/timiva-ad-layout-guidelines-v1.md`。
+廣告版位依線稿與 `docs/docs/standards/ad-layout-guidelines.md`。
 
 通用規則：
 

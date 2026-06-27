@@ -73,12 +73,12 @@ Bento / card 結構混亂
 ## 必讀文件
 
 ```text
-docs/timiva-product-principles-v2.md
-docs/timiva-layout-system-v2.md
-docs/timiva-design-system-v2.md
-docs/timiva-tailwind-css-guidelines-v2.md
-docs/timiva-wireframe-index-v1.md
-docs/timiva-ad-layout-guidelines-v1.md
+docs/core/product-principles.md
+docs/standards/layout-system.md
+docs/standards/design-system.md
+docs/standards/tailwind-guidelines.md
+docs/standards/wireframe-index.md
+docs/standards/ad-layout-guidelines.md
 ```
 
 ---

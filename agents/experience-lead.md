@@ -74,11 +74,11 @@ Bottom Sheet 無法正常關閉
 ## 必讀文件
 
 ```text
-docs/timiva-project-brief-v1.md
-docs/timiva-product-principles-v2.md
-docs/timiva-layout-system-v2.md
-docs/timiva-new-tool-development-rules-v2.md
-docs/timiva-tool-page-qa-checklist-v2.md
+docs/core/project-brief.md
+docs/core/product-principles.md
+docs/standards/layout-system.md
+docs/workflow/new-tool-development.md
+docs/workflow/tool-page-qa.md
 ```
 
 ---

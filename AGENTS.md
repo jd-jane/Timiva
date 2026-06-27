@@ -1,8 +1,8 @@
 # AGENTS.md — Timiva Project Operating Guide
 
 > 目的：這是 Cursor / Agents / Owner 的**任務入口檔**。  
-> 使用方式：每次開新任務時，先讀本檔，再讀 `docs/timiva-current-status.md`，最後讀該任務的 `docs/tasks/*.md`。  
-> 注意：根目錄只保留這一份 `AGENTS.md`。4 個代理人的詳細角色定義放在 `agents/`，不要再把舊版 monolithic agents 文件放回根目錄，避免 Cursor 混淆。
+> 使用方式：每次開新任務時，先讀本檔與 `docs/README.md` 的閱讀順序，再讀 `docs/project/current-status.md`。  
+> 注意：根目錄只保留這一份 `AGENTS.md`。4 個代理人的詳細角色定義放在 `agents/`。
 
 ---
 
@@ -42,19 +42,19 @@ No database by default
 
 ```text
 1. AGENTS.md
-2. docs/timiva-current-status.md
-3. docs/timiva-decision-log.md
-4. docs/timiva-project-brief-v1.md
-5. docs/timiva-product-principles-v2.md
-6. docs/timiva-ceo-workflow-v1.md
-7. docs/timiva-agent-review-workflow-v1.md
+2. docs/README.md（閱讀順序與文件分類）
+3. docs/project/current-status.md
+4. docs/project/decision-log.md
+5. docs/core/project-brief.md
+6. docs/core/product-principles.md
+7. docs/workflow/owner-workflow.md
 8. agents/README.md
-9. the specific docs/tasks/*.md file for the current task
+9. 若任務有對應 brief：local-docs/tasks/ 下的相關檔案（local-only，不進 Git）
 ```
 
 ### Agent role files
 
-Cursor must read the relevant role files based on Agent Routing. For broad or high-risk tasks, read all four:
+依任務等級與 `docs/workflow/agent-review.md` 判斷是否讀取。L 級或 Pre-deploy 時，讀取相關角色檔：
 
 ```text
 agents/experience-lead.md
@@ -66,37 +66,39 @@ agents/growth-strategist.md
 ### Layout / UI tasks additionally read
 
 ```text
-docs/timiva-layout-system-v2.md
-docs/timiva-design-system-v2.md
-docs/timiva-tailwind-css-guidelines-v2.md
-docs/timiva-wireframe-index-v1.md
+docs/standards/layout-system.md
+docs/standards/design-system.md
+docs/standards/tailwind-guidelines.md
+docs/standards/wireframe-index.md
+docs/wireframes/README.md
 ```
 
 ### Tool page tasks additionally read
 
 ```text
-docs/timiva-new-tool-development-rules-v2.md
-docs/timiva-tool-page-qa-checklist-v2.md
-docs/timiva-seo-aeo-ai-search-guidelines-v2.md
+docs/workflow/new-tool-development.md
+docs/workflow/tool-page-qa.md
+docs/standards/seo-guidelines.md
+docs/tools/[tool-name]/README.md
 ```
 
 ### SEO / content tasks additionally read
 
 ```text
-docs/timiva-seo-aeo-ai-search-guidelines-v2.md
-docs/timiva-product-architecture-v3.md
+docs/standards/seo-guidelines.md
+docs/core/product-architecture.md
 ```
 
 ### Ads tasks additionally read
 
 ```text
-docs/timiva-ad-layout-guidelines-v1.md
+docs/standards/ad-layout-guidelines.md
 ```
 
 ### Commit / deploy tasks additionally read
 
 ```text
-docs/timiva-pre-deploy-checklist-v1.md
+docs/workflow/pre-deploy.md
 ```
 
 ---
@@ -115,16 +117,7 @@ Existing verified tool core logic
 Preview baseline layout
 ```
 
-If a locked component seems necessary to modify, stop and report first:
-
-```text
-Component:
-Why it seems necessary:
-Affected pages:
-Safer alternative:
-Regression tests needed:
-Owner approval required: yes
-```
+If a locked component seems necessary to modify, stop and report first.
 
 ---
 
@@ -148,11 +141,10 @@ CSS / Tailwind rules:
 Use Tailwind CSS.
 Keep semantic HTML.
 Add Chinese comments for major sections.
-Write RWD by component section, not all desktop first then all mobile at the end.
+Write RWD by component section.
 Do not use inline style.
 Do not use !important.
 Do not use CSS id selectors.
-Avoid random hard-coded colors and arbitrary values.
 Prefer existing tokens and shared components.
 ```
 
@@ -160,37 +152,24 @@ Prefer existing tokens and shared components.
 
 ## 5. Cursor workflow
 
-For every task:
+依 `docs/workflow/owner-workflow.md` 的 **P / S / M / L** 等級執行：
 
 ```text
-1. Read AGENTS.md.
-2. Read docs/timiva-current-status.md.
-3. Read docs/timiva-decision-log.md.
-4. Read docs/timiva-agent-review-workflow-v1.md.
-5. Read agents/README.md and relevant agent role files.
-6. Read the task brief in docs/tasks/.
-7. Create an implementation plan only.
-8. Include Agent Routing in the plan.
-9. List files to modify and files not to modify.
-10. Wait for Owner approval before editing.
-11. Implement only the approved scope.
-12. Run required checks.
-13. Create a validation report.
-14. Wait for Owner final approval before commit / deploy.
+P 級：直接實作與微調，不需 Plan，不需 Agent Review
+S 級：直接實作，不需正式 Plan
+M 級：精簡 Plan → Owner 審核 → 實作 → 驗收
+L 級：完整 Plan → 分階段實作 → Targeted Agent Review → 驗收
 ```
 
-Recommended Cursor command:
+超出原範圍時必須停止並回報升級建議，不可自行擴大。
 
-```text
-Read AGENTS.md, docs/timiva-current-status.md, docs/timiva-decision-log.md, docs/timiva-agent-review-workflow-v1.md, agents/README.md, the relevant files in agents/, and docs/tasks/[TASK_FILE].md.
-Create an implementation plan only, including Agent Routing. Do not edit files yet.
-```
+Validation reports 與 task briefs 放 `local-docs/`，不進 Git。
 
 ---
 
 ## 6. Four Agents
 
-Timiva uses four review roles:
+Timiva 使用四個審查角色。是否啟用見 `docs/workflow/agent-review.md`（Targeted Review，非每任務全跑）。
 
 ```text
 Experience Lead = mobile UX, flow, touch targets, simplicity
@@ -199,41 +178,19 @@ Tech Architect = Astro / Tailwind / semantic HTML / JS stability / build
 Growth Strategist = SEO / AEO / FAQ Schema / related tools / internal links
 ```
 
-Agent definitions live in:
-
-```text
-agents/README.md
-agents/experience-lead.md
-agents/brand-guardian.md
-agents/tech-architect.md
-agents/growth-strategist.md
-```
-
-Every implementation plan must include:
-
-```text
-Experience Lead: Required / N/A — reason
-Brand Guardian: Required / N/A — reason
-Tech Architect: Required / N/A — reason
-Growth Strategist: Required / N/A — reason
-```
+L 級 Plan 需標註 Targeted Agent Review 範圍與原因。
 
 ---
 
 ## 7. Owner Final Approval
 
-Timiva is currently in Phase A: Owner-led confirmation.
-
-This means:
+Timiva 目前為 Phase A：Owner 主導確認期。
 
 ```text
 Agents passing does not mean automatic launch.
 Cursor finishing does not mean commit is allowed.
 Build passing does not mean deploy is allowed.
+commit 授權 ≠ push 授權 ≠ deploy 授權
 ```
 
-Cursor may only proceed when Owner says something equivalent to:
-
-```text
-確認，可以進入下一步。
-```
+Cursor may only proceed when Owner explicitly approves the next step.

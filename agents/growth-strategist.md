@@ -80,11 +80,11 @@ SEO 內容壓過工具體驗
 ## 必讀文件
 
 ```text
-docs/timiva-product-principles-v2.md
-docs/timiva-product-architecture-v3.md
-docs/timiva-v1-roadmap-v2.md
-docs/timiva-seo-aeo-ai-search-guidelines-v2.md
-docs/timiva-ad-layout-guidelines-v1.md
+docs/core/product-principles.md
+docs/core/product-architecture.md
+docs/core/roadmap.md
+docs/standards/seo-guidelines.md
+docs/standards/ad-layout-guidelines.md
 ```
 
 ---

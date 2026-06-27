@@ -2,7 +2,7 @@
 
 > 用途：本資料夾放置 Timiva 專案的 4 個核心審查代理人。  
 > 根目錄 `AGENTS.md` 是 Cursor 任務入口；本資料夾是代理人的角色定義與使用規則。  
-> 注意：舊版 monolithic `AGENTS.md` 已封存於 `docs/archive/legacy-agents-v1.md`，不應放在根目錄覆蓋新版入口檔。
+> 注意：舊版 monolithic `AGENTS.md` 已封存於 `local-docs/archive/docs/legacy-agents-v1.md`，不應放在根目錄覆蓋新版入口檔。
 
 ---
 

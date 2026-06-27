@@ -104,9 +104,9 @@ Cursor 開始任務時，應先讀：
 
 ```text
 1. AGENTS.md
-2. docs/timiva-current-status.md
-3. docs/timiva-decision-log.md
-4. docs/tasks/[TASK_FILE].md
+2. docs/project/current-status.md
+3. docs/project/decision-log.md
+4. local-docs/tasks/[TASK_FILE].md
 5. agents/README.md
 6. 相關 Agent 檔案
 7. 相關 skill 檔案
@@ -152,7 +152,7 @@ Skills 不應：
 4. 自行 commit / deploy
 5. 把 minor notes 當成 block
 6. 為了完成檢查而重寫整頁
-7. 忽略 docs/timiva-current-status.md
+7. 忽略 docs/project/current-status.md
 8. 把 discussion / drafts 當成 finalized decision
 ```
 
@@ -307,8 +307,8 @@ locked components 修改
 ```text
 agents/ = 誰來看
 agents/skills/ = 怎麼檢查
-docs/tasks/ = 這次要做什麼
-docs/reports/ = 做完怎麼回報
-docs/timiva-current-status.md = 目前真實狀態
-docs/timiva-decision-log.md = 已定案決策
+local-docs/tasks/ = 這次要做什麼
+local-docs/reports/ = 做完怎麼回報
+docs/project/current-status.md = 目前真實狀態
+docs/project/decision-log.md = 已定案決策
 ```
