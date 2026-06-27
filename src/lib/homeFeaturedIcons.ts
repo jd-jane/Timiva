@@ -7,5 +7,5 @@ export const homeFeaturedIconMap: Record<
 	"event-countdown": "calendar",
 	"date-range": "plus-square",
 	timer: "timer",
-	"life-progress": "progress",
+	"year-progress": "progress",
 };
