@@ -1,8 +1,8 @@
 # Timiva 專案現況
 
-> 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。  
-> 更新日期：2026-06-27  
-> 狀態來源：整合既有 Timiva docs、三個正式工具 Owner 實機驗收與 deploy、Countdown Timer Post-tool Link Integration、Year Progress V2 實作與站內連結整合（rebuild/main 本地 commit）、文件架構重組。
+> 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
+> 更新日期：2026-06-28
+> 狀態來源：整合既有 Timiva docs、三個正式工具 Owner 實機驗收與 deploy、Countdown Timer Post-tool Link Integration 與完成提示音改善、Year Progress V2 實作與站內連結整合（rebuild/main 本地 commit）、文件架構重組。
 
 ---
 
@@ -191,6 +191,40 @@ Locale-aware routes preserved
 ```
 
 Full spec: `docs/tools/countdown-timer/product-spec.md`
+
+### 5.1 完成提示音改善（2026-06-28）
+
+**實作完成 · Owner 實機驗收通過 · 本地 commit 已完成 · 尚未 push / deploy**
+
+```text
+主要播放路徑：本地 WAV（public/audio/countdown-complete.wav）+ HTMLAudioElement
+Fallback：Web Audio 三音 chime（播放失敗時）
+Sound 預設、localStorage key、倒數狀態機、UI：不變
+```
+
+Owner 實機驗收：
+
+```text
+iPhone Safari 靜音模式開啟：有聲
+iPhone Safari 靜音模式關閉：有聲
+低媒體音量：清楚可辨識
+桌機：有聲且較先前清楚
+```
+
+驗證：
+
+```text
+npm run build：通過
+git diff --check：通過
+dist/audio/countdown-complete.wav：已輸出
+```
+
+已知限制：
+
+```text
+僅保證頁面位於前景、瀏覽器正常開啟時的完成提示音。
+背景、鎖屏或系統暫停頁面時，不保證原生鬧鐘等級提醒。
+```
 
 ---
 

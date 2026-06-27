@@ -271,6 +271,55 @@ ZH：開啟提示音 / 關閉提示音
 Time's up 時依當下 Sound 狀態決定是否播放聲音。
 如果 Time's up 音效正在播放，使用者切成 Sound off，音效立即停止。
 即使聲音關閉，Time's up 視覺提示仍然存在。
+倒數完成只播放一次提示音。
+Sound Off、Cancel、Done 或重設時，不得繼續播放。
+```
+
+### 7.4 完成提示音
+
+Sound 預設為 Off。使用者開啟 Sound 後，倒數完成只播放一次提示音。
+
+**主要播放路徑**
+
+```text
+音檔：public/audio/countdown-complete.wav
+方式：HTMLAudioElement（singleton）
+格式：16-bit PCM WAV · mono · 22,050 Hz · 約 2.0 秒
+開頭保留約 120 ms 無聲區段
+```
+
+**準備與播放**
+
+```text
+Sound Off → On、Start、Resume、Quick Start、Custom「套用並開始」時，
+若 soundEnabled === true，在使用者操作鏈中 prepareCompletionAudio()。
+
+Warm-up：play() 成功後立即 pause() 並 currentTime = 0。
+不得在使用者聽到可辨識的 warm-up 聲音。
+
+Time's up 時：pause() → currentTime = 0 → play()，只播放一次。
+```
+
+**Fallback**
+
+```text
+HTMLAudioElement 播放失敗時，保留 Web Audio API 三音 chime 作為 fallback。
+不得同時播放 HTML 音檔與 Web Audio。
+```
+
+**儲存**
+
+```text
+localStorage key 維持：timiva-countdown-timer-sound-enabled
+刷新後不恢復進行中的倒數（既有規則不變）。
+```
+
+**支援範圍**
+
+```text
+僅保證頁面位於前景、瀏覽器正常開啟時的完成提示音。
+手機鎖定畫面、瀏覽器切至背景或系統暫停頁面時，
+不保證具有原生鬧鐘等級的提醒能力。
 ```
 
 ---
@@ -729,6 +778,9 @@ Time's up 狀態 Cancel disabled，Done 可點。
 倒數中可切換。
 Time's up 播放中切 Sound off，音效立即停止。
 Sound off 時仍有視覺提示。
+主要完成提示音：public/audio/countdown-complete.wav（HTMLAudioElement）。
+Web Audio 三音 chime 保留為 fallback。
+Pause → Resume → 完成時可播放（Sound on）。
 ```
 
 ### 儲存與背景
@@ -739,3 +791,25 @@ Sound preference 可保存。
 重新整理不恢復 active countdown。
 背景回來後用 target end time 重新計算剩餘時間。
 ```
+
+---
+
+## 不可回歸條件（完成提示音）
+
+以下為 Owner 實機驗收通過後必須維持的行為：
+
+```text
+Sound Off → 完成時完全無聲
+Sound On → 完成時只播放一次
+Cancel → 不播放
+Done → 不重播
+Pause → Resume → 完成時可播放
+iPhone 靜音模式開啟時，在 Owner 實測環境中可播放
+低媒體音量下仍可辨識
+Start／Resume 時的音訊準備不可產生可聽見的 warm-up 聲音
+Sound Off、Cancel、Done 或重設時，不得繼續播放
+刷新後不恢復進行中的倒數
+localStorage key 維持 timiva-countdown-timer-sound-enabled
+```
+
+不宣稱所有 iOS 版本皆保證支援、背景執行保證有聲，或鎖定畫面可作為原生鬧鐘。

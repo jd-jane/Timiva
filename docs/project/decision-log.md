@@ -5,6 +5,55 @@
 
 ---
 
+## 2026-06-28 — Countdown Timer 完成提示音改用本地音檔
+
+### 背景
+
+```text
+原本使用 Web Audio API 三音 chime。
+桌機低系統音量下過小聲。
+iPhone 靜音模式會使 Web Audio 無聲。
+Owner 平常長期使用靜音模式與低媒體音量。
+```
+
+### 決策
+
+```text
+使用原創本地 WAV（public/audio/countdown-complete.wav）
+搭配 HTMLAudioElement 作為主要完成提示音。
+既有 Web Audio chime 保留為 fallback。
+```
+
+### 原因
+
+```text
+提高低音量下的可辨識度
+改善 iPhone 靜音模式的真實使用情境
+不新增外部套件
+不依賴遠端音訊資源
+維持既有 UI、狀態機與 Sound preference（timiva-countdown-timer-sound-enabled）
+```
+
+### 邊界
+
+```text
+只保證頁面位於前景時的提示音。
+不承諾背景、鎖屏或原生鬧鐘能力。
+```
+
+### 驗證
+
+```text
+Owner 已完成桌機與 iPhone 實機驗收。
+iPhone 靜音模式開啟與關閉皆可播放。
+低媒體音量下可辨識。
+npm run build 通過。
+```
+
+規格：`docs/tools/countdown-timer/product-spec.md` §7.4、不可回歸條件
+
+---
+
 ## 2026-06-27 — Global Interactive Cursor Baseline
 
 Decision:

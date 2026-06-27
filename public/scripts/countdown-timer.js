@@ -98,6 +98,7 @@
 
 	const LAST_DURATION_STORAGE_KEY = "timiva-countdown-timer-last-duration-ms";
 	const SOUND_PREFERENCE_STORAGE_KEY = "timiva-countdown-timer-sound-enabled";
+	const COMPLETION_AUDIO_SRC = "/audio/countdown-complete.wav";
 	const MOBILE_ROW1_OVERFLOW_PRESET_SECONDS = "300";
 	const MOBILE_ROW1_LONG_LAST_OVERFLOW_PRESET_SECONDS = "600";
 	const MOBILE_ROW2_STATIC_ANCHOR_PRESET_SECONDS = "1500";
@@ -139,6 +140,9 @@
 	let pausedRemainingMs = 0;
 	let soundEnabled = false;
 	let audioContext = null;
+	let completionAudio = null;
+	let completionAudioPrepared = false;
+	let completionAudioPreparePromise = null;
 	let activeCompletionNodes = [];
 	let completionSoundPlayedForSession = false;
 	let completionPlaybackSessionId = 0;
@@ -179,6 +183,53 @@
 		}
 	}
 
+	function getCompletionAudio() {
+		if (!completionAudio) {
+			completionAudio = new Audio(COMPLETION_AUDIO_SRC);
+			completionAudio.preload = "auto";
+			completionAudio.setAttribute("playsinline", "");
+			completionAudio.setAttribute("webkit-playsinline", "true");
+		}
+
+		return completionAudio;
+	}
+
+	function prepareCompletionAudio() {
+		if (!soundEnabled) {
+			return Promise.resolve(false);
+		}
+
+		if (completionAudioPrepared) {
+			return Promise.resolve(true);
+		}
+
+		if (completionAudioPreparePromise) {
+			return completionAudioPreparePromise;
+		}
+
+		const audio = getCompletionAudio();
+		audio.load();
+		audio.currentTime = 0;
+
+		completionAudioPreparePromise = audio
+			.play()
+			.then(() => {
+				audio.pause();
+				audio.currentTime = 0;
+				completionAudioPrepared = true;
+				return true;
+			})
+			.catch(() => {
+				completionAudioPrepared = false;
+				return false;
+			})
+			.finally(() => {
+				completionAudioPreparePromise = null;
+			});
+
+		return completionAudioPreparePromise;
+	}
+
 	function ensureAudioContext() {
 		if (!audioContext) {
 			const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
@@ -191,7 +242,7 @@
 
 		if (audioContext.state === "suspended") {
 			audioContext.resume().catch(() => {
-				// Ignore resume failures.
+				// Web Audio fallback resume failed.
 			});
 		}
 
@@ -199,6 +250,15 @@
 	}
 
 	function stopCompletionSound() {
+		if (completionAudio) {
+			try {
+				completionAudio.pause();
+				completionAudio.currentTime = 0;
+			} catch (error) {
+				// Ignore teardown failures.
+			}
+		}
+
 		activeCompletionNodes.forEach((node) => {
 			try {
 				if (typeof node.stop === "function") {
@@ -233,7 +293,7 @@
 		const startTime = ctx.currentTime;
 		const masterGain = ctx.createGain();
 		masterGain.gain.setValueAtTime(0.0001, startTime);
-		masterGain.gain.exponentialRampToValueAtTime(0.11, startTime + 0.08);
+		masterGain.gain.exponentialRampToValueAtTime(0.28, startTime + 0.08);
 		masterGain.gain.exponentialRampToValueAtTime(0.0001, startTime + 3.6);
 		masterGain.connect(ctx.destination);
 		activeCompletionNodes.push(masterGain);
@@ -253,7 +313,7 @@
 			oscillator.type = "sine";
 			oscillator.frequency.setValueAtTime(note.frequency, noteStart);
 			noteGain.gain.setValueAtTime(0.0001, noteStart);
-			noteGain.gain.exponentialRampToValueAtTime(0.34, noteStart + 0.06);
+			noteGain.gain.exponentialRampToValueAtTime(0.55, noteStart + 0.06);
 			noteGain.gain.exponentialRampToValueAtTime(0.0001, noteEnd);
 			oscillator.connect(noteGain);
 			noteGain.connect(masterGain);
@@ -265,18 +325,20 @@
 		scheduleCompletionSoundCleanup(sessionId);
 	}
 
-	function playCompletionSound() {
-		if (!timesUpSoundEligible || completionSoundPlayedForSession || !soundEnabled) {
+	function playWebAudioCompletionSound(sessionId) {
+		if (
+			completionSoundPlayedForSession ||
+			!timesUpSoundEligible ||
+			!soundEnabled ||
+			sessionId !== completionPlaybackSessionId
+		) {
 			return;
 		}
 
-		const ctx = audioContext;
+		const ctx = ensureAudioContext();
 		if (!ctx) {
 			return;
 		}
-
-		completionSoundPlayedForSession = true;
-		const sessionId = completionPlaybackSessionId;
 
 		const resumePromise = ctx.state === "suspended" ? ctx.resume() : Promise.resolve();
 		resumePromise
@@ -284,20 +346,59 @@
 				if (
 					sessionId !== completionPlaybackSessionId ||
 					!soundEnabled ||
-					!timesUpSoundEligible
+					!timesUpSoundEligible ||
+					completionSoundPlayedForSession
 				) {
 					return;
 				}
 
 				try {
+					completionSoundPlayedForSession = true;
 					playSoftCompletionChime(ctx, sessionId);
 				} catch (error) {
-					// Ignore playback failures.
+					completionSoundPlayedForSession = false;
 				}
 			})
 			.catch(() => {
-				// Ignore resume failures.
+				// Web Audio fallback resume failed.
 			});
+	}
+
+	function playCompletionSound() {
+		if (!timesUpSoundEligible || completionSoundPlayedForSession || !soundEnabled) {
+			return;
+		}
+
+		const sessionId = completionPlaybackSessionId;
+
+		if (completionAudio && completionAudioPrepared) {
+			const audio = completionAudio;
+			audio.pause();
+			audio.currentTime = 0;
+
+			audio
+				.play()
+				.then(() => {
+					if (
+						sessionId !== completionPlaybackSessionId ||
+						!soundEnabled ||
+						!timesUpSoundEligible
+					) {
+						audio.pause();
+						audio.currentTime = 0;
+						return;
+					}
+
+					completionSoundPlayedForSession = true;
+				})
+				.catch(() => {
+					playWebAudioCompletionSound(sessionId);
+				});
+
+			return;
+		}
+
+		playWebAudioCompletionSound(sessionId);
 	}
 
 	function syncSoundControl() {
@@ -315,18 +416,19 @@
 
 		if (!enabled && stopActivePlayback) {
 			stopCompletionSound();
+			completionAudioPrepared = false;
+			completionAudioPreparePromise = null;
 		}
 	}
 
 	function toggleSoundPreference() {
-		ensureAudioContext();
-
 		if (soundEnabled) {
 			setSoundEnabled(false);
 			return;
 		}
 
 		setSoundEnabled(true, { stopActivePlayback: false });
+		prepareCompletionAudio();
 	}
 
 	function prepareCountdownSoundSession() {
@@ -2102,7 +2204,7 @@
 		}
 
 		if (soundEnabled) {
-			ensureAudioContext();
+			prepareCompletionAudio();
 		}
 
 		cancelEditPreview();
@@ -2140,6 +2242,10 @@
 	function resumeCountdown() {
 		if (state !== "paused" || pausedRemainingMs <= 0) {
 			return;
+		}
+
+		if (soundEnabled) {
+			prepareCompletionAudio();
 		}
 
 		endTimestamp = Date.now() + pausedRemainingMs;
