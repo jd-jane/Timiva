@@ -1,0 +1,416 @@
+---
+import { getLocalizedPath, routePaths, type Locale } from "../i18n/config";
+import { getMessages } from "../i18n/messages";
+import "../styles/analytics-consent.css";
+
+interface Props {
+	locale?: Locale;
+}
+
+const { locale = "en" } = Astro.props;
+const text = getMessages(locale).analytics;
+const privacyHref = getLocalizedPath(locale, routePaths.privacy);
+const settingsTitleId = "analytics-consent-settings-title";
+---
+
+<div class="analytics-consent-root" data-analytics-consent-root>
+	<section
+		class="analytics-consent-banner"
+		role="region"
+		aria-label={text.bannerRegionLabel}
+		data-analytics-consent-banner
+		hidden
+	>
+		<div class="analytics-consent-banner__inner">
+			<p class="analytics-consent-banner__body">{text.bannerBody}</p>
+			<div class="analytics-consent-banner__actions">
+				<button type="button" class="analytics-consent-btn" data-analytics-banner-action="rejected">
+					{text.necessaryOnly}
+				</button>
+				<button type="button" class="analytics-consent-btn" data-analytics-banner-action="accepted">
+					{text.allowAnalytics}
+				</button>
+			</div>
+		</div>
+	</section>
+
+	<div
+		class="analytics-consent-settings"
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby={settingsTitleId}
+		data-analytics-consent-settings
+		hidden
+	>
+		<div class="analytics-consent-settings__backdrop" aria-hidden="true"></div>
+		<div class="analytics-consent-settings__panel">
+			<div class="analytics-consent-settings__header">
+				<h2 class="analytics-consent-settings__title" id={settingsTitleId}>
+					{text.settingsTitle}
+				</h2>
+				<button
+					type="button"
+					class="analytics-consent-settings__close"
+					aria-label={text.close}
+					data-analytics-settings-close
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+						<path
+							d="M4.25 4.25l7.5 7.5M11.75 4.25l-7.5 7.5"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"></path>
+					</svg>
+				</button>
+			</div>
+			<p class="analytics-consent-settings__body">{text.settingsBody}</p>
+			<div
+				class="analytics-consent-settings__choices"
+				role="radiogroup"
+				aria-labelledby={settingsTitleId}
+			>
+				<button
+					type="button"
+					role="radio"
+					class="analytics-consent-settings-choice"
+					data-analytics-settings-choice="rejected"
+					aria-checked="false"
+				>
+					<span class="analytics-consent-settings-choice__label">{text.necessaryOnly}</span>
+					<svg
+						class="analytics-consent-settings-choice__check"
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="none"
+						aria-hidden="true"
+					>
+						<path
+							d="M4 8.25l2.5 2.5L12 5"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+				</button>
+				<button
+					type="button"
+					role="radio"
+					class="analytics-consent-settings-choice"
+					data-analytics-settings-choice="accepted"
+					aria-checked="false"
+				>
+					<span class="analytics-consent-settings-choice__label">{text.allowAnalytics}</span>
+					<svg
+						class="analytics-consent-settings-choice__check"
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="none"
+						aria-hidden="true"
+					>
+						<path
+							d="M4 8.25l2.5 2.5L12 5"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+				</button>
+			</div>
+			<div class="analytics-consent-settings__footer">
+				<a class="analytics-consent-settings__link" href={privacyHref}>
+					{text.privacyLink}
+				</a>
+				<button type="button" class="analytics-consent-settings__save" data-analytics-settings-save>
+					{text.save}
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script is:inline>
+	(function () {
+		var RESERVE_GAP_PX = 12;
+		var root = document.querySelector("[data-analytics-consent-root]");
+		if (!root) return;
+
+		var api = window.TimivaAnalyticsConsent;
+		if (!api) return;
+
+		var banner = root.querySelector("[data-analytics-consent-banner]");
+		var settings = root.querySelector("[data-analytics-consent-settings]");
+		var panel = settings && settings.querySelector(".analytics-consent-settings__panel");
+		var closeBtn = root.querySelector("[data-analytics-settings-close]");
+		var saveBtn = root.querySelector("[data-analytics-settings-save]");
+		var choiceReject = root.querySelector('[data-analytics-settings-choice="rejected"]');
+		var choiceAccept = root.querySelector('[data-analytics-settings-choice="accepted"]');
+		var bannerReject = root.querySelector('[data-analytics-banner-action="rejected"]');
+		var bannerAccept = root.querySelector('[data-analytics-banner-action="accepted"]');
+		var backdrop = settings && settings.querySelector(".analytics-consent-settings__backdrop");
+
+		var settingsOpen = false;
+		var settingsTrigger = null;
+		var pendingChoice = null;
+		var resizeObserver = null;
+
+		function isToolSheetOpen() {
+			return (
+				document.body.classList.contains("msb-sheet-open") ||
+				document.body.classList.contains("tool-operation-open")
+			);
+		}
+
+		function readState() {
+			return api.readConsent();
+		}
+
+		function clearReserve() {
+			document.documentElement.style.setProperty("--timiva-consent-banner-reserve", "0px");
+			delete document.body.dataset.consentBannerVisible;
+		}
+
+		function syncReserve() {
+			if (!banner || banner.hasAttribute("hidden")) {
+				clearReserve();
+				return;
+			}
+
+			if (isToolSheetOpen()) {
+				clearReserve();
+				return;
+			}
+
+			var height = banner.getBoundingClientRect().height;
+			var reserve = Math.max(0, Math.ceil(height + RESERVE_GAP_PX));
+			document.documentElement.style.setProperty(
+				"--timiva-consent-banner-reserve",
+				reserve + "px"
+			);
+			document.body.dataset.consentBannerVisible = "true";
+		}
+
+		function setBannerVisible(visible) {
+			if (!banner) return;
+
+			if (visible && !isToolSheetOpen() && !settingsOpen && readState() === "unknown") {
+				banner.removeAttribute("hidden");
+				syncReserve();
+				return;
+			}
+
+			banner.setAttribute("hidden", "");
+			clearReserve();
+		}
+
+		function updateChoiceSelection(choice) {
+			pendingChoice = choice;
+
+			if (choiceReject) {
+				choiceReject.setAttribute("aria-checked", choice === "rejected" ? "true" : "false");
+			}
+
+			if (choiceAccept) {
+				choiceAccept.setAttribute("aria-checked", choice === "accepted" ? "true" : "false");
+			}
+		}
+
+		function getFocusableElements() {
+			if (!panel) return [];
+
+			return Array.prototype.slice
+				.call(
+					panel.querySelectorAll(
+						'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+					)
+				)
+				.filter(function (el) {
+					return !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true";
+				});
+		}
+
+		function openSettings(trigger) {
+			if (!settings || isToolSheetOpen()) return;
+
+			settingsTrigger = trigger || null;
+			var state = readState();
+			updateChoiceSelection(state === "unknown" ? null : state);
+			settingsOpen = true;
+			settings.removeAttribute("hidden");
+			setBannerVisible(false);
+
+			var focusTarget = closeBtn || choiceReject || choiceAccept;
+			if (focusTarget && typeof focusTarget.focus === "function") {
+				focusTarget.focus();
+			}
+		}
+
+		function closeSettings(restoreBanner) {
+			if (!settings) return;
+
+			settingsOpen = false;
+			settings.setAttribute("hidden", "");
+			pendingChoice = null;
+
+			if (restoreBanner && readState() === "unknown" && !isToolSheetOpen()) {
+				setBannerVisible(true);
+			} else {
+				setBannerVisible(false);
+			}
+
+			if (settingsTrigger && typeof settingsTrigger.focus === "function") {
+				settingsTrigger.focus();
+			}
+
+			settingsTrigger = null;
+		}
+
+		function handleFocusTrap(event) {
+			if (!settingsOpen || event.key !== "Tab" || !panel) return;
+
+			var focusables = getFocusableElements();
+			if (!focusables.length) return;
+
+			var first = focusables[0];
+			var last = focusables[focusables.length - 1];
+
+			if (event.shiftKey && document.activeElement === first) {
+				event.preventDefault();
+				last.focus();
+			} else if (!event.shiftKey && document.activeElement === last) {
+				event.preventDefault();
+				first.focus();
+			}
+		}
+
+		function handleEscape(event) {
+			if (event.key === "Escape" && settingsOpen) {
+				event.preventDefault();
+				closeSettings(true);
+			}
+		}
+
+		function syncWithEnvironment() {
+			if (isToolSheetOpen()) {
+				if (settingsOpen) closeSettings(false);
+				setBannerVisible(false);
+				return;
+			}
+
+			if (settingsOpen) {
+				setBannerVisible(false);
+				return;
+			}
+
+			setBannerVisible(readState() === "unknown");
+		}
+
+		function isConsentSaved(result) {
+			return !!(result && result.consentSaved === true);
+		}
+
+		function applyChoice(choice) {
+			if (choice === "accepted") {
+				return api.acceptAnalytics().then(isConsentSaved);
+			}
+
+			return Promise.resolve(isConsentSaved(api.rejectAnalytics()));
+		}
+
+		function applyBannerChoice(choice) {
+			return applyChoice(choice).then(function (ok) {
+				if (ok) setBannerVisible(false);
+				return ok;
+			});
+		}
+
+		function applySettingsSave() {
+			if (pendingChoice !== "accepted" && pendingChoice !== "rejected") {
+				return;
+			}
+
+			applyChoice(pendingChoice).then(function (ok) {
+				if (ok) closeSettings(false);
+			});
+		}
+
+		if (bannerReject) {
+			bannerReject.addEventListener("click", function () {
+				applyBannerChoice("rejected");
+			});
+		}
+
+		if (bannerAccept) {
+			bannerAccept.addEventListener("click", function () {
+				applyBannerChoice("accepted");
+			});
+		}
+
+		if (choiceReject) {
+			choiceReject.addEventListener("click", function () {
+				updateChoiceSelection("rejected");
+			});
+		}
+
+		if (choiceAccept) {
+			choiceAccept.addEventListener("click", function () {
+				updateChoiceSelection("accepted");
+			});
+		}
+
+		if (saveBtn) {
+			saveBtn.addEventListener("click", applySettingsSave);
+		}
+
+		if (closeBtn) {
+			closeBtn.addEventListener("click", function () {
+				closeSettings(true);
+			});
+		}
+
+		if (backdrop) {
+			backdrop.addEventListener("click", function () {
+				closeSettings(true);
+			});
+		}
+
+		document.addEventListener("click", function (event) {
+			var trigger = event.target.closest("[data-footer-analytics-settings]");
+			if (trigger) {
+				event.preventDefault();
+				openSettings(trigger);
+			}
+		});
+
+		document.addEventListener("keydown", handleEscape);
+
+		if (panel) {
+			panel.addEventListener("keydown", handleFocusTrap);
+		}
+
+		if (banner && typeof ResizeObserver !== "undefined") {
+			resizeObserver = new ResizeObserver(function () {
+				syncReserve();
+			});
+			resizeObserver.observe(banner);
+		}
+
+		window.addEventListener("resize", syncReserve);
+		window.addEventListener("orientationchange", function () {
+			window.setTimeout(syncReserve, 100);
+		});
+
+		var bodyClassObserver = new MutationObserver(syncWithEnvironment);
+		bodyClassObserver.observe(document.body, {
+			attributes: true,
+			attributeFilter: ["class"],
+		});
+
+		api.initializeFromPersistedState().finally(function () {
+			syncWithEnvironment();
+		});
+
+		window.TimivaAnalyticsConsentUI = {
+			openSettings: openSettings,
+		};
+	})();
+</script>

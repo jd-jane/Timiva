@@ -2,6 +2,8 @@
 import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import AnalyticsConsent from "../components/AnalyticsConsent.astro";
+import { analyticsEnabled, gaMeasurementId } from "../lib/analyticsConfig";
 import { siteUrl, type Locale } from "../i18n/config";
 
 interface Props {
@@ -36,7 +38,7 @@ function toAbsoluteUrl(path: string) {
 ---
 
 <!doctype html>
-<html lang={htmlLang}>
+<html lang={htmlLang} data-ga-measurement-id={analyticsEnabled ? gaMeasurementId : undefined}>
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
@@ -114,7 +116,10 @@ function toAbsoluteUrl(path: string) {
 				<slot />
 			</main>
 
-			<Footer locale={locale} />
+			<Footer locale={locale} analyticsEnabled={analyticsEnabled} />
 		</div>
+
+		{analyticsEnabled && <script is:inline src="/scripts/analytics-consent.js"></script>}
+		{analyticsEnabled && <AnalyticsConsent locale={locale} />}
 	</body>
 </html>

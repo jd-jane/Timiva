@@ -129,8 +129,21 @@ export const zh: Messages = {
     privacy: "隱私權政策",
     terms: "使用條款",
     contact: "聯絡我們",
+    analyticsSettings: "分析設定",
     emailLabel: "Email",
     email: "hello@timiva.app",
+  },
+  analytics: {
+    bannerRegionLabel: "分析同意提示",
+    bannerBody:
+      "Timiva 使用可選的分析功能，了解頁面使用情況並改善工具。你可以允許分析，或僅使用必要功能。",
+    necessaryOnly: "僅使用必要功能",
+    allowAnalytics: "允許分析",
+    settingsTitle: "分析設定",
+    settingsBody: "選擇是否允許 Timiva 使用 Google Analytics。這不會影響工具的正常使用。",
+    privacyLink: "詳見隱私權政策",
+    close: "關閉",
+    save: "儲存",
   },
   relatedTools: {
     heading: "你可能也會需要",

@@ -139,8 +139,22 @@ export const en = {
     privacy: "Privacy",
     terms: "Terms",
     contact: "Contact",
+    analyticsSettings: "Analytics settings",
     emailLabel: "Email",
     email: "hello@timiva.app",
+  },
+  analytics: {
+    bannerRegionLabel: "Analytics consent",
+    bannerBody:
+      "Timiva uses optional analytics to understand how pages are used and improve the tools. You can allow analytics or use only necessary features.",
+    necessaryOnly: "Necessary only",
+    allowAnalytics: "Allow analytics",
+    settingsTitle: "Analytics settings",
+    settingsBody:
+      "Choose whether Timiva may use Google Analytics. This does not affect how the tools work.",
+    privacyLink: "Learn more in our Privacy Policy",
+    close: "Close",
+    save: "Save",
   },
   relatedTools: {
     heading: "You may also need",

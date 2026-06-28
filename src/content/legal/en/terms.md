@@ -10,7 +10,7 @@ By using Timiva, you understand and agree to these Terms. If you do not agree to
 
 ## 1. Nature of the Service
 
-Timiva is a free time and date tools website. It may provide tools such as event countdowns, date range calculators, age calculators, progress displays, and other time-related tools.
+Timiva is a free time and date tools website. It provides tools such as event countdowns, date range calculators, countdown timers, year progress displays, and other time-related tools.
 
 Timiva’s tools are intended for everyday reference, personal planning, and general informational use. Timiva does not provide legal, medical, financial, tax, investment, accounting, professional scheduling, or other professional advice.
 
@@ -40,7 +40,7 @@ When using Timiva, you agree to:
 
 ## 5. Advertising and Third-Party Content
 
-Timiva may display third-party ads, sponsored content, or external links now or in the future. These may be provided by third-party services and may vary based on your location, browser settings, ad preferences, or other factors.
+Timiva may include external links. In the future, Timiva may also display third-party ads or sponsored content. If added, such content may be provided by third-party services and may vary based on your location, browser settings, ad preferences, or other factors.
 
 Displaying ads on Timiva does not mean that we endorse, guarantee, or take responsibility for the products, services, claims, offers, or external websites shown in those ads.
 
@@ -48,9 +48,9 @@ If you click an ad or third-party link, you may be taken to a third-party websit
 
 ## 6. Privacy, Cookies, and Local Storage
 
-Timiva may use cookies, browser local storage, or similar technologies to provide website features, remember tool settings, analyze traffic, display ads, or improve the user experience.
+Timiva may use Google Analytics 4 when you choose to allow optional analytics, as described in our Privacy Policy. Timiva may also use cookies, browser local storage, or similar technologies to provide website features, remember tool settings, or improve the user experience.
 
-For more information about how Timiva handles data, cookies, advertising services, and local storage, please read our Privacy Policy.
+For more information about analytics consent, data handling, cookies, possible future advertising, and local storage, please read our Privacy Policy.
 
 ## 7. Service Availability
 

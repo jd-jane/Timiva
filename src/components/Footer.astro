@@ -9,9 +9,10 @@ import { getMessages } from "../i18n/messages";
 
 interface Props {
 	locale?: Locale;
+	analyticsEnabled?: boolean;
 }
 
-const { locale = "en" } = Astro.props;
+const { locale = "en", analyticsEnabled = false } = Astro.props;
 const messages = getMessages(locale);
 const footer = messages.footer;
 const nav = messages.nav;
@@ -83,6 +84,17 @@ const currentLocaleLabel = locale === "zh" ? nav.chinese : nav.english;
 					>
 						{footer.contact}
 					</a>
+					{
+						analyticsEnabled && (
+							<button
+								type="button"
+								data-footer-analytics-settings
+								class="text-slate-300 transition-colors hover:text-white"
+							>
+								{footer.analyticsSettings}
+							</button>
+						)
+					}
 					<!-- Footer｜語言切換 -->
 					<details class="group relative">
 						<summary
@@ -191,6 +203,17 @@ const currentLocaleLabel = locale === "zh" ? nav.chinese : nav.english;
 				>
 					{footer.contact}
 				</a>
+				{
+					analyticsEnabled && (
+						<button
+							type="button"
+							data-footer-analytics-settings
+							class="inline-flex min-h-11 items-center text-slate-300 transition-colors hover:text-white"
+						>
+							{footer.analyticsSettings}
+						</button>
+					)
+				}
 				<!-- Footer｜語言切換 -->
 				<details class="group relative">
 					<summary

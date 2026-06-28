@@ -2,7 +2,7 @@
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
 > 更新日期：2026-06-28
-> 狀態來源：整合既有 Timiva docs、三個正式工具 Owner 實機驗收與 deploy、Countdown Timer Post-tool Link Integration 與完成提示音改善、Year Progress V2 實作與站內連結整合（rebuild/main 本地 commit）、文件架構重組。
+> 狀態來源：整合既有 Timiva docs、三個正式工具 Owner 實機驗收與 deploy、Countdown Timer Post-tool Link Integration 與完成提示音改善、Year Progress V2 實作與站內連結整合、GA4 + Basic Consent（Batch A–D）source implementation、文件架構重組。
 
 ---
 
@@ -21,7 +21,7 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **已部署**：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2（含站內連結整合）。**本地 commit 完成、尚未 push / deploy**：Year Progress V2（`f39f8bc`）與 Link Integration（`20c379d`）。 |
+| Current session status | **已部署**：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2（含站內連結整合）。**GA4 + Basic Consent source implementation 完成**（Batch A–D、Owner 實機 QA、validator 通過）；**隨本次 commit 進入 main**；**尚未在線上啟用**（Cloudflare `PUBLIC_GA_MEASUREMENT_ID` 未設定）。**本地 commit 完成、尚未 push / deploy**：Year Progress V2（`f39f8bc`）與 Link Integration（`20c379d`）。 |
 
 ---
 
@@ -342,9 +342,77 @@ Six pages via Markdown + `LegalTextLayout`:
 
 Legal pages do not contain ads. Chinese label: 使用條款.
 
+Privacy Policy 與 Terms of Use（EN / ZH）已更新 GA4、Consent、LocalStorage 與未來可能廣告之說明（Batch C）。
+
 ---
 
-## 9. Footer language switch completed
+## 9. GA4 + Basic Consent current status
+
+**Source implementation complete · 尚未在線上啟用 Analytics。**
+
+```text
+GA4 Property / Web Data Stream 已建立（Owner 端）
+使用 direct Google tag（gtag.js），不使用 Google Tag Manager
+Measurement ID 僅由 build-time env PUBLIC_GA_MEASUREMENT_ID 提供
+無 Measurement ID 時：不輸出 Consent UI、Footer 分析設定、analytics-consent.js 引用
+使用 Google Basic Consent Mode
+使用者明確允許（Allow analytics）前不載入 Google tag
+unknown / rejected 不傳送 Analytics 資料
+Consent 狀態儲存於 LocalStorage key：timiva.analytics.consent（v:1）
+狀態：unknown / accepted / rejected
+Footer 可重新開啟 Analytics settings / 分析設定
+Google Signals：關閉
+User-provided data collection：關閉
+Google Ads / 廣告個人化：關閉（透過 analytics 設定）
+GA4 user-level / event-level retention：14 個月
+Privacy Policy 與 Terms（EN / ZH）已與實作同步
+Batch A–D 與 Owner 實機 QA：已通過
+```
+
+Validator（`scripts/validate-analytics-consent.mjs`）：
+
+```text
+disabled build：179 pass / 0 fail
+enabled placeholder build（G-LOCALTEST）：172 pass / 0 fail
+runtime harness（local-docs/tests）：50 pass / 0 fail
+tool link validator：176 pass / 0 fail
+```
+
+Implementation scope（committed with GA4 feature）：
+
+```text
+public/scripts/analytics-consent.js
+src/lib/analyticsConfig.ts
+src/layouts/BaseLayout.astro（條件式接線）
+src/components/AnalyticsConsent.astro
+src/styles/analytics-consent.css
+src/components/Footer.astro（Analytics settings 入口）
+src/i18n/en.ts · src/i18n/zh.ts
+src/content/legal/en|zh/privacy.md · terms.md
+scripts/validate-analytics-consent.mjs
+```
+
+Not done yet:
+
+```text
+Cloudflare PUBLIC_GA_MEASUREMENT_ID 設定
+pages.dev 線上 Consent / Network QA
+GA4 Realtime 驗證
+正式 timiva.app 上 Analytics 啟用確認
+```
+
+Next workflow:
+
+```text
+Cloudflare PUBLIC_GA_MEASUREMENT_ID
+→ pages.dev Consent / Network QA
+→ GA4 Realtime
+→ 正式網域與後續 V1 launch checks
+```
+
+---
+
+## 10. Footer language switch completed
 
 Footer preserves corresponding page route on language switch.
 
@@ -359,7 +427,7 @@ Examples:
 
 ---
 
-## 10. Current locked / protected areas
+## 11. Current locked / protected areas
 
 Unless a task explicitly says otherwise, do not modify:
 
@@ -375,7 +443,7 @@ ToolAdSlot visual style
 
 ---
 
-## 11. Current no-go list
+## 12. Current no-go list
 
 ```text
 Do not redesign EC V2 / DR V2 / Countdown Timer / Year Progress without new task
@@ -391,21 +459,31 @@ Do not push / deploy without Owner confirmation
 
 ---
 
-## 12. Current active next step
+## 13. Current active next step
 
 ```text
 Event Countdown V2 — deployed baseline
 Date Range Calculator V2 — deployed baseline
 Countdown Timer V2 — deployed · site-integrated
+GA4 + Basic Consent — source complete on main · Cloudflare Measurement ID 尚未設定 · 未在線上啟用 Analytics
 Year Progress V2 + Link Integration — local commits complete（f39f8bc, 20c379d）
 ```
 
 Next workflow:
 
 ```text
+Cloudflare PUBLIC_GA_MEASUREMENT_ID
+→ pages.dev Consent / Network QA
+→ GA4 Realtime
+→ 正式網域與後續 V1 launch checks
+```
+
+Parallel（Year Progress）:
+
+```text
 Owner authorization
 → Pre-deploy final check（docs/workflow/pre-deploy.md）
-→ Push rebuild/main
+→ Push Year Progress commits（若尚未合併）
 → Deploy to Cloudflare Pages
 → HTTPS Share verification for Year Progress
 ```
@@ -420,15 +498,16 @@ Year Progress is NOT live until push / deploy completes
 
 ---
 
-## 13. Possible next project tasks
+## 14. Possible next project tasks
 
 Recommended order:
 
 ```text
-1. Pre-deploy final check
-2. Push / deploy authorization（when approved）
-3. HTTPS Share verification after deploy
-4. All Tools final content check on production
+1. Cloudflare PUBLIC_GA_MEASUREMENT_ID
+2. pages.dev Consent / Network QA
+3. GA4 Realtime verification
+4. Pre-deploy final check（Year Progress 等其他待上線項）
+5. HTTPS Share verification after deploy
 ```
 
 Parallel / later:
@@ -441,7 +520,7 @@ Ad placeholder strategy only; ads remain disabled
 
 ---
 
-## 14. Documentation map（canonical tracked paths）
+## 15. Documentation map（canonical tracked paths）
 
 ### Core
 
@@ -503,7 +582,7 @@ local-docs/templates/ — reusable templates
 
 ---
 
-## 15. How to start a new Cursor task
+## 16. How to start a new Cursor task
 
 ```text
 Read AGENTS.md,
@@ -518,7 +597,7 @@ Create an implementation plan only. Do not edit files yet.
 
 ---
 
-## 16. How to start a new ChatGPT discussion
+## 17. How to start a new ChatGPT discussion
 
 ```text
 這是 Timiva 專案。請以 AGENTS.md、docs/project/current-status.md 與 docs/project/decision-log.md 為主要上下文。

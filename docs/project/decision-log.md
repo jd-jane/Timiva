@@ -5,6 +5,56 @@
 
 ---
 
+## 2026-06-28 — GA4 採 privacy-first Basic Consent
+
+### 背景
+
+```text
+Timiva 需要了解網站與工具使用情況以改善產品，但必須在使用者明確同意前避免載入 Google tag 或傳送 Analytics 資料。
+廣告（AdSense）仍屬未來範圍，不可與 Analytics consent 混為一談。
+```
+
+### 決策
+
+```text
+使用 Google Analytics 4 direct Google tag（gtag.js）
+不使用 Google Tag Manager
+未取得明確同意前不載入 Google tag
+unknown / rejected 不傳送 Analytics
+accepted 才允許 analytics_storage = granted
+ad_storage、ad_user_data、ad_personalization 永遠 denied
+Consent 儲存於 LocalStorage（timiva.analytics.consent，v:1）
+使用者可從 Footer Analytics settings / 分析設定變更選擇
+consentSaved 與 tagLoaded 必須分離（Save 成功不等於 tag 已載入）
+localhost 可保存 consent，但不得載入 tag（零 googletagmanager request）
+Google Signals 與 user-provided data collection 關閉
+不使用 Google Ads 或廣告個人化（透過此 analytics 設定）
+Measurement ID 只能由 PUBLIC_GA_MEASUREMENT_ID 提供
+無 env 時 Consent UI、Footer 分析設定、script 引用必須完全停用
+Privacy / Terms（EN / ZH）必須與實作同步
+scripts/validate-analytics-consent.mjs 為正式防回歸 validator
+```
+
+### 邊界
+
+```text
+廣告仍屬未來可能範圍；Legal 已分開描述，未啟用 AdSense 或廣告追蹤。
+不在 repo 內硬編碼 Measurement ID。
+不在 localhost / 無 env build 輸出 Consent 或載入 tag。
+```
+
+### 驗證
+
+```text
+Batch A–D 完成
+Owner 實機 QA：通過
+validate-analytics-consent.mjs：disabled 179/0 · placeholder enabled 172/0
+runtime harness：50/0
+validate-tool-link-integration.mjs：176/0
+```
+
+---
+
 ## 2026-06-28 — Countdown Timer 完成提示音改用本地音檔
 
 ### 背景
