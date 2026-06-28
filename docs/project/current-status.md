@@ -194,7 +194,13 @@ Full spec: `docs/tools/countdown-timer/product-spec.md`
 
 ### 5.1 完成提示音改善（2026-06-28）
 
-**實作完成 · Owner 實機驗收通過 · 本地 commit 已完成 · 尚未 push / deploy**
+**實作完成 · Owner 實機驗收通過 · 已 push · 線上驗收通過**
+
+Commit：
+
+```text
+5ee7613 — fix: improve Countdown Timer completion sound
+```
 
 ```text
 主要播放路徑：本地 WAV（public/audio/countdown-complete.wav）+ HTMLAudioElement
@@ -217,6 +223,8 @@ iPhone Safari 靜音模式關閉：有聲
 npm run build：通過
 git diff --check：通過
 dist/audio/countdown-complete.wav：已輸出
+已 push 至 origin/main（5ee7613）
+Cloudflare Pages 線上驗收：通過
 ```
 
 已知限制：

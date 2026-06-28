@@ -48,6 +48,8 @@ Owner 已完成桌機與 iPhone 實機驗收。
 iPhone 靜音模式開啟與關閉皆可播放。
 低媒體音量下可辨識。
 npm run build 通過。
+已 push 至 origin/main（5ee7613）。
+Cloudflare Pages 線上驗收通過。
 ```
 
 規格：`docs/tools/countdown-timer/product-spec.md` §7.4、不可回歸條件
