@@ -1,11 +1,13 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import LegalTextLayout from "../../../components/LegalTextLayout.astro";
-import { type Locale } from "../../../i18n/config";
+import { getPageRouteMeta } from "../../../lib/pageRouteMeta";
+import { routePaths, type Locale } from "../../../i18n/config";
 import { Content, frontmatter } from "../../../content/legal/zh/terms.md";
 
 const locale: Locale = "zh";
 const pageTitle = `${frontmatter.title} | Timiva`;
+const routeMeta = getPageRouteMeta(routePaths.terms, locale);
 const [, updatedYear, updatedMonth] =
 	frontmatter.lastUpdated.match(/^(\d{4})-(\d{2})$/) ?? [];
 const metaLine =
@@ -17,6 +19,8 @@ const metaLine =
 <BaseLayout
 	title={pageTitle}
 	description={frontmatter.description}
+	canonicalUrl={routeMeta.canonicalUrl}
+	alternateUrls={routeMeta.alternateUrls}
 	headerVariant="inner"
 	locale={locale}
 >

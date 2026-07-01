@@ -8,11 +8,13 @@ import ToolCard from "../../components/ToolCard.astro";
 import { featuredTools, type FeaturedToolId } from "../../data/homeTools";
 import { buildHomePageJsonLd } from "../../lib/buildHomePageJsonLd";
 import { homeFeaturedIconMap } from "../../lib/homeFeaturedIcons";
+import { getPageRouteMeta } from "../../lib/pageRouteMeta";
 import { getLocalizedPath, routePaths, siteUrl, type Locale } from "../../i18n/config";
 import { getMessages } from "../../i18n/messages";
 
 const locale: Locale = "en";
 const messages = getMessages(locale);
+const routeMeta = getPageRouteMeta(routePaths.home, locale);
 const homeUrl = `${siteUrl}${getLocalizedPath(locale, routePaths.home)}`;
 
 const toolCopy: Record<
@@ -54,6 +56,8 @@ const [heroTitleFirst, heroTitleSecond, heroTitleThird] = messages.home.heroTitl
 <BaseLayout
 	title={messages.meta.home.title}
 	description={messages.meta.home.description}
+	canonicalUrl={routeMeta.canonicalUrl}
+	alternateUrls={routeMeta.alternateUrls}
 	headerVariant="home"
 	locale={locale}
 >

@@ -7,16 +7,20 @@ import "../../../styles/tools/date-range.css";
 import "../../../styles/tools/date-range-calculator-v2.css";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import DateRangeCalculatorV2 from "../../../components/tools/date-range-calculator-v2/DateRangeCalculatorV2.astro";
-import { type Locale } from "../../../i18n/config";
+import { getPageRouteMeta } from "../../../lib/pageRouteMeta";
+import { routePaths, type Locale } from "../../../i18n/config";
 import { getMessages } from "../../../i18n/messages";
 
 const locale: Locale = "zh";
 const messages = getMessages(locale);
+const routeMeta = getPageRouteMeta(routePaths.dateRangeCalculator, locale);
 ---
 
 <BaseLayout
 	title={messages.meta.dateRangeCalculator.title}
 	description={messages.meta.dateRangeCalculator.description}
+	canonicalUrl={routeMeta.canonicalUrl}
+	alternateUrls={routeMeta.alternateUrls}
 	headerVariant="inner"
 	locale={locale}
 >
