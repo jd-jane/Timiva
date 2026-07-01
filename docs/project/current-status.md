@@ -1,8 +1,8 @@
 # Timiva 專案現況
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
-> 更新日期：2026-06-28
-> 狀態來源：整合既有 Timiva docs、三個正式工具 Owner 實機驗收與 deploy、Countdown Timer Post-tool Link Integration 與完成提示音改善、Year Progress V2 實作與站內連結整合、GA4 + Basic Consent（Batch A–D）source implementation、文件架構重組。
+> 更新日期：2026-07-01
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app 上線與 V1 production smoke test、GA4 正式網域驗證、Legal 手機橫式 hotfix（`40761d3`）、四個 V1 工具與 Year Progress 部署狀態。
 
 ---
 
@@ -21,7 +21,7 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **已部署**：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2（含站內連結整合）。**GA4 + Basic Consent source implementation 完成**（Batch A–D、Owner 實機 QA、validator 通過）；**隨本次 commit 進入 main**；**尚未在線上啟用**（Cloudflare `PUBLIC_GA_MEASUREMENT_ID` 未設定）。**本地 commit 完成、尚未 push / deploy**：Year Progress V2（`f39f8bc`）與 Link Integration（`20c379d`）。 |
+| Current session status | **Timiva V1 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** 四個 V1 工具、EN / ZH、Legal、GA4 privacy-first Basic Consent、Cloudflare Pages production domain、HTTPS、www redirect、email forwarding 已上線；**V1 production smoke test：PASS**。最新 production commit：`40761d3`（Legal meta hotfix）。 |
 
 ---
 
@@ -53,7 +53,7 @@ Hero title / subtitle updated
 Hero CTA buttons removed
 Hero chips added as visual-only, non-interactive labels
 Featured tool cards（4 tools）:
-Event Countdown → Date Range Calculator → Countdown Timer → Year Progress（本地 catalog 已更新；遠端 deploy 仍為舊版直至 push）
+Event Countdown → Date Range Calculator → Countdown Timer → Year Progress
 View all tools retained
 FAQ & Help added with 7 Q&A per locale
 Ad Container implemented but production state is-disabled
@@ -86,6 +86,7 @@ Do not re-enable Home / All Tools animated glow overlay in V1 unless explicitly 
 Event Countdown V2 — 已部署
 Date Range Calculator V2 — 已部署
 Countdown Timer V2 — 已部署 · 站內連結整合完成（2c44484）
+Year Progress V2 — 已部署 · 站內連結整合完成（f39f8bc, 20c379d）
 ```
 
 工具 README：`docs/tools/event-countdown/`、`docs/tools/date-range-calculator/`、`docs/tools/countdown-timer/`
@@ -238,7 +239,7 @@ Cloudflare Pages 線上驗收：通過
 
 ## 6. Year Progress current status
 
-**實作完成 · 站內連結整合完成（rebuild/main 本地 commit）· 尚未 push / deploy**
+**實作完成 · 站內連結整合完成 · 已部署。**
 
 Routes:
 
@@ -247,7 +248,7 @@ Routes:
 /zh/year-progress/
 ```
 
-Commits（rebuild/main）:
+Commits:
 
 ```text
 f39f8bc — feat: add Year Progress V2
@@ -259,11 +260,8 @@ Current status:
 ```text
 B0–B3 standalone: complete
 Link Integration: complete · validate-tool-link-integration.mjs passed · Owner QA passed
-Catalog: year-progress available:true
-Home fourth card: year-progress（本地）
-All Tools: visible under Momentum（本地）
-Related Tools: all four production tools cross-link
-Not pushed · Not deployed
+Catalog / Home / All Tools / Related Tools: integrated
+Deployed to timiva.app
 HTTPS Share success verification: pending（non-blocking, post-deploy）
 ```
 
@@ -344,11 +342,68 @@ Legal pages do not contain ads. Chinese label: 使用條款.
 
 Privacy Policy 與 Terms of Use（EN / ZH）已更新 GA4、Consent、LocalStorage 與未來可能廣告之說明（Batch C）。
 
+### Legal mobile-landscape meta hotfix
+
+Issue:
+
+```text
+Privacy / Terms / Contact 手機橫式下，
+「最後更新」meta 列因 mx-auto + max-w-xl 產生左側縮排。
+```
+
+Fix:
+
+```text
+LegalTextLayout meta 使用 shared class（legal-text-layout__meta）
+mobile landscape 覆寫 margin / max-width / width / text-align
+portrait / landscape / desktop 均通過
+```
+
+Commit:
+
+```text
+40761d3 — fix: align legal meta on mobile landscape
+```
+
+Status:
+
+```text
+Committed：Yes
+Pushed：Yes
+Cloudflare Production deployed：Yes
+Owner official-domain verification：PASS
+```
+
+### Safari cache QA note
+
+```text
+Safari 一般瀏覽模式曾出現異常舊版畫面，
+但 Chrome mobile 與 Safari Private Browsing 均正常。
+清除 timiva.app 的 Safari 網站資料後恢復正常，
+確認為舊 cache / website data，
+未新增 Safari-specific workaround 或 production code。
+```
+
 ---
 
 ## 9. GA4 + Basic Consent current status
 
-**Source implementation complete · 尚未在線上啟用 Analytics。**
+```text
+Source implementation complete
+Committed and pushed to main
+Cloudflare Production env configured
+Deployed to timiva.pages.dev and timiva.app
+Online Consent / Network QA passed（pages.dev + timiva.app）
+GA4 Realtime verification passed
+```
+
+Commit:
+
+```text
+87e718b — feat: add privacy-first GA4 consent
+```
+
+### Implementation summary
 
 ```text
 GA4 Property / Web Data Stream 已建立（Owner 端）
@@ -369,6 +424,86 @@ Privacy Policy 與 Terms（EN / ZH）已與實作同步
 Batch A–D 與 Owner 實機 QA：已通過
 ```
 
+### Cloudflare
+
+```text
+Production 已設定 PUBLIC_GA_MEASUREMENT_ID
+Measurement ID 僅存在 Cloudflare environment variable
+未寫入 Git 或 source code
+設定 env 後已重新部署
+timiva.pages.dev 已成功輸出 Consent UI 與 Footer Analytics settings
+```
+
+### Online Consent / Network QA（Owner 實測 · timiva.pages.dev）
+
+```text
+首次進站、尚未選擇 consent：
+- Consent Banner 正常顯示
+- 0 Google Analytics requests
+
+選擇 Necessary only：
+- consent 正常保存
+- 重新整理後 Banner 不再出現
+- Footer Analytics settings 正常顯示
+- 0 googletagmanager requests
+- 0 google-analytics / collect requests
+
+選擇 Allow analytics：
+- gtag.js 成功載入
+- googletagmanager request：200
+- GA collect requests：204
+- Consent dialog 正常關閉
+- 重新整理後 accepted 狀態保留
+
+Allow analytics → Necessary only：
+- consent 正常切換
+- 重新整理及切換頁面後不再產生新的 GA requests
+- Necessary only 狀態正確保留
+```
+
+### GA4 Realtime
+
+```text
+GA4 Realtime：PASS
+
+Owner 測試時顯示：
+- 1 active user
+- 4 page views
+
+確認頁面（pages.dev smoke test）：
+- /en/
+- /en/countdown-timer/
+- /en/event-countdown/
+- /en/privacy/
+```
+
+### Official-domain verification（timiva.app）
+
+```text
+Official-domain Consent / Network QA：PASS
+
+unknown：
+- Consent Banner 顯示
+- 0 GA requests
+
+Necessary only：
+- consent 正常保存
+- 0 googletagmanager requests
+- 0 collect requests
+
+Allow analytics：
+- gtag.js 正常載入
+- collect 正常送出
+- consent 刷新後保留
+
+Allow analytics → Necessary only：
+- 停止後續 GA requests
+- rejected 狀態保留
+
+GA4 Realtime：
+- 成功收到 timiva.app 頁面瀏覽資料（smoke-test 驗證；非正式流量統計）
+```
+
 Validator（`scripts/validate-analytics-consent.mjs`）：
 
 ```text
@@ -378,7 +513,7 @@ runtime harness（local-docs/tests）：50 pass / 0 fail
 tool link validator：176 pass / 0 fail
 ```
 
-Implementation scope（committed with GA4 feature）：
+Implementation scope（`87e718b`）：
 
 ```text
 public/scripts/analytics-consent.js
@@ -392,27 +527,112 @@ src/content/legal/en|zh/privacy.md · terms.md
 scripts/validate-analytics-consent.mjs
 ```
 
-Not done yet:
+---
+
+## 10. Production domain（timiva.app）
+
+### 正式網域
 
 ```text
-Cloudflare PUBLIC_GA_MEASUREMENT_ID 設定
-pages.dev 線上 Consent / Network QA
-GA4 Realtime 驗證
-正式 timiva.app 上 Analytics 啟用確認
+timiva.app 已連接 Cloudflare Pages
+Cloudflare zone：Active
+Pages custom domain：Active
+HTTPS / SSL：PASS
+正式主網域：https://timiva.app
 ```
 
-Next workflow:
+### DNS 與 www
 
 ```text
-Cloudflare PUBLIC_GA_MEASUREMENT_ID
-→ pages.dev Consent / Network QA
-→ GA4 Realtime
-→ 正式網域與後續 V1 launch checks
+Porkbun nameservers 已切換至 Cloudflare
+DNS records 已遷移
+timiva.app 指向 Timiva Cloudflare Pages
+www.timiva.app 已設定 301 redirect 至 timiva.app
+redirect 保留 path 與 query string
+舊 www → pixie.porkbun.com 已移除
+舊 wildcard *.timiva.app → pixie.porkbun.com 已移除
+```
+
+驗證範例：
+
+```text
+https://www.timiva.app/ → https://timiva.app/
+https://www.timiva.app/zh/ → https://timiva.app/zh/
+```
+
+### Email
+
+```text
+Porkbun email forwarding 所需 MX / SPF records 已保留
+hello@timiva.app 寄信測試成功
+郵件轉寄正常
 ```
 
 ---
 
-## 10. Footer language switch completed
+## 11. V1 production smoke test
+
+Owner 已在正式 `timiva.app` 完成：
+
+```text
+網域與 HTTPS
+EN / ZH
+首頁與 Legal 頁
+四個 V1 工具主要流程
+全站導覽與語系切換
+Desktop
+Mobile portrait
+Mobile landscape
+Chrome mobile
+Safari Private Browsing
+Consent / GA4
+```
+
+狀態：
+
+```text
+V1 production smoke test：PASS
+```
+
+說明：此為 Owner 正式網域複測通過，**不代表**所有瀏覽器、所有裝置、所有 edge cases 均已完整覆蓋。
+
+---
+
+## 12. Current V1 launch status
+
+```text
+Timiva V1 已在正式網域 timiva.app 提供服務。
+```
+
+Completed:
+
+```text
+四個 V1 工具
+EN / ZH
+Legal
+GA4 privacy-first Basic Consent
+Cloudflare Pages production domain
+HTTPS
+www redirect
+email forwarding
+official-domain smoke test
+Legal mobile-landscape meta hotfix（40761d3）
+```
+
+Not done yet（依專案真實狀態保留）:
+
+```text
+Google Search Console 設定與驗證
+sitemap submission
+SEO technical final review
+final launch report
+Year Progress HTTPS Share verification（non-blocking）
+AdSense / live ads（仍 disabled）
+```
+
+---
+
+## 13. Footer language switch completed
 
 Footer preserves corresponding page route on language switch.
 
@@ -422,12 +642,12 @@ Examples:
 /zh/event-countdown/ ↔ /en/event-countdown/
 /zh/date-range-calculator/ ↔ /en/date-range-calculator/
 /zh/countdown-timer/ ↔ /en/countdown-timer/
-/zh/year-progress/ ↔ /en/year-progress/（route ready; deploy pending）
+/zh/year-progress/ ↔ /en/year-progress/
 ```
 
 ---
 
-## 11. Current locked / protected areas
+## 14. Current locked / protected areas
 
 Unless a task explicitly says otherwise, do not modify:
 
@@ -443,7 +663,7 @@ ToolAdSlot visual style
 
 ---
 
-## 12. Current no-go list
+## 15. Current no-go list
 
 ```text
 Do not redesign EC V2 / DR V2 / Countdown Timer / Year Progress without new task
@@ -459,68 +679,62 @@ Do not push / deploy without Owner confirmation
 
 ---
 
-## 13. Current active next step
+## 16. Current active next step
 
 ```text
-Event Countdown V2 — deployed baseline
-Date Range Calculator V2 — deployed baseline
+Timiva V1 — live on timiva.app
+Event Countdown V2 — deployed
+Date Range Calculator V2 — deployed
 Countdown Timer V2 — deployed · site-integrated
-GA4 + Basic Consent — source complete on main · Cloudflare Measurement ID 尚未設定 · 未在線上啟用 Analytics
-Year Progress V2 + Link Integration — local commits complete（f39f8bc, 20c379d）
+Year Progress V2 — deployed · site-integrated（f39f8bc, 20c379d）
+GA4 + Basic Consent — deployed on timiva.app · official-domain QA passed（87e718b）
+Legal meta hotfix — deployed（40761d3）
 ```
 
 Next workflow:
 
 ```text
-Cloudflare PUBLIC_GA_MEASUREMENT_ID
-→ pages.dev Consent / Network QA
-→ GA4 Realtime
-→ 正式網域與後續 V1 launch checks
+V1 launch checklist 剩餘項目（Search Console、sitemap、SEO technical review、final launch report）
 ```
 
-Parallel（Year Progress）:
+Optional follow-up:
 
 ```text
-Owner authorization
-→ Pre-deploy final check（docs/workflow/pre-deploy.md）
-→ Push Year Progress commits（若尚未合併）
-→ Deploy to Cloudflare Pages
-→ HTTPS Share verification for Year Progress
+Year Progress HTTPS Share verification（non-blocking）
+Ad placeholder strategy only; ads remain disabled
 ```
 
 Important:
 
 ```text
 Task briefs and validation reports live in local-docs/ — not Git tracked paths
-Do not push or deploy without explicit Owner authorization
-Year Progress is NOT live until push / deploy completes
+Phase A：重大變更、deploy 或 locked components 修改仍需 Owner 明確授權
 ```
 
 ---
 
-## 14. Possible next project tasks
+## 17. Possible next project tasks
 
 Recommended order:
 
 ```text
-1. Cloudflare PUBLIC_GA_MEASUREMENT_ID
-2. pages.dev Consent / Network QA
-3. GA4 Realtime verification
-4. Pre-deploy final check（Year Progress 等其他待上線項）
-5. HTTPS Share verification after deploy
+1. Google Search Console 設定與驗證
+2. sitemap submission
+3. SEO technical final review
+4. final launch report
+5. All Tools final content check on production
 ```
 
 Parallel / later:
 
 ```text
-Cloudflare Pages / domain final confirmation
+Year Progress HTTPS Share verification
 Ad placeholder strategy only; ads remain disabled
-文件重構完成（canonical 路徑見 `docs/README.md`）
 ```
 
 ---
 
-## 15. Documentation map（canonical tracked paths）
+## 18. Documentation map（canonical tracked paths）
 
 ### Core
 
@@ -582,7 +796,7 @@ local-docs/templates/ — reusable templates
 
 ---
 
-## 16. How to start a new Cursor task
+## 19. How to start a new Cursor task
 
 ```text
 Read AGENTS.md,
@@ -597,19 +811,18 @@ Create an implementation plan only. Do not edit files yet.
 
 ---
 
-## 17. How to start a new ChatGPT discussion
+## 20. How to start a new ChatGPT discussion
 
 ```text
 這是 Timiva 專案。請以 AGENTS.md、docs/project/current-status.md 與 docs/project/decision-log.md 為主要上下文。
 
-已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2（含站內連結整合 commit 2c44484）。
+Timiva V1 已在正式網域 https://timiva.app 提供服務。
 
-Year Progress / 今年進度（第四個 V1 工具）已在 rebuild/main 完成實作（f39f8bc）與站內連結整合（20c379d），自動化驗證與 Owner QA 已通過，但尚未 push / deploy — 請勿描述為已上線。
+已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2、Year Progress V2（含站內連結整合）。
+GA4 privacy-first Basic Consent 已在 timiva.app 驗證通過。
+Legal mobile-landscape meta hotfix：40761d3。
 
-規格：docs/tools/year-progress/product-spec.md
-流程：同文件「產品流程」章節
-站內整合規則：docs/workflow/tool-link-integration.md
-
+規格與流程：docs/tools/、docs/workflow/
 Task briefs 與 validation reports 在 local-docs/，不納入 Git tracked。
 
 Phase A：不要 push / deploy / commit 除非 Owner 明確授權。不要修改 Header、Footer、BaseLayout、global background 或既有工具核心功能，除非任務明確指定。

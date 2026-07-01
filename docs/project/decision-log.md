@@ -5,6 +5,96 @@
 
 ---
 
+## 2026-06-30 — Official-domain V1 smoke test passed
+
+### 背景
+
+```text
+timiva.app 已連接 Cloudflare Pages，DNS / HTTPS / www redirect / email forwarding 完成後，
+Owner 在正式網域進行 V1 production smoke test。
+```
+
+### 決策
+
+```text
+Timiva V1 視為已在正式網域 timiva.app 提供服務。
+V1 production smoke test：PASS（非 exhaustive QA；不代表所有瀏覽器、裝置與 edge cases 均已完整覆蓋）。
+```
+
+### 驗證範圍（Owner 實測摘要）
+
+```text
+網域與 HTTPS
+EN / ZH
+首頁與 Legal 頁
+四個 V1 工具主要流程
+全站導覽與語系切換
+Desktop · mobile portrait · mobile landscape
+Chrome mobile · Safari Private Browsing
+Consent / GA4 on timiva.app
+Legal mobile-landscape meta hotfix（40761d3）已部署並通過
+```
+
+### Safari 快取 QA note
+
+```text
+Safari 一般瀏覽模式曾出現異常舊版畫面；
+Chrome mobile 與 Safari Private Browsing 均正常。
+清除 timiva.app 的 Safari 網站資料後恢復正常。
+確認為舊 cache / website data，未新增 Safari-specific workaround 或 production code。
+```
+
+---
+
+## 2026-06-30 — www redirects to apex domain
+
+### 決策
+
+```text
+Canonical host 採 timiva.app（apex）。
+www.timiva.app 使用 Cloudflare 301 redirect 至 timiva.app。
+Redirect 保留 path 與 query string。
+```
+
+### 實作摘要
+
+```text
+移除 Porkbun pixie 舊 www 與 wildcard *.timiva.app DNS records。
+```
+
+### 驗證範例
+
+```text
+https://www.timiva.app/ → https://timiva.app/
+https://www.timiva.app/zh/ → https://timiva.app/zh/
+```
+
+---
+
+## 2026-06-29 — timiva.app connected to Cloudflare Pages
+
+### 決策
+
+```text
+timiva.app 採 Cloudflare 作為 authoritative DNS。
+Porkbun 保留為 domain registrar 與 email forwarding provider。
+Cloudflare Pages 使用 timiva.app 作為正式主網域。
+HTTPS / SSL 啟用完成。
+```
+
+### 驗證
+
+```text
+Cloudflare zone：Active
+Pages custom domain：Active
+HTTPS / SSL：PASS
+正式主網域：https://timiva.app
+MX / SPF records 保留（Porkbun email forwarding）
+hello@timiva.app 寄信測試成功；郵件轉寄正常
+```
+
+---
+
 ## 2026-06-28 — GA4 採 privacy-first Basic Consent
 
 ### 背景
@@ -47,10 +137,38 @@ scripts/validate-analytics-consent.mjs 為正式防回歸 validator
 
 ```text
 Batch A–D 完成
-Owner 實機 QA：通過
+Owner 實機 QA（本地）：通過
 validate-analytics-consent.mjs：disabled 179/0 · placeholder enabled 172/0
 runtime harness：50/0
 validate-tool-link-integration.mjs：176/0
+```
+
+### 線上驗證（timiva.pages.dev · post-deploy）
+
+```text
+Cloudflare Production 已設定 PUBLIC_GA_MEASUREMENT_ID（僅 env，未寫入 Git）
+設定 env 後重新部署完成
+Online Consent / Network QA：PASS
+GA4 Realtime：PASS（1 active user · 4 page views；/en/ · /en/countdown-timer/ · /en/event-countdown/ · /en/privacy/）
+
+Consent 實測摘要：
+- unknown：Banner 顯示 · 0 GA requests
+- Necessary only：consent 保存 · 0 googletagmanager / collect requests
+- Allow analytics：gtag.js 200 · collect 204 · accepted 狀態保留
+- Allow → Necessary only：切換後無新 GA requests · rejected 狀態保留
+```
+
+### 正式網域驗證（timiva.app · post-domain cutover）
+
+```text
+Official-domain Consent / Network QA：PASS
+
+unknown：Consent Banner 顯示 · 0 GA requests
+Necessary only：consent 正常保存 · 0 googletagmanager / collect requests
+Allow analytics：gtag.js 正常載入 · collect 正常送出 · consent 刷新後保留
+Allow analytics → Necessary only：停止後續 GA requests · rejected 狀態保留
+
+GA4 Realtime：成功收到 timiva.app 頁面瀏覽資料（smoke-test 驗證；非正式流量統計）
 ```
 
 ---
