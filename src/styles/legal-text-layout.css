@@ -1,0 +1,10 @@
+/* Legal text pages — shared meta row (last updated) alignment */
+
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+	.legal-text-layout__meta {
+		margin-inline: 0;
+		max-width: none;
+		width: 100%;
+		text-align: left;
+	}
+}

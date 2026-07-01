@@ -1,4 +1,5 @@
 ---
+import "../styles/legal-text-layout.css";
 import InnerPageShell from "./InnerPageShell.astro";
 import type { Locale } from "../i18n/config";
 
@@ -19,7 +20,7 @@ void locale;
 				<h1 class="text-3xl font-semibold tracking-normal md:text-4xl">{heading}</h1>
 				{
 					metaLine && (
-						<p class="mx-auto max-w-xl text-sm leading-relaxed text-slate-500 md:text-base">
+						<p class="legal-text-layout__meta text-sm leading-relaxed text-slate-500 md:mx-auto md:max-w-xl md:text-base">
 							{metaLine}
 						</p>
 					)
