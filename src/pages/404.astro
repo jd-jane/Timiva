@@ -1,0 +1,269 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+	title="Page not found | Timiva"
+	description="The page you're looking for doesn't exist or may have moved."
+	robots="noindex, follow"
+	headerVariant="inner"
+	locale="en"
+	showFooter={false}
+>
+	<div
+		class="not-found-page mx-auto flex w-full max-w-5xl min-h-[calc(100dvh-var(--site-header-height))] flex-col items-center justify-center gap-8 px-6 py-6 text-center md:gap-12 md:py-12"
+	>
+		<section class="not-found-hero flex w-full flex-col items-center">
+			<div
+				class="not-found-visual flex items-end justify-center gap-1 sm:gap-2 md:gap-3"
+				role="img"
+				aria-label="404"
+			>
+				<span
+					class="not-found-digit text-[7.5rem] font-light leading-none tracking-tight text-white/90 sm:text-[9rem] md:text-[11rem]"
+					aria-hidden="true">4</span
+				>
+				<div class="not-found-zero-group relative flex translate-y-1 flex-col items-center pb-1 sm:translate-y-1.5 sm:pb-2 md:translate-y-2">
+					<div
+						class="not-found-eyes -mb-1 flex translate-y-1 gap-5 sm:-mb-1.5 sm:translate-y-1.5 sm:gap-6 md:-mb-2 md:translate-y-2 md:gap-7"
+						aria-hidden="true"
+					>
+						<span
+							class="h-1.5 w-1.5 rounded-full bg-white sm:h-2 sm:w-2 md:h-2.5 md:w-2.5"
+						></span>
+						<span
+							class="h-1.5 w-1.5 rounded-full bg-white sm:h-2 sm:w-2 md:h-2.5 md:w-2.5"
+						></span>
+					</div>
+					<span
+						class="not-found-zero text-[6.5rem] font-light leading-none tracking-tight text-white/90 sm:text-[7.75rem] md:text-[9.5rem]"
+						aria-hidden="true">0</span
+					>
+				</div>
+				<span
+					class="not-found-digit text-[7.5rem] font-light leading-none tracking-tight text-white/90 sm:text-[9rem] md:text-[11rem]"
+					aria-hidden="true">4</span
+				>
+			</div>
+
+			<div class="not-found-copy mt-8 max-w-xl space-y-3 sm:mt-10">
+				<h1
+					class="text-lg font-semibold tracking-normal text-white sm:text-xl"
+					data-404-role="title"
+				>
+					Page not found
+				</h1>
+				<p
+					class="text-sm leading-relaxed text-slate-400 sm:text-base"
+					data-404-role="body"
+				>
+					The page may have moved, or the address may be incorrect.
+				</p>
+			</div>
+		</section>
+
+		<section class="not-found-actions flex w-full max-w-xl flex-col items-center">
+			<div class="not-found-primary-row flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+				<a
+					href="/en/"
+					data-404-role="primary"
+					class="inline-flex min-h-12 items-center justify-center rounded-full border border-white/15 bg-white/5 px-8 py-3 text-base font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/10"
+				>
+					Back to home
+				</a>
+			</div>
+			<div class="not-found-secondary-row mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+				<a
+					href="/en/tools/"
+					data-404-role="secondary"
+					class="inline-flex min-h-11 items-center gap-2 text-slate-400 transition-colors hover:text-white"
+				>
+					<span data-404-role="secondary-label">All Tools</span>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="none"
+						class="h-4 w-4"
+						aria-hidden="true"
+					>
+						<path
+							d="M3 8h8M9 5l3 3-3 3"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+				</a>
+			</div>
+		</section>
+	</div>
+
+	<noscript>
+		<p class="sr-only">
+			<a href="/en/">Back to home</a>
+			<a href="/en/tools/">All Tools</a>
+		</p>
+	</noscript>
+
+	<script is:inline>
+		(function () {
+			var copy = {
+				en: {
+					title: "Page not found",
+					body: "The page may have moved, or the address may be incorrect.",
+					primaryLabel: "Back to home",
+					primaryHref: "/en/",
+					secondaryLabel: "All Tools",
+					secondaryHref: "/en/tools/",
+					htmlLang: "en",
+				},
+				zh: {
+					title: "找不到這個頁面",
+					body: "這個頁面可能已移動，或網址有誤。",
+					primaryLabel: "回首頁",
+					primaryHref: "/zh/",
+					secondaryLabel: "全部工具",
+					secondaryHref: "/zh/tools/",
+					htmlLang: "zh-Hant",
+				},
+			};
+
+			function resolveLocale() {
+				var path = window.location.pathname || "/";
+
+				if (path.indexOf("/zh/") === 0 || path === "/zh") {
+					return "zh";
+				}
+
+				if (path.indexOf("/en/") === 0 || path === "/en") {
+					return "en";
+				}
+
+				try {
+					var stored = localStorage.getItem("preferredLocale");
+					if (stored === "zh" || stored === "en") {
+						return stored;
+					}
+				} catch (e) {}
+
+				var navLang = (navigator.language || "").toLowerCase();
+				if (
+					navLang.indexOf("zh") === 0 ||
+					navLang.indexOf("zh-tw") === 0 ||
+					navLang.indexOf("zh-hant") === 0
+				) {
+					return "zh";
+				}
+
+				return "en";
+			}
+
+			function applyLocale(locale) {
+				var strings = copy[locale] || copy.en;
+				var titleEl = document.querySelector('[data-404-role="title"]');
+				var bodyEl = document.querySelector('[data-404-role="body"]');
+				var primaryEl = document.querySelector('[data-404-role="primary"]');
+				var secondaryEl = document.querySelector('[data-404-role="secondary"]');
+
+				if (titleEl) {
+					titleEl.textContent = strings.title;
+				}
+
+				if (bodyEl) {
+					bodyEl.textContent = strings.body;
+				}
+
+				if (primaryEl) {
+					primaryEl.textContent = strings.primaryLabel;
+					primaryEl.setAttribute("href", strings.primaryHref);
+				}
+
+				if (secondaryEl) {
+					var secondaryLabel = secondaryEl.querySelector('[data-404-role="secondary-label"]');
+					if (secondaryLabel) {
+						secondaryLabel.textContent = strings.secondaryLabel;
+					}
+					secondaryEl.setAttribute("href", strings.secondaryHref);
+				}
+
+				document.documentElement.lang = strings.htmlLang;
+
+				var headerLinks = document.querySelectorAll(
+					'header.site-header nav[aria-label="Main navigation"] > a',
+				);
+				for (var i = 0; i < headerLinks.length; i += 1) {
+					headerLinks[i].setAttribute("href", strings.primaryHref);
+				}
+			}
+
+			applyLocale(resolveLocale());
+		})();
+	</script>
+
+	<style>
+		@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+			.not-found-page {
+				gap: 0.625rem;
+				padding-block: 0.5rem;
+			}
+
+			.not-found-copy {
+				margin-top: 0.5rem;
+			}
+
+			.not-found-copy h1 {
+				font-size: 1rem;
+				line-height: 1.375rem;
+			}
+
+			.not-found-copy p {
+				font-size: 0.8125rem;
+				line-height: 1.25rem;
+			}
+
+			.not-found-visual {
+				align-items: center;
+			}
+
+			.not-found-digit {
+				font-size: 4.5rem;
+			}
+
+			.not-found-zero {
+				font-size: 4rem;
+			}
+
+			.not-found-zero-group {
+				transform: none;
+				padding-bottom: 0;
+			}
+
+			.not-found-eyes {
+				margin-bottom: -0.125rem;
+				transform: none;
+				gap: 1.25rem;
+			}
+
+			.not-found-eyes span {
+				height: 0.3125rem;
+				width: 0.3125rem;
+			}
+
+			.not-found-primary-row a {
+				min-height: 2.5rem;
+				padding-block: 0.5rem;
+				padding-inline: 1.5rem;
+				font-size: 0.875rem;
+			}
+
+			.not-found-secondary-row {
+				margin-top: 0.5rem;
+			}
+
+			.not-found-secondary-row a {
+				min-height: 2.5rem;
+				font-size: 0.8125rem;
+			}
+		}
+	</style>
+</BaseLayout>

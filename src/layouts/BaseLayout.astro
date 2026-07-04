@@ -14,6 +14,7 @@ interface Props {
 	alternateUrls?: Partial<Record<Locale, string>>;
 	headerVariant?: "home" | "inner";
 	locale?: Locale;
+	showFooter?: boolean;
 }
 
 const {
@@ -24,6 +25,7 @@ const {
 	alternateUrls,
 	headerVariant = "home",
 	locale = "en",
+	showFooter = true,
 } = Astro.props;
 
 const htmlLang = locale === "zh" ? "zh-Hant" : "en";
@@ -116,7 +118,7 @@ function toAbsoluteUrl(path: string) {
 				<slot />
 			</main>
 
-			<Footer locale={locale} analyticsEnabled={analyticsEnabled} />
+			{showFooter && <Footer locale={locale} analyticsEnabled={analyticsEnabled} />}
 		</div>
 
 		{analyticsEnabled && <script is:inline src="/scripts/analytics-consent.js"></script>}
