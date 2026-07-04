@@ -1349,3 +1349,104 @@ Push not performed
 Deploy not performed
 HTTPS Share verification pending after HTTPS preview/deploy
 ```
+
+> **歷史備註（2026-06-27）：** 上述 entry 記錄 link integration 完成當下尚未 push。Year Progress 與四工具現已 production deployed。
+
+---
+
+## 2026-07-04 — V1 SEO Technical Closeout
+
+### 背景
+
+```text
+2026-07-01 SEO technical audit 找到 3 個 B 級問題。
+三批 implementation（Batch 1–3）已完成並通過 production 驗證。
+Owner 核准進行 canonical documentation closeout。
+```
+
+### 決策 — Formal pages
+
+```text
+正式 EN / ZH 頁面使用 self canonical
+提供 en、zh-Hant、x-default alternates
+Formal page canonical / hreflang 為正式 baseline
+18 個正式頁可索引；在 Sitemap
+```
+
+### 決策 — Preview routes
+
+```text
+Preview routes 保留 HTTP 200，供 internal preview 使用
+robots = noindex, nofollow
+不提供 canonical
+不提供 hreflang
+不進 Sitemap
+未來是否刪除 Preview routes 另案決定
+```
+
+六個 Preview routes：
+
+```text
+/preview/home/
+/preview/all-tools/
+/preview/tool/
+/preview/text/
+/preview/mobile-sheet-shared-style/
+/preview/event-countdown-v2/
+```
+
+### 決策 — Custom 404
+
+```text
+使用單一 static 404.html（src/pages/404.astro）
+不新增 /en/404/ 或 /zh/404/
+不使用 Worker / Function / _redirects
+Unknown URL 保持原網址並回 HTTP 404
+pathname 僅用於 locale content（非 redirect）
+/en/ unknown → 英文內容與連結
+/zh/ unknown → 中文內容與連結
+Root unknown → preferredLocale → navigator.language → EN fallback
+robots = noindex, follow
+不輸出 canonical / hreflang / JSON-LD
+404 不在 Sitemap
+404 不顯示 Footer
+Header 與 CTA 依 locale 連到正確正式頁
+```
+
+### 決策 — BaseLayout
+
+```text
+新增 showFooter?: boolean
+default = true
+為向後相容 additive prop
+只有 404 使用 showFooter={false}
+Header / Footer component 視覺未修改
+```
+
+### 延後決策（Deferred · Non-blocking）
+
+```text
+Open Graph / Twitter Card metadata
+WebApplication / SoftwareApplication schema
+Root HTTP 301（目前 noindex + JS redirect）
+Preview legacy cleanup
+```
+
+原因：
+
+```text
+不屬於 A / B 級問題
+不阻擋 V1 SEO technical closeout
+避免在 closeout 批次擴張 scope
+```
+
+### Evidence
+
+```text
+Batch 1 — 9c10f39 — canonical / hreflang — Production verified
+Batch 2 — f7629de — Preview noindex — Production verified
+Batch 3 — b5b150f — localized custom 404 — Production verified
+Production baseline：b5b150f
+```
+
+Canonical audit baseline：[`docs/project/seo-technical-audit.md`](seo-technical-audit.md)

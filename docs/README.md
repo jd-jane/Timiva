@@ -48,7 +48,7 @@ Timiva 的核心方向：
 | 產品方向 | `docs/core/` | 專案 brief、原則、架構、roadmap |
 | 設計與實作標準 | `docs/standards/` | layout、design system、Tailwind、SEO、互動 baseline |
 | 工作流程 | `docs/workflow/` | Owner workflow、Agent review、QA、pre-deploy |
-| 專案狀態 | `docs/project/` | current-status、decision-log |
+| 專案狀態 | `docs/project/` | current-status、decision-log、seo-technical-audit |
 | 工具規格 | `docs/tools/<tool>/` | 每工具最小 tracked 集合 |
 | Cursor 任務入口 | 根目錄 `AGENTS.md` | 每次任務必讀 |
 | Agent 角色定義 | `agents/` | 四代理人角色檔 |
@@ -117,6 +117,7 @@ docs/standards/**
 docs/workflow/**
 docs/project/current-status.md
 docs/project/decision-log.md
+docs/project/seo-technical-audit.md
 docs/tools/<tool>/ 最小規格集合（README、product-spec 等）
 docs/wireframes/（線稿 JPG；Owner 可另行決定是否改 local）
 agents/**
@@ -203,7 +204,8 @@ timiva/
 │   │   └── cursor-commands.md
 │   ├── project/
 │   │   ├── current-status.md
-│   │   └── decision-log.md
+│   │   ├── decision-log.md
+│   │   └── seo-technical-audit.md
 │   ├── wireframes/
 │   └── tools/
 │       ├── event-countdown/
@@ -271,6 +273,9 @@ timiva/
 |---|---|
 | [`current-status.md`](project/current-status.md) | 專案現況事實來源 |
 | [`decision-log.md`](project/decision-log.md) | 已確認決策紀錄 |
+| [`seo-technical-audit.md`](project/seo-technical-audit.md) | V1 technical SEO audit、問題分級、修正批次與 production closeout baseline |
+
+**閱讀時機：** SEO audit、SEO closeout、pre-deploy SEO 檢查時視情況閱讀；非每次 Cursor 任務必讀。
 
 ### 8.5 Tools（`docs/tools/`）
 
@@ -282,7 +287,7 @@ timiva/
 | Event Countdown (EC) | 已部署 |
 | Date Range Calculator (DR) | 已部署 |
 | Countdown Timer (CT) | 已部署 |
-| Year Progress (YP) | 實作完成，站內連結整合完成，待 Owner push / deploy |
+| Year Progress (YP) | 已部署 |
 
 ---
 

@@ -1,8 +1,8 @@
 # Timiva 專案現況
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
-> 更新日期：2026-07-01
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app 上線與 V1 production smoke test、GA4 正式網域驗證、Legal 手機橫式 hotfix（`40761d3`）、四個 V1 工具與 Year Progress 部署狀態。
+> 更新日期：2026-07-04
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、四個 V1 tools production、GA4 privacy-first implementation、Search Console verification、SEO Batch 1–3 production closeout（production commit `b5b150f`）。
 
 ---
 
@@ -21,7 +21,7 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **Timiva V1 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** 四個 V1 工具、EN / ZH、Legal、GA4 privacy-first Basic Consent、Cloudflare Pages production domain、HTTPS、www redirect、email forwarding 已上線；**V1 production smoke test：PASS**。最新 production commit：`40761d3`（Legal meta hotfix）。 |
+| Current session status | **Timiva V1 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** 四個 V1 工具、EN / ZH、Legal、GA4 privacy-first Basic Consent、Search Console verification、**V1 SEO technical closeout** 已完成；**V1 production smoke test：PASS**。Current production baseline：`b5b150f`（localized custom 404）。 |
 
 ---
 
@@ -262,7 +262,7 @@ B0–B3 standalone: complete
 Link Integration: complete · validate-tool-link-integration.mjs passed · Owner QA passed
 Catalog / Home / All Tools / Related Tools: integrated
 Deployed to timiva.app
-HTTPS Share success verification: pending（non-blocking, post-deploy）
+HTTPS Share success verification: optional follow-up（non-blocking）
 ```
 
 Core MVP:
@@ -602,12 +602,13 @@ V1 production smoke test：PASS
 
 ```text
 Timiva V1 已在正式網域 timiva.app 提供服務。
+V1 SEO technical closeout 已完成（2026-07-04）。
 ```
 
 Completed:
 
 ```text
-四個 V1 工具
+四個 V1 工具（Event Countdown、Date Range Calculator、Countdown Timer、Year Progress）
 EN / ZH
 Legal
 GA4 privacy-first Basic Consent
@@ -617,17 +618,68 @@ www redirect
 email forwarding
 official-domain smoke test
 Legal mobile-landscape meta hotfix（40761d3）
+Google Search Console 驗證
+Sitemap submission（18 formal URLs）
+SEO Batch 1 — canonical / hreflang（9c10f39）
+SEO Batch 2 — Preview noindex（f7629de）
+SEO Batch 3 — localized custom 404（b5b150f）
 ```
 
-Not done yet（依專案真實狀態保留）:
+Deferred / optional（不阻擋 V1 SEO technical closeout）:
 
 ```text
-Google Search Console 設定與驗證
-sitemap submission
-SEO technical final review
-final launch report
+Open Graph / Twitter Card metadata
+WebApplication schema
+Root HTTP 301 decision
+Preview legacy cleanup decision
 Year Progress HTTPS Share verification（non-blocking）
 AdSense / live ads（仍 disabled）
+final launch report（若 Owner 另開文件任務）
+```
+
+### 12.1 V1 SEO Technical Closeout
+
+```text
+Batch 1 — canonical / hreflang
+  Commit：9c10f39
+  Production：PASS
+  18 個正式頁 canonical / hreflang 正確
+
+Batch 2 — Preview noindex
+  Commit：f7629de
+  Production：PASS
+  6 個 Preview routes：noindex, nofollow；無 canonical / hreflang
+
+Batch 3 — Localized custom 404
+  Commit：b5b150f
+  Production：PASS
+  Unknown URLs → HTTP 404；不再 soft 404
+```
+
+Final SEO status:
+
+```text
+18 formal pages indexable
+6 Preview routes noindex, nofollow
+Unknown URLs return HTTP 404
+Sitemap：18 URLs
+robots.txt：normal
+Search Console：verified
+No open A / B technical SEO issue
+```
+
+詳細 audit 與 closeout baseline：[`docs/project/seo-technical-audit.md`](seo-technical-audit.md)
+
+### 12.2 Custom 404 summary
+
+```text
+單一 src/pages/404.astro → dist/404.html
+EN / ZH locale-aware content（pathname 決定語系；非 redirect）
+robots：noindex, follow
+無 canonical / hreflang / JSON-LD
+無 Footer
+BaseLayout 新增 optional showFooter prop（default true）；僅 404 使用 showFooter={false}
+Desktop / Mobile portrait / Mobile landscape：Owner accepted
 ```
 
 ---
@@ -683,18 +735,20 @@ Do not push / deploy without Owner confirmation
 
 ```text
 Timiva V1 — live on timiva.app
-Event Countdown V2 — deployed
-Date Range Calculator V2 — deployed
-Countdown Timer V2 — deployed · site-integrated
-Year Progress V2 — deployed · site-integrated（f39f8bc, 20c379d）
-GA4 + Basic Consent — deployed on timiva.app · official-domain QA passed（87e718b）
-Legal meta hotfix — deployed（40761d3）
+Event Countdown V2 — Production
+Date Range Calculator V2 — Production
+Countdown Timer V2 — Production · site-integrated
+Year Progress V2 — Production · site-integrated
+GA4 + Basic Consent — deployed on timiva.app
+V1 SEO technical closeout — complete（b5b150f）
 ```
 
 Next workflow:
 
 ```text
-V1 launch checklist 剩餘項目（Search Console、sitemap、SEO technical review、final launch report）
+docs commit push（待 Owner Review）
+後續非阻擋 SEO growth work（OG、schema 等）
+Preview legacy cleanup decision（另案）
 ```
 
 Optional follow-up:
@@ -702,6 +756,9 @@ Optional follow-up:
 ```text
 Year Progress HTTPS Share verification（non-blocking）
 Ad placeholder strategy only; ads remain disabled
+Open Graph / Twitter Card
+WebApplication schema
+Root HTTP 301 decision
 ```
 
 Important:
@@ -718,11 +775,12 @@ Phase A：重大變更、deploy 或 locked components 修改仍需 Owner 明確�
 Recommended order:
 
 ```text
-1. Google Search Console 設定與驗證
-2. sitemap submission
-3. SEO technical final review
-4. final launch report
-5. All Tools final content check on production
+1. Push docs closeout commit（待 Owner Review）
+2. Open Graph / Twitter Card（deferred SEO growth）
+3. WebApplication schema（deferred）
+4. Root HTTP 301 decision（deferred）
+5. Preview legacy cleanup decision
+6. All Tools final content check on production（若尚未完成）
 ```
 
 Parallel / later:
@@ -772,6 +830,7 @@ docs/workflow/cursor-commands.md
 ```text
 docs/project/current-status.md（本文件）
 docs/project/decision-log.md
+docs/project/seo-technical-audit.md
 ```
 
 ### Tools
@@ -820,7 +879,8 @@ Timiva V1 已在正式網域 https://timiva.app 提供服務。
 
 已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2、Year Progress V2（含站內連結整合）。
 GA4 privacy-first Basic Consent 已在 timiva.app 驗證通過。
-Legal mobile-landscape meta hotfix：40761d3。
+V1 SEO technical closeout 已完成（Batch 1–3 production PASS；baseline `b5b150f`）。
+Search Console 已驗證；Sitemap 18 formal URLs 已提交。
 
 規格與流程：docs/tools/、docs/workflow/
 Task briefs 與 validation reports 在 local-docs/，不納入 Git tracked。
