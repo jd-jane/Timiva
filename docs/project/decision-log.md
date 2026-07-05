@@ -1450,3 +1450,46 @@ Production baseline：b5b150f
 ```
 
 Canonical audit baseline：[`docs/project/seo-technical-audit.md`](seo-technical-audit.md)
+
+---
+
+## 2026-07-05 — Age Calculator product specification confirmed
+
+### 背景
+
+```text
+Timiva 四個 V1 工具與 Year Progress 已上線。
+Owner 完成 Age Calculator 產品規格討論，核准納入 canonical 文件系統。
+Age Calculator 為 Timiva 第五個工具，下一步為 repository-aware Plan-first。
+```
+
+### 決策
+
+```text
+- Age Calculator 成為 Timiva 第五個工具
+- Category：Important Dates／重要日子
+- Routes：/en/age-calculator/、/zh/age-calculator/
+- MVP 主結果：完整歲數、精準年／月／日、已走過總天數
+- 初始狀態顯示 0 歲
+- 出生日期：單一智慧日期欄位；支援 8 位連續輸入（如 19950812）；自動格式化 YYYY / MM / DD；支援常見完整日期貼上；保留日期選擇器
+- 計算日期預設今天；Desktop 原位置修改；Mobile 使用既有 Mobile Sheet
+- 2 月 29 日出生者在非閏年以 3 月 1 日作為生日週年
+- 自然日曆算法：完整年數、完整月數、剩餘實際天數；出生當天為 Day 0
+- MVP 不使用 LocalStorage
+- MVP 不加入分享、距離下次生日、星座、生肖或生命統計
+- Ready for Plan-first；Implementation not started
+```
+
+### Canonical spec
+
+```text
+docs/tools/age-calculator/product-spec.md
+docs/tools/age-calculator/README.md
+```
+
+### 狀態
+
+```text
+Not committed · Not pushed · Not deployed
+Implementation not started
+```

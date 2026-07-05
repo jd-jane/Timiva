@@ -118,6 +118,8 @@ docs/workflow/**
 docs/project/current-status.md
 docs/project/decision-log.md
 docs/project/seo-technical-audit.md
+docs/tools/age-calculator/README.md
+docs/tools/age-calculator/product-spec.md
 docs/tools/<tool>/ 最小規格集合（README、product-spec 等）
 docs/wireframes/（線稿 JPG；Owner 可另行決定是否改 local）
 agents/**
@@ -212,6 +214,7 @@ timiva/
 │       ├── date-range-calculator/
 │       ├── countdown-timer/
 │       ├── year-progress/
+│       ├── age-calculator/
 │       └── shared/
 ├── agents/
 │   ├── README.md
@@ -288,6 +291,9 @@ timiva/
 | Date Range Calculator (DR) | 已部署 |
 | Countdown Timer (CT) | 已部署 |
 | Year Progress (YP) | 已部署 |
+| Age Calculator (AC) | Product specification complete · Ready for Plan-first · Implementation not started |
+
+Canonical docs：`docs/tools/age-calculator/README.md`、`docs/tools/age-calculator/product-spec.md`
 
 ---
 

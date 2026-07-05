@@ -1,7 +1,7 @@
 ﻿# Timiva V1 Roadmap V3
 
-> Updated: 2026-06-21
-> Main change from V2: Year Progress replaces Life Progress Bar as the V1 fourth tool.
+> Updated: 2026-07-05
+> Main changes: Year Progress deployed as V1 fourth tool; Age Calculator advanced to fifth tool with product spec complete.
 
 ---
 
@@ -43,13 +43,13 @@ flowchart TD
     C --> C1[Event Countdown<br/>Completed]
     C --> C2[Date Range Calculator<br/>Completed]
     C --> C3[Countdown Timer<br/>Completed + integrated]
-    C --> C4[Year Progress<br/>Product spec confirmed]
+    C --> C4[Year Progress<br/>Deployed]
+    C --> C5[Age Calculator<br/>Product spec complete · Plan-first next]
 
     D --> D1[Breathing Timer]
     D --> D2[Fasting / Recovery Timer]
     D --> D3[Days Between Dates]
     D --> D4[Add / Subtract Days]
-    D --> D5[Age Calculator]
 
     E --> E1[Stopwatch]
     E --> E2[Fullscreen Timer]
@@ -90,7 +90,7 @@ Post-tool Link Integration Gate
 | 1 | Event Countdown | Important Dates | Completed baseline |
 | 2 | Date Range Calculator | Important Dates | Completed baseline |
 | 3 | Countdown Timer | Timers & Focus | Completed and site-integrated |
-| 4 | Year Progress | Life Progress | Product spec / flow confirmed; Plan-first next |
+| 4 | Year Progress | Life Progress | Deployed · site-integrated |
 
 Phase 1 covers:
 
@@ -104,30 +104,46 @@ Daily Rhythm begins in V1.5.
 
 ---
 
-## 5. Year Progress development roadmap
+## 5. Year Progress status（deployed）
 
 ```text
 Product specification: Complete
-Product function flow: Complete
-Plan-first task: Ready
-Implementation: Not started
+Implementation: Complete
+Link integration: Complete
+Production: Deployed on timiva.app
 ```
 
-Development sequence:
+---
+
+## 5.1 Age Calculator — next product development
+
+| Item | Status |
+|---|---|
+| Order | **5** — Timiva fifth tool |
+| Category | Important Dates / 重要日子 |
+| Routes | `/en/age-calculator/`, `/zh/age-calculator/` |
+| Product specification | Complete |
+| Plan-first | Ready for repository-aware Plan-first |
+| Implementation | Not started |
+| Commit / push / deploy | Not committed · Not pushed · Not deployed |
+
+Canonical spec: [`docs/tools/age-calculator/product-spec.md`](../tools/age-calculator/product-spec.md)
+
+Development sequence（implementation 階段；Plan-first 先行）:
 
 ```text
 1. Plan-first repository audit
-2. B0 V2 tool page scaffold
-3. B1A lower content
-4. B1B upper static visual
-5. B2A date calculation
-6. B2B Tool Theme Layer / theme / share
-7. B3 full QA and Agent Reviews
+2. Owner Plan Review
+3. B0 V2 tool page scaffold
+4. B1A lower content
+5. B1B upper static visual
+6. B2 smart date input + calculation logic + calculation-date interaction
+7. Full QA and Agent Reviews
 8. Owner standalone-tool acceptance
 9. Tool implementation commit
 10. Post-tool Link Integration
 11. Link QA / commit
-12. V1 pre-deploy readiness
+12. push / deploy checkpoint
 ```
 
 ---
@@ -136,13 +152,12 @@ Development sequence:
 
 | Order | Tool | Category | Purpose |
 |---:|---|---|---|
-| 5 | Breathing Timer | Daily Rhythm | Establish calm rhythm / rest use case |
-| 6 | Fasting / Recovery Timer | Daily Rhythm | Time tracking only; no health advice |
-| 7 | Days Between Dates | Important Dates | Search-focused date difference |
-| 8 | Add / Subtract Days | Important Dates | Search-focused date arithmetic |
-| 9 | Age Calculator | Important Dates | Age / birthday search demand |
+| 6 | Breathing Timer | Daily Rhythm | Establish calm rhythm / rest use case |
+| 7 | Fasting / Recovery Timer | Daily Rhythm | Time tracking only; no health advice |
+| 8 | Days Between Dates | Important Dates | Search-focused date difference |
+| 9 | Add / Subtract Days | Important Dates | Search-focused date arithmetic |
 
-Year Progress is removed from V1.5 because it is now the V1 fourth tool.
+Age Calculator 已提前至第五個工具（見 §5.1），不再列於 Phase 2 第 9 位。
 
 ---
 
@@ -209,18 +224,20 @@ Link QA and integration commit
 
 ---
 
-## 10. V1 release sequence after Year Progress
+## 10. V1 release status
 
 ```text
-Year Progress standalone acceptance
-→ Year Progress implementation commit
-→ Year Progress Post-tool Link Integration
-→ All Tools / Home final content check
-→ Timiva V1 Pre Deploy Final Check
-→ Push / Deploy approval
+V1 four tools + Year Progress: deployed on timiva.app
+V1 SEO technical closeout: complete
 ```
 
-No commit, push, or deploy occurs without Owner approval.
+Post–Year Progress optional follow-up:
+
+```text
+Year Progress HTTPS Share verification（non-blocking）
+```
+
+No further push or deploy occurs without Owner approval.
 
 ---
 
@@ -243,7 +260,8 @@ PWA until core tool release timing is confirmed
 ## 12. Current next action
 
 ```text
-Run the Year Progress Plan-first task.
+Age Calculator repository-aware Plan-first task.
 Cursor inspects the repository and outputs a plan only.
 Owner reviews the plan before any file edits.
+Implementation not started.
 ```

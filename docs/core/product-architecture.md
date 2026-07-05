@@ -1,6 +1,6 @@
 ﻿# Timiva Product Architecture V4
 
-> Updated: 2026-06-21
+> Updated: 2026-07-05
 > Replaces the planning assumptions in V3 where Life Progress Bar was the V1 fourth tool.
 
 ## 文件目的
@@ -99,12 +99,22 @@ flowchart TD
 
 | Order | Tool | Category | Status / purpose |
 |---:|---|---|---|
-| 1 | Event Countdown | Important Dates | Completed baseline |
-| 2 | Date Range Calculator | Important Dates | Completed baseline |
-| 3 | Countdown Timer | Timers & Focus | Completed and site-integrated |
-| 4 | Year Progress | Life Progress | Product spec confirmed; next implementation |
+| 1 | Event Countdown | Important Dates | Deployed · production baseline |
+| 2 | Date Range Calculator | Important Dates | Deployed · production baseline |
+| 3 | Countdown Timer | Timers & Focus | Deployed · site-integrated |
+| 4 | Year Progress | Life Progress | Deployed · site-integrated |
 
 V1 no longer uses a multi-mode Life Progress Bar as the fourth tool.
+
+---
+
+## 4.1 Fifth tool（post-V1 core）
+
+| Order | Tool | Category | Status / purpose |
+|---:|---|---|---|
+| 5 | Age Calculator | Important Dates | Product specification complete · Ready for Plan-first · Implementation not started |
+
+Age Calculator 為 Timiva **第五個工具**，產品規格已完成；下一步為 repository-aware Plan-first。尚未 commit、push 或 deploy。
 
 ---
 
@@ -122,7 +132,7 @@ V1 no longer uses a multi-mode Life Progress Bar as the fourth tool.
 | P0 | Date Range Calculator | 日期區間計算 | 計算日期區間 | Low |
 | P1 | Days Between Dates | 日期差計算 | 聚焦相差天數 | Low |
 | P1 | Add / Subtract Days | 日期加減 | 計算 N 天前後 | Low |
-| P1 | Age Calculator | 年齡計算 | 年齡與生日日期差 | Low |
+| P1 | Age Calculator | 年齡計算 | 年齡與生日日期差 | Low — **Product spec complete · Ready for Plan-first** |
 | P2 | Birthday Countdown | 生日倒數 | 生日情境倒數 | Low |
 | P3 | Holiday Countdown | 節日倒數 | 長尾節日情境 | Medium |
 | P3 | Anniversary Countdown | 週年倒數 | 紀念日情境 | Low |
@@ -232,24 +242,31 @@ Backend / account / sync
 
 ## 9. Development priority
 
-### Phase 1 — V1 core
+### Phase 1 — V1 core（deployed）
 
 ```text
-1. Event Countdown
-2. Date Range Calculator
-3. Countdown Timer
-4. Year Progress
+1. Event Countdown — deployed
+2. Date Range Calculator — deployed
+3. Countdown Timer — deployed
+4. Year Progress — deployed
+```
+
+### Phase 1.5 — Next product development
+
+```text
+5. Age Calculator — Product specification complete · Ready for Plan-first · Implementation not started
 ```
 
 ### Phase 2 — V1.5 differentiation and search expansion
 
 ```text
-5. Breathing Timer
-6. Fasting / Recovery Timer
-7. Days Between Dates
-8. Add / Subtract Days
-9. Age Calculator
+6. Breathing Timer
+7. Fasting / Recovery Timer
+8. Days Between Dates
+9. Add / Subtract Days
 ```
+
+Age Calculator 已自原 V1.5 第 9 位 **提前至第五個工具**；上列 Phase 2 其餘工具順序依既有邏輯往後移。
 
 ### Phase 3 — V2 expansion
 

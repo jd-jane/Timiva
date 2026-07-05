@@ -1,8 +1,8 @@
 # Timiva 專案現況
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
-> 更新日期：2026-07-04
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、四個 V1 tools production、GA4 privacy-first implementation、Search Console verification、SEO Batch 1–3 production closeout（production commit `b5b150f`）。
+> 更新日期：2026-07-05
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、四個 V1 tools + Year Progress production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、Age Calculator 產品規格完成。
 
 ---
 
@@ -21,7 +21,25 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **Timiva V1 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** 四個 V1 工具、EN / ZH、Legal、GA4 privacy-first Basic Consent、Search Console verification、**V1 SEO technical closeout** 已完成；**V1 production smoke test：PASS**。Current production baseline：`b5b150f`（localized custom 404）。 |
+| Current session status | **Timiva V1 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** 四個 V1 工具（含 Year Progress）已上線；V1 SEO technical closeout 已完成；**Age Calculator**（第五個工具）產品規格已完成，Ready for Plan-first。Production baseline：`c5c0a22`（docs closeout；implementation `b5b150f`）。 |
+
+### 1.1 Current work tracks（2026-07-05）
+
+**Release track（production）：**
+
+```text
+Event Countdown、Date Range Calculator、Countdown Timer、Year Progress：已部署 timiva.app
+V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22`）
+可選：Year Progress HTTPS Share verification（non-blocking）
+```
+
+**Product development track：**
+
+```text
+Age Calculator：Product specification complete · Ready for repository-aware Plan-first
+Implementation not started · Not committed · Not pushed · Not deployed
+下一步：Age Calculator Plan-first（僅計劃，不實作）
+```
 
 ---
 
@@ -299,7 +317,59 @@ Do not refactor Event Countdown themes in unrelated tasks
 
 ---
 
-## 7. Shared V2 tool baselines（2026-06-13 起）
+## 7. Age Calculator current status
+
+**Product specification complete · Ready for repository-aware Plan-first · Implementation not started · Not committed · Not pushed · Not deployed**
+
+Timiva **第五個工具**。
+
+Routes:
+
+```text
+/en/age-calculator/
+/zh/age-calculator/
+```
+
+Category:
+
+```text
+Important Dates / 重要日子
+```
+
+Core MVP summary:
+
+```text
+完整歲數 · 精準年／月／日 · 已走過總天數
+出生日期智慧輸入（8 位連續數字、貼上、日期選擇器）
+計算日期預設今天；Desktop 原位置修改；Mobile 既有 Mobile Sheet
+初始狀態 0 歲；2 月 29 日非閏年週年規則；自然日曆算法；Day 0
+MVP 無 LocalStorage、無分享、無星座／生肖／生命統計
+```
+
+Primary specification:
+
+```text
+docs/tools/age-calculator/product-spec.md
+docs/tools/age-calculator/README.md
+```
+
+Protected / no-go boundary:
+
+```text
+尚未實作 — 不得建立 route、component、preview、計算邏輯或 validation script
+不得修改 Header、Footer、BaseLayout、Mobile Sheet baseline、既有工具程式
+不得在未核准 Plan-first 前開始 implementation
+```
+
+Next step:
+
+```text
+Owner 確認文件同步後 → Age Calculator repository-aware Plan-first task
+```
+
+---
+
+## 8. Shared V2 tool baselines（2026-06-13 起）
 
 ### 7.1 Tool result baseline
 
@@ -329,7 +399,7 @@ No live AdSense connected
 
 ---
 
-## 8. Legal pages completed
+## 9. Legal pages completed
 
 Six pages via Markdown + `LegalTextLayout`:
 
@@ -386,7 +456,7 @@ Safari 一般瀏覽模式曾出現異常舊版畫面，
 
 ---
 
-## 9. GA4 + Basic Consent current status
+## 10. GA4 + Basic Consent current status
 
 ```text
 Source implementation complete
@@ -529,7 +599,7 @@ scripts/validate-analytics-consent.mjs
 
 ---
 
-## 10. Production domain（timiva.app）
+## 11. Production domain（timiva.app）
 
 ### 正式網域
 
@@ -570,7 +640,7 @@ hello@timiva.app 寄信測試成功
 
 ---
 
-## 11. V1 production smoke test
+## 12. V1 production smoke test
 
 Owner 已在正式 `timiva.app` 完成：
 
@@ -598,7 +668,7 @@ V1 production smoke test：PASS
 
 ---
 
-## 12. Current V1 launch status
+## 13. Current V1 launch status
 
 ```text
 Timiva V1 已在正式網域 timiva.app 提供服務。
@@ -684,7 +754,7 @@ Desktop / Mobile portrait / Mobile landscape：Owner accepted
 
 ---
 
-## 13. Footer language switch completed
+## 14. Footer language switch completed
 
 Footer preserves corresponding page route on language switch.
 
@@ -699,7 +769,7 @@ Examples:
 
 ---
 
-## 14. Current locked / protected areas
+## 15. Current locked / protected areas
 
 Unless a task explicitly says otherwise, do not modify:
 
@@ -715,7 +785,7 @@ ToolAdSlot visual style
 
 ---
 
-## 15. Current no-go list
+## 16. Current no-go list
 
 ```text
 Do not redesign EC V2 / DR V2 / Countdown Timer / Year Progress without new task
@@ -731,7 +801,7 @@ Do not push / deploy without Owner confirmation
 
 ---
 
-## 16. Current active next step
+## 17. Current active next step
 
 ```text
 Timiva V1 — live on timiva.app
@@ -740,15 +810,15 @@ Date Range Calculator V2 — Production
 Countdown Timer V2 — Production · site-integrated
 Year Progress V2 — Production · site-integrated
 GA4 + Basic Consent — deployed on timiva.app
-V1 SEO technical closeout — complete（b5b150f）
+V1 SEO technical closeout — complete（docs `c5c0a22`）
+Age Calculator — Product spec complete · Ready for Plan-first
 ```
 
 Next workflow:
 
 ```text
-docs commit push（待 Owner Review）
-後續非阻擋 SEO growth work（OG、schema 等）
-Preview legacy cleanup decision（另案）
+Age Calculator repository-aware Plan-first（僅計劃，不實作）
+Owner 確認本次文件同步後啟動
 ```
 
 Optional follow-up:
@@ -770,17 +840,17 @@ Phase A：重大變更、deploy 或 locked components 修改仍需 Owner 明確�
 
 ---
 
-## 17. Possible next project tasks
+## 18. Possible next project tasks
 
 Recommended order:
 
 ```text
-1. Push docs closeout commit（待 Owner Review）
-2. Open Graph / Twitter Card（deferred SEO growth）
-3. WebApplication schema（deferred）
-4. Root HTTP 301 decision（deferred）
-5. Preview legacy cleanup decision
-6. All Tools final content check on production（若尚未完成）
+1. Age Calculator repository-aware Plan-first
+2. Owner Plan Review → implementation batches（尚未開始）
+3. Open Graph / Twitter Card（deferred SEO growth）
+4. WebApplication schema（deferred）
+5. Root HTTP 301 decision（deferred）
+6. Preview legacy cleanup decision
 ```
 
 Parallel / later:
@@ -792,7 +862,7 @@ Ad placeholder strategy only; ads remain disabled
 
 ---
 
-## 18. Documentation map（canonical tracked paths）
+## 19. Documentation map（canonical tracked paths）
 
 ### Core
 
@@ -840,6 +910,7 @@ docs/tools/event-countdown/README.md
 docs/tools/date-range-calculator/README.md
 docs/tools/countdown-timer/README.md + product-spec.md
 docs/tools/year-progress/README.md + product-spec.md
+docs/tools/age-calculator/README.md + product-spec.md
 ```
 
 ### Local-only（不納入 Git tracked）
@@ -855,7 +926,7 @@ local-docs/templates/ — reusable templates
 
 ---
 
-## 19. How to start a new Cursor task
+## 20. How to start a new Cursor task
 
 ```text
 Read AGENTS.md,
@@ -870,7 +941,7 @@ Create an implementation plan only. Do not edit files yet.
 
 ---
 
-## 20. How to start a new ChatGPT discussion
+## 21. How to start a new ChatGPT discussion
 
 ```text
 這是 Timiva 專案。請以 AGENTS.md、docs/project/current-status.md 與 docs/project/decision-log.md 為主要上下文。
@@ -879,8 +950,8 @@ Timiva V1 已在正式網域 https://timiva.app 提供服務。
 
 已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2、Year Progress V2（含站內連結整合）。
 GA4 privacy-first Basic Consent 已在 timiva.app 驗證通過。
-V1 SEO technical closeout 已完成（Batch 1–3 production PASS；baseline `b5b150f`）。
-Search Console 已驗證；Sitemap 18 formal URLs 已提交。
+V1 SEO technical closeout 已完成（Batch 1–3 production PASS；docs `c5c0a22`）。
+Age Calculator 產品規格已完成，Ready for Plan-first；尚未實作。
 
 規格與流程：docs/tools/、docs/workflow/
 Task briefs 與 validation reports 在 local-docs/，不納入 Git tracked。
