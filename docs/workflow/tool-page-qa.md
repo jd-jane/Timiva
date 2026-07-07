@@ -223,8 +223,9 @@ URL 參數錯誤時有 fallback
 檢查：
 
 ```text
-Related Tools 數量 2 到 4 個
-優先推薦同分類工具
+Related Tools 最多 3 個（除非 Owner 明確核准更多）
+優先推薦最接近使用者意圖的工具，而非單純依新工具順序
+優先同分類工具
 再推薦互補情境
 連結正確
 不放在主工具上方
@@ -243,6 +244,7 @@ H1 存在
 Meta title 存在
 Meta description 存在
 FAQ 3 到 6 題
+FAQ 標題使用 {Tool Name} FAQ，不得使用 generic「Frequently asked questions」或僅「常見問題」
 FAQ 解答真問題
 FAQ Schema / JSON-LD 正確
 FAQ 與頁面顯示內容一致
@@ -257,8 +259,35 @@ H1 缺失
 Meta 缺失
 FAQ Schema 錯誤
 FAQ 與工具功能不一致
+FAQ 標題不符合工具頁命名規則
 SEO 區塊放到主工具前面
 ```
+
+---
+
+## 11A. B1A lower content and sidebar QA
+
+B1A（lower content + SEO）完成後、進入 B1B 前，Owner browser review 必須至少對照 **一個已核准的 production 工具頁** 檢查：
+
+```text
+[ ] Lower content 結構與順序對齊既有正式工具（About → How to use → Common uses/tags → {Tool Name} FAQ）
+[ ] About 使用工具專屬標題（非 generic About the…）
+[ ] How to use 使用工具專屬標題（非僅 How to use / 使用方式）
+[ ] FAQ 標題為 {Tool Name} FAQ，非 generic Frequently asked questions / 常見問題
+[ ] Common uses / tags 區塊存在，除非 product spec 明確排除
+[ ] Tags / chips 為資訊標籤、非互動，除非 product spec 明確要求
+[ ] Related Tools 最多 3 個
+[ ] Related Tools 依最接近使用者意圖排序，非單純新工具順序
+[ ] Desktop 右側 sidebar related cards 不得 hover-lift 或向上 translate
+[ ] Sidebar cards 不得重用首頁 ToolCard hover 行為
+[ ] Desktop drawer collapse / expand 控制項可見
+[ ] Desktop drawer collapse / expand 行為正常
+[ ] Drawer aria-expanded 與 accessible label 正確
+[ ] Sidebar hover 不造成 layout shift
+[ ] Desktop drawer 修正不造成手機破版或水平捲軸
+```
+
+若 Owner browser review 發現以上任一項失敗，**必須回到 B1A regression fix**，不得進入 B1B。
 
 ---
 

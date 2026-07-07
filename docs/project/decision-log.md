@@ -1493,3 +1493,49 @@ docs/tools/age-calculator/README.md
 Not committed · Not pushed · Not deployed
 Implementation not started
 ```
+
+---
+
+## 2026-07-07 — Tool page sidebar and lower content consistency rules
+
+### 背景
+
+```text
+Age Calculator B1A 完成後，Owner 實際瀏覽器檢查再次發現工具頁 sidebar / lower content regression：
+右側 Related Tools hover lift、drawer 收合按鈕缺失、FAQ 使用 generic 標題、缺少 common uses / tags 區、
+Related Tools 數量與選擇原則未在 canonical docs 中明確記錄。
+類似問題曾在先前工具修正，需升格為全站工具頁標準。
+```
+
+### 決策
+
+```text
+All new Timiva tool pages must preserve the approved production tool-page sidebar and lower-content structure.
+```
+
+### 規則
+
+```text
+- Sidebar related cards do not use hover lift.
+- Sidebar related cards must not reuse homepage ToolCard hover translate behavior.
+- Desktop drawer collapse / expand control must remain visible and functional.
+- Lower content FAQ heading uses {Tool Name} FAQ.
+- Lower content includes a common uses / tags section unless explicitly excluded by product spec.
+- Related Tools are capped at 3 per tool page unless Owner explicitly approves more.
+- Related Tools should be chosen by closest user intent, not by newest tools or automatic all-to-all linking.
+```
+
+### 原因
+
+```text
+The same sidebar / lower-content regression occurred again during Age Calculator B1A after similar issues
+had been corrected in prior tools. The rule must be elevated from per-tool feedback into canonical tool-page standards.
+```
+
+### 影響
+
+```text
+Future B1A tasks, tool-page QA, and Post-tool Link Integration must check these rules before moving forward.
+Canonical references: docs/standards/layout-system.md §6.6, docs/workflow/tool-page-qa.md §11A,
+docs/workflow/tool-link-integration.md §8.2.1.
+```

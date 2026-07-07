@@ -240,6 +240,89 @@ Header component 為 locked component，layout 任務不應随意修改。
 * 置中 `max-w-3xl`，區塊內左對齊
 * 不壓過第一屏工具體驗
 
+### 6.6 Tool page sidebar and lower content rules
+
+本節適用於 **正式工具頁**（production V2 tool pages），不限 preview route。新工具 B1A 與 Owner browser review 必須對照本節與既有正式工具（Date Range、Event Countdown、Countdown Timer、Year Progress 等）。
+
+#### A. Tool page right sidebar rules
+
+```text
+Desktop 右側 sidebar 的 Related Tools 卡片不得使用 hover lift（translateY / 上浮）。
+不得把首頁 ToolCard 的 hover translate 行為套用到工具頁右側欄。
+Sidebar related cards 僅可使用已核准的 border、background、arrow、opacity 等 hover 狀態。
+Sidebar related cards 不得在 hover 時改變高度、造成 layout shift、或向上移動。
+新工具必須對齊既有正式工具的 production sidebar pattern。
+除非 Owner 明確核准，新工具不得自創新的 sidebar card 互動模式。
+```
+
+若新工具 root 尚未納入 `tool-drawer-v2-baseline.css` 的 drawer selector，必須在 **工具 scoped CSS** 內複製同等 no-lift 規則，不得修改 shared baseline。
+
+#### B. Drawer collapse / expand control
+
+```text
+Desktop 工具頁 drawer 必須包含已核准的 collapse / expand 控制項。
+Collapse 控制項在 desktop 工具頁必須保持可見。
+控制項的 markup、位置、aria 狀態與 open/closed 行為必須遵循既有 production 工具。
+新工具必須複製既有 production drawer pattern，不得自創新的 drawer 系統。
+若無法在不修改 shared baseline 的前提下保留 drawer 控制項，implementation 必須停止並請求 Owner 核准。
+```
+
+允許使用 component 內 **inline drawer toggle script**（與 Date Range Calculator V2 等相同 shell pattern）；此屬 shell behavior，不是工具計算邏輯。
+
+#### C. Tool lower content structure
+
+工具頁下方內容應遵循既有 production 順序與語意：
+
+```text
+1. About（工具專屬標題）
+2. How to use（工具專屬標題）
+3. Common uses / ideas / calculations（標籤 / chips 區）
+4. {Tool Name} FAQ
+5. Related Tools（適用時；例如 mobile lower 或 drawer 關閉時）
+```
+
+FAQ 標題必須使用 **工具名稱 + FAQ**，例如：
+
+```text
+EN: Date Range Calculator FAQ · Event Countdown FAQ · Countdown Timer FAQ · Age Calculator FAQ
+ZH: 日期區間計算 FAQ · 事件倒數 FAQ · 倒數計時器 FAQ · 年齡計算 FAQ
+```
+
+避免在工具頁使用過於籠統的標題，例如：
+
+```text
+Frequently asked questions
+FAQ
+常見問題
+```
+
+除非頁面類型不是工具頁，或 Owner 明確核准。
+
+#### D. Common uses / tags section
+
+```text
+工具頁應包含 common uses / ideas / calculations 標籤區，除非 product spec 明確排除。
+Tags / chips 為資訊標籤，不是按鈕。
+不得表現為 Quick Templates，除非 product spec 明確要求。
+不得加入 click handler，除非 product spec 明確指定。
+應使用既有 production chip 樣式（例如 drv2-keyword-chip 同型 scoped class）。
+不得暗示 product spec 未支援的功能（例如 next birthday、星座、儲存生日等）。
+```
+
+#### E. Related Tools maximum
+
+```text
+每個工具頁最多顯示 3 個 Related Tools，除非 Owner 明確核准更多。
+右側 sidebar 與下方 Related 區皆受此上限約束。
+Related Tools 應優先最接近的使用者意圖，而非單純依新工具順序排列。
+若超過 3 個工具相關，依下列優先序選前 3 個：
+  1. 相同計算意圖
+  2. 相同使用情境
+  3. 相同分類
+  4. 次要的時間感知 / 情緒相關性
+不得只因站內工具變多就自動擴充 Related Tools 數量。
+```
+
 ---
 
 ## 7. Text Preview Rules
@@ -355,6 +438,7 @@ Drawer 內每張 ToolCard 必須包一層 neutral `<div>`：
 ❌ 不要用 min-h-[156px] / md:min-h-[192px] 硬撐所有卡片
 ❌ 不要讓 Drawer 卡片被 h-full 撐滿整個 drawer
 ❌ 不要為 home / all-tools / drawer 發明三套不同 ToolCard
+❌ 不要在工具頁右側 sidebar 使用首頁 ToolCard hover lift
 ```
 
 ---
