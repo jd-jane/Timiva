@@ -1,6 +1,6 @@
 # Timiva New Tool Development Rules V2
 
-> 最後更新：2026-06-21
+> 最後更新：2026-07-08
 
 ## 文件目的
 
@@ -363,6 +363,51 @@ B2+：互動程式、state machine、sheet、動畫、音效與其他動態效�
 不要在同一批次混做版型、下方內容、上方靜態 UI、互動程式與動態效果，除非 Owner 明確批准。
 每個批次完成後都要先回報與驗收，再進下一批。
 ```
+
+### 8.2 手機第一屏控制區 baseline（一般工具）
+
+B1B 靜態畫面與 B2 互動實作前，必須對齊 `docs/standards/layout-system.md` §6.7。
+
+#### 結構與按鈕位置
+
+```text
+手機第一屏需先保留下方主要操作按鈕區域。
+主要結果內容區在扣除按鈕區域後的剩餘空間中垂直置中；不要把「結果區 + 按鈕」整組一起置中。
+主要操作按鈕屬於 first-screen tool stage，不是 viewport fixed。
+「底部」指第一屏工具區底部，不是瀏覽器視窗底部；使用者往下滑時，按鈕要跟著頁面一起滑動。
+主要操作按鈕位置高度應與其他一般工具頁一致，不可依各工具內容高度自由漂移。
+主要操作按鈕與下方第一個內容標題（例如 You may also need / 相關工具）距離應維持一致。
+```
+
+#### 按鈕樣式
+
+```text
+手機主要操作按鈕沿用 Event Countdown 的 Edit / Theme / Share 樣式。
+Date Range 手機日期按鈕為同型，可含 icon。
+不要新增滿版大 CTA、fixed bottom action bar，或讓單一工具任意改變按鈕大小、重量、型態。
+```
+
+#### Bottom sheet 與手機橫式
+
+```text
+手機直式 bottom sheet：內容上下排列。
+手機橫式第一屏：仍為 mobile pattern；結果區與主要操作按鈕整理成 compact layout，完整呈現在第一屏內；不得套用 desktop inline input（除非 product spec 明確指定）。
+手機橫式 bottom sheet：可改為一列兩欄；不要把直式 sheet 直接壓扁套到橫式。
+bottom sheet 開啟時，背景結果內容區整組縮放，但不包含底部主要操作按鈕。
+```
+
+#### 特殊工具例外
+
+```text
+以上規則適用於一般工具。
+特殊互動工具（例如 Countdown Timer）可例外，但必須在 product spec 或任務提詞中明確指定。
+Cursor 不得自行判斷某工具是否為例外。
+```
+
+#### B1B / B2 前驗收
+
+進入 B2 前，必須通過 `docs/workflow/tool-page-qa.md` §11B 四種狀態檢查：
+mobile portrait closed / sheet-open、mobile landscape closed / sheet-open。
 
 
 ---

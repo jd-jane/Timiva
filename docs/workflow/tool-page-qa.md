@@ -166,6 +166,11 @@ Bottom Sheet 可關閉
 鍵盤開啟時不嚴重跑版
 Bottom Sheet 內不放廣告
 轉向後狀態正常
+主要操作按鈕不是 viewport fixed
+主要操作按鈕會跟頁面一起滑動
+bottom sheet 開啟時，背景結果內容區整組縮放
+bottom sheet 開啟時，底部主要按鈕不納入背景縮放群組
+手機直式 sheet 為上下排列；手機橫式 sheet 為一列兩欄 compact 版面
 ```
 
 Block 條件：
@@ -175,6 +180,10 @@ Bottom Sheet 無法關閉
 Bottom Sheet 過高不可操作
 Bottom Control 與 Footer 重疊
 Bottom Sheet 內出現廣告
+主要操作按鈕做成 viewport fixed 或 fixed bottom action bar
+主要操作按鈕樣式偏離 Event Countdown Edit / Theme / Share 基準
+手機橫式誤用桌機 inline input（且 product spec 未明確指定）
+bottom sheet 開啟時縮放對象錯誤或背景縮放不完整
 ```
 
 ---
@@ -288,6 +297,50 @@ B1A（lower content + SEO）完成後、進入 B1B 前，Owner browser review �
 ```
 
 若 Owner browser review 發現以上任一項失敗，**必須回到 B1A regression fix**，不得進入 B1B。
+
+---
+
+## 11B. B1B / B2 前：手機第一屏控制區 QA gate
+
+新工具在 **B1B / B2 前**，Owner browser review 必須至少檢查以下四種狀態：
+
+```text
+[ ] mobile portrait closed state（手機直式、sheet 關閉）
+[ ] mobile portrait sheet-open state（手機直式、sheet 開啟）
+[ ] mobile landscape closed state（手機橫式、sheet 關閉）
+[ ] mobile landscape sheet-open state（手機橫式、sheet 開啟）
+```
+
+QA 必須確認：
+
+```text
+[ ] 主要按鈕不是 viewport fixed
+[ ] 主要按鈕會跟頁面一起滑動
+[ ] 主要按鈕位置高度與其他一般工具頁一致
+[ ] 主要按鈕與下方第一個內容標題（例如 You may also need / 相關工具）距離一致
+[ ] 按鈕樣式符合 Event Countdown Edit / Theme / Share 那套（Date Range 手機日期按鈕同型，可含 icon）
+[ ] 沒有新增另一套滿版大 CTA 或 fixed bottom action bar
+[ ] 手機橫式沒有套用桌機 inline input（除非 product spec 明確指定）
+[ ] 手機橫式結果區與按鈕可完整呈現在第一屏內
+[ ] 手機橫式按鈕尺寸與樣式未因單一工具任意縮小或變形
+[ ] 手機直式 bottom sheet 內容為上下排列
+[ ] 手機橫式 bottom sheet 內容為一列兩欄 compact 版面（非直式 sheet 直接壓扁）
+[ ] bottom sheet 開啟時，背景結果內容區整組縮放
+[ ] bottom sheet 開啟時，底部主要按鈕不被納入背景縮放群組
+```
+
+適用範圍：
+
+```text
+以上規則適用於一般工具。
+特殊互動工具（例如 Countdown Timer）可例外，但例外必須在 product spec 或任務提詞中明確指定。
+Cursor 不得自行判斷某工具是否為例外。
+沒有明確例外時，一律套用標準 mobile first-screen baseline。
+```
+
+規範來源：`docs/standards/layout-system.md` §6.7。
+
+若 Owner browser review 發現以上任一項失敗，**必須回到 B1B regression fix**，不得進入 B2。
 
 ---
 

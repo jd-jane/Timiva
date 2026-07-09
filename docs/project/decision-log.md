@@ -1539,3 +1539,55 @@ Future B1A tasks, tool-page QA, and Post-tool Link Integration must check these 
 Canonical references: docs/standards/layout-system.md §6.6, docs/workflow/tool-page-qa.md §11A,
 docs/workflow/tool-link-integration.md §8.2.1.
 ```
+
+---
+
+## 2026-07-08 — 手機第一屏控制區與 bottom sheet 狀態基準
+
+### 背景
+
+```text
+Age Calculator B1B 實作與 Owner 瀏覽器檢查中，再次出現手機第一屏控制區不一致問題：
+底部主要按鈕被做成 viewport fixed、按鈕樣式偏離既有工具控制按鈕、
+手機橫式誤用桌機 inline input、bottom sheet 開啟時背景縮放對象錯誤、
+手機直式與橫式 sheet 版面未分開規劃。
+需將一般工具的手機 first-screen baseline 升格為 canonical docs，避免新工具重複發生。
+```
+
+### 決策
+
+```text
+一般工具的手機第一屏控制區與 bottom sheet 開啟狀態，必須遵循統一的 mobile first-screen baseline。
+```
+
+### 規則
+
+```text
+- 一般工具的手機第一屏主要操作按鈕屬於 first-screen tool stage，不是 viewport fixed。
+- 「底部」指第一屏工具區底部；使用者往下滑時，主要操作按鈕要跟著頁面一起滑動。
+- 按鈕位置、按鈕樣式、按鈕與下方內容標題距離需維持一致，作為 mobile first-screen baseline 的一部分。
+- 手機主要按鈕樣式沿用 Event Countdown 的 Edit / Theme / Share；Date Range 手機日期按鈕為同型（可含 icon）。
+- 不得新增滿版大 CTA 或 fixed bottom action bar。
+- 手機橫式仍採 mobile pattern；結果區與按鈕需整理進第一屏 compact layout，不得誤用 desktop inline input（除非 product spec 明確指定）。
+- 手機直式 bottom sheet 內容可上下排列；手機橫式 bottom sheet 內容可一列兩欄，不可把直式 sheet 直接壓扁套到橫式。
+- bottom sheet 開啟時，背景結果內容區整組縮放，但不包含底部主要操作按鈕。
+- 特殊互動工具可例外，但必須在 product spec 或任務提詞中明確指定；Cursor 不得自行判斷。
+```
+
+### 原因
+
+```text
+手機第一屏控制區是 Timiva 工具頁的核心體驗節奏。
+若各工具自行發明 fixed CTA、不同按鈕樣式或錯誤的 sheet 縮放邊界，會破壞 Widget-like 一致性，
+並在 B1B / B2 階段造成難以回歸的 layout drift。
+```
+
+### 影響
+
+```text
+未來 B1B、B2 任務與 tool-page QA 必須在進入互動實作前檢查四種手機狀態：
+mobile portrait closed / sheet-open、mobile landscape closed / sheet-open。
+Canonical references: docs/standards/layout-system.md §6.7,
+docs/workflow/tool-page-qa.md §7、§11B,
+docs/workflow/new-tool-development.md §8.2.
+```

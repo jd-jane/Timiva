@@ -323,6 +323,92 @@ Related Tools 應優先最接近的使用者意圖，而非單純依新工具順
 不得只因站內工具變多就自動擴充 Related Tools 數量。
 ```
 
+#### F. 手機第一屏控制區 baseline（一般工具）
+
+本節適用於 **一般工具** 的手機 first-screen tool stage。特殊互動工具（例如 Countdown Timer）可例外，但例外必須在該工具 product spec 或任務提詞中 **明確指定**；Cursor 不得自行判斷某工具是否為例外。沒有明確例外時，一律套用本節。
+
+##### F.1 手機第一屏結構
+
+```text
+手機第一屏需先保留下方主要操作按鈕區域。
+主要結果內容區要在扣除按鈕區域後的剩餘空間中垂直置中。
+不要把「結果區 + 按鈕」整組一起垂直置中。
+主要操作按鈕屬於 first-screen tool stage，不是 viewport fixed。
+「底部」指第一屏工具區底部，不是瀏覽器視窗底部。
+使用者往下滑時，主要操作按鈕要跟著頁面一起滑動。
+```
+
+##### F.2 手機主要操作按鈕位置
+
+```text
+一般工具的主要操作按鈕位置應維持一致高度。
+按鈕落在第一屏下方控制區，不可依各工具內容高度自由漂移。
+主要操作按鈕與下方第一個內容標題（例如 You may also need / 相關工具）距離要維持一致。
+這個距離是 mobile first-screen baseline 的一部分。
+```
+
+##### F.3 手機主要操作按鈕樣式
+
+```text
+手機主要操作按鈕沿用 Timiva 既有工具控制按鈕樣式。
+樣式基準為 Event Countdown 的 Edit / Theme / Share。
+Date Range 的手機日期按鈕也是同一套樣式，只是多了 icon。
+不要新增另一套滿版大 CTA。
+不要做成 fixed bottom action bar。
+不要讓單一工具任意改變按鈕大小、重量或型態。
+```
+
+##### F.4 手機直式 bottom sheet
+
+```text
+手機直式 bottom sheet 內容採上下排列。
+欄位列應依工具語意由上而下排列，例如：
+  第一列：主要日期 / 主要輸入欄
+  第二列：次要日期 / 次要設定欄
+不要把直式 sheet 的欄位橫向壓縮成單列塞進直式畫面。
+```
+
+##### F.5 手機橫式第一屏
+
+```text
+手機橫式仍然是 mobile pattern，不是 desktop pattern。
+一般工具的手機橫式第一屏，需把結果區與主要操作按鈕整理成 compact layout，完整呈現在第一屏內。
+手機橫式按鈕尺寸與樣式要和其他一般工具頁一致，不可因單一工具任意縮小或變形。
+如果結果區內容太多，應調整該工具的結果內容優先級與呈現方式，不應改壞按鈕樣式或造成重疊。
+手機橫式不得套用 desktop inline input，除非該工具規格明確指定。
+```
+
+##### F.6 手機橫式 bottom sheet
+
+```text
+手機橫式 bottom sheet 內容可改為一列兩欄，以適應高度較低的畫面。
+欄位可依工具語意分左右欄排列，例如：
+  左欄：主要輸入欄
+  右欄：次要輸入欄
+不要把直式 sheet 直接壓扁套到橫式；橫式 sheet 應有獨立的 compact 版面規劃。
+```
+
+##### F.7 Bottom sheet 開啟時的背景縮放
+
+```text
+bottom sheet 開啟時，背景的結果內容區要作為一整組縮放。
+縮放對象是工具的結果內容區，不包含底部主要操作按鈕。
+目的：讓使用者編輯下方欄位時，仍能看到上方結果區有狀態變化。
+各工具可依自己的主視覺結構決定結果內容區包含哪些內容，但縮放群組邊界必須一致遵守：
+  納入：主結果與其直接輔助呈現
+  不納入：第一屏底部主要操作按鈕
+```
+
+##### F.8 特殊工具例外
+
+```text
+以上規則適用於一般工具。
+特殊互動工具可以例外，例如 Countdown Timer。
+例外必須在該工具 product spec 或任務提詞中明確指定。
+Cursor 不得自行判斷某工具是否為例外。
+沒有明確例外時，一律套用標準 mobile first-screen baseline。
+```
+
 ---
 
 ## 7. Text Preview Rules
@@ -544,6 +630,8 @@ max-width: 36rem;
 
 * 手機橫式縮小標題、結果區、間距
 * 第一屏需完整顯示主結果數字與操作列
+* 手機橫式仍採 mobile pattern；不得套用 desktop inline input（除非 product spec 明確指定）
+* 主要操作按鈕樣式與位置須對齊 §6.7 mobile first-screen baseline
 * 使用 `.preview-tool-landscape-*` 等 scoped 規則
 
 ### 11.3 通用
@@ -633,6 +721,9 @@ pt-10 (40px)  pt-12 (48px)  pb-20 (80px)
 
 - [ ] 第一屏置中、主結果數字 Manrope 400
 - [ ] 手機橫式第一屏 compact 完整可見
+- [ ] 手機主要操作按鈕非 viewport fixed，會跟頁面一起滑動
+- [ ] 手機主要操作按鈕樣式對齊 Event Countdown Edit / Theme / Share
+- [ ] bottom sheet 開啟時，背景結果內容區整組縮放，底部主要按鈕不納入縮放群組
 - [ ] Drawer 300px、毛玻璃、3 張 ToolCard
 - [ ] Drawer ToolCard 未被撐高
 - [ ] 下方 RelatedToolRow 3 張、三欄垂直置中
