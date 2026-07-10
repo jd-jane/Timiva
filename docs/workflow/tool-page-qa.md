@@ -173,10 +173,17 @@ bottom sheet 開啟時，底部主要按鈕不納入背景縮放群組
 sheet-open 時，結果區縮放後在 Header 與 sheet 頂部之間保持視覺平衡
 sheet-open 時，結果區沒有過度貼近 header
 sheet-open 時，sheet 上方沒有不自然大空白
+portrait keyboard-open 時，result group 與 sheet 形成同一個 composition，一起為鍵盤讓位
+portrait keyboard-open 時，sheet 沒有被夾在 result group 與 keyboard 中間
+portrait keyboard-open 時，sheet 與 keyboard 中間沒有露出背景結果 / You may also need / 相關工具
+keyboard 關閉後，result group 與 sheet 立即回到一般 sheet-open 狀態
+keyboard-open 沒有用大面積 ::after / 延伸底色遮空隙，sheet 本體維持正常 panel 高度
+sheet 開啟與 input focus 時背景維持 scroll lock，沒有捲到 You may also need 或下方內容
 手機直式 sheet 為上下排列；手機橫式 sheet 為一列兩欄 compact 版面
 手機橫式 sheet / panel 高度為內容驅動 compact layout
 手機橫式 sheet 沒有直接沿用直式 sheet 高度
 手機橫式 sheet 沒有大面積空白 panel
+landscape keyboard-open 維持 compact，沒有被 portrait keyboard lift 推高或產生多餘色塊
 ```
 
 Block 條件：
@@ -191,7 +198,14 @@ Bottom Sheet 內出現廣告
 手機橫式誤用桌機 inline input（且 product spec 未明確指定）
 bottom sheet 開啟時縮放對象錯誤或背景縮放不完整
 sheet-open 時結果區過度貼近 header 或 sheet 上方出現不自然大空白
+portrait keyboard-open 時只移動 sheet，result group 未一起讓位
+portrait keyboard-open 時 sheet 被夾在 result group 與 keyboard 中間
+portrait keyboard-open 時 sheet 與 keyboard 中間露出背景結果或其他下方內容
+keyboard 關閉後 result group / sheet 未立即恢復一般 sheet-open 狀態
+keyboard-open 用大面積延伸底色遮空隙，或 sheet 被拉成大色塊 / 留下短暫異常高度
+input focus 時背景被捲到 You may also need 或下方內容
 手機橫式 sheet 直接沿用直式高度或撐出大面積空白 panel
+landscape 被 portrait keyboard lift 影響，出現推高、多餘色塊或破壞 compact panel
 ```
 
 ---
@@ -338,9 +352,16 @@ QA 必須確認：
 [ ] sheet-open 時，結果區縮放後沒有過度貼近 header
 [ ] sheet-open 時，結果區在 sheet 上方可視空間中保持視覺平衡
 [ ] sheet-open 時，sheet 上方沒有不自然大空白
+[ ] portrait keyboard-open 時，result group 與 sheet 一起為鍵盤讓位（同一 composition）
+[ ] portrait keyboard-open 時，sheet 沒有被夾在 result group 與 keyboard 中間
+[ ] portrait keyboard-open 時，sheet 與 keyboard 中間沒有露出背景結果 / You may also need / 相關工具
+[ ] keyboard 關閉後，result group 與 sheet 立即回到一般 sheet-open 狀態
+[ ] keyboard-open 沒有用大面積 ::after / 延伸底色遮空隙；sheet 本體維持正常 panel 高度
+[ ] sheet 開啟與 input focus 時背景維持 scroll lock，沒有捲到 You may also need / 相關工具
 [ ] landscape sheet 高度為內容驅動 compact layout
 [ ] landscape sheet 沒有直接套用直式 sheet 高度
 [ ] landscape sheet 沒有大面積空白 panel
+[ ] landscape keyboard-open 維持 compact，未被 portrait keyboard lift 影響
 ```
 
 適用範圍：

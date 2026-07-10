@@ -1636,3 +1636,56 @@ Canonical references: docs/standards/layout-system.md §6.7 F.6、F.7、F.7A,
 docs/workflow/tool-page-qa.md §7、§11B,
 docs/workflow/new-tool-development.md §8.2.
 ```
+
+---
+
+## 2026-07-10 — Mobile bottom sheet keyboard-open composition baseline
+
+### 背景
+
+```text
+Age Calculator B2A 與 Owner 真機檢查中，再次出現 mobile portrait keyboard-open 問題：
+只移動 bottom sheet，result group 停在一般 sheet-open 位置，
+導致 sheet 被夾在結果區與 keyboard 中間，並露出背景結果內容。
+另曾出現以大面積 ::after 延伸底色遮空隙、以及 landscape 被 portrait keyboard lift 影響的偏差。
+需將 keyboard-open composition 升格為全站共用規則，避免後續有 sheet input focus 的工具重複發生。
+```
+
+### 決策
+
+```text
+一般工具的 mobile bottom sheet，在 keyboard-open 時必須把 result group 與 bottom sheet
+視為同一個 composition，一起為鍵盤讓位。
+```
+
+### 規則
+
+```text
+- mobile portrait keyboard-open 時，result group 與 bottom sheet 要作為同一個 composition 一起為鍵盤讓位。
+- 不可只移動 sheet，導致 sheet 被夾在結果區與鍵盤中間。
+- result group 應依同一組 keyboard inset / shift 重新定位；keyboard 關閉後立即回到一般 sheet-open 狀態。
+- 不使用大面積延伸底色（例如大面積 ::after）遮空隙；sheet 本體維持正常 panel 高度。
+- sheet 開啟與 input focus 時維持 scroll lock；不可因 Safari input focus / visualViewport 把背景捲到 You may also need 或下方內容。
+- mobile landscape 不直接套用 portrait keyboard lift，應維持 compact panel。
+- landscape 若需例外，必須在該工具 product spec 或任務提詞明確指定。
+- 此規則用於後續有 mobile bottom sheet 與 input focus 的一般工具。
+```
+
+### 原因
+
+```text
+keyboard-open 是 sheet 互動的核心狀態之一。
+若只抬 sheet、不重定位 result group，會破壞結果區與操作區的連續視覺組合，
+並在 iPhone Safari 上露出背景內容，造成明顯 layout drift。
+portrait 與 landscape 的 keyboard 行為必須分開規範，避免 compact panel 被直式 lift 破壞。
+```
+
+### 影響
+
+```text
+B1B / B2 與含 sheet input 的工具 QA，必須檢查 portrait keyboard-open composition、
+keyboard 關閉恢復、scroll lock，以及 landscape 不被 portrait keyboard lift 影響。
+Canonical references: docs/standards/layout-system.md §6.7 F.7B,
+docs/workflow/tool-page-qa.md §7、§11B,
+docs/workflow/new-tool-development.md §8.2、§20.
+```

@@ -418,6 +418,34 @@ bottom sheet 開啟時，背景結果內容區整組縮放後，必須重新定�
 若縮放後結果區位置失衡，應調整 translate / reposition，而不是改變 sheet 高度或破壞 first-screen baseline。
 ```
 
+##### F.7B Mobile portrait keyboard-open composition
+
+```text
+手機直式 bottom sheet 內 input focus 並叫出鍵盤時，不可只移動 bottom sheet。
+result group 與 bottom sheet 必須形成同一個 keyboard-open composition，一起為鍵盤讓位。
+keyboard-open 時，result group 應依同一組 keyboard inset / shift 重新定位；
+不可讓 result group 停在一般 sheet-open 位置，而只有 sheet 移動。
+不可讓 sheet 被夾在 result group 與 keyboard 中間。
+sheet 與 keyboard 中間不得露出背景結果內容、You may also need、相關工具或其他下方內容。
+keyboard 關閉後，result group 與 sheet 必須立即回到一般 sheet-open 狀態。
+
+Sheet 視覺處理：
+- 不使用大面積 ::after 或延伸底色遮空隙。
+- sheet 本體維持正常 panel 高度，不可拉成大色塊。
+- 不可在鍵盤消失後留下短暫異常高度。
+
+Scroll lock：
+- sheet 開啟與 input focus 時，背景頁面必須維持 scroll lock。
+- 不可因 Safari input focus / visualViewport resize 把背景捲到 You may also need 或下方內容。
+- 若需 stabilize scroll，背景仍須停留在工具第一屏狀態。
+
+Mobile landscape：
+- 不直接套用 portrait keyboard lift。
+- 若 landscape 使用 compact panel，keyboard-open 時仍應維持 compact。
+- 不可讓 landscape sheet 被推高、產生多餘色塊，或破壞已核准的 compact panel 狀態。
+- landscape 若需例外，必須在該工具 product spec 或任務提詞明確指定。
+```
+
 ##### F.8 特殊工具例外
 
 ```text
@@ -744,7 +772,12 @@ pt-10 (40px)  pt-12 (48px)  pb-20 (80px)
 - [ ] 手機主要操作按鈕樣式對齊 Event Countdown Edit / Theme / Share
 - [ ] bottom sheet 開啟時，背景結果內容區整組縮放，底部主要按鈕不納入縮放群組
 - [ ] sheet-open 時結果區縮放後在 Header 與 sheet 頂部之間視覺平衡
+- [ ] portrait keyboard-open 時，result group 與 sheet 一起為鍵盤讓位（同一 composition）
+- [ ] portrait keyboard-open 時，sheet 沒有被夾在 result group 與 keyboard 中間
+- [ ] portrait keyboard-open 時，sheet 與 keyboard 中間沒有露出背景結果 / You may also need
+- [ ] keyboard 關閉後，result group 與 sheet 立即回到一般 sheet-open 狀態
 - [ ] landscape sheet 高度為內容驅動 compact panel，無大面積空白
+- [ ] landscape keyboard-open 維持 compact，未被 portrait keyboard lift 影響
 - [ ] Drawer 300px、毛玻璃、3 張 ToolCard
 - [ ] Drawer ToolCard 未被撐高
 - [ ] 下方 RelatedToolRow 3 張、三欄垂直置中

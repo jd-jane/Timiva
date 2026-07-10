@@ -397,6 +397,22 @@ Date Range 手機日期按鈕為同型，可含 icon。
 bottom sheet 開啟時，背景結果內容區整組縮放，但不包含底部主要操作按鈕。
 sheet-open 時，縮放後的結果區須重新定位在 sheet 上方可視區域中，於 Header 與 sheet 頂部之間保持視覺平衡；不可只做 scale 導致結果貼 header，或 sheet 上方出現不自然大空白。
 驗收時對照 Event Countdown、Date Range 等已核准工具的 sheet-open 狀態。
+
+Mobile portrait keyboard-open composition：
+- sheet 內 input focus 叫出鍵盤時，不可只移動 bottom sheet。
+- result group 與 bottom sheet 必須形成同一個 keyboard-open composition，一起為鍵盤讓位。
+- result group 應依同一組 keyboard inset / shift 重新定位；不可停在一般 sheet-open 位置而只有 sheet 移動。
+- 不可讓 sheet 被夾在 result group 與 keyboard 中間。
+- sheet 與 keyboard 中間不得露出背景結果、You may also need、相關工具或其他下方內容。
+- keyboard 關閉後，result group 與 sheet 必須立即回到一般 sheet-open 狀態。
+- 不使用大面積 ::after 或延伸底色遮空隙；sheet 本體維持正常 panel 高度，不可拉成大色塊或留下短暫異常高度。
+- sheet 開啟與 input focus 時維持 scroll lock；不可因 Safari input focus / visualViewport 把背景捲到下方內容。
+
+Mobile landscape keyboard-open：
+- 不直接套用 portrait keyboard lift。
+- compact panel 在 keyboard-open 時仍應維持 compact。
+- 不可被推高、產生多餘色塊，或破壞已核准的 compact panel 狀態。
+- landscape 若需例外，必須在該工具 product spec 或任務提詞明確指定。
 ```
 
 #### 特殊工具例外
@@ -706,6 +722,9 @@ Owner 前期最終確認
 共用 Sheet 必須先經真機 keyboard / visualViewport 驗收；emulation 不足以單獨定案。
 Mobile portrait 與 landscape 可共用同一 Sheet 實作，但 layout mode 必須分開驗收。
 真機 input focus 不可只依 emulation；H / M / S 與 action row 可見性需實機確認。
+Mobile portrait keyboard-open 時，result group 與 bottom sheet 必須作為同一個 composition 一起為鍵盤讓位；不可只移動 sheet。
+不使用大面積 ::after / 延伸底色遮空隙；sheet 本體維持正常 panel 高度。
+Mobile landscape 不直接套用 portrait keyboard lift；compact panel 在 keyboard-open 時仍應維持 compact。
 Scroll lock 不應任意混用 fixed-body 策略；新工具需明確選用 msb-scroll-lock / msb-sheet-open，避免不必要混用 tool-operation-open。
 Pointer-based ring interaction 的 touch-action: none 只能加在 hit area，不可加在整頁或 stage。
 互動刻度應直接改變既有視覺元素（例如 tick 線段），避免 overlay 疊加造成破圖感。
