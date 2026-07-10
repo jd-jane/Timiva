@@ -2,7 +2,7 @@
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
 > 更新日期：2026-07-10
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、四個 V1 tools + Year Progress production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、Age Calculator standalone 實作完成與 B3D Final QA Re-check 通過（HEAD `f5416b6`）。
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、Age Calculator V1.5（standalone + link integration）已上線（deployed HEAD `f48df91`）。
 
 ---
 
@@ -21,7 +21,7 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **Timiva V1 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** 四個 V1 工具（含 Year Progress）已上線；V1 SEO technical closeout 已完成；**Age Calculator**（第五個工具）standalone 實作完成，B3D Final QA Re-check 通過（`f5416b6`），尚未 Post-tool Link Integration / push / deploy。Production baseline：`c5c0a22`（docs closeout；implementation `b5b150f`）。 |
+| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具（含 Year Progress）與 **Age Calculator**（第五個工具）皆已上線；V1 SEO technical closeout 已完成。Age Calculator 視為 **V1.5 standalone + link integration 完成**；B7 Deploy / Production Verification 通過；deployed HEAD：`f48df91`（`feat: integrate Age Calculator links`）。`main` 與 `origin/main` 同步、working tree clean。 |
 
 ### 1.1 Current work tracks（2026-07-10）
 
@@ -29,6 +29,9 @@
 
 ```text
 Event Countdown、Date Range Calculator、Countdown Timer、Year Progress：已部署 timiva.app
+Age Calculator：已部署 timiva.app（V1.5 standalone + link integration）
+Deployed HEAD：f48df91 feat: integrate Age Calculator links
+Cloudflare Pages 自動部署成功 · B7 Production Verification Pass
 V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22`）
 可選：Year Progress HTTPS Share verification（non-blocking）
 ```
@@ -36,9 +39,10 @@ V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22
 **Product development track：**
 
 ```text
-Age Calculator：Standalone 完成 · B3D Final QA Re-check Pass（HEAD f5416b6）
-尚未 Post-tool Link Integration · 尚未 push / deploy
-下一步：Post-tool Link Integration（Owner 授權後）
+Age Calculator：V1.5 完成並已上線（standalone + Post-tool Link Integration）
+Home Featured Tools 已調整為 4 張（Date Range → Age Calculator → Event Countdown → Year Progress）
+Countdown Timer 仍保留於 All Tools 與工具頁
+下一步：依 Owner 新任務（非 Age Calculator 上線阻塞項）
 ```
 
 ---
@@ -70,8 +74,11 @@ Completed home scope:
 Hero title / subtitle updated
 Hero CTA buttons removed
 Hero chips added as visual-only, non-interactive labels
-Featured tool cards（4 tools）:
-Event Countdown → Date Range Calculator → Countdown Timer → Year Progress
+Featured tool cards（固定 4 張；2026-07-10 起）:
+Date Range Calculator → Age Calculator → Event Countdown → Year Progress
+Countdown Timer 不在首頁 Featured（仍在 All Tools）
+Hero chips 對齊 Featured 方向（含 Age Calculator；不含 Countdown Timer）
+Home FAQ 描述 Timiva 工具集合，不綁死首頁 4 張卡
 View all tools retained
 FAQ & Help added with 7 Q&A per locale
 Ad Container implemented but production state is-disabled
@@ -105,9 +112,10 @@ Event Countdown V2 — 已部署
 Date Range Calculator V2 — 已部署
 Countdown Timer V2 — 已部署 · 站內連結整合完成（2c44484）
 Year Progress V2 — 已部署 · 站內連結整合完成（f39f8bc, 20c379d）
+Age Calculator V2 — 已部署 · standalone + 站內連結整合完成（f48df91）
 ```
 
-工具 README：`docs/tools/event-countdown/`、`docs/tools/date-range-calculator/`、`docs/tools/countdown-timer/`
+工具 README：`docs/tools/event-countdown/`、`docs/tools/date-range-calculator/`、`docs/tools/countdown-timer/`、`docs/tools/year-progress/`、`docs/tools/age-calculator/`
 
 ---
 
@@ -319,9 +327,9 @@ Do not refactor Event Countdown themes in unrelated tasks
 
 ## 7. Age Calculator current status
 
-**Standalone 實作完成 · B3D Final QA Re-check 通過 · No blocking issues found · 尚未 Post-tool Link Integration · 尚未 push / deploy**
+**已正式上線 · V1.5 standalone + link integration 完成 · B7 Deploy / Production Verification 通過 · No blocking issues found**
 
-Timiva **第五個工具**。
+Timiva **第五個工具**。Production URL：`https://timiva.app`
 
 Routes:
 
@@ -336,7 +344,19 @@ Category:
 Important Dates / 重要日子
 ```
 
-Commits:
+Production / release:
+
+```text
+Deployed HEAD：f48df91 feat: integrate Age Calculator links
+Cloudflare Pages 自動部署成功
+main 與 origin/main 同步 · working tree clean
+B4 Link Integration commit：f48df91
+B5 Final pre-push QA：Pass
+B6 push origin main：Pass
+B7 Production Verification：Pass
+```
+
+Commits（關鍵）：
 
 ```text
 cb09fc6 — feat: add Age Calculator B1B
@@ -344,6 +364,8 @@ cb09fc6 — feat: add Age Calculator B1B
 fb2d21f — feat: add Age Calculator B2B
 cc31c79 — feat: add Age Calculator B2C
 f5416b6 — fix: reset Age Calculator invalid birth state
+852e580 — docs: update Age Calculator status
+f48df91 — feat: integrate Age Calculator links
 ```
 
 Core shipped features:
@@ -363,18 +385,30 @@ EN / ZH · About / How to / Common uses / FAQ / FAQ JSON-LD · Related Tools（3
 MVP 無 LocalStorage、無分享、無星座／生肖／生命統計
 ```
 
-B3D QA（2026-07-10）：
+站內連結整合（B4）：
 
 ```text
-npm run build — Pass
-validate-seo-head — Pass（460）
-validate-sitemap — Pass（375）
-validate-age-calculator-math — Pass（130）
-git diff --check — Pass
-Desktop EN / ZH — Pass
-Mobile portrait EN / ZH — Pass
-Mobile landscape EN / ZH — Pass
-Content / SEO / Related Tools — Pass
+All Tools EN / ZH：顯示 Age Calculator
+Home Featured Tools（4 張）：
+1. Date Range Calculator
+2. Age Calculator
+3. Event Countdown
+4. Year Progress
+Countdown Timer：僅從首頁 Featured 移除；All Tools / 路由 / Related / 核心功能保留
+Related Tools inbound：Event Countdown / Date Range / Year Progress 含 age-calculator
+Countdown Timer Related：維持既定三張（不含 age-calculator）
+Hero chips / Home FAQ 文案已對齊（不暗示 CT 一定在首頁）
+```
+
+B7 Production QA（2026-07-10）：
+
+```text
+Home EN / ZH — Pass
+All Tools EN / ZH — Pass
+Age Calculator EN / ZH · Desktop / Mobile — Pass
+Related Tools — Pass
+Existing tools quick check — Pass
+No blocking issues found
 ```
 
 Primary specification:
@@ -389,14 +423,13 @@ Protected / no-go boundary:
 ```text
 不得在未授權任務中改寫 Age Calculator 已驗收核心邏輯
 不得修改 Header、Footer、BaseLayout、Mobile Sheet baseline、既有工具程式
-尚未 Post-tool Link Integration — 不得自行改 Home / All Tools / 其他工具 Related Tools
 ```
 
 Next step:
 
 ```text
-Owner 授權後 → Age Calculator Post-tool Link Integration
-→ Link QA / commit → push / deploy checkpoint
+Age Calculator 上線阻塞項已關閉
+後續依 Owner 新任務（例如 SEO growth / 其他工具）
 ```
 
 ---
@@ -812,7 +845,7 @@ EventCountdownV2 core / theme / share / quick templates
 Date Range calculation / date selection core
 Countdown Timer accepted implementation
 Year Progress accepted implementation（after Owner sign-off）
-Age Calculator accepted standalone implementation（after B3D；Link Integration 另開任務）
+Age Calculator accepted V1.5 implementation（standalone + link integration；已上線）
 ToolAdSlot visual style
 ```
 
@@ -837,21 +870,20 @@ Do not push / deploy without Owner confirmation
 ## 17. Current active next step
 
 ```text
-Timiva V1 — live on timiva.app
+Timiva — live on timiva.app
 Event Countdown V2 — Production
 Date Range Calculator V2 — Production
 Countdown Timer V2 — Production · site-integrated
 Year Progress V2 — Production · site-integrated
+Age Calculator V2 — Production · V1.5 standalone + link integration（f48df91）
 GA4 + Basic Consent — deployed on timiva.app
 V1 SEO technical closeout — complete（docs `c5c0a22`）
-Age Calculator — Standalone complete · B3D QA Pass（f5416b6）· 尚未 Link Integration / push / deploy
 ```
 
 Next workflow:
 
 ```text
-Age Calculator Post-tool Link Integration（Owner 授權後）
-→ Link QA / commit → push / deploy checkpoint
+Age Calculator 上線完成；等待 Owner 指定下一任務
 ```
 
 Optional follow-up:
@@ -878,12 +910,10 @@ Phase A：重大變更、deploy 或 locked components 修改仍需 Owner 明確�
 Recommended order:
 
 ```text
-1. Age Calculator Post-tool Link Integration
-2. Age Calculator Link QA / commit → push / deploy
-3. Open Graph / Twitter Card（deferred SEO growth）
-4. WebApplication schema（deferred）
-5. Root HTTP 301 decision（deferred）
-6. Preview legacy cleanup decision
+1. Open Graph / Twitter Card（deferred SEO growth）
+2. WebApplication schema（deferred）
+3. Root HTTP 301 decision（deferred）
+4. Preview legacy cleanup decision
 ```
 
 Parallel / later:
@@ -981,10 +1011,10 @@ Create an implementation plan only. Do not edit files yet.
 
 Timiva V1 已在正式網域 https://timiva.app 提供服務。
 
-已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2、Year Progress V2（含站內連結整合）。
+已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2、Year Progress V2、Age Calculator V2（V1.5 standalone + link integration）。
 GA4 privacy-first Basic Consent 已在 timiva.app 驗證通過。
 V1 SEO technical closeout 已完成（Batch 1–3 production PASS；docs `c5c0a22`）。
-Age Calculator standalone 實作完成，B3D Final QA Re-check 通過（`f5416b6`）；尚未 Post-tool Link Integration / push / deploy。
+Age Calculator 已正式上線；deployed HEAD：`f48df91`；B7 Production Verification 通過；No blocking issues found。
 
 規格與流程：docs/tools/、docs/workflow/
 Task briefs 與 validation reports 在 local-docs/，不納入 Git tracked。

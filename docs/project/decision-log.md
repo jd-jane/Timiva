@@ -1,7 +1,56 @@
-﻿# Timiva Decision Log
+# Timiva Decision Log
 
 > 用途：記錄已確認的產品、設計、技術、SEO、法務與工作流決策。
 > 原則：只記錄「之後會影響判斷」的決策，不記錄每個小修改細節。
+
+---
+
+## 2026-07-10 — Age Calculator 正式上線（V1.5 + B7 Production Verification）
+
+### 背景
+
+```text
+Age Calculator 完成 standalone、Post-tool Link Integration、Home Featured reorder、
+Home copy alignment，並經 B5 pre-push QA、B6 push、B7 production verification。
+```
+
+### 決策／現況
+
+```text
+Age Calculator 已正式上線於 https://timiva.app。
+視為 V1.5：standalone + link integration 完成。
+Deployed HEAD：f48df91 feat: integrate Age Calculator links。
+Cloudflare Pages 自動部署成功。
+main 與 origin/main 同步 · working tree clean。
+B7 Deploy / Production Verification：Pass · No blocking issues found。
+```
+
+### Home Featured Tools（固定 4 張）
+
+```text
+1. Date Range Calculator
+2. Age Calculator
+3. Event Countdown
+4. Year Progress
+Countdown Timer 不在首頁 Featured；仍保留 All Tools / 路由 / Related / 核心功能。
+```
+
+### Production QA 摘要
+
+```text
+Home EN / ZH — Pass
+All Tools EN / ZH — Pass（含 Age Calculator 與 Countdown Timer）
+Age Calculator EN / ZH · Desktop / Mobile — Pass
+Related Tools — Pass
+Existing tools quick check — Pass
+```
+
+### 邊界
+
+```text
+不得在未授權任務中改寫已驗收 Age Calculator 核心邏輯。
+文件以 docs/tools/age-calculator/ 與 docs/project/current-status.md 為準。
+```
 
 ---
 
