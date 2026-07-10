@@ -291,7 +291,7 @@ timiva/
 | Date Range Calculator (DR) | 已部署 |
 | Countdown Timer (CT) | 已部署 |
 | Year Progress (YP) | 已部署 |
-| Age Calculator (AC) | Product specification complete · Ready for Plan-first · Implementation not started |
+| Age Calculator (AC) | 已部署 · V1.5 standalone + link integration complete |
 
 Canonical docs：`docs/tools/age-calculator/README.md`、`docs/tools/age-calculator/product-spec.md`
 

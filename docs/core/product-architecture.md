@@ -1,7 +1,8 @@
-﻿# Timiva Product Architecture V4
+# Timiva Product Architecture V4
 
-> Updated: 2026-07-05
+> Updated: 2026-07-10
 > Replaces the planning assumptions in V3 where Life Progress Bar was the V1 fourth tool.
+> V1.5 redefined as Search Foundation／搜尋鋪路期（開發優先順序策略，非分類變更）。
 
 ## 文件目的
 
@@ -44,6 +45,15 @@ Simple tools for important dates, focus, daily rhythm, and life progress.
 
 分類名稱不因工具調整而更改。
 
+### V1.5 Search Foundation（優先順序策略，非分類變更）
+
+```text
+V1.5 Search Foundation is a priority strategy, not a category change.
+V1.5 是搜尋鋪路期的開發優先順序，不改變 Timiva 四大分類。
+優先做高搜尋意圖、低維護的日期與時間工具。
+Daily Rhythm / Timers & Focus / Life Progress 的完整補齊延後至 V2。
+```
+
 ---
 
 ## 3. 架構總覽
@@ -59,10 +69,11 @@ flowchart TD
 
     C --> C1[Event Countdown]
     C --> C2[Date Range Calculator]
-    C --> C3[Days Between Dates]
-    C --> C4[Add / Subtract Days]
-    C --> C5[Age Calculator]
-    C --> C6[Birthday Countdown]
+    C --> C3[Age Calculator]
+    C --> C4[Days Between Dates]
+    C --> C5[Date Calculator]
+    C --> C6[Business Days / Hours]
+    C --> C7[Optional converters]
 
     D --> D1[Countdown Timer]
     D --> D2[Stopwatch]
@@ -108,13 +119,13 @@ V1 no longer uses a multi-mode Life Progress Bar as the fourth tool.
 
 ---
 
-## 4.1 Fifth tool（post-V1 core）
+## 4.1 Fifth tool — Age Calculator（deployed）
 
 | Order | Tool | Category | Status / purpose |
 |---:|---|---|---|
-| 5 | Age Calculator | Important Dates | Product specification complete · Ready for Plan-first · Implementation not started |
+| 5 | Age Calculator | Important Dates | Deployed · V1.5 first Search Foundation tool · standalone + link integration complete |
 
-Age Calculator 為 Timiva **第五個工具**，產品規格已完成；下一步為 repository-aware Plan-first。尚未 commit、push 或 deploy。
+Age Calculator 為 Timiva **第五個工具**，已正式上線於 `https://timiva.app`。Deployed HEAD：`f48df91`。
 
 ---
 
@@ -130,14 +141,28 @@ Age Calculator 為 Timiva **第五個工具**，產品規格已完成；下一�
 |---|---|---|---|---|
 | P0 | Event Countdown | 事件倒數 | 建立重要事件倒數 | Low |
 | P0 | Date Range Calculator | 日期區間計算 | 計算日期區間 | Low |
+| P0 | Age Calculator | 年齡計算 | 年齡與生日日期差 | Low — **已部署 · V1.5 first Search Foundation tool** |
 | P1 | Days Between Dates | 日期差計算 | 聚焦相差天數 | Low |
-| P1 | Add / Subtract Days | 日期加減 | 計算 N 天前後 | Low |
-| P1 | Age Calculator | 年齡計算 | 年齡與生日日期差 | Low — **Product spec complete · Ready for Plan-first** |
+| P1 | Date Calculator / Add or Subtract Days | 日期加減 | 計算 N 天前後 | Low |
+| P1 | Business Days Calculator | 工作日計算 | 排除週末的工作日差 | Low — MVP 不做國定假日資料庫 |
+| P1 | Hours Calculator | 時數計算 | 時數／時間差計算 | Low |
+| P2 | Lunar Date Converter | 農曆日期轉換 | 公曆／農曆日期轉換 | Low — optional；不做農民曆／宜忌／吉日 |
+| P2 | Pet Age Calculator | 寵物年齡換算 | 年齡換算參考 | Low — optional；不做健康／醫療建議 |
+| P2 | Japanese Era Converter | 日本年號換算 | 明治／大正／昭和／平成／令和等現代年號 | Low — optional；不做大型歷史年號資料庫 |
 | P2 | Birthday Countdown | 生日倒數 | 生日情境倒數 | Low |
 | P3 | Holiday Countdown | 節日倒數 | 長尾節日情境 | Medium |
 | P3 | Anniversary Countdown | 週年倒數 | 紀念日情境 | Low |
 
 Holiday data must not become a high-maintenance global database in early phases.
+
+Important Dates 低維護邊界（V1.5 Search Foundation）：
+
+```text
+Business Days Calculator MVP：排除週末即可，不做國定假日資料庫
+Lunar Date Converter：可列 optional；不做農民曆、宜忌、吉日、沖煞
+Pet Age Calculator：只做年齡換算參考，不做健康、醫療、照護建議
+Japanese Era Converter：只做現代年號換算，不做大型歷史年號資料庫
+```
 
 ---
 
@@ -170,6 +195,8 @@ Avoid early background systems, complex notifications, history reports, and sync
 ```text
 處理每天的節奏、休息、能量與恢復。
 ```
+
+Daily Rhythm 仍是 Timiva 四大分類之一，但**不是 V1.5 立即優先序**。完整工具線補齊延後至 V2。
 
 | Priority | Tool | 中文 | Core use | Maintenance |
 |---|---|---|---|---|
@@ -251,41 +278,41 @@ Backend / account / sync
 4. Year Progress — deployed
 ```
 
-### Phase 1.5 — Next product development
+### Phase 1.5 / V1.5 — Search Foundation／搜尋鋪路期
 
 ```text
-5. Age Calculator — Product specification complete · Ready for Plan-first · Implementation not started
+5. Age Calculator — deployed · first Search Foundation tool
+6. Days Between Dates
+7. Date Calculator / Add or Subtract Days
+8. Business Days Calculator（MVP：排除週末；無國定假日資料庫）
+9. Hours Calculator
+10. Lunar Date Converter — optional
+11. Pet Age Calculator — optional
+12. Japanese Era Converter — optional
 ```
 
-### Phase 2 — V1.5 differentiation and search expansion
+V1.5 是優先順序策略，不是分類變更。Daily Rhythm 不在此階段前段優先開發。
+
+### Phase 2 / V2 — Category completion and brand differentiation
 
 ```text
-6. Breathing Timer
-7. Fasting / Recovery Timer
-8. Days Between Dates
-9. Add / Subtract Days
+13. Breathing Timer
+14. Fasting / Recovery Timer
+15. Stopwatch
+16. Fullscreen Timer
+17. Pomodoro Timer
+18. Month Progress
+19. Milestone Progress（working name）
+20. Goal Countdown
+21. Circadian Energy Planner
 ```
 
-Age Calculator 已自原 V1.5 第 9 位 **提前至第五個工具**；上列 Phase 2 其餘工具順序依既有邏輯往後移。
-
-### Phase 3 — V2 expansion
-
-```text
-10. Stopwatch
-11. Fullscreen Timer
-12. Milestone Progress（working name）
-13. Month Progress
-14. Circadian Energy Planner
-15. Pomodoro Timer
-```
-
-### Phase 4 — Later extensions
+### Phase 3 — Later extensions
 
 ```text
 Birthday Countdown
 Holiday Countdown
 Anniversary Countdown
-Goal Countdown
 Break Timer
 Focus Flow Timer
 Habit Streak Counter

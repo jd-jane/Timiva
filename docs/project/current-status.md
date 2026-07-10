@@ -2,7 +2,7 @@
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
 > 更新日期：2026-07-10
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、Age Calculator V1.5（standalone + link integration）已上線（deployed HEAD `f48df91`）。
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、Age Calculator V1.5（standalone + link integration）已上線（deployed HEAD `f48df91`）、V1.5 重新定義為 Search Foundation／搜尋鋪路期。
 
 ---
 
@@ -42,7 +42,15 @@ V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22
 Age Calculator：V1.5 完成並已上線（standalone + Post-tool Link Integration）
 Home Featured Tools 已調整為 4 張（Date Range → Age Calculator → Event Countdown → Year Progress）
 Countdown Timer 仍保留於 All Tools 與工具頁
-下一步：依 Owner 新任務（非 Age Calculator 上線阻塞項）
+下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
+暫定 next candidates：
+  Days Between Dates
+  Date Calculator / Add or Subtract Days
+  Business Days Calculator
+  Hours Calculator
+  Lunar Date Converter（optional）
+  Pet Age Calculator（optional）
+  Japanese Era Converter（optional）
 ```
 
 ---
@@ -429,7 +437,8 @@ Next step:
 
 ```text
 Age Calculator 上線阻塞項已關閉
-後續依 Owner 新任務（例如 SEO growth / 其他工具）
+下一個產品方向：V1.5 Search Foundation
+由 Owner 決定 / 規格化下一支搜尋型工具
 ```
 
 ---
@@ -883,7 +892,11 @@ V1 SEO technical closeout — complete（docs `c5c0a22`）
 Next workflow:
 
 ```text
-Age Calculator 上線完成；等待 Owner 指定下一任務
+Age Calculator 上線完成
+下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
+暫定 candidates：Days Between Dates → Date Calculator → Business Days → Hours Calculator
+（Lunar / Pet Age / Japanese Era 為 optional）
+等待 Owner 決定下一支工具規格
 ```
 
 Optional follow-up:
@@ -891,9 +904,9 @@ Optional follow-up:
 ```text
 Year Progress HTTPS Share verification（non-blocking）
 Ad placeholder strategy only; ads remain disabled
-Open Graph / Twitter Card
-WebApplication schema
-Root HTTP 301 decision
+Open Graph / Twitter Card（deferred SEO growth）
+WebApplication schema（deferred）
+Root HTTP 301 decision（deferred）
 ```
 
 Important:
@@ -910,10 +923,12 @@ Phase A：重大變更、deploy 或 locked components 修改仍需 Owner 明確�
 Recommended order:
 
 ```text
-1. Open Graph / Twitter Card（deferred SEO growth）
-2. WebApplication schema（deferred）
-3. Root HTTP 301 decision（deferred）
-4. Preview legacy cleanup decision
+1. Product development：決定 / 規格化下一支 V1.5 Search Foundation 工具
+   （暫定：Days Between Dates → Date Calculator → Business Days → Hours Calculator）
+2. Open Graph / Twitter Card（deferred SEO growth）
+3. WebApplication schema（deferred）
+4. Root HTTP 301 decision（deferred）
+5. Preview legacy cleanup decision
 ```
 
 Parallel / later:
@@ -1015,6 +1030,7 @@ Timiva V1 已在正式網域 https://timiva.app 提供服務。
 GA4 privacy-first Basic Consent 已在 timiva.app 驗證通過。
 V1 SEO technical closeout 已完成（Batch 1–3 production PASS；docs `c5c0a22`）。
 Age Calculator 已正式上線；deployed HEAD：`f48df91`；B7 Production Verification 通過；No blocking issues found。
+下一個產品方向：V1.5 Search Foundation／搜尋鋪路期（高搜尋、低維護日期與時間工具；四大分類不變）。
 
 規格與流程：docs/tools/、docs/workflow/
 Task briefs 與 validation reports 在 local-docs/，不納入 Git tracked。

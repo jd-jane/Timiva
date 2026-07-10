@@ -1,7 +1,7 @@
-﻿# Timiva V1 Roadmap V3
+# Timiva V1 Roadmap
 
-> Updated: 2026-07-05
-> Main changes: Year Progress deployed as V1 fourth tool; Age Calculator advanced to fifth tool with product spec complete.
+> Updated: 2026-07-10
+> Main changes: Age Calculator deployed as V1.5 first Search Foundation tool; V1.5 redefined as Search Foundation／搜尋鋪路期；Daily Rhythm 完整補齊延後至 V2。
 
 ---
 
@@ -36,33 +36,28 @@ Success criteria:
 flowchart TD
     A[Timiva Roadmap] --> B[Phase 0<br/>Foundation]
     B --> C[Phase 1<br/>V1 Core]
-    C --> D[Phase 2<br/>V1.5]
-    D --> E[Phase 3<br/>V2 Expansion]
-    E --> F[Phase 4<br/>Later]
+    C --> D[Phase 1.5 / V1.5<br/>Search Foundation]
+    D --> E[Phase 2 / V2<br/>Category completion]
+    E --> F[Phase 3<br/>Later]
 
-    C --> C1[Event Countdown<br/>Completed]
-    C --> C2[Date Range Calculator<br/>Completed]
-    C --> C3[Countdown Timer<br/>Completed + integrated]
+    C --> C1[Event Countdown<br/>Deployed]
+    C --> C2[Date Range Calculator<br/>Deployed]
+    C --> C3[Countdown Timer<br/>Deployed]
     C --> C4[Year Progress<br/>Deployed]
-    C --> C5[Age Calculator<br/>Product spec complete · Plan-first next]
 
-    D --> D1[Breathing Timer]
-    D --> D2[Fasting / Recovery Timer]
-    D --> D3[Days Between Dates]
-    D --> D4[Add / Subtract Days]
+    D --> D1[Age Calculator<br/>Deployed · first SF tool]
+    D --> D2[Days Between Dates]
+    D --> D3[Date Calculator<br/>Add or Subtract Days]
+    D --> D4[Business Days Calculator]
+    D --> D5[Hours Calculator]
+    D --> D6[Optional SF tools]
 
-    E --> E1[Stopwatch]
-    E --> E2[Fullscreen Timer]
-    E --> E3[Milestone Progress]
-    E --> E4[Month Progress]
-    E --> E5[Circadian Energy Planner]
-    E --> E6[Pomodoro Timer]
-
-    F --> F1[Birthday / Holiday / Anniversary]
-    F --> F2[Goal Countdown]
-    F --> F3[Break / Focus Flow]
-    F --> F4[Habit / Interval / Meeting]
-    F --> F5[Life Timeline]
+    E --> E1[Breathing Timer]
+    E --> E2[Fasting / Recovery Timer]
+    E --> E3[Stopwatch]
+    E --> E4[Fullscreen Timer]
+    E --> E5[Pomodoro Timer]
+    E --> E6[Month / Milestone / Goal]
 ```
 
 ---
@@ -83,13 +78,13 @@ Post-tool Link Integration Gate
 
 ---
 
-## 4. Phase 1 — V1 core tools
+## 4. Phase 1 — V1 core tools（deployed）
 
 | Order | Tool | Category | Current status |
 |---:|---|---|---|
-| 1 | Event Countdown | Important Dates | Completed baseline |
-| 2 | Date Range Calculator | Important Dates | Completed baseline |
-| 3 | Countdown Timer | Timers & Focus | Completed and site-integrated |
+| 1 | Event Countdown | Important Dates | Deployed · production baseline |
+| 2 | Date Range Calculator | Important Dates | Deployed · production baseline |
+| 3 | Countdown Timer | Timers & Focus | Deployed · site-integrated |
 | 4 | Year Progress | Life Progress | Deployed · site-integrated |
 
 Phase 1 covers:
@@ -100,7 +95,7 @@ Timers & Focus
 Life Progress
 ```
 
-Daily Rhythm begins in V1.5.
+四大分類仍完整保留。Daily Rhythm 的完整工具線補齊延後至 V2，不在 V1.5 前段優先開發。
 
 ---
 
@@ -115,72 +110,73 @@ Production: Deployed on timiva.app
 
 ---
 
-## 5.1 Age Calculator — next product development
+## 5.1 Age Calculator — V1.5 first Search Foundation tool（deployed）
 
 | Item | Status |
 |---|---|
-| Order | **5** — Timiva fifth tool |
+| Order | **5** — Timiva fifth tool · V1.5 first Search Foundation tool |
 | Category | Important Dates / 重要日子 |
 | Routes | `/en/age-calculator/`, `/zh/age-calculator/` |
 | Product specification | Complete |
-| Plan-first | Ready for repository-aware Plan-first |
-| Implementation | Not started |
-| Commit / push / deploy | Not committed · Not pushed · Not deployed |
+| Implementation | Complete · V1.5 standalone + link integration |
+| Production | Deployed on timiva.app |
+| Deployed HEAD | `f48df91` feat: integrate Age Calculator links |
 
 Canonical spec: [`docs/tools/age-calculator/product-spec.md`](../tools/age-calculator/product-spec.md)
 
-Development sequence（implementation 階段；Plan-first 先行）:
+---
+
+## 6. Phase 1.5 / V1.5 — Search Foundation／搜尋鋪路期
+
+V1.5 重新定義為 **Search Foundation**：優先開發高搜尋意圖、低維護的日期與時間工具，先建立自然搜尋入口。
+
+這是**開發優先順序策略**，不是分類變更。Timiva 四大分類不變。
+
+| Order | Tool | Category | Notes |
+|---:|---|---|---|
+| 5 | Age Calculator | Important Dates | **已完成 · 已上線** · first Search Foundation tool |
+| 6 | Days Between Dates | Important Dates | 高搜尋日期差 |
+| 7 | Date Calculator / Add or Subtract Days | Important Dates | 高搜尋日期加減 |
+| 8 | Business Days Calculator | Important Dates | MVP：排除週末即可；不做國定假日資料庫 |
+| 9 | Hours Calculator | Important Dates / time utility | 高搜尋時數計算 |
+| 10 | Lunar Date Converter | Important Dates | Optional · zh-Hant opportunity；不做農民曆／宜忌／吉日 |
+| 11 | Pet Age Calculator | Important Dates | Optional · emotional age-conversion；不做健康／醫療建議 |
+| 12 | Japanese Era Converter | Important Dates | Optional · 現代年號換算；不做大型歷史年號資料庫 |
+
+V1.5 發布節奏：
 
 ```text
-1. Plan-first repository audit
-2. Owner Plan Review
-3. B0 V2 tool page scaffold
-4. B1A lower content
-5. B1B upper static visual
-6. B2 smart date input + calculation logic + calculation-date interaction
-7. Full QA and Agent Reviews
-8. Owner standalone-tool acceptance
-9. Tool implementation commit
-10. Post-tool Link Integration
-11. Link QA / commit
-12. push / deploy checkpoint
+單工具開發 → 單工具驗收 → Post-tool Link Integration Gate
+→ Link QA → Owner 確認後 deploy
+工具頁完成 ≠ 可直接上線
 ```
 
 ---
 
-## 6. Phase 2 — V1.5
+## 7. Phase 2 / V2 — Category completion and brand differentiation
+
+補齊四大分類與品牌差異化（含 Daily Rhythm）：
 
 | Order | Tool | Category | Purpose |
 |---:|---|---|---|
-| 6 | Breathing Timer | Daily Rhythm | Establish calm rhythm / rest use case |
-| 7 | Fasting / Recovery Timer | Daily Rhythm | Time tracking only; no health advice |
-| 8 | Days Between Dates | Important Dates | Search-focused date difference |
-| 9 | Add / Subtract Days | Important Dates | Search-focused date arithmetic |
-
-Age Calculator 已提前至第五個工具（見 §5.1），不再列於 Phase 2 第 9 位。
-
----
-
-## 7. Phase 3 — V2 expansion
-
-| Order | Tool | Category | Purpose |
-|---:|---|---|---|
-| 10 | Stopwatch | Timers & Focus | Complete basic timer line |
-| 11 | Fullscreen Timer | Timers & Focus | Large low-distraction display |
-| 12 | Milestone Progress (working name) | Life Progress | Focused single-milestone progress |
-| 13 | Month Progress | Life Progress | Shorter-term time awareness |
-| 14 | Circadian Energy Planner | Daily Rhythm | Differentiation with careful health boundary |
-| 15 | Pomodoro Timer | Timers & Focus | Common focus cycle use case |
+| 13 | Breathing Timer | Daily Rhythm | Calm rhythm / rest use case |
+| 14 | Fasting / Recovery Timer | Daily Rhythm | Time tracking only; no health advice |
+| 15 | Stopwatch | Timers & Focus | Complete basic timer line |
+| 16 | Fullscreen Timer | Timers & Focus | Large low-distraction display |
+| 17 | Pomodoro Timer | Timers & Focus | Common focus cycle use case |
+| 18 | Month Progress | Life Progress | Shorter-term time awareness |
+| 19 | Milestone Progress (working name) | Life Progress | Single-milestone progress |
+| 20 | Goal Countdown | Life Progress | Distance to a goal deadline |
+| 21 | Circadian Energy Planner | Daily Rhythm | Differentiation with careful health boundary |
 
 ---
 
-## 8. Phase 4 — Later
+## 8. Phase 3 — Later
 
 ```text
 Birthday Countdown
 Holiday Countdown
 Anniversary Countdown
-Goal Countdown
 Break Timer
 Focus Flow Timer
 Habit Streak Counter
@@ -201,7 +197,7 @@ Do not depend on background notifications or sync early.
 
 ## 9. V1 completion standard
 
-Each V1 tool needs:
+Each V1 / V1.5 tool needs:
 
 ```text
 Tool core experience
@@ -220,6 +216,7 @@ Owner real-device approval
 Standalone-tool commit
 Post-tool Link Integration
 Link QA and integration commit
+Owner-confirmed deploy
 ```
 
 ---
@@ -228,6 +225,7 @@ Link QA and integration commit
 
 ```text
 V1 four tools + Year Progress: deployed on timiva.app
+Age Calculator (V1.5 first Search Foundation tool): deployed on timiva.app
 V1 SEO technical closeout: complete
 ```
 
@@ -253,6 +251,10 @@ Large programmatic SEO
 Complex reports
 Push backend
 PWA until core tool release timing is confirmed
+國定假日完整資料庫
+農民曆 / 宜忌 / 吉日 / 沖煞
+健康 / 醫療 / 照護建議
+大型歷史年號資料庫
 ```
 
 ---
@@ -260,8 +262,7 @@ PWA until core tool release timing is confirmed
 ## 12. Current next action
 
 ```text
-Age Calculator repository-aware Plan-first task.
-Cursor inspects the repository and outputs a plan only.
-Owner reviews the plan before any file edits.
-Implementation not started.
+V1.5 Search Foundation 下一工具：由 Owner 決定 / 規格化。
+暫定 candidates：Days Between Dates → Date Calculator → Business Days → Hours Calculator
+（Lunar / Pet Age / Japanese Era 為 optional）
 ```

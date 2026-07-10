@@ -5,6 +5,62 @@
 
 ---
 
+## 2026-07-10 — V1.5 redefined as Search Foundation
+
+### 背景
+
+```text
+Age Calculator 已正式上線於 https://timiva.app。
+Owner 希望 V1.5 先鋪高搜尋、高流量、低維護的日期與時間工具，
+再補齊 Daily Rhythm 等品牌差異化工具線。
+```
+
+### 決策
+
+```text
+V1.5 改為 Search Foundation／搜尋鋪路期。
+先做高搜尋意圖、低維護日期與時間工具。
+四大分類完整補齊（含 Daily Rhythm）延後至 V2。
+這是開發優先順序策略，不改變 Timiva 四大分類。
+```
+
+### 暫定順序
+
+```text
+5. Age Calculator — 已完成 · 已上線
+6. Days Between Dates
+7. Date Calculator / Add or Subtract Days
+8. Business Days Calculator
+9. Hours Calculator
+10. Lunar Date Converter — optional
+11. Pet Age Calculator — optional
+12. Japanese Era Converter — optional
+```
+
+### 邊界
+
+```text
+不做大型資料庫
+不做健康建議
+不做農民曆 / 宜忌 / 吉日 / 沖煞
+不做國定假日完整資料庫
+不改變 Timiva 四大分類
+Business Days MVP：排除週末即可
+Japanese Era：只做現代年號換算
+```
+
+### 發布節奏
+
+```text
+V1.5 搜尋型工具採：
+單工具開發 → 單工具驗收 → 單工具站內整合 → 單工具 release check
+→ Owner 確認後 deploy
+工具頁完成 ≠ 可直接上線
+仍需 Post-tool Link Integration Gate
+```
+
+---
+
 ## 2026-07-10 — Age Calculator 正式上線（V1.5 + B7 Production Verification）
 
 ### 背景
