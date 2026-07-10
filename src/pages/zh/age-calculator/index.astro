@@ -1,0 +1,26 @@
+---
+import "../../../styles/tools/timiva-tokens.css";
+import "../../../styles/tools/tool-design-system.css";
+import "../../../styles/tools/tool-result-v2-baseline.css";
+import "../../../styles/tools/tool-overlay-v2-baseline.css";
+import "../../../styles/tools/tool-drawer-v2-baseline.css";
+import "../../../styles/tools/age-calculator-v2.css";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import AgeCalculatorV2 from "../../../components/tools/age-calculator-v2/AgeCalculatorV2.astro";
+import { getAgeCalculatorRouteMeta } from "../../../lib/ageCalculatorRouteMeta";
+import { type Locale } from "../../../i18n/config";
+
+const locale: Locale = "zh";
+const routeMeta = getAgeCalculatorRouteMeta(locale);
+---
+
+<BaseLayout
+	title={routeMeta.title}
+	description={routeMeta.description}
+	canonicalUrl={routeMeta.canonicalUrl}
+	alternateUrls={routeMeta.alternateUrls}
+	headerVariant="inner"
+	locale={locale}
+>
+	<AgeCalculatorV2 locale={locale} />
+</BaseLayout>

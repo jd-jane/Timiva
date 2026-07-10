@@ -15,6 +15,7 @@ export const routePaths = {
   dateRangeCalculator: "/date-range-calculator/",
   countdownTimer: "/countdown-timer/",
   yearProgress: "/year-progress/",
+  ageCalculator: "/age-calculator/",
   allTools: "/tools/",
   privacy: "/privacy/",
   terms: "/terms/",

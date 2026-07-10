@@ -1,0 +1,481 @@
+---
+import RelatedToolRow from "../../RelatedToolRow.astro";
+import ToolAdSlot from "../../ToolAdSlot.astro";
+import ToolCard from "../../ToolCard.astro";
+import { catalogIconMap } from "../../../lib/catalogIcons";
+import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
+import { getCatalogTool, type CatalogToolId } from "../../../data/toolsCatalog";
+import { getLocalizedPath, type Locale } from "../../../i18n/config";
+import { getMessages } from "../../../i18n/messages";
+import "../../../styles/tools/tool-mobile-sheet-v2-baseline.css";
+
+interface Props {
+	locale?: Locale;
+}
+
+const AGE_CALCULATOR_OUTBOUND_IDS = [
+	"date-range",
+	"event-countdown",
+	"year-progress",
+] as const satisfies readonly CatalogToolId[];
+
+const { locale = "en" } = Astro.props;
+const messages = getMessages(locale);
+const m = messages.ageCalculator;
+
+const toolCopy: Record<
+	CatalogToolId,
+	{ title: string; relatedDescription: string }
+> = {
+	"event-countdown": messages.tools.eventCountdown,
+	"date-range": messages.tools.dateRange,
+	"countdown-timer": messages.tools.countdownTimer,
+	"year-progress": messages.tools.yearProgress,
+	"age-calculator": messages.tools.ageCalculator,
+	"life-progress": messages.tools.lifeProgress,
+};
+
+const relatedToolItems = AGE_CALCULATOR_OUTBOUND_IDS.map((id) => {
+	const tool = getCatalogTool(id);
+
+	if (!tool?.available) {
+		return null;
+	}
+
+	return {
+		href: getLocalizedPath(locale, `/${tool.slug}/`),
+		name: toolCopy[tool.id].title,
+		description: toolCopy[tool.id].relatedDescription,
+		icon: catalogIconMap[tool.id],
+	};
+}).filter((item): item is NonNullable<typeof item> => item !== null);
+
+const faqSchema = buildFaqPageJsonLd(m.faq.items);
+---
+
+<div data-age-calculator-v2>
+	<section data-acv2-main-tool class="preview-tool-main-section px-6">
+		<div class="preview-tool-first-screen">
+			<div class="preview-tool-stage tool-stage mx-auto w-full max-w-md md:max-w-lg">
+				<div class="preview-tool-result-group text-center">
+					<h1
+						class="acv2-tool-name preview-tool-landscape-compact-title text-sm font-medium tracking-normal text-slate-300 md:text-base"
+					>
+						{m.kicker}
+					</h1>
+
+					<div class="preview-tool-result-block mt-6 md:mt-8">
+						<p
+							class="preview-tool-result-number leading-none font-normal tracking-tight tabular-nums"
+							aria-label={`0 ${m.primaryResultUnit}`}
+						>
+							0
+						</p>
+						<p class="preview-tool-result-label text-xs text-slate-400 md:text-sm">
+							{m.primaryResultUnit}
+						</p>
+
+						<span class="acv2-result-divider" aria-hidden="true"></span>
+
+						<div class="acv2-secondary-results" aria-hidden="true">
+							<p class="acv2-secondary-line acv2-secondary-line--stacked">{m.exactAgeZero}</p>
+							<p class="acv2-secondary-line acv2-secondary-line--stacked">{m.daysLivedZero}</p>
+							<p class="acv2-secondary-line acv2-secondary-line--landscape">
+								{m.exactAgeZero} / {m.daysLivedZero}
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="acv2-input-cluster acv2-input-cluster--desktop" aria-label={m.upperControlsAriaLabel}>
+					<div
+						class="acv2-birth-capsule"
+						role="group"
+						aria-label={m.birthDateLabel}
+						aria-disabled="true"
+						data-acv2-birth-field
+						data-acv2-birth-capsule
+					>
+						<span class="acv2-birth-capsule__placeholder" aria-hidden="true">
+							{m.birthDateDesktopPlaceholder}
+						</span>
+						<span class="acv2-birth-capsule__icon" aria-hidden="true">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+								<rect x="3" y="5" width="18" height="16" rx="3"></rect>
+								<path d="M8 3v4M16 3v4M7 11h10" stroke-linecap="round"></path>
+							</svg>
+						</span>
+					</div>
+
+					<div class="acv2-asof-row" data-acv2-asof>
+						<span
+							class="acv2-asof-control"
+							data-acv2-asof-control
+							aria-disabled="true"
+						>
+							{m.asOfToday}
+						</span>
+					</div>
+				</div>
+
+				<div
+					class="preview-tool-controls acv2-mobile-controls flex flex-wrap justify-center gap-3 md:gap-4"
+					aria-label={m.upperControlsAriaLabel}
+				>
+					<button
+						type="button"
+						class="preview-tool-control-btn acv2-mobile-control-btn inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm md:min-h-11 md:px-5 md:py-2.5"
+						data-acv2-sheet-open
+					>
+						{m.startChoosingBirthday}
+					</button>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<aside
+		data-acv2-drawer
+		data-open="true"
+		aria-label={m.relatedToolsDrawerAriaLabel}
+		class="pointer-events-none fixed inset-y-0 right-0 z-20 hidden xl:block"
+	>
+		<span class="hidden translate-x-[300px]" aria-hidden="true"></span>
+		<div
+			data-acv2-drawer-shell
+			data-open="true"
+			class="preview-tool-drawer-frosted pointer-events-auto relative flex h-dvh rounded-tl-3xl rounded-bl-3xl border-l border-white/10 shadow-2xl shadow-black/25 ring-1 ring-inset ring-white/[0.04] transition-transform duration-200 ease-out"
+		>
+			<button
+				type="button"
+				data-acv2-drawer-toggle
+				aria-expanded="true"
+				class="relative z-10 flex w-14 shrink-0 items-center justify-center self-stretch text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+				aria-label={m.toggleRelatedToolsDrawerAriaLabel}
+			>
+				<svg
+					data-drawer-arrow-open
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="none"
+					class="h-7 w-7"
+					aria-hidden="true"
+				>
+					<path
+						d="M10 3L5 8l5 5"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+				<svg
+					data-drawer-arrow-closed
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="none"
+					class="hidden h-7 w-7"
+					aria-hidden="true"
+				>
+					<path
+						d="M6 3l5 5-5 5"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+			</button>
+
+			<div data-acv2-drawer-panel class="relative z-10 flex h-full w-[300px] shrink-0 flex-col">
+				<div class="px-5 pb-3 pt-5">
+					<h2 class="text-lg font-semibold text-white">{messages.relatedTools.heading}</h2>
+				</div>
+				<ToolAdSlot variant="sidebar" locale={locale} state="is-disabled" />
+				<div class="flex-1 space-y-3 overflow-y-auto px-5 pb-5">
+					{
+						relatedToolItems.map((tool) => (
+							<div>
+								<ToolCard
+									href={tool.href}
+									name={tool.name}
+									description={tool.description}
+									icon={tool.icon}
+								/>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</div>
+	</aside>
+
+	<div
+		class="tool-lower-content mx-auto max-w-3xl px-6 pb-20 text-left"
+		data-acv2-lower-content
+	>
+		<ToolAdSlot variant="main" locale={locale} state="is-disabled" />
+
+		<section
+			data-acv2-related-tools
+			class="pb-12 xl:hidden"
+			aria-labelledby="acv2-related-heading"
+		>
+			<h2 id="acv2-related-heading" class="mb-4 text-lg font-semibold text-white">
+				{messages.relatedTools.heading}
+			</h2>
+			<div class="space-y-3">
+				{
+					relatedToolItems.map((tool) => (
+						<RelatedToolRow
+							href={tool.href}
+							name={tool.name}
+							description={tool.description}
+							icon={tool.icon}
+						/>
+					))
+				}
+			</div>
+		</section>
+
+		<section class="pb-12" aria-labelledby="acv2-about-heading">
+			<h2 id="acv2-about-heading" class="mb-2 text-lg font-semibold text-white">
+				{m.about.heading}
+			</h2>
+			<p class="text-sm leading-relaxed text-slate-400">{m.about.body}</p>
+		</section>
+
+		<section class="pb-12" aria-labelledby="acv2-howto-heading">
+			<h2 id="acv2-howto-heading" class="mb-2 text-lg font-semibold text-white">
+				{m.howTo.heading}
+			</h2>
+			<ol class="list-decimal space-y-2 pl-5 text-sm leading-relaxed text-slate-400">
+				{m.howTo.steps.map((step) => <li>{step}</li>)}
+			</ol>
+		</section>
+
+		<section class="pb-12" aria-labelledby="acv2-uses-heading">
+			<h2 id="acv2-uses-heading" class="mb-4 text-lg font-semibold text-white">
+				{m.commonUses.heading}
+			</h2>
+			<ul class="acv2-keyword-list" role="list">
+				{m.commonUses.items.map((item) => <li class="acv2-keyword-chip">{item}</li>)}
+			</ul>
+		</section>
+
+		<section aria-labelledby="acv2-faq-heading">
+			<h2 id="acv2-faq-heading" class="mb-4 text-lg font-semibold text-white">
+				{m.faq.heading}
+			</h2>
+			<div class="border-t border-white/20">
+				{
+					m.faq.items.map((item) => (
+						<details class="group border-b border-white/20 py-4">
+							<summary
+								class="flex list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden"
+							>
+								<span>{item.question}</span>
+								<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 16 16"
+										fill="none"
+										class="h-4 w-4 group-open:hidden"
+										aria-hidden="true"
+									>
+										<path
+											d="M8 3.5v9M3.5 8h9"
+											stroke="currentColor"
+											stroke-width="1.5"
+											stroke-linecap="round"></path>
+									</svg>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 16 16"
+										fill="none"
+										class="hidden h-4 w-4 group-open:block"
+										aria-hidden="true"
+									>
+										<path
+											d="M3.5 8h9"
+											stroke="currentColor"
+											stroke-width="1.5"
+											stroke-linecap="round"></path>
+									</svg>
+								</span>
+							</summary>
+							<p class="mt-3 text-sm leading-relaxed text-slate-300">{item.answer}</p>
+						</details>
+					))
+				}
+			</div>
+		</section>
+	</div>
+
+	<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+</div>
+
+<div data-acv2-sheet-portal data-mobile-sheet-baseline hidden aria-hidden="true">
+	<div
+		class="tool-operation-overlay"
+		data-acv2-sheet-overlay
+		data-tool-operation-overlay
+		hidden
+		aria-hidden="true"
+	>
+	</div>
+
+	<div
+		class="msb-sheet acv2-sheet"
+		data-acv2-sheet
+		role="dialog"
+		aria-modal="true"
+		aria-label={m.sheetAriaLabel}
+		aria-hidden="true"
+		inert
+	>
+		<div class="msb-sheet-handle" aria-hidden="true"></div>
+
+		<div class="msb-sheet-body">
+			<div class="msb-sheet-fields acv2-sheet-fields">
+				<div
+					class="acv2-sheet-field"
+					role="group"
+					aria-label={m.birthDateLabel}
+					aria-disabled="true"
+					data-acv2-sheet-birth-field
+				>
+					<div class="acv2-sheet-field__shell">
+						<span class="acv2-sheet-field__label">{m.birthDateLabel}</span>
+						<span class="acv2-sheet-field__value" aria-hidden="true">
+							{m.birthDatePlaceholder}
+						</span>
+						<span class="acv2-sheet-field__icon" aria-hidden="true">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+								<rect x="3" y="5" width="18" height="16" rx="3"></rect>
+								<path d="M8 3v4M16 3v4M7 11h10" stroke-linecap="round"></path>
+							</svg>
+						</span>
+					</div>
+				</div>
+
+				<div
+					class="acv2-sheet-field"
+					role="group"
+					aria-label={m.asOfToday}
+					aria-disabled="true"
+					data-acv2-sheet-asof-field
+				>
+					<div class="acv2-sheet-field__shell">
+						<span class="acv2-sheet-field__label">{m.asOfToday}</span>
+						<span class="acv2-sheet-field__value acv2-sheet-field__value--asof" aria-hidden="true">
+							{m.asOfTodaySheetValue}
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script is:inline>
+	document.addEventListener("DOMContentLoaded", () => {
+		const root = document.querySelector("[data-age-calculator-v2]");
+		const drawer = root?.querySelector("[data-acv2-drawer]");
+		const shell = root?.querySelector("[data-acv2-drawer-shell]");
+		const toggle = root?.querySelector("[data-acv2-drawer-toggle]");
+		const related = root?.querySelector("[data-acv2-related-tools]");
+		const arrowOpen = root?.querySelector("[data-drawer-arrow-open]");
+		const arrowClosed = root?.querySelector("[data-drawer-arrow-closed]");
+
+		if (drawer && shell && toggle) {
+			let isOpen = drawer.dataset.open !== "false";
+
+			const syncDrawer = () => {
+				drawer.dataset.open = isOpen ? "true" : "false";
+				shell.dataset.open = isOpen ? "true" : "false";
+				shell.classList.toggle("translate-x-[300px]", !isOpen);
+				related?.classList.toggle("xl:hidden", isOpen);
+				arrowOpen?.classList.toggle("hidden", !isOpen);
+				arrowClosed?.classList.toggle("hidden", isOpen);
+				toggle.setAttribute("aria-expanded", String(isOpen));
+			};
+
+			syncDrawer();
+
+			toggle.addEventListener("click", (event) => {
+				event.preventDefault();
+				isOpen = !isOpen;
+				syncDrawer();
+			});
+		}
+
+		const portal = document.querySelector("[data-acv2-sheet-portal]");
+		const overlay = portal?.querySelector("[data-acv2-sheet-overlay]");
+		const sheet = portal?.querySelector("[data-acv2-sheet]");
+		const openTriggers = root?.querySelectorAll("[data-acv2-sheet-open]");
+
+		if (!portal || !overlay || !sheet || !openTriggers?.length) return;
+
+		document.body.appendChild(portal);
+		portal.removeAttribute("hidden");
+		portal.setAttribute("aria-hidden", "false");
+
+		let savedScrollY = 0;
+		let lastTrigger = null;
+
+		const lockBodyScroll = () => {
+			savedScrollY = window.scrollY;
+			document.documentElement.classList.add("msb-scroll-lock", "msb-sheet-open");
+			document.body.classList.add("msb-scroll-lock", "msb-sheet-open");
+		};
+
+		const unlockBodyScroll = () => {
+			document.documentElement.classList.remove("msb-scroll-lock", "msb-sheet-open");
+			document.body.classList.remove("msb-scroll-lock", "msb-sheet-open");
+			window.scrollTo(0, savedScrollY);
+		};
+
+		const openSheet = (trigger) => {
+			lastTrigger = trigger;
+			root?.setAttribute("data-acv2-sheet-open", "true");
+			overlay.removeAttribute("hidden");
+			overlay.classList.add("is-visible");
+			overlay.setAttribute("aria-hidden", "false");
+			sheet.classList.add("is-open");
+			sheet.setAttribute("aria-hidden", "false");
+			sheet.inert = false;
+			lockBodyScroll();
+		};
+
+		const closeSheet = () => {
+			root?.removeAttribute("data-acv2-sheet-open");
+			overlay.classList.remove("is-visible");
+			overlay.setAttribute("hidden", "");
+			overlay.setAttribute("aria-hidden", "true");
+			sheet.classList.remove("is-open");
+			sheet.setAttribute("aria-hidden", "true");
+			sheet.inert = true;
+			unlockBodyScroll();
+
+			if (lastTrigger instanceof HTMLElement) {
+				lastTrigger.focus({ preventScroll: true });
+			}
+		};
+
+		openTriggers.forEach((trigger) => {
+			trigger.addEventListener("click", () => {
+				openSheet(trigger);
+			});
+		});
+
+		overlay.addEventListener("click", closeSheet);
+		sheet.addEventListener("click", (event) => {
+			event.stopPropagation();
+		});
+
+		document.addEventListener("keydown", (event) => {
+			if (event.key === "Escape" && sheet.classList.contains("is-open")) {
+				closeSheet();
+			}
+		});
+	});
+</script>

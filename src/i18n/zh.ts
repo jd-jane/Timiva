@@ -27,6 +27,11 @@ export const zh: Messages = {
       description:
         "快速查看今年已經走過多少、還剩多少天，以及 12 個月份的年度節奏。依照你的本地時間自動更新。",
     },
+    ageCalculator: {
+      title: "年齡計算｜精準年齡與生活總天數 | Timiva",
+      description:
+        "輸入出生日期，快速計算完整歲數、精準的年／月／日，以及已走過的總天數。預設以今天計算，也可選擇指定日期。",
+    },
     privacy: {
       title: "隱私權政策 — Timiva",
       description: "Timiva 如何處理您的資料與隱私。",
@@ -192,9 +197,10 @@ export const zh: Messages = {
     },
     ageCalculator: {
       title: "年齡計算器",
-      description: "快速計算實際年齡、出生天數與下一次生日倒數。",
-      compactDescription: "計算實際年齡與出生天數。",
-      relatedDescription: "查看實際年齡。",
+      description:
+        "快速計算完整歲數、精準的年／月／日與已走過的總天數，預設以今天或指定日期計算。",
+      compactDescription: "計算精準年齡與生活總天數。",
+      relatedDescription: "查看精準年齡。",
     },
     lifeProgress: {
       title: "人生進度條",
@@ -455,6 +461,77 @@ export const zh: Messages = {
           question: "可以在手機上使用嗎？",
           answer:
             "可以。手機直式會顯示完整年度資訊；手機橫式會保留主要數字與控制，減少畫面擁擠。",
+        },
+      ],
+    },
+  },
+  ageCalculator: {
+    kicker: "年齡計算",
+    primaryResultUnit: "歲",
+    exactAgeZero: "0 年 0 個月 0 天",
+    daysLivedZero: "已走過 0 天",
+    birthDateLabel: "出生日期",
+    birthDatePlaceholder: "YYYY / MM / DD",
+    birthDateDesktopPlaceholder: "點這裡輸入生日 yyyy/mm/dd",
+    asOfToday: "截至今天",
+    asOfTodaySheetValue: "今天",
+    startChoosingBirthday: "開始選擇生日",
+    sheetAriaLabel: "年齡計算輸入",
+    birthDateFieldAriaLabel: "出生日期",
+    upperControlsAriaLabel: "年齡計算控制項",
+    relatedToolsDrawerAriaLabel: "相關工具側欄",
+    toggleRelatedToolsDrawerAriaLabel: "切換相關工具側欄",
+    about: {
+      heading: "什麼是年齡計算？",
+      body: "輸入出生日期，即可查看截至今天或指定日期的年齡。結果包含完整歲數、精準的年／月／日，以及已走過的總天數。",
+    },
+    howTo: {
+      heading: "如何使用這個年齡計算工具",
+      steps: [
+        "直接輸入出生日期，或使用日曆選擇。",
+        "工具預設以今天計算；需要時可以修改計算日期。",
+        "查看完整歲數、精準年齡與已走過的總天數。",
+      ],
+    },
+    commonUses: {
+      heading: "常見年齡計算用途",
+      items: [
+        "精準年齡計算",
+        "已走過天數",
+        "生日年齡",
+        "未來日期年齡",
+        "過去日期年齡",
+        "表單填寫",
+        "個人紀錄",
+      ],
+    },
+    faq: {
+      heading: "年齡計算 FAQ",
+      items: [
+        {
+          question: "年齡是怎麼計算的？",
+          answer:
+            "工具會先計算完整年數，再計算完整月數與剩餘天數，顯示精準的年、月、日結果。",
+        },
+        {
+          question: "「已走過的總天數」怎麼計算？",
+          answer:
+            "總天數是出生日期與計算日期之間實際經過的日曆天數。出生當天為第 0 天，隔天才算走過 1 天。",
+        },
+        {
+          question: "可以計算過去或未來某一天的年齡嗎？",
+          answer:
+            "可以。工具預設以今天計算，你也可以修改計算日期，查看自己在指定日期的年齡。",
+        },
+        {
+          question: "2 月 29 日出生的人怎麼計算？",
+          answer:
+            "在閏年以 2 月 29 日作為生日；非閏年則以 3 月 1 日作為生日週年。",
+        },
+        {
+          question: "工具會儲存我的出生日期嗎？",
+          answer:
+            "不會。出生日期與計算結果只會用於目前頁面的計算，重新整理或離開頁面後不會儲存。",
         },
       ],
     },

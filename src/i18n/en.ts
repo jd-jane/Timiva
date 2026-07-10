@@ -25,6 +25,11 @@ export const en = {
       description:
         "See the current year's progress, days passed, days remaining, monthly rhythm, and a calm reminder—automatically based on your local time.",
     },
+    ageCalculator: {
+      title: "Age Calculator – Exact Age and Days Lived | Timiva",
+      description:
+        "Calculate your exact age in years, months, and days, plus the total number of days lived. Use today or choose another calculation date.",
+    },
     privacy: {
       title: "Privacy Policy — Timiva",
       description: "How Timiva handles your data and privacy.",
@@ -208,7 +213,7 @@ export const en = {
     ageCalculator: {
       title: "Age Calculator",
       description:
-        "Calculate exact age, days lived, and the countdown to the next birthday.",
+        "Calculate your exact age in years, months, and days, plus total days lived as of today or another date.",
       compactDescription: "Calculate exact age and days lived.",
       relatedDescription: "Check exact age.",
     },
@@ -476,6 +481,77 @@ export const en = {
           question: "Can I use this on mobile?",
           answer:
             "Yes. Mobile portrait shows the full year view, while mobile landscape keeps the primary result and controls compact.",
+        },
+      ],
+    },
+  },
+  ageCalculator: {
+    kicker: "Age Calculator",
+    primaryResultUnit: "years old",
+    exactAgeZero: "0 years, 0 months, 0 days",
+    daysLivedZero: "0 days so far",
+    birthDateLabel: "Birth date",
+    birthDatePlaceholder: "YYYY / MM / DD",
+    birthDateDesktopPlaceholder: "Enter birthday yyyy/mm/dd",
+    asOfToday: "As of today",
+    asOfTodaySheetValue: "Today",
+    startChoosingBirthday: "Start choosing birthday",
+    sheetAriaLabel: "Age calculator inputs",
+    birthDateFieldAriaLabel: "Birth date",
+    upperControlsAriaLabel: "Age calculator controls",
+    relatedToolsDrawerAriaLabel: "Related tools drawer",
+    toggleRelatedToolsDrawerAriaLabel: "Toggle related tools drawer",
+    about: {
+      heading: "What is an Age Calculator?",
+      body: "Enter a birth date to calculate an age as of today or another date. The result includes the completed age, the exact years, months, and days, and the total number of days lived.",
+    },
+    howTo: {
+      heading: "How to use this age calculator",
+      steps: [
+        "Enter a birth date directly or choose it from the calendar.",
+        "The calculator uses today by default, but you can change the calculation date.",
+        "View the completed age, exact age, and total days lived.",
+      ],
+    },
+    commonUses: {
+      heading: "Common age calculator uses",
+      items: [
+        "Exact age calculator",
+        "Days lived",
+        "Birthday age",
+        "Future date age",
+        "Past date age",
+        "Form filling",
+        "Personal records",
+      ],
+    },
+    faq: {
+      heading: "Age Calculator FAQ",
+      items: [
+        {
+          question: "How is age calculated?",
+          answer:
+            "The calculator first counts completed years, then completed months, and finally the remaining days to show an exact calendar age.",
+        },
+        {
+          question: "How is the total number of days calculated?",
+          answer:
+            "It is the actual number of calendar days between the birth date and the calculation date. The birth date is day 0, and the following day is one full day lived.",
+        },
+        {
+          question: "Can I calculate my age on a past or future date?",
+          answer:
+            "Yes. The calculator uses today by default, but you can change the calculation date to see an age on another date.",
+        },
+        {
+          question: "How are February 29 birthdays calculated?",
+          answer:
+            "In a leap year, the birthday anniversary is February 29. In a non-leap year, March 1 is used as the birthday anniversary.",
+        },
+        {
+          question: "Does the calculator save my birth date?",
+          answer:
+            "No. Your birth date and result are used only for the current calculation and are not stored after you refresh or leave the page.",
         },
       ],
     },

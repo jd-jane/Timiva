@@ -26,6 +26,8 @@ const EXPECTED_URLS = [
 	`${SITE}/zh/countdown-timer/`,
 	`${SITE}/en/year-progress/`,
 	`${SITE}/zh/year-progress/`,
+	`${SITE}/en/age-calculator/`,
+	`${SITE}/zh/age-calculator/`,
 	`${SITE}/en/privacy/`,
 	`${SITE}/zh/privacy/`,
 	`${SITE}/en/terms/`,
@@ -47,6 +49,8 @@ const EXPECTED_HTML = [
 	"zh/countdown-timer/index.html",
 	"en/year-progress/index.html",
 	"zh/year-progress/index.html",
+	"en/age-calculator/index.html",
+	"zh/age-calculator/index.html",
 	"en/privacy/index.html",
 	"zh/privacy/index.html",
 	"en/terms/index.html",
@@ -62,6 +66,7 @@ const PAIRS = [
 	["/en/date-range-calculator/", "/zh/date-range-calculator/"],
 	["/en/countdown-timer/", "/zh/countdown-timer/"],
 	["/en/year-progress/", "/zh/year-progress/"],
+	["/en/age-calculator/", "/zh/age-calculator/"],
 	["/en/privacy/", "/zh/privacy/"],
 	["/en/terms/", "/zh/terms/"],
 	["/en/contact/", "/zh/contact/"],
@@ -110,7 +115,7 @@ assert(!indexXml.includes("pages.dev"), "sitemap-index has no pages.dev");
 assert(!indexXml.includes("www.timiva.app"), "sitemap-index has no www");
 
 const locs = extractLocs(sitemapXml);
-assert(locs.length === 18, `sitemap has 18 URLs (got ${locs.length})`);
+assert(locs.length === 20, `sitemap has 20 URLs (got ${locs.length})`);
 assert(new Set(locs).size === locs.length, "sitemap URLs are unique");
 
 for (const url of EXPECTED_URLS) {
