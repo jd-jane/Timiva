@@ -5,6 +5,74 @@
 
 ---
 
+## 2026-07-10 — Age Calculator standalone 完成與 B3D Final QA Re-check
+
+### 背景
+
+```text
+Age Calculator 完成 B1B / B2A / B2B / B2C 與 B3C invalid birth reset bugfix，
+並通過 B3D Final QA Re-check。
+```
+
+### 決策／現況
+
+```text
+Age Calculator standalone 視為實作完成（尚未 Post-tool Link Integration）。
+B3D Final QA Re-check：Pass · No blocking issues found。
+HEAD：f5416b6（fix: reset Age Calculator invalid birth state）。
+尚未 push / deploy。
+下一步：Owner 授權後執行 Post-tool Link Integration。
+```
+
+### 最終規格摘要（影響後續判斷）
+
+```text
+Desktop birth：單一智慧 input + calendar popover（month / year select）
+Mobile birth：Year / Month / Day 三欄 + auto-advance
+As-of 預設 today
+Desktop As-of：calendar popover；非 today 顯示 back icon；與 birth calendar 互斥
+Mobile As-of：原生 date picker；不顯示 back icon
+出生年份：1900 ～ today
+empty / incomplete → 結果 0，無 invalid icon
+complete invalid birth → 結果 0 + invalid icon（不保留上一個 valid 結果）
+as-of earlier than birth → 結果 0 + as-of invalid
+As-of 不可未來；範圍 1900-01-01 ～ today
+leap day 2/29：閏年 2/29；非閏年週年 3/1
+Day 0 規則；自然日曆年／月／日
+```
+
+### Commits
+
+```text
+cb09fc6 — feat: add Age Calculator B1B
+72c3d58 — feat: add Age Calculator B2A
+fb2d21f — feat: add Age Calculator B2B
+cc31c79 — feat: add Age Calculator B2C
+f5416b6 — fix: reset Age Calculator invalid birth state
+```
+
+### B3D 驗證摘要
+
+```text
+npm run build — Pass
+validate-seo-head — Pass（460）
+validate-sitemap — Pass（375）
+validate-age-calculator-math — Pass（130）
+git diff --check — Pass
+Desktop EN / ZH · Mobile portrait / landscape EN / ZH — Pass
+Content / SEO / Related Tools — Pass
+```
+
+### 邊界
+
+```text
+不得在未授權任務中改寫已驗收 Age Calculator 核心邏輯。
+不得自行開始 Post-tool Link Integration / push / deploy。
+文件以 docs/tools/age-calculator/ 與 docs/project/current-status.md 為準。
+```
+
+---
+
 ## 2026-06-30 — Official-domain V1 smoke test passed
 
 ### 背景

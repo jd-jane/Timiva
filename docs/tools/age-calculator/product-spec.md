@@ -1,9 +1,9 @@
 # Timiva Age Calculator Product Spec
 
-Date: 2026-07-05  
-Last updated: 2026-07-05  
-Owner: Jane / Timiva  
-Status: Product specification complete · Ready for repository-aware Plan-first · Implementation not started · Not committed · Not pushed · Not deployed
+Date: 2026-07-05
+Last updated: 2026-07-10
+Owner: Jane / Timiva
+Status: Standalone 實作完成 · B3D Final QA Re-check 通過 · No blocking issues found · 尚未 Post-tool Link Integration · 尚未 push / deploy
 
 Related docs:
 
@@ -14,18 +14,88 @@ docs/core/roadmap.md
 docs/project/current-status.md
 docs/project/decision-log.md
 docs/workflow/new-tool-development.md
+docs/workflow/tool-link-integration.md
 ```
 
 工具名稱：Age Calculator／年齡計算  
 分類：Important Dates／重要日子  
 Timiva 第五個工具
 
-預定路由：
+正式路由：
 
 ```text
 /en/age-calculator/
 /zh/age-calculator/
 ```
+
+---
+
+## 0. 目前實作狀態（B3D · 2026-07-10）
+
+### 0.1 進度
+
+```text
+B1B / B2A / B2B / B2C / B3C bugfix 已完成
+B3D Final QA Re-check：Pass
+No blocking issues found
+尚未 Post-tool Link Integration
+尚未 push / deploy
+```
+
+### 0.2 Commits
+
+```text
+cb09fc6 — feat: add Age Calculator B1B
+72c3d58 — feat: add Age Calculator B2A
+fb2d21f — feat: add Age Calculator B2B
+cc31c79 — feat: add Age Calculator B2C
+f5416b6 — fix: reset Age Calculator invalid birth state
+```
+
+### 0.3 最終輸入／As-of 規格（以實作為準）
+
+```text
+Desktop birth：單一智慧 input（YYYY / MM / DD）+ calendar popover
+Desktop birth calendar：month / year select；不得選未來日
+Mobile birth：Year / Month / Day 三欄 input + auto-advance
+As-of 預設：today（As of today / 截至今天）
+Desktop As-of：calendar popover；與 birth calendar 互斥
+Desktop As-of 非 today：日期旁 back icon → 回到 today；點擊不開 calendar
+Mobile As-of：原生 type="date"；不顯示 back icon
+As-of 範圍：1900-01-01 ～ today（不可未來）
+```
+
+### 0.4 最終狀態／計算規格（以實作為準）
+
+```text
+出生年份：1900 ～ today
+1900 / 01 / 01 → valid
+1899 / 12 / 31 → invalid
+future birth → invalid
+empty / incomplete → 結果 0，不顯示 invalid icon
+complete invalid → 結果 0，顯示 invalid icon（不保留上一個 valid 結果）
+as-of earlier than birth → 結果 0 + as-of invalid
+leap day 2/29：閏年 2/29；非閏年週年 3/1
+自然日曆完整年、月、日
+total days lived：生日當天 Day 0
+初始畫面顯示 0 歲與 0 年／月／日、0 天（與實作一致）
+```
+
+### 0.5 B3D QA
+
+```text
+npm run build — Pass
+validate-seo-head — Pass（460）
+validate-sitemap — Pass（375）
+validate-age-calculator-math — Pass（130）
+git diff --check — Pass
+Desktop EN / ZH — Pass
+Mobile portrait EN / ZH — Pass
+Mobile landscape EN / ZH — Pass
+Content / SEO / Related Tools — Pass
+```
+
+> 以下章節保留產品意圖與文案；若與 §0 衝突，**以 §0 與目前程式實作為準**。
 
 ---
 
@@ -127,14 +197,12 @@ LocalStorage
 
 出生日期欄位本身負責引導使用者操作。
 
-初始狀態不顯示：
+初始狀態顯示（與實作一致）：
 
 ```text
 0 年 0 個月 0 天
 已走過 0 天
 ```
-
-避免讓未輸入狀態看起來像正式計算結果。
 
 ### 3.2 有效結果
 
@@ -214,20 +282,14 @@ LocalStorage
 
 ## 5. 出生日期輸入
 
-### 5.1 智慧日期欄位
+### 5.1 Desktop：單一智慧日期欄位
 
-出生日期使用單一智慧輸入欄位，不拆成年、月、日三個欄位。
+Desktop 出生日期使用單一智慧輸入欄位。
 
 欄位格式：
 
 ```text
 [ 出生日期    YYYY / MM / DD    日曆圖示 ]
-```
-
-輸入後：
-
-```text
-[ 出生日期    1995 / 08 / 12    日曆圖示 ]
 ```
 
 欄位沿用 Timiva 共用輸入語言：
@@ -239,7 +301,22 @@ Label 固定放在欄位內
 不把 Label 放到欄位上方
 ```
 
-### 5.2 連續數位輸入
+### 5.1b Mobile：Year / Month / Day 三欄
+
+Mobile（portrait / landscape）在 bottom sheet 內使用三欄：
+
+```text
+年 YYYY · 月 MM · 日 DD
+```
+
+```text
+支援數字輸入
+Year 滿 4 碼、Month 可判斷時 auto-advance
+invalid icon 可多欄同時顯示
+不使用 Desktop 單一 masked input 作為 Mobile 主輸入
+```
+
+### 5.2 連續數位輸入（Desktop）
 
 使用者可以直接輸入：
 
@@ -253,24 +330,11 @@ Label 固定放在欄位內
 1995 / 08 / 12
 ```
 
-輸入過程：
-
-```text
-1
-19
-1995
-1995 / 0
-1995 / 08
-1995 / 08 / 1
-1995 / 08 / 12
-```
-
 使用者不需要：
 
 ```text
 自行輸入斜線
 手動切換欄位
-選擇很久以前的年份
 ```
 
 ### 5.3 支援貼上
@@ -290,42 +354,36 @@ Label 固定放在欄位內
 1995 / 08 / 12
 ```
 
-不自動猜測以下模糊格式：
-
-```text
-950812
-1995812
-```
-
 出生年份必須為完整四位數。
 
-### 5.4 日期選擇器
+### 5.4 日期選擇器（Desktop calendar popover）
 
 欄位最右側保留日期選擇器入口。
 
-日期選擇器是輔助方式，直接輸入數位是主要快速方式。
-
-出生日期選擇器：
-
 ```text
+calendar popover
+month / year select
 不得選擇今天之後的日期
 不存在的日期不可選
+與 As-of calendar 互斥（不可同時開啟）
 ```
+
+日期選擇器是輔助方式；Desktop 直接輸入數位是主要快速方式。
 
 ### 5.5 自動更新
 
-完整輸入 8 位數且日期有效後：
+完整且有效日期後：
 
 ```text
 自動更新主結果
 不需要按計算
 ```
 
-不足 8 位數時視為輸入中，不立即顯示錯誤。
+不足完整日期時視為輸入中，不顯示 invalid icon。
 
 ---
 
-## 6. 計算日期
+## 6. 計算日期（As-of）
 
 ### 6.1 預設狀態
 
@@ -350,85 +408,64 @@ As of today
 中文：
 
 ```text
-截至 2030 / 01 / 01
+截至 2026 / 07 / 01
 ```
 
 英文：
 
 ```text
-As of 2030 / 01 / 01
+As of 2026 / 07 / 01
 ```
 
-允許使用者查看自己在過去或未來指定日期的年齡。
+As-of 範圍：
 
-計算日期不得早於出生日期。
+```text
+1900-01-01 ～ today
+不可選擇未來日期
+```
+
+若 as-of 早於 birth date：
+
+```text
+結果歸零
+顯示 as-of invalid 狀態
+```
 
 ---
 
 ## 7. Desktop 計算日期操作
 
-桌機版點擊「截至今天／截至某日」後，在原位置直接修改。
-
-展開概念：
+桌機版點擊「截至今天／截至某日」後，開啟 As-of calendar popover。
 
 ```text
-[ 計算日期    2030 / 01 / 01    日曆圖示 ]
-
-回到今天
-```
-
-規則：
-
-```text
-使用與出生日期相同的智慧日期輸入
-支援連續 8 位數輸入
-支援完整日期貼上
-保留日期選擇器
+與 birth calendar 使用同一套 desktop calendar factory
+month / year select
+與 birth calendar 互斥
 有效後立即更新結果
-日期不是今天時顯示「回到今天」
+日期不是 today 時，日期旁顯示 back icon
+點 back icon → 回到 As of today / 截至今天
+點 back icon 不會同時打開 calendar
 不開啟 Bottom Sheet
+不做第二個完整智慧日期文字欄位作為主編輯方式
 ```
 
 ---
 
 ## 8. Mobile 計算日期操作
 
-手機版點擊「截至今天／截至某日」後，開啟既有 Timiva Mobile Sheet。
-
-不建立新的 Sheet 視覺規格。
-
-### 8.1 Sheet 內容
+手機版 As-of 使用原生 `type="date"` picker。
 
 ```text
-[ 計算日期    YYYY / MM / DD    日曆圖示 ]
-
-回到今天                      套用
-```
-
-英文：
-
-```text
-[ Calculation date    YYYY / MM / DD    Calendar ]
-
-Back to today                  Apply
-```
-
-### 8.2 Sheet 規則
-
-```text
-不放額外標題
-固定 Label 放在欄位內
-主要動作「套用」使用膠囊按鈕
-「回到今天」使用純文字次要按鈕
-點擊背景可關閉
-背景關閉時不套用尚未確認的修改
-關閉後解除 scroll lock
-使用既有 overlay / backdrop / safe-area / action-row baseline
+不使用 Year / Month / Day 三欄編輯 As-of
+不顯示 As-of back icon
+原生 clear／空值時回到 today
+範圍：min 1900-01-01、max today
+沿用既有 Mobile Sheet（出生日期三欄 + As-of native）
 ```
 
 Mobile portrait 使用 Bottom Sheet。
 
-Mobile landscape 使用既有 compact sheet / panel 規則，不重新發明版型。
+Mobile landscape 使用既有 compact sheet 規則，不重新發明版型。
 
 ---
 
@@ -440,36 +477,20 @@ Mobile landscape 使用既有 compact sheet / panel 規則，不重新發明版�
 
 ```text
 顯示 0 歲
-不顯示錯誤
-不顯示精準年齡
-不顯示生活總天數
+精準年齡與總天數顯示 0 狀態文案
+不顯示 invalid icon
 ```
 
-### 9.2 輸入中
+### 9.2 輸入中（incomplete）
 
-不足 8 位數時：
-
-```text
-視為正在輸入
-不顯示錯誤
-不重新計算
-```
-
-初次輸入時主結果維持 `0 歲`。
-
-已有有效結果後重新編輯時，可暫時保留上一個有效結果，避免主畫面隨每次按鍵跳動。
-
-若離開欄位後仍不完整：
+日期尚未完整時：
 
 ```text
-出生日期視為尚未完成
-主結果回到 0 歲
-精準年齡與總天數隱藏
+結果維持 0
+不顯示 invalid icon
 ```
 
 ### 9.3 完整且有效
-
-輸入完成且日期成立時：
 
 ```text
 立即更新主結果
@@ -482,58 +503,29 @@ Mobile landscape 使用既有 compact sheet / panel 規則，不重新發明版�
 
 ```text
 1995 / 02 / 30
+2025 / 02 / 29（非閏年）
+2030 / 01 / 01（未來）
+1899 / 12 / 31（早於 1900）
 ```
-
-不要自動修正為：
 
 ```text
-1995 / 02 / 28
+結果歸零（不保留上一個 valid 結果）
+顯示 invalid icon
+不自動修正日期
 ```
 
-避免系統在使用者不知情時改變日期。
-
-初版錯誤呈現先採：
-
-```text
-欄位邊框或狀態色改變
-最右側顯示警示圖示
-不更新主結果
-```
-
-欄位內不塞入完整「日期無效」文字，避免手機空間不足。
-
-若實機測試後仍不夠清楚，可以在欄位下方加入極短提示：
-
-```text
-日期無效
-```
-
-但正常狀態不保留額外說明行。
-
-輔助技術仍須取得完整錯誤資訊：
-
-```text
-aria-invalid
-aria-describedby
-screen-reader error message
-```
+B3C 已修正：invalid birth 路徑不得因殘留函式呼叫中斷 `renderZeroState()`。
 
 ### 9.5 清除
 
-MVP 不在欄位內預設加入 `×` 清除按鈕，避免欄位過度擁擠。
-
-使用者可以進入欄位後刪除日期。
+MVP 不在欄位內預設加入 `×` 清除按鈕。
 
 出生日期清空後：
 
 ```text
-回到 0 歲
-隱藏精準年齡
-隱藏生活總天數
-計算日期回到今天
+回到 0 歲與 0 狀態文案
+計算日期維持既有 as-of（清空 birth 不強制重置 as-of）
 ```
-
-實機驗收後若清除不方便，再考慮只在聚焦狀態顯示清除控制。
 
 ---
 
@@ -543,25 +535,20 @@ MVP 不在欄位內預設加入 `×` 清除按鈕，避免欄位過度擁擠。
 
 ```text
 使用西曆 Gregorian calendar
-接受四位數年份
-不得晚於今天
+四位數年份
+有效範圍：1900 ～ today
+不得晚於 today
+1900 / 01 / 01 → valid
+1899 / 12 / 31 → invalid
 ```
 
-建議支援：
+### 10.2 計算日期（As-of）
 
 ```text
-0001–9999
-```
-
-技術實作需避免 JavaScript 對 `0–99` 年的自動轉換問題。
-
-### 10.2 計算日期
-
-```text
-可以是今天
-可以是過去日期
-可以是未來日期
-不得早於出生日期
+可以是 today
+可以是過去日期（≥ 1900-01-01）
+不可是未來日期
+若早於 birth date → 結果 0 + as-of invalid
 ```
 
 ---
@@ -755,14 +742,15 @@ MVP 不加入 URL sharing 或 Native Share。
 
 ## 14. 主畫面狀態表
 
-| 狀態 | 主結果 | 精準年齡 | 總天數 | 出生日期欄位 | 計算日期 |
-|---|---|---|---|---|---|
-| 初始 | `0 歲` | 隱藏 | 隱藏 | 空白提示 | 截至今天 |
-| 輸入中 | `0 歲` 或上一個有效結果 | 不更新 | 不更新 | 部分格式化 | 維持 |
-| 有效日期 | 完整歲數 | 顯示 | 顯示 | 正式日期 | 今天或指定日期 |
-| 無效日期 | 不更新 | 不更新 | 不更新 | Invalid 狀態 | 維持 |
-| 清除 | `0 歲` | 隱藏 | 隱藏 | 空白提示 | 回到今天 |
-| 自訂計算日期 | 重新計算 | 重新計算 | 重新計算 | 維持 | 截至指定日期 |
+| 狀態 | 主結果 | 精準年齡 / 總天數 | 出生日期 | 計算日期 |
+|---|---|---|---|---|
+| 初始 | `0 歲` | 顯示 0 狀態文案 | 空白提示 | 截至今天 |
+| incomplete | `0 歲` | 0 狀態文案 | 部分輸入 | 維持 |
+| 有效日期 | 完整歲數 | 顯示計算結果 | 正式日期 | 今天或指定日期 |
+| invalid birth | `0 歲` | 0 狀態文案 + invalid icon | Invalid | 維持 |
+| as-of &lt; birth | `0 歲` | 0 狀態文案 + as-of invalid | 維持有效 birth | 指定日期 |
+| 清除 birth | `0 歲` | 0 狀態文案 | 空白提示 | 維持 as-of |
+| 自訂 as-of（有效） | 重新計算 | 重新計算 | 維持 | 截至指定日期；非 today 顯示 back icon（Desktop） |
 
 ---
 
@@ -1188,64 +1176,53 @@ Utility control baseline
 
 ## 25. 建議開發流程
 
-Age Calculator 為新工具 MVP，建議列為 L 層任務。
+Age Calculator 為新工具 MVP，已完成 standalone 批次：
 
 ```text
 產品規格完成
-→ Wireframe / product flow
-→ Cursor Plan-first repository audit
-→ Owner Plan Review
-→ B0 V2 tool page scaffold
-→ B1A About / How to / FAQ / Related Tools
-→ B1B upper static visual
-→ B2A smart date input
-→ B2B calculation logic
-→ B2C calculation-date desktop / mobile interaction
-→ Full QA
-→ Targeted Agent Review
-→ Owner real-device acceptance
-→ standalone-tool commit
-→ Post-tool Link Integration
+→ Plan-first / Owner Review
+→ B0–B1B scaffold / upper visual
+→ B2A birth input（Desktop masked + Mobile YMD）
+→ B2B Desktop birth calendar
+→ B2C As-of（Desktop calendar + Mobile native）
+→ B3 Final QA
+→ B3C invalid birth reset bugfix（f5416b6）
+→ B3D Final QA Re-check（Pass）
+→（下一步）Post-tool Link Integration
 → Link QA / commit
 → push / deploy checkpoint
-```
-
-Plan-first 階段需確認：
-
-```text
-實際可重用的智慧輸入元件
-原生日期選擇器與自訂文字輸入的同步方式
-Mobile Sheet 實際共用元件
-最低年份與瀏覽器相容性
-精準年齡演算法測試案例
-手機鍵盤與 visualViewport 行為
-Desktop inline calculation-date interaction
 ```
 
 ---
 
 ## 26. Definition of Done
 
+### Standalone（已完成 · B3D）
+
 ```text
-出生日期可直接輸入 8 位數
-輸入自動格式化
-日期選擇器正常
-完整歲數正確
-精準年齡正確
-總天數正確
+Desktop birth 單一 input + calendar
+Mobile birth 三欄 + auto-advance
+完整歲數 / 精準年齡 / 總天數正確
 2 月 29 日規則正確
-計算日期預設今天
-Desktop 可原位置修改計算日期
-Mobile 使用既有 Bottom Sheet
-重新整理不儲存資料
-Mobile portrait 通過
-Mobile landscape 通過
-Desktop 通過
+As-of 預設 today
+Desktop As-of calendar + back icon
+Mobile As-of native date picker（無 back icon）
+invalid birth 歸零
+empty / incomplete / as-of-before-birth 行為正確
+Mobile portrait / landscape / Desktop 通過
 EN / ZH 通過
-About / How to / FAQ 完成
-FAQ JSON-LD 完成
-Related Tools 完成
-Build 通過
-Owner 實機驗收完成
+About / How to / FAQ / FAQ JSON-LD / Related Tools 完成
+build / seo-head / sitemap / age-calculator-math / diff-check 通過
+B3D Final QA Re-check：Pass
+```
+
+### 尚未完成
+
+```text
+Post-tool Link Integration
+Owner 授權後的 push / deploy
+```
+
+```text
 未經 Owner 授權不 commit / push / deploy
 ```

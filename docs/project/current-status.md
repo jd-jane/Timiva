@@ -1,8 +1,8 @@
 # Timiva 專案現況
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
-> 更新日期：2026-07-05
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、四個 V1 tools + Year Progress production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、Age Calculator 產品規格完成。
+> 更新日期：2026-07-10
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、四個 V1 tools + Year Progress production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、Age Calculator standalone 實作完成與 B3D Final QA Re-check 通過（HEAD `f5416b6`）。
 
 ---
 
@@ -21,9 +21,9 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **Timiva V1 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** 四個 V1 工具（含 Year Progress）已上線；V1 SEO technical closeout 已完成；**Age Calculator**（第五個工具）產品規格已完成，Ready for Plan-first。Production baseline：`c5c0a22`（docs closeout；implementation `b5b150f`）。 |
+| Current session status | **Timiva V1 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** 四個 V1 工具（含 Year Progress）已上線；V1 SEO technical closeout 已完成；**Age Calculator**（第五個工具）standalone 實作完成，B3D Final QA Re-check 通過（`f5416b6`），尚未 Post-tool Link Integration / push / deploy。Production baseline：`c5c0a22`（docs closeout；implementation `b5b150f`）。 |
 
-### 1.1 Current work tracks（2026-07-05）
+### 1.1 Current work tracks（2026-07-10）
 
 **Release track（production）：**
 
@@ -36,9 +36,9 @@ V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22
 **Product development track：**
 
 ```text
-Age Calculator：Product specification complete · Ready for repository-aware Plan-first
-Implementation not started · Not committed · Not pushed · Not deployed
-下一步：Age Calculator Plan-first（僅計劃，不實作）
+Age Calculator：Standalone 完成 · B3D Final QA Re-check Pass（HEAD f5416b6）
+尚未 Post-tool Link Integration · 尚未 push / deploy
+下一步：Post-tool Link Integration（Owner 授權後）
 ```
 
 ---
@@ -319,7 +319,7 @@ Do not refactor Event Countdown themes in unrelated tasks
 
 ## 7. Age Calculator current status
 
-**Product specification complete · Ready for repository-aware Plan-first · Implementation not started · Not committed · Not pushed · Not deployed**
+**Standalone 實作完成 · B3D Final QA Re-check 通過 · No blocking issues found · 尚未 Post-tool Link Integration · 尚未 push / deploy**
 
 Timiva **第五個工具**。
 
@@ -336,14 +336,45 @@ Category:
 Important Dates / 重要日子
 ```
 
-Core MVP summary:
+Commits:
 
 ```text
-完整歲數 · 精準年／月／日 · 已走過總天數
-出生日期智慧輸入（8 位連續數字、貼上、日期選擇器）
-計算日期預設今天；Desktop 原位置修改；Mobile 既有 Mobile Sheet
-初始狀態 0 歲；2 月 29 日非閏年週年規則；自然日曆算法；Day 0
+cb09fc6 — feat: add Age Calculator B1B
+72c3d58 — feat: add Age Calculator B2A
+fb2d21f — feat: add Age Calculator B2B
+cc31c79 — feat: add Age Calculator B2C
+f5416b6 — fix: reset Age Calculator invalid birth state
+```
+
+Core shipped features:
+
+```text
+Desktop birth：單一智慧 input + calendar popover（month / year select）
+Mobile birth：Year / Month / Day 三欄 + auto-advance
+As-of 預設 today
+Desktop As-of calendar + 非 today 時 back icon
+Mobile As-of 原生 date picker（無 back icon）
+invalid birth 歸零（B3C 已修 ReferenceError）
+empty / incomplete → 0、無 invalid icon
+as-of earlier than birth → 0 + as-of invalid
+出生年份 1900～today；leap day 2/29 規則
+自然日曆年／月／日；Day 0
+EN / ZH · About / How to / Common uses / FAQ / FAQ JSON-LD · Related Tools（3）
 MVP 無 LocalStorage、無分享、無星座／生肖／生命統計
+```
+
+B3D QA（2026-07-10）：
+
+```text
+npm run build — Pass
+validate-seo-head — Pass（460）
+validate-sitemap — Pass（375）
+validate-age-calculator-math — Pass（130）
+git diff --check — Pass
+Desktop EN / ZH — Pass
+Mobile portrait EN / ZH — Pass
+Mobile landscape EN / ZH — Pass
+Content / SEO / Related Tools — Pass
 ```
 
 Primary specification:
@@ -356,15 +387,16 @@ docs/tools/age-calculator/README.md
 Protected / no-go boundary:
 
 ```text
-尚未實作 — 不得建立 route、component、preview、計算邏輯或 validation script
+不得在未授權任務中改寫 Age Calculator 已驗收核心邏輯
 不得修改 Header、Footer、BaseLayout、Mobile Sheet baseline、既有工具程式
-不得在未核准 Plan-first 前開始 implementation
+尚未 Post-tool Link Integration — 不得自行改 Home / All Tools / 其他工具 Related Tools
 ```
 
 Next step:
 
 ```text
-Owner 確認文件同步後 → Age Calculator repository-aware Plan-first task
+Owner 授權後 → Age Calculator Post-tool Link Integration
+→ Link QA / commit → push / deploy checkpoint
 ```
 
 ---
@@ -780,6 +812,7 @@ EventCountdownV2 core / theme / share / quick templates
 Date Range calculation / date selection core
 Countdown Timer accepted implementation
 Year Progress accepted implementation（after Owner sign-off）
+Age Calculator accepted standalone implementation（after B3D；Link Integration 另開任務）
 ToolAdSlot visual style
 ```
 
@@ -811,14 +844,14 @@ Countdown Timer V2 — Production · site-integrated
 Year Progress V2 — Production · site-integrated
 GA4 + Basic Consent — deployed on timiva.app
 V1 SEO technical closeout — complete（docs `c5c0a22`）
-Age Calculator — Product spec complete · Ready for Plan-first
+Age Calculator — Standalone complete · B3D QA Pass（f5416b6）· 尚未 Link Integration / push / deploy
 ```
 
 Next workflow:
 
 ```text
-Age Calculator repository-aware Plan-first（僅計劃，不實作）
-Owner 確認本次文件同步後啟動
+Age Calculator Post-tool Link Integration（Owner 授權後）
+→ Link QA / commit → push / deploy checkpoint
 ```
 
 Optional follow-up:
@@ -845,8 +878,8 @@ Phase A：重大變更、deploy 或 locked components 修改仍需 Owner 明確�
 Recommended order:
 
 ```text
-1. Age Calculator repository-aware Plan-first
-2. Owner Plan Review → implementation batches（尚未開始）
+1. Age Calculator Post-tool Link Integration
+2. Age Calculator Link QA / commit → push / deploy
 3. Open Graph / Twitter Card（deferred SEO growth）
 4. WebApplication schema（deferred）
 5. Root HTTP 301 decision（deferred）
@@ -951,7 +984,7 @@ Timiva V1 已在正式網域 https://timiva.app 提供服務。
 已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2、Year Progress V2（含站內連結整合）。
 GA4 privacy-first Basic Consent 已在 timiva.app 驗證通過。
 V1 SEO technical closeout 已完成（Batch 1–3 production PASS；docs `c5c0a22`）。
-Age Calculator 產品規格已完成，Ready for Plan-first；尚未實作。
+Age Calculator standalone 實作完成，B3D Final QA Re-check 通過（`f5416b6`）；尚未 Post-tool Link Integration / push / deploy。
 
 規格與流程：docs/tools/、docs/workflow/
 Task briefs 與 validation reports 在 local-docs/，不納入 Git tracked。
