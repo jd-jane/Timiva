@@ -1137,8 +1137,8 @@ function initAgeCalculator(root: HTMLElement): void {
 			const invalidFields = resolveInvalidBirthFields(segments, today);
 			setDesktopInvalidIcon(invalidFields.length > 0);
 			setMobileInvalidFields(invalidFields);
+			// mobile As-of 已改 native picker；as-of invalid 只走 setDesktopAsOfInvalidIcon
 			setDesktopAsOfInvalidIcon(false);
-			setMobileAsOfInvalidFields([]);
 			renderZeroState();
 			return;
 		}
