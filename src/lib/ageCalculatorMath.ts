@@ -1036,3 +1036,23 @@ export function getTodayCalendarDate(now = new Date()): CalendarDate {
 		day: now.getDate(),
 	};
 }
+
+/** Birth calendar selectable range: 1900-01-01 through today inclusive. */
+export function isSelectableBirthCalendarDate(
+	date: CalendarDate,
+	today: CalendarDate = getTodayCalendarDate(),
+): boolean {
+	if (!isValidBirthDate(date.year, date.month, date.day, today)) {
+		return false;
+	}
+
+	return compareCalendarDates(date, today) <= 0;
+}
+
+export function segmentsFromCalendarDate(date: CalendarDate): DateSegments {
+	return withSegmentFlags({
+		year: String(date.year).padStart(4, "0"),
+		month: String(date.month).padStart(2, "0"),
+		day: String(date.day).padStart(2, "0"),
+	});
+}

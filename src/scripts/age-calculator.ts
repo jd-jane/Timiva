@@ -7,12 +7,16 @@ import {
 	getTodayCalendarDate,
 	isSegmentsComplete,
 	isSegmentsEmpty,
+	isSelectableBirthCalendarDate,
+	MIN_BIRTH_YEAR,
 	normalizeSegmentsForBlur,
 	parseBirthDateSegments,
 	resolveInvalidBirthFields,
+	segmentsFromCalendarDate,
 	shouldAutoAdvanceMobileMonth,
 	shouldAutoAdvanceMobileYear,
 	type AgeResult,
+	type CalendarDate,
 	type DateSegments,
 	type InvalidBirthField,
 	type SegmentKey,
@@ -22,6 +26,7 @@ type AgeCalculatorLocale = "en" | "zh";
 
 type AgeCalculatorClientI18n = {
 	locale: AgeCalculatorLocale;
+	intlLocale: string;
 	primaryResultUnit: string;
 	exactAgeZero: string;
 	daysLivedZero: string;
@@ -30,6 +35,11 @@ type AgeCalculatorClientI18n = {
 	invalidBirthDate: string;
 	birthDatePlaceholder: string;
 	birthDateDesktopPlaceholder: string;
+	calendarLabel: string;
+	openCalendarAriaLabel: string;
+	previousMonth: string;
+	nextMonth: string;
+	weekdays: string[];
 };
 
 const initializedRoots = new WeakSet<HTMLElement>();
@@ -769,6 +779,464 @@ function initAgeCalculator(root: HTMLElement): void {
 				),
 			);
 			maybeAutoAdvanceMobileField(field, previousValue, pasted, input);
+		});
+	}
+
+	// Desktop birth-date calendar — fixed 對齊結果區；month/year 快速選擇
+	const calendarToggle = root.querySelector<HTMLButtonElement>(
+		"[data-acv2-calendar-toggle]",
+	);
+	const calendarPopover = root.querySelector<HTMLElement>(
+		"[data-acv2-calendar-popover]",
+	);
+	const calendarGrid = root.querySelector<HTMLElement>("[data-acv2-calendar-grid]");
+	const calendarMonthSelect = root.querySelector<HTMLSelectElement>(
+		"[data-acv2-calendar-month-select]",
+	);
+	const calendarYearSelect = root.querySelector<HTMLSelectElement>(
+		"[data-acv2-calendar-year-select]",
+	);
+	const calendarPrev = root.querySelector<HTMLButtonElement>(
+		"[data-acv2-calendar-prev]",
+	);
+	const calendarNext = root.querySelector<HTMLButtonElement>(
+		"[data-acv2-calendar-next]",
+	);
+	const resultGroup = root.querySelector<HTMLElement>(".preview-tool-result-group");
+	const resultBlock = root.querySelector<HTMLElement>(".preview-tool-result-block");
+
+	if (
+		calendarToggle &&
+		calendarPopover &&
+		calendarGrid &&
+		calendarMonthSelect &&
+		calendarYearSelect &&
+		calendarPrev &&
+		calendarNext
+	) {
+		const POPOVER_GAP = 16;
+		const INPUT_GAP = 8;
+		const VIEWPORT_PAD = 12;
+		const POPOVER_NUDGE_X = 28;
+		let viewYear = getTodayCalendarDate().year;
+		let viewMonth = getTodayCalendarDate().month;
+		let isCalendarOpen = false;
+		let yearOptionsReady = false;
+
+		const monthFormatter = new Intl.DateTimeFormat(i18n.intlLocale, {
+			month: "short",
+		});
+
+		const formatMonthOption = (month: number) =>
+			monthFormatter.format(new Date(2000, month - 1, 1));
+
+		const maxSelectableMonth = (year: number) => {
+			const today = getTodayCalendarDate();
+			return year >= today.year ? today.month : 12;
+		};
+
+		const clampViewToSelectableRange = () => {
+			const today = getTodayCalendarDate();
+
+			if (viewYear < MIN_BIRTH_YEAR) {
+				viewYear = MIN_BIRTH_YEAR;
+			}
+
+			if (viewYear > today.year) {
+				viewYear = today.year;
+			}
+
+			const maxMonth = maxSelectableMonth(viewYear);
+
+			if (viewMonth < 1) {
+				viewMonth = 1;
+			}
+
+			if (viewMonth > maxMonth) {
+				viewMonth = maxMonth;
+			}
+		};
+
+		const canGoPrevMonth = () =>
+			viewYear > MIN_BIRTH_YEAR || (viewYear === MIN_BIRTH_YEAR && viewMonth > 1);
+
+		const canGoNextMonth = () => {
+			const today = getTodayCalendarDate();
+			return (
+				viewYear < today.year ||
+				(viewYear === today.year && viewMonth < today.month)
+			);
+		};
+
+		const ensureYearOptions = () => {
+			const today = getTodayCalendarDate();
+
+			if (yearOptionsReady && calendarYearSelect.dataset.maxYear === String(today.year)) {
+				return;
+			}
+
+			calendarYearSelect.innerHTML = "";
+
+			for (let year = today.year; year >= MIN_BIRTH_YEAR; year -= 1) {
+				const option = document.createElement("option");
+				option.value = String(year);
+				option.textContent = String(year);
+				calendarYearSelect.appendChild(option);
+			}
+
+			calendarYearSelect.dataset.maxYear = String(today.year);
+			yearOptionsReady = true;
+		};
+
+		const syncMonthOptions = () => {
+			const maxMonth = maxSelectableMonth(viewYear);
+			calendarMonthSelect.innerHTML = "";
+
+			for (let month = 1; month <= 12; month += 1) {
+				const option = document.createElement("option");
+				option.value = String(month);
+				option.textContent = formatMonthOption(month);
+				option.disabled = month > maxMonth;
+				calendarMonthSelect.appendChild(option);
+			}
+
+			calendarMonthSelect.value = String(viewMonth);
+		};
+
+		const syncSelects = () => {
+			ensureYearOptions();
+			syncMonthOptions();
+			calendarYearSelect.value = String(viewYear);
+			calendarMonthSelect.value = String(viewMonth);
+			calendarPrev.disabled = !canGoPrevMonth();
+			calendarNext.disabled = !canGoNextMonth();
+		};
+
+		const rectsOverlap = (a: DOMRect, b: DOMRect) =>
+			!(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+
+		const positionPopover = () => {
+			const width = calendarPopover.offsetWidth;
+			const height = calendarPopover.offsetHeight;
+
+			if (width <= 0 || height <= 0) {
+				return;
+			}
+
+			const vw = window.innerWidth;
+			const vh = window.innerHeight;
+			const inputRect = birthCapsule?.getBoundingClientRect();
+			const resultRect = (resultBlock ?? resultGroup)?.getBoundingClientRect();
+
+			let left = VIEWPORT_PAD;
+			let top = VIEWPORT_PAD;
+
+			if (inputRect) {
+				// 優先：生日 input 上方，水平對齊 input 中心後再略往右
+				left = inputRect.left + (inputRect.width - width) / 2 + POPOVER_NUDGE_X;
+				top = inputRect.top - INPUT_GAP - height;
+
+				// 上方空間不足時，貼近 input 上方盡量往上放（仍不壓住 input）
+				if (top < VIEWPORT_PAD) {
+					top = VIEWPORT_PAD;
+				}
+
+				// 若仍會壓到 input，改放 input 右側／左側，垂直貼近 input 上緣
+				let popRect = new DOMRect(left, top, width, height);
+
+				if (rectsOverlap(popRect, inputRect)) {
+					const rightCandidate = inputRect.right + INPUT_GAP;
+					const leftCandidate = inputRect.left - INPUT_GAP - width;
+
+					if (rightCandidate + width <= vw - VIEWPORT_PAD) {
+						left = rightCandidate;
+					} else if (leftCandidate >= VIEWPORT_PAD) {
+						left = leftCandidate;
+					}
+
+					top = Math.max(
+						VIEWPORT_PAD,
+						Math.min(inputRect.top, vh - height - VIEWPORT_PAD),
+					);
+					popRect = new DOMRect(left, top, width, height);
+				}
+
+				// 盡量不要壓住主結果數字
+				if (resultRect && rectsOverlap(popRect, resultRect)) {
+					const aboveResult = resultRect.top - POPOVER_GAP - height;
+					const besideRight = resultRect.right + POPOVER_GAP;
+					const besideLeft = resultRect.left - POPOVER_GAP - width;
+
+					if (aboveResult >= VIEWPORT_PAD && aboveResult + height <= inputRect.top - 4) {
+						top = aboveResult;
+					} else if (besideRight + width <= vw - VIEWPORT_PAD) {
+						left = besideRight;
+						top = Math.max(
+							VIEWPORT_PAD,
+							Math.min(inputRect.top - height - INPUT_GAP, vh - height - VIEWPORT_PAD),
+						);
+					} else if (besideLeft >= VIEWPORT_PAD) {
+						left = besideLeft;
+						top = Math.max(
+							VIEWPORT_PAD,
+							Math.min(inputRect.top - height - INPUT_GAP, vh - height - VIEWPORT_PAD),
+						);
+					}
+				}
+			} else if (resultRect) {
+				left = resultRect.right + POPOVER_GAP;
+				top = resultRect.top + (resultRect.height - height) / 2;
+			}
+
+			top = Math.max(VIEWPORT_PAD, Math.min(top, vh - height - VIEWPORT_PAD));
+			left = Math.max(VIEWPORT_PAD, Math.min(left, vw - width - VIEWPORT_PAD));
+
+			calendarPopover.style.left = `${Math.round(left)}px`;
+			calendarPopover.style.top = `${Math.round(top)}px`;
+		};
+
+		const getSelectedBirth = (): CalendarDate | null =>
+			parseBirthDateSegments(sharedSegments, getTodayCalendarDate());
+
+		const renderCalendar = () => {
+			clampViewToSelectableRange();
+			syncSelects();
+
+			const today = getTodayCalendarDate();
+			const selected = getSelectedBirth();
+			calendarGrid.innerHTML = "";
+
+			const firstWeekday = (new Date(viewYear, viewMonth - 1, 1).getDay() + 6) % 7;
+			const daysCount = new Date(viewYear, viewMonth, 0).getDate();
+
+			for (let index = 0; index < firstWeekday; index += 1) {
+				const emptyCell = document.createElement("div");
+				emptyCell.className = "calendar-cell calendar-cell--empty";
+				emptyCell.setAttribute("aria-hidden", "true");
+				calendarGrid.appendChild(emptyCell);
+			}
+
+			for (let day = 1; day <= daysCount; day += 1) {
+				const cellDate: CalendarDate = {
+					year: viewYear,
+					month: viewMonth,
+					day,
+				};
+				const button = document.createElement("button");
+				button.type = "button";
+				button.className = "calendar-day";
+				button.textContent = String(day);
+
+				if (
+					cellDate.year === today.year &&
+					cellDate.month === today.month &&
+					cellDate.day === today.day
+				) {
+					button.classList.add("is-today");
+				}
+
+				if (
+					selected &&
+					selected.year === cellDate.year &&
+					selected.month === cellDate.month &&
+					selected.day === cellDate.day
+				) {
+					button.classList.add("is-selected");
+				}
+
+				if (!isSelectableBirthCalendarDate(cellDate, today)) {
+					button.disabled = true;
+				} else {
+					button.addEventListener("click", () => {
+						const nextSegments = segmentsFromCalendarDate(cellDate);
+						sharedSegments = nextSegments;
+						syncAllDisplays(nextSegments, null, null, true);
+						evaluate(nextSegments);
+						closeCalendar();
+					});
+				}
+
+				calendarGrid.appendChild(button);
+			}
+
+			if (isCalendarOpen) {
+				positionPopover();
+			}
+		};
+
+		const setViewFromSegments = () => {
+			const selected = getSelectedBirth();
+
+			if (selected) {
+				viewYear = selected.year;
+				viewMonth = selected.month;
+				clampViewToSelectableRange();
+				return;
+			}
+
+			const today = getTodayCalendarDate();
+			viewYear = today.year;
+			viewMonth = today.month;
+		};
+
+		const openCalendar = () => {
+			setViewFromSegments();
+			isCalendarOpen = true;
+			calendarPopover.hidden = false;
+			calendarPopover.setAttribute("aria-hidden", "false");
+			calendarToggle.setAttribute("aria-expanded", "true");
+			renderCalendar();
+			requestAnimationFrame(() => {
+				positionPopover();
+			});
+		};
+
+		const closeCalendar = () => {
+			if (!isCalendarOpen) {
+				return;
+			}
+
+			isCalendarOpen = false;
+			calendarPopover.hidden = true;
+			calendarPopover.setAttribute("aria-hidden", "true");
+			calendarToggle.setAttribute("aria-expanded", "false");
+			calendarPopover.style.left = "";
+			calendarPopover.style.top = "";
+		};
+
+		const toggleCalendar = () => {
+			if (isCalendarOpen) {
+				closeCalendar();
+				return;
+			}
+
+			openCalendar();
+		};
+
+		calendarToggle.addEventListener("click", (event) => {
+			event.preventDefault();
+			event.stopPropagation();
+			toggleCalendar();
+		});
+
+		calendarPopover.addEventListener("pointerdown", (event) => {
+			event.stopPropagation();
+		});
+
+		calendarMonthSelect.addEventListener("change", () => {
+			const nextMonth = Number(calendarMonthSelect.value);
+
+			if (!Number.isInteger(nextMonth) || nextMonth < 1 || nextMonth > 12) {
+				return;
+			}
+
+			viewMonth = nextMonth;
+			clampViewToSelectableRange();
+			renderCalendar();
+		});
+
+		calendarYearSelect.addEventListener("change", () => {
+			const nextYear = Number(calendarYearSelect.value);
+			const today = getTodayCalendarDate();
+
+			if (
+				!Number.isInteger(nextYear) ||
+				nextYear < MIN_BIRTH_YEAR ||
+				nextYear > today.year
+			) {
+				return;
+			}
+
+			viewYear = nextYear;
+			clampViewToSelectableRange();
+			renderCalendar();
+		});
+
+		calendarPrev.addEventListener("click", () => {
+			if (!canGoPrevMonth()) {
+				return;
+			}
+
+			viewMonth -= 1;
+
+			if (viewMonth < 1) {
+				viewMonth = 12;
+				viewYear -= 1;
+			}
+
+			clampViewToSelectableRange();
+			renderCalendar();
+		});
+
+		calendarNext.addEventListener("click", () => {
+			if (!canGoNextMonth()) {
+				return;
+			}
+
+			viewMonth += 1;
+
+			if (viewMonth > 12) {
+				viewMonth = 1;
+				viewYear += 1;
+			}
+
+			clampViewToSelectableRange();
+			renderCalendar();
+		});
+
+		document.addEventListener("pointerdown", (event) => {
+			if (!isCalendarOpen) {
+				return;
+			}
+
+			const target = event.target;
+
+			if (!(target instanceof Node)) {
+				return;
+			}
+
+			if (
+				calendarPopover.contains(target) ||
+				calendarToggle.contains(target)
+			) {
+				return;
+			}
+
+			closeCalendar();
+		});
+
+		document.addEventListener("keydown", (event) => {
+			if (event.key === "Escape" && isCalendarOpen) {
+				event.preventDefault();
+				closeCalendar();
+				calendarToggle.focus();
+			}
+		});
+
+		window.addEventListener(
+			"resize",
+			() => {
+				if (isCalendarOpen) {
+					positionPopover();
+				}
+			},
+			{ passive: true },
+		);
+
+		window.addEventListener(
+			"scroll",
+			() => {
+				if (isCalendarOpen) {
+					positionPopover();
+				}
+			},
+			{ passive: true, capture: true },
+		);
+
+		window.matchMedia("(min-width: 768px)").addEventListener("change", (event) => {
+			if (!event.matches && isCalendarOpen) {
+				closeCalendar();
+			}
 		});
 	}
 

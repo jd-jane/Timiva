@@ -24,6 +24,8 @@ import {
 	resolveInvalidBirthFields,
 	shouldAutoAdvanceMobileMonth,
 	shouldAutoAdvanceMobileYear,
+	isSelectableBirthCalendarDate,
+	segmentsFromCalendarDate,
 	segmentsFromPastedText,
 	segmentsFromStreamDigits,
 	splitMonthDayDigits,
@@ -416,6 +418,29 @@ assert(!shouldAutoAdvanceMobileMonth("1"), "month 1 waits for second digit");
 assert(!shouldAutoAdvanceMobileMonth("0"), "month 0 waits for second digit");
 assert(shouldAutoAdvanceMobileMonth("10"), "month 10 auto-advances");
 assert(shouldAutoAdvanceMobileMonth("12"), "month 12 auto-advances");
+
+assert(
+	isSelectableBirthCalendarDate({ year: 1999, month: 1, day: 4 }, FIXED_TODAY),
+	"1999-01-04 selectable",
+);
+assert(
+	!isSelectableBirthCalendarDate({ year: 1899, month: 12, day: 31 }, FIXED_TODAY),
+	"1899 not selectable",
+);
+assert(
+	!isSelectableBirthCalendarDate({ year: 2026, month: 12, day: 31 }, FIXED_TODAY),
+	"future date not selectable",
+);
+assert(
+	isSelectableBirthCalendarDate(FIXED_TODAY, FIXED_TODAY),
+	"today is selectable",
+);
+assert(
+	formatSegmentsNormalized(
+		segmentsFromCalendarDate({ year: 1999, month: 1, day: 4 }),
+	) === "1999 / 01 / 04",
+	"calendar date formats as YYYY / MM / DD",
+);
 
 // Completion rules
 assert(!isSegmentsComplete({ year: "1995", month: "8", day: "" }), "missing day is incomplete");
