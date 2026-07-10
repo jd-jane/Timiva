@@ -657,6 +657,26 @@ FAQ 初稿已確認
 不做項目已確認
 ```
 
+### 16.1 日期輸入工具（條件式）
+
+若工具涉及日期輸入，尤其是快速日期輸入型工具，確認主要輸入時必須閱讀：
+
+```text
+docs/standards/date-input.md
+```
+
+該文件定義 Smart Date Input、Mobile segmented input、純數字推斷、slash / dash 輸入、auto-advance、雙日期欄位一致性與相關 QA baseline。
+
+以下 V1.5 Search Foundation 候選工具可引用此文件作為 **input behavior baseline**：
+
+```text
+Days Between Dates
+Date Calculator / Add or Subtract Days
+Business Days Calculator
+```
+
+Age Calculator 已驗證的日期輸入行為亦以此文件為準；新工具應對齊，而非各自發明一套輸入規則。
+
 ---
 
 ## 17. 新工具完成後檢查清單
@@ -774,3 +794,5 @@ node scripts/validate-tool-utility-control-baseline.mjs
 ```
 
 正式規範：[互動控制規範](../standards/interactive-controls.md)
+
+日期輸入（條件式）：若工具含日期欄位或快速日期輸入，正式規範見 [日期輸入標準](../standards/date-input.md)。

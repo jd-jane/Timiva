@@ -196,7 +196,8 @@ timiva/
 │   │   ├── ad-layout-guidelines.md
 │   │   ├── wireframe-index.md
 │   │   ├── mobile-sheet.md
-│   │   └── interactive-controls.md
+│   │   ├── interactive-controls.md
+│   │   └── date-input.md
 │   ├── workflow/
 │   │   ├── owner-workflow.md
 │   │   ├── agent-review.md
@@ -256,6 +257,7 @@ timiva/
 | [`wireframe-index.md`](standards/wireframe-index.md) | 線稿索引 |
 | [`mobile-sheet.md`](standards/mobile-sheet.md) | Mobile Sheet 共用樣式 |
 | [`interactive-controls.md`](standards/interactive-controls.md) | Global cursor + Utility Capsule 互動 baseline |
+| [`date-input.md`](standards/date-input.md) | 日期輸入互動標準、Smart Date Input、快速日期輸入、Mobile segmented input、雙日期欄位 QA |
 
 ### 8.3 Workflow（`docs/workflow/`）
 
@@ -330,6 +332,7 @@ docs/workflow/new-tool-development.md
 docs/workflow/tool-page-qa.md
 docs/standards/seo-guidelines.md
 docs/tools/<tool>/ 下對應規格
+docs/standards/date-input.md              ← 涉及日期輸入 / 快速日期輸入時
 ```
 
 ### Pre-deploy 任務額外閱讀

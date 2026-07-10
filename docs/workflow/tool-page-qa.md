@@ -76,6 +76,24 @@ flowchart TD
 
 ---
 
+## 3.1 日期輸入 QA（條件式）
+
+若工具包含日期輸入，需對照 [`docs/standards/date-input.md`](../standards/date-input.md) 檢查相關項目：
+
+```text
+[ ] empty / incomplete / valid / invalid 狀態行為正確
+[ ] valid → invalid 是否歸零（結果與衍生狀態）
+[ ] 6 / 7 / 8 碼純數字推斷正確
+[ ] slash / dash 輸入可接受且解析正確
+[ ] 回頭修改 segment 行為穩定（不誤跳、不殘留錯誤值）
+[ ] mobile auto-advance 符合標準（含 Day 欄位例外規則）
+[ ] 雙日期欄位一致性（Start / End 或同等欄位行為對齊）
+```
+
+快速日期輸入型工具（例如 Days Between Dates、Date Calculator、Business Days Calculator）應以該文件為 input behavior baseline，不可只測「能算出結果」。
+
+---
+
 ## 4. 手機直式測試
 
 手機直式是 Timiva 的核心體驗，必須優先測試。
