@@ -393,7 +393,10 @@ Date Range 手機日期按鈕為同型，可含 icon。
 手機直式 bottom sheet：內容上下排列。
 手機橫式第一屏：仍為 mobile pattern；結果區與主要操作按鈕整理成 compact layout，完整呈現在第一屏內；不得套用 desktop inline input（除非 product spec 明確指定）。
 手機橫式 bottom sheet：可改為一列兩欄；不要把直式 sheet 直接壓扁套到橫式。
+手機橫式 bottom sheet / panel 高度應採內容驅動 compact layout，不得直接沿用直式 sheet 高度；若只有一列兩欄，不得撐出大面積空白。
 bottom sheet 開啟時，背景結果內容區整組縮放，但不包含底部主要操作按鈕。
+sheet-open 時，縮放後的結果區須重新定位在 sheet 上方可視區域中，於 Header 與 sheet 頂部之間保持視覺平衡；不可只做 scale 導致結果貼 header，或 sheet 上方出現不自然大空白。
+驗收時對照 Event Countdown、Date Range 等已核准工具的 sheet-open 狀態。
 ```
 
 #### 特殊工具例外

@@ -1591,3 +1591,48 @@ Canonical references: docs/standards/layout-system.md §6.7,
 docs/workflow/tool-page-qa.md §7、§11B,
 docs/workflow/new-tool-development.md §8.2.
 ```
+
+---
+
+## 2026-07-08 — 手機 bottom sheet 開啟狀態的位置與高度補強
+
+### 背景
+
+```text
+Age Calculator B1B regression fix 與 Owner 瀏覽器檢查中，再次發現 sheet-open 狀態的兩類問題：
+只做 scale 但結果區位置錯誤（過度貼近 header 或 sheet 上方大空白）；
+手機橫式 sheet 直接沿用直式高度，撐出大面積空白 panel。
+既有 §6.7 已規範縮放對象，但尚未明確寫入定位基準與 landscape compact panel 高度基準。
+```
+
+### 決策
+
+```text
+一般工具的手機 bottom sheet 開啟狀態，除縮放群組邊界外，必須同時遵守結果區定位基準與 landscape sheet 高度基準。
+```
+
+### 規則
+
+```text
+- bottom sheet 開啟時，背景結果內容區整組縮放後，須重新定位在 sheet 上方可視區域中，於 Header 與 sheet 頂部之間保持視覺平衡。
+- 不可只做 scale，導致結果區過度貼近 header，或 sheet 上方出現不自然大空白。
+- 手機橫式 bottom sheet / panel 高度應採內容驅動 compact layout，不得直接沿用直式 sheet 高度。
+- 若內容只有一列兩欄，不得撐出大面積空白 panel。
+- 新工具 sheet-open 驗收需對照 Event Countdown、Date Range 等已核准工具。
+```
+
+### 原因
+
+```text
+縮放與定位是兩個獨立驗收點；只做 scale 無法保證 sheet-open 狀態的視覺平衡。
+橫式 viewport 高度有限，沿用直式 sheet 高度會破壞 compact panel 基準並浪費可視空間。
+```
+
+### 影響
+
+```text
+B1B / B2 前 QA 必須在 mobile portrait sheet-open 與 mobile landscape sheet-open 狀態檢查定位與高度。
+Canonical references: docs/standards/layout-system.md §6.7 F.6、F.7、F.7A,
+docs/workflow/tool-page-qa.md §7、§11B,
+docs/workflow/new-tool-development.md §8.2.
+```

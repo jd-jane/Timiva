@@ -386,6 +386,14 @@ Date Range 的手機日期按鈕也是同一套樣式，只是多了 icon。
   左欄：主要輸入欄
   右欄：次要輸入欄
 不要把直式 sheet 直接壓扁套到橫式；橫式 sheet 應有獨立的 compact 版面規劃。
+手機橫式 bottom sheet / panel 必須使用 landscape-specific compact panel，不得直接沿用手機直式 sheet 高度。
+高度應採內容驅動的 compact layout，只容納：
+  drag handle
+  主要欄位內容
+  必要內距
+  safe area / browser UI 安全距離
+若內容只有一列兩欄，不得撐出大面積空白 panel。
+參考基準：Date Range landscape compact panel、Mobile Sheet baseline 的 landscape compact panel 規則。
 ```
 
 ##### F.7 Bottom sheet 開啟時的背景縮放
@@ -397,6 +405,17 @@ bottom sheet 開啟時，背景的結果內容區要作為一整組縮放。
 各工具可依自己的主視覺結構決定結果內容區包含哪些內容，但縮放群組邊界必須一致遵守：
   納入：主結果與其直接輔助呈現
   不納入：第一屏底部主要操作按鈕
+```
+
+##### F.7A Sheet-open 結果區定位基準
+
+```text
+bottom sheet 開啟時，背景結果內容區整組縮放後，必須重新定位在 sheet 上方的可視區域中。
+位置要在上方導覽區（Header / 返回 Timiva）與 sheet 頂部之間保持視覺平衡。
+不可只做 scale，導致結果區過度往上貼近 header。
+不可讓 sheet 上方出現不自然的大量空白。
+新工具必須對照已核准工具的 sheet-open 狀態驗收，例如 Event Countdown、Date Range。
+若縮放後結果區位置失衡，應調整 translate / reposition，而不是改變 sheet 高度或破壞 first-screen baseline。
 ```
 
 ##### F.8 特殊工具例外
@@ -724,6 +743,8 @@ pt-10 (40px)  pt-12 (48px)  pb-20 (80px)
 - [ ] 手機主要操作按鈕非 viewport fixed，會跟頁面一起滑動
 - [ ] 手機主要操作按鈕樣式對齊 Event Countdown Edit / Theme / Share
 - [ ] bottom sheet 開啟時，背景結果內容區整組縮放，底部主要按鈕不納入縮放群組
+- [ ] sheet-open 時結果區縮放後在 Header 與 sheet 頂部之間視覺平衡
+- [ ] landscape sheet 高度為內容驅動 compact panel，無大面積空白
 - [ ] Drawer 300px、毛玻璃、3 張 ToolCard
 - [ ] Drawer ToolCard 未被撐高
 - [ ] 下方 RelatedToolRow 3 張、三欄垂直置中

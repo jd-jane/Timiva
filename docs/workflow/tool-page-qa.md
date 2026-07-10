@@ -170,7 +170,13 @@ Bottom Sheet 內不放廣告
 主要操作按鈕會跟頁面一起滑動
 bottom sheet 開啟時，背景結果內容區整組縮放
 bottom sheet 開啟時，底部主要按鈕不納入背景縮放群組
+sheet-open 時，結果區縮放後在 Header 與 sheet 頂部之間保持視覺平衡
+sheet-open 時，結果區沒有過度貼近 header
+sheet-open 時，sheet 上方沒有不自然大空白
 手機直式 sheet 為上下排列；手機橫式 sheet 為一列兩欄 compact 版面
+手機橫式 sheet / panel 高度為內容驅動 compact layout
+手機橫式 sheet 沒有直接沿用直式 sheet 高度
+手機橫式 sheet 沒有大面積空白 panel
 ```
 
 Block 條件：
@@ -184,6 +190,8 @@ Bottom Sheet 內出現廣告
 主要操作按鈕樣式偏離 Event Countdown Edit / Theme / Share 基準
 手機橫式誤用桌機 inline input（且 product spec 未明確指定）
 bottom sheet 開啟時縮放對象錯誤或背景縮放不完整
+sheet-open 時結果區過度貼近 header 或 sheet 上方出現不自然大空白
+手機橫式 sheet 直接沿用直式高度或撐出大面積空白 panel
 ```
 
 ---
@@ -327,6 +335,12 @@ QA 必須確認：
 [ ] 手機橫式 bottom sheet 內容為一列兩欄 compact 版面（非直式 sheet 直接壓扁）
 [ ] bottom sheet 開啟時，背景結果內容區整組縮放
 [ ] bottom sheet 開啟時，底部主要按鈕不被納入背景縮放群組
+[ ] sheet-open 時，結果區縮放後沒有過度貼近 header
+[ ] sheet-open 時，結果區在 sheet 上方可視空間中保持視覺平衡
+[ ] sheet-open 時，sheet 上方沒有不自然大空白
+[ ] landscape sheet 高度為內容驅動 compact layout
+[ ] landscape sheet 沒有直接套用直式 sheet 高度
+[ ] landscape sheet 沒有大面積空白 panel
 ```
 
 適用範圍：
