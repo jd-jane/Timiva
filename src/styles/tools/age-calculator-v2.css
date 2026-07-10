@@ -233,6 +233,17 @@ body:has([data-age-calculator-v2]) header {
 		transform-origin: center center;
 		pointer-events: none;
 	}
+
+	/*
+	 * Portrait keyboard-open composition：
+	 * result group 與 sheet 共用 --acv2-keyboard-shift，一起上移貼齊鍵盤，
+	 * 避免只抬 sheet 造成結果區停原位、sheet 夾在中間。
+	 */
+	[data-age-calculator-v2][data-acv2-sheet-open="true"][data-acv2-keyboard-open="true"]
+		.preview-tool-result-group {
+		transform: scale(0.84) translateY(calc(-2.75rem - var(--acv2-keyboard-shift, 0px)));
+		transition: none;
+	}
 }
 
 @media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
@@ -276,36 +287,83 @@ body:has([data-age-calculator-v2]) header {
 	}
 
 	/* 桌機：no-visible-label capsule */
+	[data-age-calculator-v2] .acv2-birth-capsule-wrap {
+		width: 100%;
+		max-width: min(100%, 420px);
+		margin-inline: auto;
+	}
+
 	[data-age-calculator-v2] .acv2-birth-capsule {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
 		width: 100%;
-		max-width: min(100%, 420px);
-		margin-inline: auto;
 		min-height: 3.25rem;
 		padding: 0.75rem 1.125rem 0.75rem 1.25rem;
 		border-radius: 9999px;
 		background: rgb(255 255 255 / 0.06);
 		border: 1px solid rgb(255 255 255 / 0.12);
 		backdrop-filter: blur(10px);
-		pointer-events: none;
-		user-select: none;
 	}
 
-	[data-age-calculator-v2] .acv2-birth-capsule__placeholder {
+	[data-age-calculator-v2] .acv2-birth-input-wrap {
+		display: flex;
 		flex: 1;
+		align-items: center;
 		min-width: 0;
-		text-align: left;
+	}
+
+	[data-age-calculator-v2] .acv2-birth-date-inline {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		max-width: 100%;
+		flex: 0 0 auto;
+	}
+
+	[data-age-calculator-v2] .acv2-birth-input {
+		flex: 0 0 auto;
+		width: auto;
+		min-width: 0;
+		max-width: 100%;
+		border: none;
+		background: transparent;
 		font-size: 0.9375rem;
 		font-weight: 500;
 		line-height: 1.35;
+		font-variant-numeric: tabular-nums;
+		color: rgb(248 250 252 / 0.92);
+		outline: none;
+		field-sizing: content;
+	}
+
+	[data-age-calculator-v2] .acv2-birth-input::placeholder {
 		color: rgb(244 243 248 / 0.48);
+	}
+
+	[data-age-calculator-v2] .acv2-date-invalid-icon {
+		display: inline-flex;
+		flex-shrink: 0;
+		align-items: center;
+		justify-content: center;
+		width: 0.875rem;
+		height: 0.875rem;
+		color: #cbd5e1c2;
+	}
+
+	[data-age-calculator-v2] .acv2-date-invalid-icon[hidden] {
+		display: none;
+	}
+
+	[data-age-calculator-v2] .acv2-date-invalid-icon svg {
+		width: 0.875rem;
+		height: 0.875rem;
 	}
 
 	[data-age-calculator-v2] .acv2-birth-capsule__icon {
 		display: grid;
 		flex-shrink: 0;
+		margin-left: auto;
 		place-items: center;
 		width: 2rem;
 		height: 2rem;
@@ -566,77 +624,70 @@ body:has([data-age-calculator-v2]) header {
 	border: 1px solid rgb(255 255 255 / 0.07);
 }
 
-/* Mobile sheet — fixed-label rows（B1B shell only） */
-[data-acv2-sheet-portal] .acv2-sheet-field {
-	display: block;
-	width: 100%;
-	min-width: 0;
-	pointer-events: none;
-	user-select: none;
-}
 
-[data-acv2-sheet-portal] .acv2-sheet-field__shell {
+/* Mobile sheet — YMD 套用 shared msb input；僅保留列排與 invalid / as-of */
+[data-acv2-sheet-portal] .acv2-sheet-fields {
 	display: flex;
-	align-items: center;
-	gap: 0.375rem;
+	flex-direction: column;
+	gap: 0.625rem;
 	width: 100%;
 	min-width: 0;
-	min-height: 2.75rem;
-	padding: 0.625rem 0.75rem;
-	border-radius: 0.75rem;
-	border: 1px solid rgb(255 255 255 / 0.1);
-	background: rgb(255 255 255 / 0.05);
-	overflow: hidden;
 }
 
-[data-acv2-sheet-portal] .acv2-sheet-field__label {
-	display: inline-flex;
-	flex: 0 0 auto;
-	align-items: center;
-	white-space: nowrap;
-	font-size: 0.875rem;
-	font-weight: 500;
-	line-height: 1.25rem;
-	color: rgb(255 255 255 / 0.58);
-}
-
-[data-acv2-sheet-portal] .acv2-sheet-field__value {
-	flex: 1 1 0%;
-	width: auto;
+[data-acv2-sheet-portal] .acv2-sheet-ymd-row {
+	width: 100%;
 	min-width: 0;
-	max-width: 100%;
-	text-align: start;
-	font-size: 1rem;
+}
+
+[data-acv2-sheet-portal] .acv2-sheet-ymd-invalid {
+	display: inline-flex;
+	flex-shrink: 0;
+	margin-left: auto;
+	align-items: center;
+	justify-content: center;
+	width: 0.875rem;
+	height: 0.875rem;
+	color: #cbd5e1c2;
+}
+
+[data-acv2-sheet-portal] .acv2-sheet-ymd-invalid[hidden] {
+	display: none;
+}
+
+[data-acv2-sheet-portal] .acv2-sheet-ymd-invalid svg {
+	width: 0.875rem;
+	height: 0.875rem;
+}
+
+[data-acv2-sheet-portal] .acv2-sheet-asof-text {
+	margin: 0;
+	padding-inline: 0.125rem;
+	font-size: 0.8125rem;
 	font-weight: 500;
 	line-height: 1.25rem;
-	font-variant-numeric: tabular-nums;
-	color: rgb(248 250 252 / 0.42);
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+	color: rgb(203 213 225 / 0.62);
 }
 
-[data-acv2-sheet-portal] .acv2-sheet-field__value--asof {
-	color: rgb(203 213 225 / 0.82);
-}
-
-[data-acv2-sheet-portal] .acv2-sheet-field__icon {
-	display: grid;
+[data-acv2-sheet-portal] .acv2-date-invalid-icon {
+	display: inline-flex;
 	flex-shrink: 0;
-	place-items: center;
-	width: 2rem;
-	height: 2rem;
-	border-radius: 0.5rem;
-	color: rgb(220 218 240 / 0.88);
-	background: rgb(255 255 255 / 0.04);
+	align-items: center;
+	justify-content: center;
+	width: 0.875rem;
+	height: 0.875rem;
+	color: #cbd5e1c2;
 }
 
-[data-acv2-sheet-portal] .acv2-sheet-field__icon svg {
-	width: 1.125rem;
-	height: 1.125rem;
+[data-acv2-sheet-portal] .acv2-date-invalid-icon[hidden] {
+	display: none;
 }
 
-/* 手機橫式 sheet — 一列兩欄；content-driven compact panel（對齊 Date Range landscape panel 高度節奏） */
+[data-acv2-sheet-portal] .acv2-date-invalid-icon svg {
+	width: 0.875rem;
+	height: 0.875rem;
+}
+
+/* 手機橫式 sheet — compact panel；input 高度交給 shared msb landscape */
 @media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
 	[data-acv2-sheet-portal][data-mobile-sheet-baseline] .acv2-sheet.msb-sheet.is-open {
 		box-sizing: border-box;
@@ -667,58 +718,12 @@ body:has([data-age-calculator-v2]) header {
 	}
 
 	[data-acv2-sheet-portal][data-mobile-sheet-baseline] .acv2-sheet-fields {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-		gap: 0.25rem;
+		gap: 0.375rem;
 		flex-shrink: 0;
 	}
 
-	[data-acv2-sheet-portal] .acv2-sheet-field__shell {
-		box-sizing: border-box;
-		flex-direction: row;
-		align-items: center;
-		gap: 0.375rem;
-		min-width: 0;
-		max-width: 100%;
-		min-height: 2.5rem;
-		padding: 0.375rem 0.5rem;
-		overflow: hidden;
-	}
-
-	[data-acv2-sheet-portal] .acv2-sheet-field__label {
-		display: inline-flex;
-		flex: 0 0 auto;
-		align-items: center;
-		white-space: nowrap;
+	[data-acv2-sheet-portal][data-mobile-sheet-baseline] .acv2-sheet-asof-text {
 		font-size: 0.75rem;
 		line-height: 1rem;
-	}
-
-	[data-acv2-sheet-portal] .acv2-sheet-field__value {
-		flex: 1 1 0%;
-		width: auto;
-		min-width: 0;
-		max-width: 100%;
-		text-align: start;
-		font-size: 1rem;
-		line-height: 1.25rem;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	[data-acv2-sheet-portal] .acv2-sheet-field__icon {
-		display: grid;
-		flex-shrink: 0;
-		width: 1.25rem;
-		height: 1.25rem;
-		border-radius: 0;
-		background: transparent;
-		color: rgb(220 218 240 / 0.88);
-	}
-
-	[data-acv2-sheet-portal] .acv2-sheet-field__icon svg {
-		width: 1rem;
-		height: 1rem;
 	}
 }

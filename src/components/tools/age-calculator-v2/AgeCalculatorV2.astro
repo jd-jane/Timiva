@@ -51,9 +51,21 @@ const relatedToolItems = AGE_CALCULATOR_OUTBOUND_IDS.map((id) => {
 }).filter((item): item is NonNullable<typeof item> => item !== null);
 
 const faqSchema = buildFaqPageJsonLd(m.faq.items);
+
+const clientI18n = {
+	locale,
+	primaryResultUnit: m.primaryResultUnit,
+	exactAgeZero: m.exactAgeZero,
+	daysLivedZero: m.daysLivedZero,
+	exactAgeTemplate: m.exactAgeTemplate,
+	daysLivedTemplate: m.daysLivedTemplate,
+	invalidBirthDate: m.invalidBirthDate,
+	birthDatePlaceholder: m.birthDatePlaceholder,
+	birthDateDesktopPlaceholder: m.birthDateDesktopPlaceholder,
+};
 ---
 
-<div data-age-calculator-v2>
+<div data-age-calculator-v2 data-acv2-client-i18n={JSON.stringify(clientI18n)}>
 	<section data-acv2-main-tool class="preview-tool-main-section px-6">
 		<div class="preview-tool-first-screen">
 			<div class="preview-tool-stage tool-stage mx-auto w-full max-w-md md:max-w-lg">
@@ -67,6 +79,7 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 					<div class="preview-tool-result-block mt-6 md:mt-8">
 						<p
 							class="preview-tool-result-number leading-none font-normal tracking-tight tabular-nums"
+							data-acv2-result-years
 							aria-label={`0 ${m.primaryResultUnit}`}
 						>
 							0
@@ -78,9 +91,13 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 						<span class="acv2-result-divider" aria-hidden="true"></span>
 
 						<div class="acv2-secondary-results" aria-hidden="true">
-							<p class="acv2-secondary-line acv2-secondary-line--stacked">{m.exactAgeZero}</p>
-							<p class="acv2-secondary-line acv2-secondary-line--stacked">{m.daysLivedZero}</p>
-							<p class="acv2-secondary-line acv2-secondary-line--landscape">
+							<p class="acv2-secondary-line acv2-secondary-line--stacked" data-acv2-exact-age-stacked>
+								{m.exactAgeZero}
+							</p>
+							<p class="acv2-secondary-line acv2-secondary-line--stacked" data-acv2-days-lived-stacked>
+								{m.daysLivedZero}
+							</p>
+							<p class="acv2-secondary-line acv2-secondary-line--landscape" data-acv2-exact-age-landscape>
 								{m.exactAgeZero} / {m.daysLivedZero}
 							</p>
 						</div>
@@ -88,23 +105,50 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 				</div>
 
 				<div class="acv2-input-cluster acv2-input-cluster--desktop" aria-label={m.upperControlsAriaLabel}>
-					<div
-						class="acv2-birth-capsule"
-						role="group"
-						aria-label={m.birthDateLabel}
-						aria-disabled="true"
-						data-acv2-birth-field
-						data-acv2-birth-capsule
-					>
-						<span class="acv2-birth-capsule__placeholder" aria-hidden="true">
-							{m.birthDateDesktopPlaceholder}
-						</span>
-						<span class="acv2-birth-capsule__icon" aria-hidden="true">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-								<rect x="3" y="5" width="18" height="16" rx="3"></rect>
-								<path d="M8 3v4M16 3v4M7 11h10" stroke-linecap="round"></path>
-							</svg>
-						</span>
+					<div class="acv2-birth-capsule-wrap">
+						<div
+							class="acv2-birth-capsule"
+							role="group"
+							aria-label={m.birthDateLabel}
+							data-acv2-birth-capsule
+						>
+							<div class="acv2-birth-input-wrap">
+								<div class="acv2-birth-date-inline">
+									<input
+										type="text"
+										class="acv2-birth-input"
+										data-acv2-birth-input
+										inputmode="numeric"
+										autocomplete="bday"
+										spellcheck="false"
+										aria-label={m.birthDateLabel}
+										placeholder={m.birthDateDesktopPlaceholder}
+									/>
+									<span
+										class="acv2-date-invalid-icon"
+										data-acv2-desktop-invalid-icon
+										hidden
+										aria-label={m.invalidBirthDate}
+									>
+										<svg viewBox="0 0 16 16" aria-hidden="true">
+											<path
+												fill="currentColor"
+												d="M8 1.75 14.25 14.25H1.75L8 1.75z"></path>
+											<path
+												fill="#0f172a"
+												d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+											></path>
+										</svg>
+									</span>
+								</div>
+							</div>
+							<span class="acv2-birth-capsule__icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+									<rect x="3" y="5" width="18" height="16" rx="3"></rect>
+									<path d="M8 3v4M16 3v4M7 11h10" stroke-linecap="round"></path>
+								</svg>
+							</span>
+						</div>
 					</div>
 
 					<div class="acv2-asof-row" data-acv2-asof>
@@ -336,146 +380,127 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 
 		<div class="msb-sheet-body">
 			<div class="msb-sheet-fields acv2-sheet-fields">
+				{/* 第一列：套用 shared msb 三欄 input shell（對齊 Countdown） */}
 				<div
-					class="acv2-sheet-field"
+					class="msb-sheet-fields--cols-3 acv2-sheet-ymd-row"
+					data-acv2-sheet-ymd
 					role="group"
 					aria-label={m.birthDateLabel}
-					aria-disabled="true"
-					data-acv2-sheet-birth-field
 				>
-					<div class="acv2-sheet-field__shell">
-						<span class="acv2-sheet-field__label">{m.birthDateLabel}</span>
-						<span class="acv2-sheet-field__value" aria-hidden="true">
-							{m.birthDatePlaceholder}
+					<label class="msb-field" data-acv2-sheet-year-field>
+						<span class="msb-input-shell">
+							<span class="msb-input-prefix">{m.yearFieldLabel}</span>
+							<input
+								id="acv2-sheet-year-input"
+								type="text"
+								class="msb-input"
+								data-acv2-sheet-year-input
+								inputmode="numeric"
+								pattern="[0-9]*"
+								autocomplete="bday-year"
+								spellcheck="false"
+								maxlength="4"
+								aria-label={m.yearFieldLabel}
+								placeholder={m.yearPlaceholder}
+							/>
+							<span
+								class="acv2-date-invalid-icon acv2-sheet-ymd-invalid"
+								data-acv2-sheet-year-invalid
+								hidden
+								aria-label={m.invalidBirthDate}
+							>
+								<svg viewBox="0 0 16 16" aria-hidden="true">
+									<path
+										fill="currentColor"
+										d="M8 1.75 14.25 14.25H1.75L8 1.75z"></path>
+									<path
+										fill="#0f172a"
+										d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+									></path>
+								</svg>
+							</span>
 						</span>
-						<span class="acv2-sheet-field__icon" aria-hidden="true">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-								<rect x="3" y="5" width="18" height="16" rx="3"></rect>
-								<path d="M8 3v4M16 3v4M7 11h10" stroke-linecap="round"></path>
-							</svg>
+					</label>
+
+					<label class="msb-field" data-acv2-sheet-month-field>
+						<span class="msb-input-shell">
+							<span class="msb-input-prefix">{m.monthFieldLabel}</span>
+							<input
+								id="acv2-sheet-month-input"
+								type="text"
+								class="msb-input"
+								data-acv2-sheet-month-input
+								inputmode="numeric"
+								pattern="[0-9]*"
+								autocomplete="bday-month"
+								spellcheck="false"
+								maxlength="2"
+								aria-label={m.monthFieldLabel}
+								placeholder={m.monthPlaceholder}
+							/>
+							<span
+								class="acv2-date-invalid-icon acv2-sheet-ymd-invalid"
+								data-acv2-sheet-month-invalid
+								hidden
+								aria-label={m.invalidBirthDate}
+							>
+								<svg viewBox="0 0 16 16" aria-hidden="true">
+									<path
+										fill="currentColor"
+										d="M8 1.75 14.25 14.25H1.75L8 1.75z"></path>
+									<path
+										fill="#0f172a"
+										d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+									></path>
+								</svg>
+							</span>
 						</span>
-					</div>
+					</label>
+
+					<label class="msb-field" data-acv2-sheet-day-field>
+						<span class="msb-input-shell">
+							<span class="msb-input-prefix">{m.dayFieldLabel}</span>
+							<input
+								id="acv2-sheet-day-input"
+								type="text"
+								class="msb-input"
+								data-acv2-sheet-day-input
+								inputmode="numeric"
+								pattern="[0-9]*"
+								autocomplete="bday-day"
+								spellcheck="false"
+								maxlength="2"
+								aria-label={m.dayFieldLabel}
+								placeholder={m.dayPlaceholder}
+							/>
+							<span
+								class="acv2-date-invalid-icon acv2-sheet-ymd-invalid"
+								data-acv2-sheet-day-invalid
+								hidden
+								aria-label={m.invalidBirthDate}
+							>
+								<svg viewBox="0 0 16 16" aria-hidden="true">
+									<path
+										fill="currentColor"
+										d="M8 1.75 14.25 14.25H1.75L8 1.75z"></path>
+									<path
+										fill="#0f172a"
+										d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+									></path>
+								</svg>
+							</span>
+						</span>
+					</label>
 				</div>
 
-				<div
-					class="acv2-sheet-field"
-					role="group"
-					aria-label={m.asOfToday}
-					aria-disabled="true"
-					data-acv2-sheet-asof-field
-				>
-					<div class="acv2-sheet-field__shell">
-						<span class="acv2-sheet-field__label">{m.asOfToday}</span>
-						<span class="acv2-sheet-field__value acv2-sheet-field__value--asof" aria-hidden="true">
-							{m.asOfTodaySheetValue}
-						</span>
-					</div>
-				</div>
+				<p class="acv2-sheet-asof-text" data-acv2-sheet-asof>
+					{m.asOfToday}
+				</p>
 			</div>
 		</div>
 	</div>
 </div>
 
-<script is:inline>
-	document.addEventListener("DOMContentLoaded", () => {
-		const root = document.querySelector("[data-age-calculator-v2]");
-		const drawer = root?.querySelector("[data-acv2-drawer]");
-		const shell = root?.querySelector("[data-acv2-drawer-shell]");
-		const toggle = root?.querySelector("[data-acv2-drawer-toggle]");
-		const related = root?.querySelector("[data-acv2-related-tools]");
-		const arrowOpen = root?.querySelector("[data-drawer-arrow-open]");
-		const arrowClosed = root?.querySelector("[data-drawer-arrow-closed]");
-
-		if (drawer && shell && toggle) {
-			let isOpen = drawer.dataset.open !== "false";
-
-			const syncDrawer = () => {
-				drawer.dataset.open = isOpen ? "true" : "false";
-				shell.dataset.open = isOpen ? "true" : "false";
-				shell.classList.toggle("translate-x-[300px]", !isOpen);
-				related?.classList.toggle("xl:hidden", isOpen);
-				arrowOpen?.classList.toggle("hidden", !isOpen);
-				arrowClosed?.classList.toggle("hidden", isOpen);
-				toggle.setAttribute("aria-expanded", String(isOpen));
-			};
-
-			syncDrawer();
-
-			toggle.addEventListener("click", (event) => {
-				event.preventDefault();
-				isOpen = !isOpen;
-				syncDrawer();
-			});
-		}
-
-		const portal = document.querySelector("[data-acv2-sheet-portal]");
-		const overlay = portal?.querySelector("[data-acv2-sheet-overlay]");
-		const sheet = portal?.querySelector("[data-acv2-sheet]");
-		const openTriggers = root?.querySelectorAll("[data-acv2-sheet-open]");
-
-		if (!portal || !overlay || !sheet || !openTriggers?.length) return;
-
-		document.body.appendChild(portal);
-		portal.removeAttribute("hidden");
-		portal.setAttribute("aria-hidden", "false");
-
-		let savedScrollY = 0;
-		let lastTrigger = null;
-
-		const lockBodyScroll = () => {
-			savedScrollY = window.scrollY;
-			document.documentElement.classList.add("msb-scroll-lock", "msb-sheet-open");
-			document.body.classList.add("msb-scroll-lock", "msb-sheet-open");
-		};
-
-		const unlockBodyScroll = () => {
-			document.documentElement.classList.remove("msb-scroll-lock", "msb-sheet-open");
-			document.body.classList.remove("msb-scroll-lock", "msb-sheet-open");
-			window.scrollTo(0, savedScrollY);
-		};
-
-		const openSheet = (trigger) => {
-			lastTrigger = trigger;
-			root?.setAttribute("data-acv2-sheet-open", "true");
-			overlay.removeAttribute("hidden");
-			overlay.classList.add("is-visible");
-			overlay.setAttribute("aria-hidden", "false");
-			sheet.classList.add("is-open");
-			sheet.setAttribute("aria-hidden", "false");
-			sheet.inert = false;
-			lockBodyScroll();
-		};
-
-		const closeSheet = () => {
-			root?.removeAttribute("data-acv2-sheet-open");
-			overlay.classList.remove("is-visible");
-			overlay.setAttribute("hidden", "");
-			overlay.setAttribute("aria-hidden", "true");
-			sheet.classList.remove("is-open");
-			sheet.setAttribute("aria-hidden", "true");
-			sheet.inert = true;
-			unlockBodyScroll();
-
-			if (lastTrigger instanceof HTMLElement) {
-				lastTrigger.focus({ preventScroll: true });
-			}
-		};
-
-		openTriggers.forEach((trigger) => {
-			trigger.addEventListener("click", () => {
-				openSheet(trigger);
-			});
-		});
-
-		overlay.addEventListener("click", closeSheet);
-		sheet.addEventListener("click", (event) => {
-			event.stopPropagation();
-		});
-
-		document.addEventListener("keydown", (event) => {
-			if (event.key === "Escape" && sheet.classList.contains("is-open")) {
-				closeSheet();
-			}
-		});
-	});
+<script>
+	import "../../../scripts/age-calculator";
 </script>
