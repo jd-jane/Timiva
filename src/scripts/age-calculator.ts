@@ -1,12 +1,15 @@
 import {
 	applySegmentInputChange,
 	calculateAge,
+	calendarDatesEqual,
 	emptyDateSegments,
+	formatCalendarDateDisplay,
 	formatSegmentsDisplay,
 	formatSegmentsNormalized,
 	getTodayCalendarDate,
 	isSegmentsComplete,
 	isSegmentsEmpty,
+	isSelectableAsOfCalendarDate,
 	isSelectableBirthCalendarDate,
 	MIN_BIRTH_YEAR,
 	normalizeSegmentsForBlur,
@@ -33,10 +36,16 @@ type AgeCalculatorClientI18n = {
 	exactAgeTemplate: string;
 	daysLivedTemplate: string;
 	invalidBirthDate: string;
+	invalidAsOfDate: string;
 	birthDatePlaceholder: string;
 	birthDateDesktopPlaceholder: string;
 	calendarLabel: string;
 	openCalendarAriaLabel: string;
+	asOfToday: string;
+	asOfTemplate: string;
+	asOfCalendarLabel: string;
+	openAsOfCalendarAriaLabel: string;
+	backToTodayAriaLabel: string;
 	previousMonth: string;
 	nextMonth: string;
 	weekdays: string[];
@@ -373,6 +382,512 @@ function segmentsFromParts(year: string, month: string, day: string): DateSegmen
 	};
 }
 
+type DesktopCalendarApi = {
+	isOpen: () => boolean;
+	open: () => void;
+	close: () => void;
+	toggle: () => void;
+};
+
+type DesktopCalendarOptions = {
+	intlLocale: string;
+	toggle: HTMLButtonElement;
+	popover: HTMLElement;
+	grid: HTMLElement;
+	monthSelect: HTMLSelectElement;
+	yearSelect: HTMLSelectElement;
+	prev: HTMLButtonElement;
+	next: HTMLButtonElement;
+	getSelectedDate: () => CalendarDate | null;
+	getFallbackViewDate: () => CalendarDate;
+	isDateSelectable: (date: CalendarDate, today: CalendarDate) => boolean;
+	onSelectDate: (date: CalendarDate) => void;
+	getPositionAnchor: () => HTMLElement | null;
+	/** 額外避開的區域（例如主結果數字），避免 popover 壓住 */
+	getAvoidRects?: () => Array<DOMRect | null | undefined>;
+	nudgeX?: number;
+	preferAboveAnchor?: boolean;
+	/** above = 錨點上方（生日）；right = 錨點右側（as-of） */
+	placement?: "above" | "right";
+	onBeforeOpen?: () => void;
+};
+
+function createDesktopDateCalendar(options: DesktopCalendarOptions): DesktopCalendarApi {
+	const {
+		intlLocale,
+		toggle,
+		popover,
+		grid,
+		monthSelect,
+		yearSelect,
+		prev,
+		next,
+		getSelectedDate,
+		getFallbackViewDate,
+		isDateSelectable,
+		onSelectDate,
+		getPositionAnchor,
+		getAvoidRects,
+		nudgeX = 0,
+		preferAboveAnchor = true,
+		placement = "above",
+		onBeforeOpen,
+	} = options;
+
+	const POPOVER_GAP = 16;
+	const INPUT_GAP = 8;
+	const VIEWPORT_PAD = 12;
+	let viewYear = getTodayCalendarDate().year;
+	let viewMonth = getTodayCalendarDate().month;
+	let isCalendarOpen = false;
+	let yearOptionsReady = false;
+
+	const monthFormatter = new Intl.DateTimeFormat(intlLocale, { month: "short" });
+	const formatMonthOption = (month: number) =>
+		monthFormatter.format(new Date(2000, month - 1, 1));
+
+	const maxSelectableMonth = (year: number) => {
+		const today = getTodayCalendarDate();
+		return year >= today.year ? today.month : 12;
+	};
+
+	const clampViewToSelectableRange = () => {
+		const today = getTodayCalendarDate();
+
+		if (viewYear < MIN_BIRTH_YEAR) {
+			viewYear = MIN_BIRTH_YEAR;
+		}
+
+		if (viewYear > today.year) {
+			viewYear = today.year;
+		}
+
+		const maxMonth = maxSelectableMonth(viewYear);
+
+		if (viewMonth < 1) {
+			viewMonth = 1;
+		}
+
+		if (viewMonth > maxMonth) {
+			viewMonth = maxMonth;
+		}
+	};
+
+	const canGoPrevMonth = () =>
+		viewYear > MIN_BIRTH_YEAR || (viewYear === MIN_BIRTH_YEAR && viewMonth > 1);
+
+	const canGoNextMonth = () => {
+		const today = getTodayCalendarDate();
+		return (
+			viewYear < today.year || (viewYear === today.year && viewMonth < today.month)
+		);
+	};
+
+	const ensureYearOptions = () => {
+		const today = getTodayCalendarDate();
+
+		if (yearOptionsReady && yearSelect.dataset.maxYear === String(today.year)) {
+			return;
+		}
+
+		yearSelect.innerHTML = "";
+
+		for (let year = today.year; year >= MIN_BIRTH_YEAR; year -= 1) {
+			const option = document.createElement("option");
+			option.value = String(year);
+			option.textContent = String(year);
+			yearSelect.appendChild(option);
+		}
+
+		yearSelect.dataset.maxYear = String(today.year);
+		yearOptionsReady = true;
+	};
+
+	const syncMonthOptions = () => {
+		const maxMonth = maxSelectableMonth(viewYear);
+		monthSelect.innerHTML = "";
+
+		for (let month = 1; month <= 12; month += 1) {
+			const option = document.createElement("option");
+			option.value = String(month);
+			option.textContent = formatMonthOption(month);
+			option.disabled = month > maxMonth;
+			monthSelect.appendChild(option);
+		}
+
+		monthSelect.value = String(viewMonth);
+	};
+
+	const syncSelects = () => {
+		ensureYearOptions();
+		syncMonthOptions();
+		yearSelect.value = String(viewYear);
+		monthSelect.value = String(viewMonth);
+		prev.disabled = !canGoPrevMonth();
+		next.disabled = !canGoNextMonth();
+	};
+
+	const rectsOverlap = (a: DOMRect, b: DOMRect) =>
+		!(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+
+	const positionPopover = () => {
+		const width = popover.offsetWidth;
+		const height = popover.offsetHeight;
+
+		if (width <= 0 || height <= 0) {
+			return;
+		}
+
+		const vw = window.innerWidth;
+		const vh = window.innerHeight;
+		const anchor = getPositionAnchor();
+		const anchorRect = anchor?.getBoundingClientRect();
+		const avoidRects = (getAvoidRects?.() ?? []).filter(
+			(rect): rect is DOMRect => rect instanceof DOMRect,
+		);
+
+		let left = VIEWPORT_PAD;
+		let top = VIEWPORT_PAD;
+
+		if (anchorRect) {
+			if (placement === "right") {
+				// As-of：水平在文字右側；底部與 As of 文字底緣對齊
+				left = anchorRect.right + INPUT_GAP;
+				top = anchorRect.bottom - height;
+
+				if (left + width > vw - VIEWPORT_PAD) {
+					const leftSide = anchorRect.left - INPUT_GAP - width;
+					left = leftSide >= VIEWPORT_PAD ? leftSide : VIEWPORT_PAD;
+				}
+			} else {
+				// 生日：錨點上方，水平置中後再 nudgeX
+				left = anchorRect.left + (anchorRect.width - width) / 2 + nudgeX;
+
+				if (preferAboveAnchor) {
+					top = anchorRect.top - INPUT_GAP - height;
+
+					if (top < VIEWPORT_PAD) {
+						top = VIEWPORT_PAD;
+					}
+				} else {
+					top = anchorRect.bottom + INPUT_GAP;
+				}
+
+				let popRect = new DOMRect(left, top, width, height);
+
+				// 不可壓住錨點（生日 input）
+				if (rectsOverlap(popRect, anchorRect)) {
+					const rightCandidate = anchorRect.right + INPUT_GAP;
+					const leftCandidate = anchorRect.left - INPUT_GAP - width;
+
+					if (rightCandidate + width <= vw - VIEWPORT_PAD) {
+						left = rightCandidate;
+					} else if (leftCandidate >= VIEWPORT_PAD) {
+						left = leftCandidate;
+					}
+
+					top = Math.max(
+						VIEWPORT_PAD,
+						Math.min(anchorRect.top - height - INPUT_GAP, vh - height - VIEWPORT_PAD),
+					);
+
+					if (top + height > anchorRect.top - 2) {
+						top = Math.max(
+							VIEWPORT_PAD,
+							Math.min(anchorRect.top, vh - height - VIEWPORT_PAD),
+						);
+					}
+
+					popRect = new DOMRect(left, top, width, height);
+				}
+
+				// 盡量不要壓住主結果等 avoid 區域
+				for (const avoidRect of avoidRects) {
+					popRect = new DOMRect(left, top, width, height);
+
+					if (!rectsOverlap(popRect, avoidRect)) {
+						continue;
+					}
+
+					const aboveAvoid = avoidRect.top - POPOVER_GAP - height;
+					const besideRight = avoidRect.right + POPOVER_GAP;
+					const besideLeft = avoidRect.left - POPOVER_GAP - width;
+					const nearAnchorTop = anchorRect.top - height - INPUT_GAP;
+
+					if (
+						aboveAvoid >= VIEWPORT_PAD &&
+						aboveAvoid + height <= anchorRect.top - 4
+					) {
+						top = aboveAvoid;
+					} else if (besideRight + width <= vw - VIEWPORT_PAD) {
+						left = besideRight;
+						top = Math.max(
+							VIEWPORT_PAD,
+							Math.min(nearAnchorTop, vh - height - VIEWPORT_PAD),
+						);
+					} else if (besideLeft >= VIEWPORT_PAD) {
+						left = besideLeft;
+						top = Math.max(
+							VIEWPORT_PAD,
+							Math.min(nearAnchorTop, vh - height - VIEWPORT_PAD),
+						);
+					}
+				}
+			}
+		}
+
+		top = Math.max(VIEWPORT_PAD, Math.min(top, vh - height - VIEWPORT_PAD));
+		left = Math.max(VIEWPORT_PAD, Math.min(left, vw - width - VIEWPORT_PAD));
+
+		popover.style.left = `${Math.round(left)}px`;
+		popover.style.top = `${Math.round(top)}px`;
+	};
+
+	const renderCalendar = () => {
+		clampViewToSelectableRange();
+		syncSelects();
+
+		const today = getTodayCalendarDate();
+		const selected = getSelectedDate();
+		grid.innerHTML = "";
+
+		const firstWeekday = (new Date(viewYear, viewMonth - 1, 1).getDay() + 6) % 7;
+		const daysCount = new Date(viewYear, viewMonth, 0).getDate();
+
+		for (let index = 0; index < firstWeekday; index += 1) {
+			const emptyCell = document.createElement("div");
+			emptyCell.className = "calendar-cell calendar-cell--empty";
+			emptyCell.setAttribute("aria-hidden", "true");
+			grid.appendChild(emptyCell);
+		}
+
+		for (let day = 1; day <= daysCount; day += 1) {
+			const cellDate: CalendarDate = {
+				year: viewYear,
+				month: viewMonth,
+				day,
+			};
+			const button = document.createElement("button");
+			button.type = "button";
+			button.className = "calendar-day";
+			button.textContent = String(day);
+
+			if (
+				cellDate.year === today.year &&
+				cellDate.month === today.month &&
+				cellDate.day === today.day
+			) {
+				button.classList.add("is-today");
+			}
+
+			if (
+				selected &&
+				selected.year === cellDate.year &&
+				selected.month === cellDate.month &&
+				selected.day === cellDate.day
+			) {
+				button.classList.add("is-selected");
+			}
+
+			if (!isDateSelectable(cellDate, today)) {
+				button.disabled = true;
+			} else {
+				button.addEventListener("click", () => {
+					onSelectDate(cellDate);
+					closeCalendar();
+				});
+			}
+
+			grid.appendChild(button);
+		}
+
+		if (isCalendarOpen) {
+			positionPopover();
+		}
+	};
+
+	const setViewFromSelection = () => {
+		const selected = getSelectedDate();
+
+		if (selected) {
+			viewYear = selected.year;
+			viewMonth = selected.month;
+			clampViewToSelectableRange();
+			return;
+		}
+
+		const fallback = getFallbackViewDate();
+		viewYear = fallback.year;
+		viewMonth = fallback.month;
+		clampViewToSelectableRange();
+	};
+
+	const openCalendar = () => {
+		onBeforeOpen?.();
+		setViewFromSelection();
+		isCalendarOpen = true;
+		popover.hidden = false;
+		popover.setAttribute("aria-hidden", "false");
+		toggle.setAttribute("aria-expanded", "true");
+		renderCalendar();
+		requestAnimationFrame(() => {
+			positionPopover();
+		});
+	};
+
+	const closeCalendar = () => {
+		if (!isCalendarOpen) {
+			return;
+		}
+
+		isCalendarOpen = false;
+		popover.hidden = true;
+		popover.setAttribute("aria-hidden", "true");
+		toggle.setAttribute("aria-expanded", "false");
+		popover.style.left = "";
+		popover.style.top = "";
+	};
+
+	const toggleCalendar = () => {
+		if (isCalendarOpen) {
+			closeCalendar();
+			return;
+		}
+
+		openCalendar();
+	};
+
+	toggle.addEventListener("click", (event) => {
+		event.preventDefault();
+		event.stopPropagation();
+		toggleCalendar();
+	});
+
+	popover.addEventListener("pointerdown", (event) => {
+		event.stopPropagation();
+	});
+
+	monthSelect.addEventListener("change", () => {
+		const nextMonth = Number(monthSelect.value);
+
+		if (!Number.isInteger(nextMonth) || nextMonth < 1 || nextMonth > 12) {
+			return;
+		}
+
+		viewMonth = nextMonth;
+		clampViewToSelectableRange();
+		renderCalendar();
+	});
+
+	yearSelect.addEventListener("change", () => {
+		const nextYear = Number(yearSelect.value);
+		const today = getTodayCalendarDate();
+
+		if (
+			!Number.isInteger(nextYear) ||
+			nextYear < MIN_BIRTH_YEAR ||
+			nextYear > today.year
+		) {
+			return;
+		}
+
+		viewYear = nextYear;
+		clampViewToSelectableRange();
+		renderCalendar();
+	});
+
+	prev.addEventListener("click", () => {
+		if (!canGoPrevMonth()) {
+			return;
+		}
+
+		viewMonth -= 1;
+
+		if (viewMonth < 1) {
+			viewMonth = 12;
+			viewYear -= 1;
+		}
+
+		clampViewToSelectableRange();
+		renderCalendar();
+	});
+
+	next.addEventListener("click", () => {
+		if (!canGoNextMonth()) {
+			return;
+		}
+
+		viewMonth += 1;
+
+		if (viewMonth > 12) {
+			viewMonth = 1;
+			viewYear += 1;
+		}
+
+		clampViewToSelectableRange();
+		renderCalendar();
+	});
+
+	document.addEventListener("pointerdown", (event) => {
+		if (!isCalendarOpen) {
+			return;
+		}
+
+		const target = event.target;
+
+		if (!(target instanceof Node)) {
+			return;
+		}
+
+		if (popover.contains(target) || toggle.contains(target)) {
+			return;
+		}
+
+		closeCalendar();
+	});
+
+	document.addEventListener("keydown", (event) => {
+		if (event.key === "Escape" && isCalendarOpen) {
+			event.preventDefault();
+			closeCalendar();
+			toggle.focus();
+		}
+	});
+
+	window.addEventListener(
+		"resize",
+		() => {
+			if (isCalendarOpen) {
+				positionPopover();
+			}
+		},
+		{ passive: true },
+	);
+
+	window.addEventListener(
+		"scroll",
+		() => {
+			if (isCalendarOpen) {
+				positionPopover();
+			}
+		},
+		{ passive: true, capture: true },
+	);
+
+	window.matchMedia("(min-width: 768px)").addEventListener("change", (event) => {
+		if (!event.matches && isCalendarOpen) {
+			closeCalendar();
+		}
+	});
+
+	return {
+		isOpen: () => isCalendarOpen,
+		open: openCalendar,
+		close: closeCalendar,
+		toggle: toggleCalendar,
+	};
+}
+
 function initAgeCalculator(root: HTMLElement): void {
 	if (initializedRoots.has(root)) {
 		return;
@@ -392,6 +907,16 @@ function initAgeCalculator(root: HTMLElement): void {
 	const exactAgeLandscape = root.querySelector<HTMLElement>("[data-acv2-exact-age-landscape]");
 	const birthCapsule = root.querySelector<HTMLElement>("[data-acv2-birth-capsule]");
 	const desktopInvalidIcon = root.querySelector<HTMLElement>("[data-acv2-desktop-invalid-icon]");
+	const asOfControl = root.querySelector<HTMLButtonElement>("[data-acv2-asof-control]");
+	const asOfLabel = root.querySelector<HTMLElement>("[data-acv2-asof-label]");
+	const asOfInvalidIcon = root.querySelector<HTMLElement>("[data-acv2-asof-invalid-icon]");
+	const asOfReset = root.querySelector<HTMLButtonElement>("[data-acv2-asof-reset]");
+	const sheetAsOfWrap = document.querySelector<HTMLElement>("[data-acv2-sheet-asof]");
+	const sheetAsOfLabel = document.querySelector<HTMLElement>("[data-acv2-sheet-asof-label]");
+	const sheetAsOfInvalid = document.querySelector<HTMLElement>("[data-acv2-sheet-asof-invalid]");
+	const sheetAsOfNative = document.querySelector<HTMLInputElement>(
+		"[data-acv2-sheet-asof-native]",
+	);
 	const desktopInputs = [
 		...root.querySelectorAll<HTMLInputElement>("[data-acv2-birth-input]"),
 	];
@@ -418,9 +943,97 @@ function initAgeCalculator(root: HTMLElement): void {
 	}
 
 	let sharedSegments = emptyDateSegments();
+	/** null = live today；指定日期後覆寫 */
+	let asOfOverride: CalendarDate | null = null;
+	let birthCalendarApi: DesktopCalendarApi | null = null;
+	let asOfCalendarApi: DesktopCalendarApi | null = null;
+
+	const getEffectiveAsOf = (): CalendarDate => asOfOverride ?? getTodayCalendarDate();
+
+	const isAsOfToday = (): boolean => {
+		if (!asOfOverride) {
+			return true;
+		}
+
+		return calendarDatesEqual(asOfOverride, getTodayCalendarDate());
+	};
+
+	const toDateInputValue = (date: CalendarDate): string =>
+		[
+			String(date.year).padStart(4, "0"),
+			String(date.month).padStart(2, "0"),
+			String(date.day).padStart(2, "0"),
+		].join("-");
+
+	const fromDateInputValue = (value: string): CalendarDate | null => {
+		const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+
+		if (!match) {
+			return null;
+		}
+
+		const year = Number(match[1]);
+		const month = Number(match[2]);
+		const day = Number(match[3]);
+
+		if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+			return null;
+		}
+
+		return { year, month, day };
+	};
+
+	const formatAsOfLabelText = (): string => {
+		if (isAsOfToday()) {
+			return i18n.asOfToday;
+		}
+
+		const asOf = getEffectiveAsOf();
+		return fillTemplate(i18n.asOfTemplate, {
+			date: formatCalendarDateDisplay(asOf),
+		});
+	};
+
+	const syncAsOfLabels = () => {
+		const text = formatAsOfLabelText();
+		const showReset = !isAsOfToday();
+		const asOf = getEffectiveAsOf();
+		const today = getTodayCalendarDate();
+
+		if (asOfLabel) {
+			asOfLabel.textContent = text;
+		}
+
+		if (sheetAsOfLabel) {
+			sheetAsOfLabel.textContent = text;
+		}
+
+		asOfReset?.toggleAttribute("hidden", !showReset);
+
+		if (sheetAsOfNative) {
+			sheetAsOfNative.min = "1900-01-01";
+			sheetAsOfNative.max = toDateInputValue(today);
+			sheetAsOfNative.value = toDateInputValue(asOf);
+		}
+	};
+
+	const setAsOfOverride = (date: CalendarDate | null) => {
+		if (!date) {
+			asOfOverride = null;
+			return;
+		}
+
+		const today = getTodayCalendarDate();
+		asOfOverride = calendarDatesEqual(date, today) ? null : date;
+	};
 
 	const setDesktopInvalidIcon = (visible: boolean) => {
 		desktopInvalidIcon?.toggleAttribute("hidden", !visible);
+	};
+
+	const setDesktopAsOfInvalidIcon = (visible: boolean) => {
+		asOfInvalidIcon?.toggleAttribute("hidden", !visible);
+		sheetAsOfInvalid?.toggleAttribute("hidden", !visible);
 	};
 
 	const setMobileInvalidFields = (fields: InvalidBirthField[]) => {
@@ -432,6 +1045,7 @@ function initAgeCalculator(root: HTMLElement): void {
 
 	const clearInvalidIcons = () => {
 		setDesktopInvalidIcon(false);
+		setDesktopAsOfInvalidIcon(false);
 		setMobileInvalidFields([]);
 	};
 
@@ -507,6 +1121,8 @@ function initAgeCalculator(root: HTMLElement): void {
 	};
 
 	const evaluate = (segments: DateSegments) => {
+		syncAsOfLabels();
+
 		if (isSegmentsEmpty(segments) || !isSegmentsComplete(segments)) {
 			clearInvalidIcons();
 			renderZeroState();
@@ -514,22 +1130,26 @@ function initAgeCalculator(root: HTMLElement): void {
 		}
 
 		const today = getTodayCalendarDate();
+		const asOf = getEffectiveAsOf();
 		const birth = parseBirthDateSegments(segments, today);
 
 		if (!birth) {
 			const invalidFields = resolveInvalidBirthFields(segments, today);
 			setDesktopInvalidIcon(invalidFields.length > 0);
 			setMobileInvalidFields(invalidFields);
+			setDesktopAsOfInvalidIcon(false);
+			setMobileAsOfInvalidFields([]);
 			renderZeroState();
 			return;
 		}
 
-		const outcome = calculateAge(birth, today);
+		const outcome = calculateAge(birth, asOf);
 
 		if (outcome.status !== "ok") {
-			const invalidFields = resolveInvalidBirthFields(segments, today);
-			setDesktopInvalidIcon(invalidFields.length > 0);
-			setMobileInvalidFields(invalidFields);
+			// as-of 早於 birth → 結果 0 + 輕量 as-of invalid
+			setDesktopInvalidIcon(false);
+			setMobileInvalidFields([]);
+			setDesktopAsOfInvalidIcon(true);
 			renderZeroState();
 			return;
 		}
@@ -782,7 +1402,92 @@ function initAgeCalculator(root: HTMLElement): void {
 		});
 	}
 
-	// Desktop birth-date calendar — fixed 對齊結果區；month/year 快速選擇
+	const openNativeAsOfPicker = () => {
+		if (!sheetAsOfNative) {
+			return;
+		}
+
+		const today = getTodayCalendarDate();
+		const asOf = getEffectiveAsOf();
+		sheetAsOfNative.min = "1900-01-01";
+		sheetAsOfNative.max = toDateInputValue(today);
+		sheetAsOfNative.value = toDateInputValue(asOf);
+		sheetAsOfNative.focus({ preventScroll: true });
+
+		if (typeof sheetAsOfNative.showPicker === "function") {
+			try {
+				sheetAsOfNative.showPicker();
+			} catch {
+				sheetAsOfNative.focus({ preventScroll: true });
+			}
+		}
+	};
+
+	const resetAsOfToToday = () => {
+		asOfCalendarApi?.close();
+		setAsOfOverride(null);
+		evaluate(sharedSegments);
+	};
+
+	const handleAsOfResetClick = (event: Event) => {
+		event.preventDefault();
+		event.stopPropagation();
+		resetAsOfToToday();
+	};
+
+	asOfReset?.addEventListener("click", handleAsOfResetClick);
+
+	// Mobile：點 As-of 文字開原生 date picker（不顯示 back icon；清除靠原生重置）
+	sheetAsOfWrap?.addEventListener(
+		"click",
+		(event) => {
+			const target = event.target;
+
+			if (!(target instanceof Element)) {
+				return;
+			}
+
+			if (target.closest("[data-acv2-sheet-asof-control]")) {
+				event.preventDefault();
+				event.stopPropagation();
+				birthCalendarApi?.close();
+				asOfCalendarApi?.close();
+				openNativeAsOfPicker();
+			}
+		},
+		true,
+	);
+
+	sheetAsOfNative?.addEventListener("change", () => {
+		const today = getTodayCalendarDate();
+		const value = sheetAsOfNative.value.trim();
+
+		// 原生 picker 清除／重置會變成空字串 → 視為回到今天
+		if (!value) {
+			resetAsOfToToday();
+			return;
+		}
+
+		const parsed = fromDateInputValue(value);
+
+		if (!parsed || !isSelectableAsOfCalendarDate(parsed, today)) {
+			syncAsOfLabels();
+			return;
+		}
+
+		setAsOfOverride(parsed);
+		evaluate(sharedSegments);
+	});
+
+	sheetAsOfNative?.addEventListener("input", () => {
+		const value = sheetAsOfNative.value.trim();
+
+		if (!value) {
+			resetAsOfToToday();
+		}
+	});
+
+	// Desktop birth + as-of calendars（共用 factory；互斥開啟）
 	const calendarToggle = root.querySelector<HTMLButtonElement>(
 		"[data-acv2-calendar-toggle]",
 	);
@@ -802,8 +1507,6 @@ function initAgeCalculator(root: HTMLElement): void {
 	const calendarNext = root.querySelector<HTMLButtonElement>(
 		"[data-acv2-calendar-next]",
 	);
-	const resultGroup = root.querySelector<HTMLElement>(".preview-tool-result-group");
-	const resultBlock = root.querySelector<HTMLElement>(".preview-tool-result-block");
 
 	if (
 		calendarToggle &&
@@ -814,434 +1517,101 @@ function initAgeCalculator(root: HTMLElement): void {
 		calendarPrev &&
 		calendarNext
 	) {
-		const POPOVER_GAP = 16;
-		const INPUT_GAP = 8;
-		const VIEWPORT_PAD = 12;
-		const POPOVER_NUDGE_X = 28;
-		let viewYear = getTodayCalendarDate().year;
-		let viewMonth = getTodayCalendarDate().month;
-		let isCalendarOpen = false;
-		let yearOptionsReady = false;
-
-		const monthFormatter = new Intl.DateTimeFormat(i18n.intlLocale, {
-			month: "short",
-		});
-
-		const formatMonthOption = (month: number) =>
-			monthFormatter.format(new Date(2000, month - 1, 1));
-
-		const maxSelectableMonth = (year: number) => {
-			const today = getTodayCalendarDate();
-			return year >= today.year ? today.month : 12;
-		};
-
-		const clampViewToSelectableRange = () => {
-			const today = getTodayCalendarDate();
-
-			if (viewYear < MIN_BIRTH_YEAR) {
-				viewYear = MIN_BIRTH_YEAR;
-			}
-
-			if (viewYear > today.year) {
-				viewYear = today.year;
-			}
-
-			const maxMonth = maxSelectableMonth(viewYear);
-
-			if (viewMonth < 1) {
-				viewMonth = 1;
-			}
-
-			if (viewMonth > maxMonth) {
-				viewMonth = maxMonth;
-			}
-		};
-
-		const canGoPrevMonth = () =>
-			viewYear > MIN_BIRTH_YEAR || (viewYear === MIN_BIRTH_YEAR && viewMonth > 1);
-
-		const canGoNextMonth = () => {
-			const today = getTodayCalendarDate();
-			return (
-				viewYear < today.year ||
-				(viewYear === today.year && viewMonth < today.month)
-			);
-		};
-
-		const ensureYearOptions = () => {
-			const today = getTodayCalendarDate();
-
-			if (yearOptionsReady && calendarYearSelect.dataset.maxYear === String(today.year)) {
-				return;
-			}
-
-			calendarYearSelect.innerHTML = "";
-
-			for (let year = today.year; year >= MIN_BIRTH_YEAR; year -= 1) {
-				const option = document.createElement("option");
-				option.value = String(year);
-				option.textContent = String(year);
-				calendarYearSelect.appendChild(option);
-			}
-
-			calendarYearSelect.dataset.maxYear = String(today.year);
-			yearOptionsReady = true;
-		};
-
-		const syncMonthOptions = () => {
-			const maxMonth = maxSelectableMonth(viewYear);
-			calendarMonthSelect.innerHTML = "";
-
-			for (let month = 1; month <= 12; month += 1) {
-				const option = document.createElement("option");
-				option.value = String(month);
-				option.textContent = formatMonthOption(month);
-				option.disabled = month > maxMonth;
-				calendarMonthSelect.appendChild(option);
-			}
-
-			calendarMonthSelect.value = String(viewMonth);
-		};
-
-		const syncSelects = () => {
-			ensureYearOptions();
-			syncMonthOptions();
-			calendarYearSelect.value = String(viewYear);
-			calendarMonthSelect.value = String(viewMonth);
-			calendarPrev.disabled = !canGoPrevMonth();
-			calendarNext.disabled = !canGoNextMonth();
-		};
-
-		const rectsOverlap = (a: DOMRect, b: DOMRect) =>
-			!(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
-
-		const positionPopover = () => {
-			const width = calendarPopover.offsetWidth;
-			const height = calendarPopover.offsetHeight;
-
-			if (width <= 0 || height <= 0) {
-				return;
-			}
-
-			const vw = window.innerWidth;
-			const vh = window.innerHeight;
-			const inputRect = birthCapsule?.getBoundingClientRect();
-			const resultRect = (resultBlock ?? resultGroup)?.getBoundingClientRect();
-
-			let left = VIEWPORT_PAD;
-			let top = VIEWPORT_PAD;
-
-			if (inputRect) {
-				// 優先：生日 input 上方，水平對齊 input 中心後再略往右
-				left = inputRect.left + (inputRect.width - width) / 2 + POPOVER_NUDGE_X;
-				top = inputRect.top - INPUT_GAP - height;
-
-				// 上方空間不足時，貼近 input 上方盡量往上放（仍不壓住 input）
-				if (top < VIEWPORT_PAD) {
-					top = VIEWPORT_PAD;
-				}
-
-				// 若仍會壓到 input，改放 input 右側／左側，垂直貼近 input 上緣
-				let popRect = new DOMRect(left, top, width, height);
-
-				if (rectsOverlap(popRect, inputRect)) {
-					const rightCandidate = inputRect.right + INPUT_GAP;
-					const leftCandidate = inputRect.left - INPUT_GAP - width;
-
-					if (rightCandidate + width <= vw - VIEWPORT_PAD) {
-						left = rightCandidate;
-					} else if (leftCandidate >= VIEWPORT_PAD) {
-						left = leftCandidate;
-					}
-
-					top = Math.max(
-						VIEWPORT_PAD,
-						Math.min(inputRect.top, vh - height - VIEWPORT_PAD),
-					);
-					popRect = new DOMRect(left, top, width, height);
-				}
-
-				// 盡量不要壓住主結果數字
-				if (resultRect && rectsOverlap(popRect, resultRect)) {
-					const aboveResult = resultRect.top - POPOVER_GAP - height;
-					const besideRight = resultRect.right + POPOVER_GAP;
-					const besideLeft = resultRect.left - POPOVER_GAP - width;
-
-					if (aboveResult >= VIEWPORT_PAD && aboveResult + height <= inputRect.top - 4) {
-						top = aboveResult;
-					} else if (besideRight + width <= vw - VIEWPORT_PAD) {
-						left = besideRight;
-						top = Math.max(
-							VIEWPORT_PAD,
-							Math.min(inputRect.top - height - INPUT_GAP, vh - height - VIEWPORT_PAD),
-						);
-					} else if (besideLeft >= VIEWPORT_PAD) {
-						left = besideLeft;
-						top = Math.max(
-							VIEWPORT_PAD,
-							Math.min(inputRect.top - height - INPUT_GAP, vh - height - VIEWPORT_PAD),
-						);
-					}
-				}
-			} else if (resultRect) {
-				left = resultRect.right + POPOVER_GAP;
-				top = resultRect.top + (resultRect.height - height) / 2;
-			}
-
-			top = Math.max(VIEWPORT_PAD, Math.min(top, vh - height - VIEWPORT_PAD));
-			left = Math.max(VIEWPORT_PAD, Math.min(left, vw - width - VIEWPORT_PAD));
-
-			calendarPopover.style.left = `${Math.round(left)}px`;
-			calendarPopover.style.top = `${Math.round(top)}px`;
-		};
-
-		const getSelectedBirth = (): CalendarDate | null =>
-			parseBirthDateSegments(sharedSegments, getTodayCalendarDate());
-
-		const renderCalendar = () => {
-			clampViewToSelectableRange();
-			syncSelects();
-
-			const today = getTodayCalendarDate();
-			const selected = getSelectedBirth();
-			calendarGrid.innerHTML = "";
-
-			const firstWeekday = (new Date(viewYear, viewMonth - 1, 1).getDay() + 6) % 7;
-			const daysCount = new Date(viewYear, viewMonth, 0).getDate();
-
-			for (let index = 0; index < firstWeekday; index += 1) {
-				const emptyCell = document.createElement("div");
-				emptyCell.className = "calendar-cell calendar-cell--empty";
-				emptyCell.setAttribute("aria-hidden", "true");
-				calendarGrid.appendChild(emptyCell);
-			}
-
-			for (let day = 1; day <= daysCount; day += 1) {
-				const cellDate: CalendarDate = {
-					year: viewYear,
-					month: viewMonth,
-					day,
-				};
-				const button = document.createElement("button");
-				button.type = "button";
-				button.className = "calendar-day";
-				button.textContent = String(day);
-
-				if (
-					cellDate.year === today.year &&
-					cellDate.month === today.month &&
-					cellDate.day === today.day
-				) {
-					button.classList.add("is-today");
-				}
-
-				if (
-					selected &&
-					selected.year === cellDate.year &&
-					selected.month === cellDate.month &&
-					selected.day === cellDate.day
-				) {
-					button.classList.add("is-selected");
-				}
-
-				if (!isSelectableBirthCalendarDate(cellDate, today)) {
-					button.disabled = true;
-				} else {
-					button.addEventListener("click", () => {
-						const nextSegments = segmentsFromCalendarDate(cellDate);
-						sharedSegments = nextSegments;
-						syncAllDisplays(nextSegments, null, null, true);
-						evaluate(nextSegments);
-						closeCalendar();
-					});
-				}
-
-				calendarGrid.appendChild(button);
-			}
-
-			if (isCalendarOpen) {
-				positionPopover();
-			}
-		};
-
-		const setViewFromSegments = () => {
-			const selected = getSelectedBirth();
-
-			if (selected) {
-				viewYear = selected.year;
-				viewMonth = selected.month;
-				clampViewToSelectableRange();
-				return;
-			}
-
-			const today = getTodayCalendarDate();
-			viewYear = today.year;
-			viewMonth = today.month;
-		};
-
-		const openCalendar = () => {
-			setViewFromSegments();
-			isCalendarOpen = true;
-			calendarPopover.hidden = false;
-			calendarPopover.setAttribute("aria-hidden", "false");
-			calendarToggle.setAttribute("aria-expanded", "true");
-			renderCalendar();
-			requestAnimationFrame(() => {
-				positionPopover();
-			});
-		};
-
-		const closeCalendar = () => {
-			if (!isCalendarOpen) {
-				return;
-			}
-
-			isCalendarOpen = false;
-			calendarPopover.hidden = true;
-			calendarPopover.setAttribute("aria-hidden", "true");
-			calendarToggle.setAttribute("aria-expanded", "false");
-			calendarPopover.style.left = "";
-			calendarPopover.style.top = "";
-		};
-
-		const toggleCalendar = () => {
-			if (isCalendarOpen) {
-				closeCalendar();
-				return;
-			}
-
-			openCalendar();
-		};
-
-		calendarToggle.addEventListener("click", (event) => {
-			event.preventDefault();
-			event.stopPropagation();
-			toggleCalendar();
-		});
-
-		calendarPopover.addEventListener("pointerdown", (event) => {
-			event.stopPropagation();
-		});
-
-		calendarMonthSelect.addEventListener("change", () => {
-			const nextMonth = Number(calendarMonthSelect.value);
-
-			if (!Number.isInteger(nextMonth) || nextMonth < 1 || nextMonth > 12) {
-				return;
-			}
-
-			viewMonth = nextMonth;
-			clampViewToSelectableRange();
-			renderCalendar();
-		});
-
-		calendarYearSelect.addEventListener("change", () => {
-			const nextYear = Number(calendarYearSelect.value);
-			const today = getTodayCalendarDate();
-
-			if (
-				!Number.isInteger(nextYear) ||
-				nextYear < MIN_BIRTH_YEAR ||
-				nextYear > today.year
-			) {
-				return;
-			}
-
-			viewYear = nextYear;
-			clampViewToSelectableRange();
-			renderCalendar();
-		});
-
-		calendarPrev.addEventListener("click", () => {
-			if (!canGoPrevMonth()) {
-				return;
-			}
-
-			viewMonth -= 1;
-
-			if (viewMonth < 1) {
-				viewMonth = 12;
-				viewYear -= 1;
-			}
-
-			clampViewToSelectableRange();
-			renderCalendar();
-		});
-
-		calendarNext.addEventListener("click", () => {
-			if (!canGoNextMonth()) {
-				return;
-			}
-
-			viewMonth += 1;
-
-			if (viewMonth > 12) {
-				viewMonth = 1;
-				viewYear += 1;
-			}
-
-			clampViewToSelectableRange();
-			renderCalendar();
-		});
-
-		document.addEventListener("pointerdown", (event) => {
-			if (!isCalendarOpen) {
-				return;
-			}
-
-			const target = event.target;
-
-			if (!(target instanceof Node)) {
-				return;
-			}
-
-			if (
-				calendarPopover.contains(target) ||
-				calendarToggle.contains(target)
-			) {
-				return;
-			}
-
-			closeCalendar();
-		});
-
-		document.addEventListener("keydown", (event) => {
-			if (event.key === "Escape" && isCalendarOpen) {
-				event.preventDefault();
-				closeCalendar();
-				calendarToggle.focus();
-			}
-		});
-
-		window.addEventListener(
-			"resize",
-			() => {
-				if (isCalendarOpen) {
-					positionPopover();
-				}
+		birthCalendarApi = createDesktopDateCalendar({
+			intlLocale: i18n.intlLocale,
+			toggle: calendarToggle,
+			popover: calendarPopover,
+			grid: calendarGrid,
+			monthSelect: calendarMonthSelect,
+			yearSelect: calendarYearSelect,
+			prev: calendarPrev,
+			next: calendarNext,
+			getSelectedDate: () =>
+				parseBirthDateSegments(sharedSegments, getTodayCalendarDate()),
+			getFallbackViewDate: () => getTodayCalendarDate(),
+			isDateSelectable: isSelectableBirthCalendarDate,
+			onSelectDate: (date) => {
+				const nextSegments = segmentsFromCalendarDate(date);
+				sharedSegments = nextSegments;
+				syncAllDisplays(nextSegments, null, null, true);
+				evaluate(nextSegments);
 			},
-			{ passive: true },
-		);
-
-		window.addEventListener(
-			"scroll",
-			() => {
-				if (isCalendarOpen) {
-					positionPopover();
-				}
+			getPositionAnchor: () => birthCapsule,
+			getAvoidRects: () => {
+				const resultBlock = root.querySelector<HTMLElement>(
+					".preview-tool-result-block",
+				);
+				const resultGroup = root.querySelector<HTMLElement>(
+					".preview-tool-result-group",
+				);
+				const avoid = resultBlock ?? resultGroup;
+				return [avoid?.getBoundingClientRect()];
 			},
-			{ passive: true, capture: true },
-		);
-
-		window.matchMedia("(min-width: 768px)").addEventListener("change", (event) => {
-			if (!event.matches && isCalendarOpen) {
-				closeCalendar();
-			}
+			nudgeX: 28,
+			preferAboveAnchor: true,
+			onBeforeOpen: () => {
+				asOfCalendarApi?.close();
+			},
 		});
 	}
 
+	const asOfCalendarToggle = asOfControl;
+	const asOfCalendarPopover = root.querySelector<HTMLElement>(
+		"[data-acv2-asof-calendar-popover]",
+	);
+	const asOfCalendarGrid = root.querySelector<HTMLElement>(
+		"[data-acv2-asof-calendar-grid]",
+	);
+	const asOfCalendarMonthSelect = root.querySelector<HTMLSelectElement>(
+		"[data-acv2-asof-calendar-month-select]",
+	);
+	const asOfCalendarYearSelect = root.querySelector<HTMLSelectElement>(
+		"[data-acv2-asof-calendar-year-select]",
+	);
+	const asOfCalendarPrev = root.querySelector<HTMLButtonElement>(
+		"[data-acv2-asof-calendar-prev]",
+	);
+	const asOfCalendarNext = root.querySelector<HTMLButtonElement>(
+		"[data-acv2-asof-calendar-next]",
+	);
+
+	if (
+		asOfCalendarToggle &&
+		asOfCalendarPopover &&
+		asOfCalendarGrid &&
+		asOfCalendarMonthSelect &&
+		asOfCalendarYearSelect &&
+		asOfCalendarPrev &&
+		asOfCalendarNext
+	) {
+		asOfCalendarApi = createDesktopDateCalendar({
+			intlLocale: i18n.intlLocale,
+			toggle: asOfCalendarToggle,
+			popover: asOfCalendarPopover,
+			grid: asOfCalendarGrid,
+			monthSelect: asOfCalendarMonthSelect,
+			yearSelect: asOfCalendarYearSelect,
+			prev: asOfCalendarPrev,
+			next: asOfCalendarNext,
+			getSelectedDate: () => getEffectiveAsOf(),
+			getFallbackViewDate: () => getEffectiveAsOf(),
+			isDateSelectable: isSelectableAsOfCalendarDate,
+			onSelectDate: (date) => {
+				setAsOfOverride(date);
+				evaluate(sharedSegments);
+			},
+			getPositionAnchor: () => asOfControl,
+			placement: "right",
+			onBeforeOpen: () => {
+				birthCalendarApi?.close();
+			},
+		});
+	}
+
+	syncAsOfLabels();
 	renderZeroState();
 }
+
 
 function initAll(): void {
 	const roots = document.querySelectorAll<HTMLElement>("[data-age-calculator-v2]");

@@ -1056,3 +1056,55 @@ export function segmentsFromCalendarDate(date: CalendarDate): DateSegments {
 		day: String(date.day).padStart(2, "0"),
 	});
 }
+
+/** As-of calendar selectable range: 1900-01-01 through today inclusive (no future). */
+export function isSelectableAsOfCalendarDate(
+	date: CalendarDate,
+	today: CalendarDate = getTodayCalendarDate(),
+): boolean {
+	return isSelectableBirthCalendarDate(date, today);
+}
+
+/** Parse as-of segments — same calendar bounds as birth (≤ today, ≥ 1900). */
+export function parseAsOfDateSegments(
+	segments: DateSegments,
+	today: CalendarDate = getTodayCalendarDate(),
+): CalendarDate | null {
+	return parseBirthDateSegments(segments, today);
+}
+
+/**
+ * As-of invalid fields for mobile icons.
+ * Before-birth (when birth known) → day icon.
+ */
+export function resolveInvalidAsOfFields(
+	segments: DateSegments,
+	today: CalendarDate = getTodayCalendarDate(),
+	birth: CalendarDate | null = null,
+): InvalidBirthField[] {
+	const fields = resolveInvalidBirthFields(segments, today);
+
+	if (fields.length > 0) {
+		return fields;
+	}
+
+	const asOf = parseAsOfDateSegments(segments, today);
+
+	if (asOf && birth && compareCalendarDates(asOf, birth) < 0) {
+		return ["day"];
+	}
+
+	return [];
+}
+
+export function formatCalendarDateDisplay(date: CalendarDate): string {
+	return [
+		String(date.year).padStart(4, "0"),
+		String(date.month).padStart(2, "0"),
+		String(date.day).padStart(2, "0"),
+	].join(" / ");
+}
+
+export function calendarDatesEqual(a: CalendarDate, b: CalendarDate): boolean {
+	return compareCalendarDates(a, b) === 0;
+}

@@ -61,10 +61,16 @@ const clientI18n = {
 	exactAgeTemplate: m.exactAgeTemplate,
 	daysLivedTemplate: m.daysLivedTemplate,
 	invalidBirthDate: m.invalidBirthDate,
+	invalidAsOfDate: m.invalidAsOfDate,
 	birthDatePlaceholder: m.birthDatePlaceholder,
 	birthDateDesktopPlaceholder: m.birthDateDesktopPlaceholder,
 	calendarLabel: m.calendarLabel,
 	openCalendarAriaLabel: m.openCalendarAriaLabel,
+	asOfToday: m.asOfToday,
+	asOfTemplate: m.asOfTemplate,
+	asOfCalendarLabel: m.asOfCalendarLabel,
+	openAsOfCalendarAriaLabel: m.openAsOfCalendarAriaLabel,
+	backToTodayAriaLabel: m.backToTodayAriaLabel,
 	previousMonth: m.previousMonth,
 	nextMonth: m.nextMonth,
 	weekdays: m.weekdays,
@@ -165,12 +171,53 @@ const clientI18n = {
 					</div>
 
 					<div class="acv2-asof-row" data-acv2-asof>
-						<span
+						<button
+							type="button"
 							class="acv2-asof-control"
 							data-acv2-asof-control
-							aria-disabled="true"
+							aria-expanded="false"
+							aria-controls="acv2-asof-calendar-popover"
+							aria-label={m.openAsOfCalendarAriaLabel}
 						>
-							{m.asOfToday}
+							<span data-acv2-asof-label>{m.asOfToday}</span>
+						</button>
+						<button
+							type="button"
+							class="acv2-asof-reset"
+							data-acv2-asof-reset
+							hidden
+							aria-label={m.backToTodayAriaLabel}
+						>
+							<svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+								<path
+									d="M4.5 6.5H11a2.5 2.5 0 1 1 0 5H9"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"
+									stroke-linejoin="round"></path>
+								<path
+									d="M6.5 4.5 4.5 6.5 6.5 8.5"
+									stroke="currentColor"
+									stroke-width="1.5"
+									stroke-linecap="round"
+									stroke-linejoin="round"></path>
+							</svg>
+						</button>
+						<span
+							class="acv2-date-invalid-icon acv2-asof-invalid-icon"
+							data-acv2-asof-invalid-icon
+							hidden
+							aria-label={m.invalidAsOfDate}
+						>
+							<svg viewBox="0 0 16 16" aria-hidden="true">
+								<path
+									fill="currentColor"
+									d="M8 1.75 14.25 14.25H1.75L8 1.75z"></path>
+								<path
+									fill="#0f172a"
+									d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+								></path>
+							</svg>
 						</span>
 					</div>
 				</div>
@@ -426,6 +473,64 @@ const clientI18n = {
 			<div class="calendar-grid" data-acv2-calendar-grid></div>
 		</div>
 	</div>
+
+	{/* Desktop as-of calendar popover — 與 birth calendar 同一套視覺 */}
+	<div
+		id="acv2-asof-calendar-popover"
+		class="acv2-calendar-popover"
+		data-acv2-asof-calendar-popover
+		role="dialog"
+		aria-label={m.asOfCalendarLabel}
+		aria-hidden="true"
+		hidden
+	>
+		<div class="calendar-panel calendar-card acv2-calendar-panel">
+			<div class="calendar-toolbar">
+				<button
+					type="button"
+					class="calendar-nav-btn"
+					data-acv2-asof-calendar-prev
+					aria-label={m.previousMonth}
+				>
+					‹
+				</button>
+				<div class="acv2-calendar-selects">
+					<label class="acv2-calendar-select-wrap">
+						<span class="sr-only">{m.monthFieldLabel}</span>
+						<select
+							class="acv2-calendar-select"
+							data-acv2-asof-calendar-month-select
+							aria-label={m.monthFieldLabel}
+						>
+						</select>
+					</label>
+					<label class="acv2-calendar-select-wrap">
+						<span class="sr-only">{m.yearFieldLabel}</span>
+						<select
+							class="acv2-calendar-select"
+							data-acv2-asof-calendar-year-select
+							aria-label={m.yearFieldLabel}
+						>
+						</select>
+					</label>
+				</div>
+				<button
+					type="button"
+					class="calendar-nav-btn"
+					data-acv2-asof-calendar-next
+					aria-label={m.nextMonth}
+				>
+					›
+				</button>
+			</div>
+
+			<div class="calendar-weekdays" aria-hidden="true">
+				{m.weekdays.map((day) => <span>{day}</span>)}
+			</div>
+
+			<div class="calendar-grid" data-acv2-asof-calendar-grid></div>
+		</div>
+	</div>
 </div>
 
 <div data-acv2-sheet-portal data-mobile-sheet-baseline hidden aria-hidden="true">
@@ -564,9 +669,40 @@ const clientI18n = {
 					</label>
 				</div>
 
-				<p class="acv2-sheet-asof-text" data-acv2-sheet-asof>
-					{m.asOfToday}
-				</p>
+				<div class="acv2-sheet-asof-text" data-acv2-sheet-asof>
+					<button
+						type="button"
+						class="acv2-sheet-asof-control"
+						data-acv2-sheet-asof-control
+					>
+						<span data-acv2-sheet-asof-label>{m.asOfToday}</span>
+					</button>
+					<span
+						class="acv2-date-invalid-icon acv2-sheet-asof-invalid"
+						data-acv2-sheet-asof-invalid
+						hidden
+						aria-label={m.invalidAsOfDate}
+					>
+						<svg viewBox="0 0 16 16" aria-hidden="true">
+							<path
+								fill="currentColor"
+								d="M8 1.75 14.25 14.25H1.75L8 1.75z"></path>
+							<path
+								fill="#0f172a"
+								d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+							></path>
+						</svg>
+					</span>
+				</div>
+				{/* Mobile 原生 date picker — 視覺隱藏，由 As-of 文字觸發；清除／重置回 today */}
+				<input
+					type="date"
+					class="acv2-sheet-asof-native"
+					data-acv2-sheet-asof-native
+					min="1900-01-01"
+					tabindex="-1"
+					aria-hidden="true"
+				/>
 			</div>
 		</div>
 	</div>

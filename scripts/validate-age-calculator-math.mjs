@@ -25,6 +25,11 @@ import {
 	shouldAutoAdvanceMobileMonth,
 	shouldAutoAdvanceMobileYear,
 	isSelectableBirthCalendarDate,
+	isSelectableAsOfCalendarDate,
+	parseAsOfDateSegments,
+	resolveInvalidAsOfFields,
+	formatCalendarDateDisplay,
+	calendarDatesEqual,
 	segmentsFromCalendarDate,
 	segmentsFromPastedText,
 	segmentsFromStreamDigits,
@@ -440,6 +445,41 @@ assert(
 		segmentsFromCalendarDate({ year: 1999, month: 1, day: 4 }),
 	) === "1999 / 01 / 04",
 	"calendar date formats as YYYY / MM / DD",
+);
+
+assert(
+	isSelectableAsOfCalendarDate({ year: 2020, month: 1, day: 1 }, FIXED_TODAY),
+	"as-of past date selectable",
+);
+assert(
+	!isSelectableAsOfCalendarDate({ year: 2026, month: 12, day: 31 }, FIXED_TODAY),
+	"as-of future not selectable",
+);
+assert(
+	parseAsOfDateSegments({ year: "2020", month: "06", day: "15" }, FIXED_TODAY)?.day === 15,
+	"as-of parse accepts past date",
+);
+assert(
+	parseAsOfDateSegments({ year: "2030", month: "01", day: "01" }, FIXED_TODAY) === null,
+	"as-of parse rejects future",
+);
+assert(
+	JSON.stringify(
+		resolveInvalidAsOfFields(
+			{ year: "1990", month: "01", day: "01" },
+			FIXED_TODAY,
+			{ year: 1999, month: 1, day: 4 },
+		),
+	) === JSON.stringify(["day"]),
+	"as-of before birth marks day invalid",
+);
+assert(
+	formatCalendarDateDisplay({ year: 1999, month: 1, day: 4 }) === "1999 / 01 / 04",
+	"formatCalendarDateDisplay pads segments",
+);
+assert(
+	calendarDatesEqual(FIXED_TODAY, { year: 2026, month: 7, day: 10 }),
+	"calendarDatesEqual matches",
 );
 
 // Completion rules
