@@ -35,7 +35,7 @@ export const catalogTools: CatalogTool[] = [
     available: true,
     featured: true,
     icon: "countdown",
-    relatedIds: ["date-range", "countdown-timer", "year-progress"],
+    relatedIds: ["date-range", "countdown-timer", "age-calculator"],
   },
   {
     id: "date-range",
@@ -44,7 +44,7 @@ export const catalogTools: CatalogTool[] = [
     available: true,
     featured: true,
     icon: "date-range",
-    relatedIds: ["event-countdown", "countdown-timer", "year-progress"],
+    relatedIds: ["event-countdown", "countdown-timer", "age-calculator"],
   },
   {
     id: "countdown-timer",
@@ -62,16 +62,16 @@ export const catalogTools: CatalogTool[] = [
     available: true,
     featured: true,
     icon: "year-progress",
-    relatedIds: ["event-countdown", "date-range", "countdown-timer"],
+    relatedIds: ["event-countdown", "date-range", "age-calculator"],
   },
   {
     id: "age-calculator",
     slug: "age-calculator",
     categoryId: "dates-events",
-    available: false,
+    available: true,
     featured: true,
     icon: "age-calculator",
-    relatedIds: ["date-range", "event-countdown"],
+    relatedIds: ["date-range", "event-countdown", "year-progress"],
   },
   {
     id: "life-progress",

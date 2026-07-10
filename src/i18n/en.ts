@@ -64,24 +64,24 @@ export const en = {
     chips: [
       "Important Dates",
       "Date Calculations",
-      "Countdown Timer",
+      "Age Calculator",
       "Year Progress",
     ],
     featuredTools: {
-      "event-countdown": {
-        title: "Event Countdown",
-        description:
-          "Create a clean countdown for birthdays, trips, holidays, and important dates.",
-      },
       "date-range": {
         title: "Date Range Calculator",
         description:
           "Calculate the days, workdays, and weekends between two dates.",
       },
-      timer: {
-        title: "Countdown Timer",
+      "age-calculator": {
+        title: "Age Calculator",
         description:
-          "Set a simple timer for focus, cooking, workouts, breaks, or everyday tasks.",
+          "Calculate your exact age in years, months, and days, plus total days lived as of today or another date.",
+      },
+      "event-countdown": {
+        title: "Event Countdown",
+        description:
+          "Create a clean countdown for birthdays, trips, holidays, and important dates.",
       },
       "year-progress": {
         title: "Year Progress",
@@ -95,17 +95,17 @@ export const en = {
         {
           question: "What can I use Timiva for?",
           answer:
-            "Timiva provides simple, calm, mobile-friendly time tools for creating event countdowns, calculating date ranges, setting countdown timers, and seeing progress across years, months, or life. The homepage highlights four main tools so the most useful time features stay easy to find.",
+            "Timiva provides simple, calm, mobile-friendly time tools for calculating date ranges, calculating exact age, creating event countdowns, setting countdown timers, and seeing year progress.",
         },
         {
           question: "What tools are available on Timiva?",
           answer:
-            "The homepage currently includes Event Countdown, Date Range Calculator, Countdown Timer, and Year Progress. These tools cover important dates, date calculations, timers and focus, and long-term time progress.",
+            "Timiva tools currently include Date Range Calculator, Age Calculator, Event Countdown, Year Progress, and Countdown Timer. Together they cover date calculations, exact age, important dates, long-term time progress, and short timers for focus or daily tasks.",
         },
         {
           question: "How do I start using a Timiva tool?",
           answer:
-            "Choose a tool card from the homepage and open the tool you need. Each tool is designed mobile-first, with fewer input fields and simple controls so you can complete the main task quickly.",
+            "Open the tool you need and start right away. Each tool is designed mobile-first, with fewer input fields and simple controls so you can complete the main task quickly.",
         },
         {
           question: "Can I use Timiva on mobile?",
@@ -120,7 +120,7 @@ export const en = {
         {
           question: "Why does Timiva keep only a few tools on the homepage?",
           answer:
-            "Timiva is built around a simple idea: fewer tools, but each one should feel clear, useful, and comfortable. The homepage keeps four main tools so Timiva does not become a noisy tool directory.",
+            "Timiva is built around a simple idea: fewer tools, but each one should feel clear, useful, and comfortable. The homepage keeps a focused set of main tools so Timiva does not become a noisy tool directory.",
         },
         {
           question: "Is Timiva free to use?",

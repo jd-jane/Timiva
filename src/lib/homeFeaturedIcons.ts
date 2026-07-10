@@ -2,10 +2,10 @@ import type { FeaturedToolId } from "../data/homeTools";
 
 export const homeFeaturedIconMap: Record<
 	FeaturedToolId,
-	"calendar" | "plus-square" | "timer" | "progress"
+	"calendar" | "plus-square" | "timer" | "progress" | "person"
 > = {
-	"event-countdown": "calendar",
 	"date-range": "plus-square",
-	timer: "timer",
+	"age-calculator": "person",
+	"event-countdown": "calendar",
 	"year-progress": "progress",
 };

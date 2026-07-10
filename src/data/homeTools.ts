@@ -1,13 +1,6 @@
 /** 首頁主推工具（4 張卡片） */
 export const featuredTools = [
   {
-    id: "event-countdown",
-    slug: "event-countdown",
-    available: true,
-    icon: "countdown",
-    category: "Countdown",
-  },
-  {
     id: "date-range",
     slug: "date-range-calculator",
     available: true,
@@ -15,11 +8,18 @@ export const featuredTools = [
     category: "Date",
   },
   {
-    id: "timer",
-    slug: "countdown-timer",
+    id: "age-calculator",
+    slug: "age-calculator",
     available: true,
-    icon: "timer",
-    category: "Timer",
+    icon: "age-calculator",
+    category: "Date",
+  },
+  {
+    id: "event-countdown",
+    slug: "event-countdown",
+    available: true,
+    icon: "countdown",
+    category: "Countdown",
   },
   {
     id: "year-progress",

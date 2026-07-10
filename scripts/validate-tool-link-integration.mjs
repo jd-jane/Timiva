@@ -1,5 +1,5 @@
 /**
- * Year Progress Link Integration validator — source architecture + built output.
+ * Tool Link Integration validator — source architecture + built output.
  * Run after: npm run build
  * Run: node scripts/validate-tool-link-integration.mjs
  */
@@ -17,19 +17,22 @@ const PRODUCTION_TOOL_IDS = [
 	"date-range",
 	"countdown-timer",
 	"year-progress",
+	"age-calculator",
 ];
 
 const APPROVED_RELATED_IDS = {
-	"event-countdown": ["date-range", "countdown-timer", "year-progress"],
-	"date-range": ["event-countdown", "countdown-timer", "year-progress"],
+	"event-countdown": ["date-range", "countdown-timer", "age-calculator"],
+	"date-range": ["event-countdown", "countdown-timer", "age-calculator"],
 	"countdown-timer": ["event-countdown", "date-range", "year-progress"],
-	"year-progress": ["event-countdown", "date-range", "countdown-timer"],
+	"year-progress": ["event-countdown", "date-range", "age-calculator"],
+	"age-calculator": ["date-range", "event-countdown", "year-progress"],
 };
 
 const PRODUCTION_RELATED_COMPONENTS = [
 	"src/components/tools/event-countdown-v2/EventCountdownV2.astro",
 	"src/components/tools/date-range-calculator-v2/DateRangeCalculatorV2.astro",
 	"src/components/tools/countdown-timer-v2/CountdownTimerV2.astro",
+	"src/components/tools/year-progress-v2/YearProgressV2.astro",
 ];
 
 let passed = 0;
@@ -69,7 +72,7 @@ function countHref(html, href) {
 
 function extractRelatedHrefs(html, localePrefix) {
 	const sectionPattern = new RegExp(
-		`<section[^>]*(?:data-preview-related-tools|data-drv2-related-tools|data-ctv2-related-tools|data-ypv2-related-tools)[^>]*>([\\s\\S]*?)</section>`,
+		`<section[^>]*(?:data-preview-related-tools|data-drv2-related-tools|data-ctv2-related-tools|data-ypv2-related-tools|data-acv2-related-tools)[^>]*>([\\s\\S]*?)</section>`,
 		"g",
 	);
 	const hrefPattern = new RegExp(
@@ -182,13 +185,14 @@ const catalogIconMap = parseIconMap(
 );
 
 // --- Source: catalog ---
-const yearProgressEntries = catalogTools.filter(
-	(tool) => tool.id === "year-progress",
+const ageCalculatorEntries = catalogTools.filter(
+	(tool) => tool.id === "age-calculator",
 );
-assert(yearProgressEntries.length === 1, "exactly one year-progress catalog entry");
+assert(ageCalculatorEntries.length === 1, "exactly one age-calculator catalog entry");
 
-const yearProgress = yearProgressEntries[0];
-assert(yearProgress?.available === true, "year-progress.available === true");
+const ageCalculator = ageCalculatorEntries[0];
+assert(ageCalculator?.available === true, "age-calculator.available === true");
+assert(ageCalculator?.slug === "age-calculator", "age-calculator slug is age-calculator");
 
 for (const id of PRODUCTION_TOOL_IDS) {
 	const tool = catalogTools.find((entry) => entry.id === id);
@@ -232,43 +236,52 @@ for (const toolId of PRODUCTION_TOOL_IDS) {
 assert(featuredTools.length === 4, "Home has exactly four featured tools");
 assert(
 	JSON.stringify(featuredTools.map((tool) => tool.id)) ===
-		JSON.stringify(["event-countdown", "date-range", "timer", "year-progress"]),
-	"Home order is event-countdown, date-range, timer, year-progress",
+		JSON.stringify([
+			"date-range",
+			"age-calculator",
+			"event-countdown",
+			"year-progress",
+		]),
+	"Home order is date-range, age-calculator, event-countdown, year-progress",
+);
+assert(
+	!featuredTools.some((tool) => tool.id === "timer"),
+	"Home featured tools do not include Countdown Timer",
 );
 
-const homeYearProgress = featuredTools[3];
-assert(homeYearProgress?.id === "year-progress", "Home fourth tool is year-progress");
-assert(homeYearProgress?.slug === "year-progress", "Home year-progress slug is year-progress");
-assert(homeYearProgress?.available === true, "Home year-progress is enabled");
+const homeAgeCalculator = featuredTools[1];
+assert(homeAgeCalculator?.id === "age-calculator", "Home second tool is age-calculator");
+assert(homeAgeCalculator?.slug === "age-calculator", "Home age-calculator slug is age-calculator");
+assert(homeAgeCalculator?.available === true, "Home age-calculator is enabled");
 assert(
-	homeFeaturedIconMap["year-progress"] === "progress",
-	"Home year-progress icon mapping exists",
+	homeFeaturedIconMap["age-calculator"] === "person",
+	"Home age-calculator icon mapping exists",
 );
 assert(
-	catalogIconMap["year-progress"] === "progress",
-	"catalog year-progress icon mapping exists",
+	catalogIconMap["age-calculator"] === "person",
+	"catalog age-calculator icon mapping exists",
 );
 
 assert(
-	en.home.featuredTools["year-progress"]?.title === "Year Progress",
-	"EN Home year-progress title exists",
+	en.home.featuredTools["age-calculator"]?.title === "Age Calculator",
+	"EN Home age-calculator title exists",
 );
 assert(
-	en.home.featuredTools["year-progress"]?.description ===
-		en.tools.yearProgress.description,
-	"EN Home year-progress description matches catalog wording",
+	en.home.featuredTools["age-calculator"]?.description ===
+		en.tools.ageCalculator.description,
+	"EN Home age-calculator description matches catalog wording",
 );
 assert(
-	zh.home.featuredTools["year-progress"]?.title === "今年進度",
-	"ZH Home year-progress title exists",
+	zh.home.featuredTools["age-calculator"]?.title === "年齡計算器",
+	"ZH Home age-calculator title exists",
 );
 assert(
-	zh.home.featuredTools["year-progress"]?.description ===
-		zh.tools.yearProgress.description,
-	"ZH Home year-progress description matches catalog wording",
+	zh.home.featuredTools["age-calculator"]?.description ===
+		zh.tools.ageCalculator.description,
+	"ZH Home age-calculator description matches catalog wording",
 );
-assert(en.tools.yearProgress.title === "Year Progress", "EN tools.yearProgress exists");
-assert(zh.tools.yearProgress.title === "今年進度", "ZH tools.yearProgress exists");
+assert(en.tools.ageCalculator.title === "Age Calculator", "EN tools.ageCalculator exists");
+assert(zh.tools.ageCalculator.title === "年齡計算器", "ZH tools.ageCalculator exists");
 
 // --- Source: production Related Tools components ---
 const countdownTimerSource = readSource(
@@ -288,8 +301,8 @@ assert(
 for (const relativePath of PRODUCTION_RELATED_COMPONENTS) {
 	const source = readSource(relativePath);
 	assert(
-		source.includes('"year-progress": messages.tools.yearProgress'),
-		`${relativePath} maps year-progress copy`,
+		source.includes('"age-calculator": messages.tools.ageCalculator'),
+		`${relativePath} maps age-calculator copy`,
 	);
 }
 
@@ -297,35 +310,35 @@ for (const relativePath of PRODUCTION_RELATED_COMPONENTS) {
 const builtPages = [
 	{
 		path: "en/tools/index.html",
-		requires: ["/en/year-progress/"],
+		requires: ["/en/age-calculator/"],
 	},
 	{
 		path: "zh/tools/index.html",
-		requires: ["/zh/year-progress/"],
+		requires: ["/zh/age-calculator/"],
 	},
 	{
 		path: "en/event-countdown/index.html",
 		locale: "en",
 		selfSlug: "event-countdown",
-		related: ["date-range-calculator", "countdown-timer", "year-progress"],
+		related: ["date-range-calculator", "countdown-timer", "age-calculator"],
 	},
 	{
 		path: "zh/event-countdown/index.html",
 		locale: "zh",
 		selfSlug: "event-countdown",
-		related: ["date-range-calculator", "countdown-timer", "year-progress"],
+		related: ["date-range-calculator", "countdown-timer", "age-calculator"],
 	},
 	{
 		path: "en/date-range-calculator/index.html",
 		locale: "en",
 		selfSlug: "date-range-calculator",
-		related: ["event-countdown", "countdown-timer", "year-progress"],
+		related: ["event-countdown", "countdown-timer", "age-calculator"],
 	},
 	{
 		path: "zh/date-range-calculator/index.html",
 		locale: "zh",
 		selfSlug: "date-range-calculator",
-		related: ["event-countdown", "countdown-timer", "year-progress"],
+		related: ["event-countdown", "countdown-timer", "age-calculator"],
 	},
 	{
 		path: "en/countdown-timer/index.html",
@@ -343,13 +356,27 @@ const builtPages = [
 		path: "en/year-progress/index.html",
 		locale: "en",
 		selfSlug: "year-progress",
-		related: ["event-countdown", "date-range-calculator", "countdown-timer"],
+		related: ["event-countdown", "date-range-calculator", "age-calculator"],
 	},
 	{
 		path: "zh/year-progress/index.html",
 		locale: "zh",
 		selfSlug: "year-progress",
-		related: ["event-countdown", "date-range-calculator", "countdown-timer"],
+		related: ["event-countdown", "date-range-calculator", "age-calculator"],
+	},
+	{
+		path: "en/age-calculator/index.html",
+		locale: "en",
+		selfSlug: "age-calculator",
+		related: ["date-range-calculator", "event-countdown", "year-progress"],
+		relatedAttr: "data-acv2-related-tools",
+	},
+	{
+		path: "zh/age-calculator/index.html",
+		locale: "zh",
+		selfSlug: "age-calculator",
+		related: ["date-range-calculator", "event-countdown", "year-progress"],
+		relatedAttr: "data-acv2-related-tools",
 	},
 ];
 
@@ -360,7 +387,7 @@ for (const page of builtPages) {
 		for (const required of page.requires) {
 			assert(
 				html.includes(`href="${required}"`),
-				`${page.path} contains Year Progress link ${required}`,
+				`${page.path} contains Age Calculator link ${required}`,
 			);
 		}
 		continue;
@@ -399,11 +426,11 @@ for (const page of builtPages) {
 for (const homePage of ["en/index.html", "zh/index.html"]) {
 	const html = readDistHtml(homePage);
 	const locale = homePage.startsWith("zh") ? "zh" : "en";
-	const ypHref = `/${locale}/year-progress/`;
+	const acHref = `/${locale}/age-calculator/`;
 
 	assert(
-		countHref(html, ypHref) >= 1,
-		`${homePage} contains localized Year Progress home link`,
+		countHref(html, acHref) >= 1,
+		`${homePage} contains localized Age Calculator home link`,
 	);
 	assert(!html.includes("life-progress"), `${homePage} does not link to life-progress slug`);
 	assert(
