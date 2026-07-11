@@ -222,6 +222,12 @@ export const en = {
       compactDescription: "Calculate exact age and days lived.",
       relatedDescription: "Check exact age.",
     },
+    daysBetweenDates: {
+      title: "Days Between Dates",
+      description: "Quickly calculate how many days are between two dates.",
+      compactDescription: "Calculate the day difference between two dates.",
+      relatedDescription: "Find the number of days between two dates.",
+    },
     lifeProgress: {
       title: "Life Progress Bar",
       description:

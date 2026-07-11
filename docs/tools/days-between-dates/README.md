@@ -37,7 +37,7 @@ Days Between Dates / 日期差計算 是 Timiva V1.5 Search Foundation 的下一
 | ZH route | `/zh/days-between-dates/` |
 | Phase | V1.5 Search Foundation |
 | Tool order | 6 |
-| Status | Product spec draft complete · Ready for Plan-first |
+| Status | Standalone commit `69ba30b` · Post-tool Link Integration implemented（pending Owner QA / commit） |
 | Storage | MVP 不使用 LocalStorage |
 | URL state | MVP 不使用 URL sharing |
 | Backend | 不需要 |
@@ -717,12 +717,22 @@ Days Between Dates gives a quick day count. Date Range Calculator is better when
 
 ## 15. Related Tools
 
-MVP 建議：
+Outbound（catalog `relatedIds` / `getRelatedTools`）：
 
 ```text
 1. Date Range Calculator
 2. Age Calculator
 3. Event Countdown
+```
+
+Post-tool Link Integration inbound（Owner 批准）：
+
+```text
+Date Range Calculator → [days-between-dates, event-countdown, age-calculator]
+Age Calculator → [date-range, days-between-dates, event-countdown]
+Event Countdown / Year Progress / Countdown Timer → 本輪不加 DBD
+Home Featured → 不加 DBD（維持 4 張）
+All Tools → 加入 DBD（EC → DRC → DBD → AC）
 ```
 
 排序理由：

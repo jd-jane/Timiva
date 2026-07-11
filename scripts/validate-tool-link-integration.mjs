@@ -15,6 +15,7 @@ const DIST = join(ROOT, "dist");
 const PRODUCTION_TOOL_IDS = [
 	"event-countdown",
 	"date-range",
+	"days-between-dates",
 	"countdown-timer",
 	"year-progress",
 	"age-calculator",
@@ -22,17 +23,27 @@ const PRODUCTION_TOOL_IDS = [
 
 const APPROVED_RELATED_IDS = {
 	"event-countdown": ["date-range", "countdown-timer", "age-calculator"],
-	"date-range": ["event-countdown", "countdown-timer", "age-calculator"],
+	"date-range": ["days-between-dates", "event-countdown", "age-calculator"],
+	"days-between-dates": ["date-range", "age-calculator", "event-countdown"],
 	"countdown-timer": ["event-countdown", "date-range", "year-progress"],
 	"year-progress": ["event-countdown", "date-range", "age-calculator"],
-	"age-calculator": ["date-range", "event-countdown", "year-progress"],
+	"age-calculator": ["date-range", "days-between-dates", "event-countdown"],
 };
+
+const DATES_EVENTS_ORDER = [
+	"event-countdown",
+	"date-range",
+	"days-between-dates",
+	"age-calculator",
+];
 
 const PRODUCTION_RELATED_COMPONENTS = [
 	"src/components/tools/event-countdown-v2/EventCountdownV2.astro",
 	"src/components/tools/date-range-calculator-v2/DateRangeCalculatorV2.astro",
+	"src/components/tools/days-between-dates-v2/DaysBetweenDatesV2.astro",
 	"src/components/tools/countdown-timer-v2/CountdownTimerV2.astro",
 	"src/components/tools/year-progress-v2/YearProgressV2.astro",
+	"src/components/tools/age-calculator-v2/AgeCalculatorV2.astro",
 ];
 
 let passed = 0;
@@ -72,7 +83,7 @@ function countHref(html, href) {
 
 function extractRelatedHrefs(html, localePrefix) {
 	const sectionPattern = new RegExp(
-		`<section[^>]*(?:data-preview-related-tools|data-drv2-related-tools|data-ctv2-related-tools|data-ypv2-related-tools|data-acv2-related-tools)[^>]*>([\\s\\S]*?)</section>`,
+		`<section[^>]*(?:data-preview-related-tools|data-drv2-related-tools|data-ctv2-related-tools|data-ypv2-related-tools|data-acv2-related-tools|data-dbdv2-related-tools)[^>]*>([\\s\\S]*?)</section>`,
 		"g",
 	);
 	const hrefPattern = new RegExp(
@@ -185,6 +196,18 @@ const catalogIconMap = parseIconMap(
 );
 
 // --- Source: catalog ---
+const daysBetweenEntries = catalogTools.filter(
+	(tool) => tool.id === "days-between-dates",
+);
+assert(daysBetweenEntries.length === 1, "exactly one days-between-dates catalog entry");
+
+const daysBetweenDates = daysBetweenEntries[0];
+assert(daysBetweenDates?.available === true, "days-between-dates.available === true");
+assert(
+	daysBetweenDates?.slug === "days-between-dates",
+	"days-between-dates slug is days-between-dates",
+);
+
 const ageCalculatorEntries = catalogTools.filter(
 	(tool) => tool.id === "age-calculator",
 );
@@ -198,6 +221,15 @@ for (const id of PRODUCTION_TOOL_IDS) {
 	const tool = catalogTools.find((entry) => entry.id === id);
 	assert(tool?.available === true, `${id} is available`);
 }
+
+const datesEventsOrder = catalogTools
+	.filter((tool) => tool.available)
+	.map((tool) => tool.id)
+	.filter((id) => DATES_EVENTS_ORDER.includes(id));
+assert(
+	JSON.stringify(datesEventsOrder) === JSON.stringify(DATES_EVENTS_ORDER),
+	"dates-events available order is event-countdown → date-range → days-between-dates → age-calculator",
+);
 
 for (const [toolId, expectedIds] of Object.entries(APPROVED_RELATED_IDS)) {
 	const tool = catalogTools.find((entry) => entry.id === toolId);
@@ -219,6 +251,35 @@ for (const [toolId, expectedIds] of Object.entries(APPROVED_RELATED_IDS)) {
 		assert(related?.available === true, `${toolId} related tool ${relatedId} is available`);
 	}
 }
+
+assert(
+	!APPROVED_RELATED_IDS["date-range"].includes("countdown-timer"),
+	"date-range relatedIds no longer include countdown-timer",
+);
+assert(
+	APPROVED_RELATED_IDS["date-range"].includes("days-between-dates"),
+	"date-range relatedIds include days-between-dates",
+);
+assert(
+	!APPROVED_RELATED_IDS["age-calculator"].includes("year-progress"),
+	"age-calculator relatedIds no longer include year-progress",
+);
+assert(
+	APPROVED_RELATED_IDS["age-calculator"].includes("days-between-dates"),
+	"age-calculator relatedIds include days-between-dates",
+);
+assert(
+	!APPROVED_RELATED_IDS["event-countdown"].includes("days-between-dates"),
+	"event-countdown relatedIds do not include days-between-dates",
+);
+assert(
+	!APPROVED_RELATED_IDS["year-progress"].includes("days-between-dates"),
+	"year-progress relatedIds do not include days-between-dates",
+);
+assert(
+	!APPROVED_RELATED_IDS["countdown-timer"].includes("days-between-dates"),
+	"countdown-timer relatedIds do not include days-between-dates",
+);
 
 for (const toolId of PRODUCTION_TOOL_IDS) {
 	const related = getRelatedTools(catalogTools, toolId);
@@ -248,6 +309,10 @@ assert(
 	!featuredTools.some((tool) => tool.id === "timer"),
 	"Home featured tools do not include Countdown Timer",
 );
+assert(
+	!featuredTools.some((tool) => tool.id === "days-between-dates"),
+	"Home featured tools do not include Days Between Dates",
+);
 
 const homeAgeCalculator = featuredTools[1];
 assert(homeAgeCalculator?.id === "age-calculator", "Home second tool is age-calculator");
@@ -260,6 +325,14 @@ assert(
 assert(
 	catalogIconMap["age-calculator"] === "person",
 	"catalog age-calculator icon mapping exists",
+);
+assert(
+	catalogIconMap["days-between-dates"] === "calendar",
+	"catalog days-between-dates uses calendar icon (not plus-square)",
+);
+assert(
+	catalogIconMap["days-between-dates"] !== "plus-square",
+	"catalog days-between-dates does not use plus-square",
 );
 
 assert(
@@ -282,6 +355,19 @@ assert(
 );
 assert(en.tools.ageCalculator.title === "Age Calculator", "EN tools.ageCalculator exists");
 assert(zh.tools.ageCalculator.title === "年齡計算器", "ZH tools.ageCalculator exists");
+assert(
+	en.tools.daysBetweenDates.title === "Days Between Dates",
+	"EN tools.daysBetweenDates exists",
+);
+assert(zh.tools.daysBetweenDates.title === "日期差計算", "ZH tools.daysBetweenDates exists");
+assert(
+	!en.home.featuredTools["days-between-dates"],
+	"EN Home featuredTools has no days-between-dates entry",
+);
+assert(
+	!zh.home.featuredTools["days-between-dates"],
+	"ZH Home featuredTools has no days-between-dates entry",
+);
 
 // --- Source: production Related Tools components ---
 const countdownTimerSource = readSource(
@@ -298,11 +384,35 @@ assert(
 	"Countdown Timer uses getRelatedTools from catalog",
 );
 
+const daysBetweenSource = readSource(
+	"src/components/tools/days-between-dates-v2/DaysBetweenDatesV2.astro",
+);
+assert(
+	!daysBetweenSource.includes("DAYS_BETWEEN_DATES_OUTBOUND_IDS"),
+	"Days Between Dates no longer uses hardcoded outbound related IDs",
+);
+assert(
+	daysBetweenSource.includes('getRelatedTools("days-between-dates")'),
+	"Days Between Dates uses getRelatedTools from catalog",
+);
+
+const ageCalculatorSource = readSource(
+	"src/components/tools/age-calculator-v2/AgeCalculatorV2.astro",
+);
+assert(
+	!ageCalculatorSource.includes("AGE_CALCULATOR_OUTBOUND_IDS"),
+	"Age Calculator no longer uses hardcoded outbound related IDs",
+);
+assert(
+	ageCalculatorSource.includes('getRelatedTools("age-calculator")'),
+	"Age Calculator uses getRelatedTools from catalog",
+);
+
 for (const relativePath of PRODUCTION_RELATED_COMPONENTS) {
 	const source = readSource(relativePath);
 	assert(
-		source.includes('"age-calculator": messages.tools.ageCalculator'),
-		`${relativePath} maps age-calculator copy`,
+		source.includes('"days-between-dates": messages.tools.daysBetweenDates'),
+		`${relativePath} maps days-between-dates copy`,
 	);
 }
 
@@ -310,11 +420,23 @@ for (const relativePath of PRODUCTION_RELATED_COMPONENTS) {
 const builtPages = [
 	{
 		path: "en/tools/index.html",
-		requires: ["/en/age-calculator/"],
+		requires: ["/en/age-calculator/", "/en/days-between-dates/"],
+		datesEventsOrder: [
+			"/en/event-countdown/",
+			"/en/date-range-calculator/",
+			"/en/days-between-dates/",
+			"/en/age-calculator/",
+		],
 	},
 	{
 		path: "zh/tools/index.html",
-		requires: ["/zh/age-calculator/"],
+		requires: ["/zh/age-calculator/", "/zh/days-between-dates/"],
+		datesEventsOrder: [
+			"/zh/event-countdown/",
+			"/zh/date-range-calculator/",
+			"/zh/days-between-dates/",
+			"/zh/age-calculator/",
+		],
 	},
 	{
 		path: "en/event-countdown/index.html",
@@ -332,13 +454,27 @@ const builtPages = [
 		path: "en/date-range-calculator/index.html",
 		locale: "en",
 		selfSlug: "date-range-calculator",
-		related: ["event-countdown", "countdown-timer", "age-calculator"],
+		related: ["days-between-dates", "event-countdown", "age-calculator"],
 	},
 	{
 		path: "zh/date-range-calculator/index.html",
 		locale: "zh",
 		selfSlug: "date-range-calculator",
-		related: ["event-countdown", "countdown-timer", "age-calculator"],
+		related: ["days-between-dates", "event-countdown", "age-calculator"],
+	},
+	{
+		path: "en/days-between-dates/index.html",
+		locale: "en",
+		selfSlug: "days-between-dates",
+		related: ["date-range-calculator", "age-calculator", "event-countdown"],
+		relatedAttr: "data-dbdv2-related-tools",
+	},
+	{
+		path: "zh/days-between-dates/index.html",
+		locale: "zh",
+		selfSlug: "days-between-dates",
+		related: ["date-range-calculator", "age-calculator", "event-countdown"],
+		relatedAttr: "data-dbdv2-related-tools",
 	},
 	{
 		path: "en/countdown-timer/index.html",
@@ -368,14 +504,14 @@ const builtPages = [
 		path: "en/age-calculator/index.html",
 		locale: "en",
 		selfSlug: "age-calculator",
-		related: ["date-range-calculator", "event-countdown", "year-progress"],
+		related: ["date-range-calculator", "days-between-dates", "event-countdown"],
 		relatedAttr: "data-acv2-related-tools",
 	},
 	{
 		path: "zh/age-calculator/index.html",
 		locale: "zh",
 		selfSlug: "age-calculator",
-		related: ["date-range-calculator", "event-countdown", "year-progress"],
+		related: ["date-range-calculator", "days-between-dates", "event-countdown"],
 		relatedAttr: "data-acv2-related-tools",
 	},
 ];
@@ -387,7 +523,23 @@ for (const page of builtPages) {
 		for (const required of page.requires) {
 			assert(
 				html.includes(`href="${required}"`),
-				`${page.path} contains Age Calculator link ${required}`,
+				`${page.path} contains tool link ${required}`,
+			);
+		}
+
+		if (page.datesEventsOrder) {
+			const positions = page.datesEventsOrder.map((href) =>
+				html.indexOf(`href="${href}"`),
+			);
+			assert(
+				positions.every((position) => position >= 0),
+				`${page.path} contains all dates-events links in expected set`,
+			);
+			assert(
+				positions[0] < positions[1] &&
+					positions[1] < positions[2] &&
+					positions[2] < positions[3],
+				`${page.path} dates-events order is EC → DRC → DBD → AC`,
 			);
 		}
 		continue;
@@ -421,16 +573,52 @@ for (const page of builtPages) {
 		uniqueRelated.size === relatedHrefs.length,
 		`${page.path} related section has no duplicate links`,
 	);
+
+	if (page.selfSlug === "date-range-calculator") {
+		assert(
+			!relatedHrefs.some((href) => href.endsWith("/countdown-timer/")),
+			`${page.path} related section no longer links to countdown-timer`,
+		);
+		assert(
+			relatedHrefs.some((href) => href.endsWith("/days-between-dates/")),
+			`${page.path} related section links to days-between-dates`,
+		);
+	}
+
+	if (page.selfSlug === "age-calculator") {
+		assert(
+			!relatedHrefs.some((href) => href.endsWith("/year-progress/")),
+			`${page.path} related section no longer links to year-progress`,
+		);
+		assert(
+			relatedHrefs.some((href) => href.endsWith("/days-between-dates/")),
+			`${page.path} related section links to days-between-dates`,
+		);
+	}
+
+	if (page.selfSlug === "days-between-dates") {
+		assert(
+			relatedHrefs.includes(`${localePrefix}/date-range-calculator/`) &&
+				relatedHrefs.includes(`${localePrefix}/age-calculator/`) &&
+				relatedHrefs.includes(`${localePrefix}/event-countdown/`),
+			`${page.path} related section is Date Range → Age Calculator → Event Countdown`,
+		);
+	}
 }
 
 for (const homePage of ["en/index.html", "zh/index.html"]) {
 	const html = readDistHtml(homePage);
 	const locale = homePage.startsWith("zh") ? "zh" : "en";
 	const acHref = `/${locale}/age-calculator/`;
+	const dbdHref = `/${locale}/days-between-dates/`;
 
 	assert(
 		countHref(html, acHref) >= 1,
 		`${homePage} contains localized Age Calculator home link`,
+	);
+	assert(
+		countHref(html, dbdHref) === 0,
+		`${homePage} does not contain Days Between Dates featured link`,
 	);
 	assert(!html.includes("life-progress"), `${homePage} does not link to life-progress slug`);
 	assert(

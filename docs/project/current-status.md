@@ -1,8 +1,8 @@
 # Timiva 專案現況
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
-> 更新日期：2026-07-10
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、Age Calculator V1.5（standalone + link integration）已上線（deployed HEAD `f48df91`）、V1.5 重新定義為 Search Foundation／搜尋鋪路期。
+> 更新日期：2026-07-11
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、Age Calculator V1.5（standalone + link integration）已上線（deployed HEAD `f48df91`）、Days Between Dates standalone commit `69ba30b` + Post-tool Link Integration 實作完成（待 Owner QA / commit；未 push / 未 deploy）、V1.5 為 Search Foundation／搜尋鋪路期。
 
 ---
 
@@ -21,9 +21,9 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具（含 Year Progress）與 **Age Calculator**（第五個工具）皆已上線；V1 SEO technical closeout 已完成。Age Calculator 視為 **V1.5 standalone + link integration 完成**；B7 Deploy / Production Verification 通過；deployed HEAD：`f48df91`（`feat: integrate Age Calculator links`）。`main` 與 `origin/main` 同步、working tree clean。 |
+| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具（含 Year Progress）與 **Age Calculator**（第五個工具）皆已上線；V1 SEO technical closeout 已完成。Age Calculator 視為 **V1.5 standalone + link integration 完成**；B7 Deploy / Production Verification 通過；deployed HEAD：`f48df91`（`feat: integrate Age Calculator links`）。**Days Between Dates**：standalone commit `69ba30b`；Post-tool Link Integration 已實作（Home 不加 DBD；All Tools + DRC/AC inbound）；待 Owner QA / Link Integration commit；`main` ahead of origin、未 push、未 deploy。 |
 
-### 1.1 Current work tracks（2026-07-10）
+### 1.1 Current work tracks（2026-07-11）
 
 **Release track（production）：**
 
@@ -40,11 +40,17 @@ V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22
 
 ```text
 Age Calculator：V1.5 完成並已上線（standalone + Post-tool Link Integration）
-Home Featured Tools 已調整為 4 張（Date Range → Age Calculator → Event Countdown → Year Progress）
+Home Featured Tools 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress）
 Countdown Timer 仍保留於 All Tools 與工具頁
+Days Between Dates：
+  standalone commit：69ba30b939980b40a438f1d2016a641e2502d958
+  Post-tool Link Integration：實作完成 · 待 Owner QA
+  Home：不加入 DBD
+  All Tools：加入 DBD（dates-events：EC → DRC → DBD → AC）
+  Inbound Related：Date Range + Age Calculator 加入 DBD
+  未 push / 未 deploy
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
-暫定 next candidates：
-  Days Between Dates
+暫定 next candidates（DBD 完成後）：
   Date Calculator / Add or Subtract Days
   Business Days Calculator
   Hours Calculator
@@ -893,8 +899,9 @@ Next workflow:
 
 ```text
 Age Calculator 上線完成
+Days Between Dates：standalone `69ba30b` + Link Integration 實作完成（待 Owner QA / commit；未 push / 未 deploy）
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
-暫定 candidates：Days Between Dates → Date Calculator → Business Days → Hours Calculator
+暫定 candidates：Date Calculator → Business Days → Hours Calculator
 （Lunar / Pet Age / Japanese Era 為 optional）
 等待 Owner 決定下一支工具規格
 ```
@@ -1030,6 +1037,7 @@ Timiva V1 已在正式網域 https://timiva.app 提供服務。
 GA4 privacy-first Basic Consent 已在 timiva.app 驗證通過。
 V1 SEO technical closeout 已完成（Batch 1–3 production PASS；docs `c5c0a22`）。
 Age Calculator 已正式上線；deployed HEAD：`f48df91`；B7 Production Verification 通過；No blocking issues found。
+Days Between Dates：standalone `69ba30b`；Post-tool Link Integration 已實作（Home 不加；All Tools + DRC/AC inbound）；待 Owner QA / commit；未 push / 未 deploy。
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期（高搜尋、低維護日期與時間工具；四大分類不變）。
 
 規格與流程：docs/tools/、docs/workflow/

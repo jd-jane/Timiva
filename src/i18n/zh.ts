@@ -208,6 +208,12 @@ export const zh: Messages = {
       compactDescription: "計算精準年齡與生活總天數。",
       relatedDescription: "查看精準年齡。",
     },
+    daysBetweenDates: {
+      title: "日期差計算",
+      description: "快速計算兩個日期之間相差幾天。",
+      compactDescription: "計算兩個日期之間相差幾天。",
+      relatedDescription: "查看兩個日期之間相差幾天。",
+    },
     lifeProgress: {
       title: "人生進度條",
       description: "把一年、人生或目標期限變成清楚的時間進度。",

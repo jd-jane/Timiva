@@ -5,6 +5,44 @@
 
 ---
 
+## 2026-07-11 — Days Between Dates Post-tool Link Integration
+
+### 背景
+
+```text
+Days Between Dates standalone 已完成並 commit：
+69ba30b939980b40a438f1d2016a641e2502d958（feat: add Days Between Dates standalone tool）
+Owner 批准進入 Post-tool Link Integration。
+```
+
+### 決策
+
+```text
+Home：不加入 Days Between Dates（維持固定 4 張 Featured）
+All Tools：加入 Days Between Dates
+dates-events 排序：
+  event-countdown → date-range → days-between-dates → age-calculator
+Inbound Related Tools：
+  Date Range：[days-between-dates, event-countdown, age-calculator]
+    （替換 countdown-timer）
+  Age Calculator：[date-range, days-between-dates, event-countdown]
+    （替換 year-progress）
+  Event Countdown / Year Progress / Countdown Timer：本輪不加 DBD
+DBD outbound：改用 catalog getRelatedTools
+  [date-range, age-calculator, event-countdown]
+Icon：calendar（不用 plus-square）
+```
+
+### 狀態邊界
+
+```text
+Link Integration 實作完成後等待 Owner QA。
+尚未 Link Integration commit（除非 Owner 授權）。
+未 push / 未 deploy。
+```
+
+---
+
 ## 2026-07-10 — V1.5 redefined as Search Foundation
 
 ### 背景

@@ -4,7 +4,7 @@ import ToolAdSlot from "../../ToolAdSlot.astro";
 import ToolCard from "../../ToolCard.astro";
 import { catalogIconMap } from "../../../lib/catalogIcons";
 import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
-import { getCatalogTool, type CatalogToolId } from "../../../data/toolsCatalog";
+import { getRelatedTools, type CatalogToolId } from "../../../data/toolsCatalog";
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getMessages } from "../../../i18n/messages";
 import "../../../styles/tools/tool-mobile-sheet-v2-baseline.css";
@@ -15,16 +15,10 @@ interface Props {
 	locale?: Locale;
 }
 
-/** B1A outbound related tools（最多 3）— catalog entry for this tool lands in B4. */
-const DAYS_BETWEEN_DATES_OUTBOUND_IDS = [
-	"date-range",
-	"age-calculator",
-	"event-countdown",
-] as const satisfies readonly CatalogToolId[];
-
 const { locale = "en" } = Astro.props;
 const messages = getMessages(locale);
 const m = messages.daysBetweenDates;
+const relatedTools = getRelatedTools("days-between-dates");
 
 const toolCopy: Record<
 	CatalogToolId,
@@ -35,23 +29,16 @@ const toolCopy: Record<
 	"countdown-timer": messages.tools.countdownTimer,
 	"year-progress": messages.tools.yearProgress,
 	"age-calculator": messages.tools.ageCalculator,
+	"days-between-dates": messages.tools.daysBetweenDates,
 	"life-progress": messages.tools.lifeProgress,
 };
 
-const relatedToolItems = DAYS_BETWEEN_DATES_OUTBOUND_IDS.map((id) => {
-	const tool = getCatalogTool(id);
-
-	if (!tool?.available) {
-		return null;
-	}
-
-	return {
-		href: getLocalizedPath(locale, `/${tool.slug}/`),
-		name: toolCopy[tool.id].title,
-		description: toolCopy[tool.id].relatedDescription,
-		icon: catalogIconMap[tool.id],
-	};
-}).filter((item): item is NonNullable<typeof item> => item !== null);
+const relatedToolItems = relatedTools.map((tool) => ({
+	href: getLocalizedPath(locale, `/${tool.slug}/`),
+	name: toolCopy[tool.id].title,
+	description: toolCopy[tool.id].relatedDescription,
+	icon: catalogIconMap[tool.id],
+}));
 
 const faqSchema = buildFaqPageJsonLd(m.faq.items);
 const resultLocale = locale === "zh" ? "zh" : "en";
