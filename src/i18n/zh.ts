@@ -32,6 +32,11 @@ export const zh: Messages = {
       description:
         "輸入出生日期，快速計算完整歲數、精準的年／月／日，以及已走過的總天數。預設以今天計算，也可選擇指定日期。",
     },
+    daysBetweenDates: {
+      title: "日期差計算｜兩個日期相差幾天｜Timiva",
+      description:
+        "快速計算兩個日期相差幾天，支援直接輸入日期，也可以選擇是否包含選擇的兩個日期。",
+    },
     privacy: {
       title: "隱私權政策 — Timiva",
       description: "Timiva 如何處理您的資料與隱私。",
@@ -552,6 +557,78 @@ export const zh: Messages = {
           question: "工具會儲存我的出生日期嗎？",
           answer:
             "不會。出生日期與計算結果只會用於目前頁面的計算，重新整理或離開頁面後不會儲存。",
+        },
+      ],
+    },
+  },
+  daysBetweenDates: {
+    kicker: "日期差計算",
+    primaryResultUnit: "天",
+    secondaryResultZero: "0 週又 0 天",
+    dateRangePlaceholder: "YYYY / MM / DD  —  YYYY / MM / DD",
+    mobileSelectDates: "選擇日期",
+    includeBothDates: "包含選擇的兩個日期",
+    includeBothDatesActive: "✓ 已包含選擇的兩個日期",
+    invalidDateMessage: "請輸入 1900–2100 之間的有效日期",
+    fromDateLabel: "從",
+    toDateLabel: "到",
+    fromDateInputAriaLabel: "起始日期",
+    toDateInputAriaLabel: "結束日期",
+    dateInputPlaceholder: "YYYY / MM / DD",
+    sheetAriaLabel: "日期差計算輸入",
+    openDateSheetAriaLabel: "編輯日期",
+    upperControlsAriaLabel: "日期差計算控制項",
+    relatedToolsDrawerAriaLabel: "相關工具側欄",
+    toggleRelatedToolsDrawerAriaLabel: "切換相關工具側欄",
+    about: {
+      heading: "關於日期差計算",
+      body: "快速計算兩個日期之間相差幾天。適合旅行規劃、期限、紀念日、事件距離與專案日期等日常情境。",
+    },
+    howTo: {
+      heading: "如何使用日期差計算",
+      steps: [
+        "輸入第一個日期。",
+        "輸入第二個日期。",
+        "立即查看兩個日期相差幾天。",
+        "如果想把選擇的兩個日期也算進去，可以開啟「包含選擇的兩個日期」。",
+      ],
+    },
+    commonUses: {
+      heading: "常見用途",
+      items: ["旅行規劃", "專案期限", "活動安排", "紀念日", "日期差"],
+    },
+    faq: {
+      heading: "日期差計算 FAQ",
+      items: [
+        {
+          question: "如何計算兩個日期相差幾天？",
+          answer:
+            "輸入兩個日期後，結果會自動更新，不需要再按計算按鈕。",
+        },
+        {
+          question: "結果會包含我選擇的兩個日期嗎？",
+          answer:
+            "預設不會。預設結果是兩個日期之間的差距。如果想把選擇的兩個日期也算進去，可以開啟「包含選擇的兩個日期」。",
+        },
+        {
+          question: "為什麼同一天到同一天是 0 天？",
+          answer:
+            "因為預設顯示的是兩個日期之間的差距。如果你希望選擇的日期本身也算 1 天，可以開啟「包含選擇的兩個日期」。",
+        },
+        {
+          question: "日期順序會影響結果嗎？",
+          answer:
+            "不會。這個工具會計算兩個日期的絕對差，所以先輸入較晚日期或較早日期，結果都一樣。",
+        },
+        {
+          question: "可以不開日曆，直接輸入日期嗎？",
+          answer:
+            "可以。這個工具以快速日期輸入為主，支援純數字日期，也支援斜線或橫線格式。",
+        },
+        {
+          question: "這和日期區間計算有什麼不同？",
+          answer:
+            "日期差計算適合快速知道兩個日期相差幾天。日期區間計算則適合查看更多區間資訊，例如工作日或週末日。",
         },
       ],
     },

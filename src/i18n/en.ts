@@ -30,6 +30,11 @@ export const en = {
       description:
         "Calculate your exact age in years, months, and days, plus the total number of days lived. Use today or choose another calculation date.",
     },
+    daysBetweenDates: {
+      title: "Days Between Dates Calculator | Timiva",
+      description:
+        "Calculate the number of days between two dates with a fast, simple date input. You can also include both selected dates in the count.",
+    },
     privacy: {
       title: "Privacy Policy — Timiva",
       description: "How Timiva handles your data and privacy.",
@@ -571,6 +576,84 @@ export const en = {
           question: "Does the calculator save my birth date?",
           answer:
             "No. Your birth date and result are used only for the current calculation and are not stored after you refresh or leave the page.",
+        },
+      ],
+    },
+  },
+  daysBetweenDates: {
+    kicker: "Days Between Dates",
+    primaryResultUnit: "days",
+    secondaryResultZero: "0 weeks and 0 days",
+    dateRangePlaceholder: "YYYY / MM / DD  —  YYYY / MM / DD",
+    mobileSelectDates: "Select dates",
+    includeBothDates: "Include both dates",
+    includeBothDatesActive: "✓ Both dates included",
+    invalidDateMessage: "Enter a valid date between 1900 and 2100",
+    fromDateLabel: "From",
+    toDateLabel: "To",
+    fromDateInputAriaLabel: "From date",
+    toDateInputAriaLabel: "To date",
+    dateInputPlaceholder: "YYYY / MM / DD",
+    sheetAriaLabel: "Days between dates inputs",
+    openDateSheetAriaLabel: "Edit dates",
+    upperControlsAriaLabel: "Days between dates controls",
+    relatedToolsDrawerAriaLabel: "Related tools drawer",
+    toggleRelatedToolsDrawerAriaLabel: "Toggle related tools drawer",
+    about: {
+      heading: "About Days Between Dates",
+      body: "Quickly calculate how many days are between two dates. Useful for travel planning, deadlines, anniversaries, event spacing, and everyday project dates.",
+    },
+    howTo: {
+      heading: "How to use Days Between Dates",
+      steps: [
+        "Enter the first date.",
+        "Enter the second date.",
+        "View the day difference instantly.",
+        "Turn on Include both dates if you want to count both selected dates.",
+      ],
+    },
+    commonUses: {
+      heading: "Common uses",
+      items: [
+        "Travel planning",
+        "Project deadlines",
+        "Event planning",
+        "Anniversaries",
+        "Date difference",
+      ],
+    },
+    faq: {
+      heading: "Days Between Dates FAQ",
+      items: [
+        {
+          question: "How do I calculate days between two dates?",
+          answer:
+            "Enter the two dates and the result updates automatically. You do not need to press a calculate button.",
+        },
+        {
+          question: "Does the result include both selected dates?",
+          answer:
+            "By default, no. The result counts the difference between the two dates. Turn on Include both dates if you want both selected dates counted.",
+        },
+        {
+          question: "Why does the same date show 0 days?",
+          answer:
+            "Because the default result shows the difference between the dates. If you want the selected date itself to count as one day, turn on Include both dates.",
+        },
+        {
+          question: "Does date order matter?",
+          answer:
+            "No. The tool calculates the absolute difference, so the result is the same even if the later date is entered first.",
+        },
+        {
+          question: "Can I enter dates without opening a calendar?",
+          answer:
+            "Yes. This tool is designed for fast date input. You can type compact dates or use slash / dash formats.",
+        },
+        {
+          question: "How is this different from Date Range Calculator?",
+          answer:
+            "Days Between Dates gives a quick day count. Date Range Calculator is better when you need more range details such as workdays or weekends.",
         },
       ],
     },

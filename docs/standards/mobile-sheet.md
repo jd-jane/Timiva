@@ -1,8 +1,8 @@
 ﻿# Timiva Mobile Sheet Shared Style Spec V1
 
-Date: 2026-06-14 (Created) · Last updated: 2026-06-21
+Date: 2026-06-14 (Created) · Last updated: 2026-07-11
 Owner: Jane / Timiva
-Status: Accepted baseline · Validated on Countdown Timer Custom sheet (Owner real-device, 2026-06-21) · ECV2 / DRV2 production unchanged
+Status: Accepted baseline · Keyboard / iOS accessory rules reinforced 2026-07-11 (Age Calculator reference) · Validated on Countdown Timer Custom sheet (Owner real-device, 2026-06-21) · ECV2 / DRV2 production unchanged
 
 ---
 
@@ -300,24 +300,89 @@ Tool-specific actions may override only when explicitly documented.
 
 ---
 
-## 12. Focus / keyboard rules
+## 12. Focus / keyboard / iOS Safari state rules
 
-Shared rules:
+> Last reinforced: 2026-07-11 · Reference behavior: Age Calculator Owner-accepted landscape + keyboard state
 
-```text
-- Sheet open should not force autofocus by default.
-- User taps a field to focus it.
-- Numeric fields should use a numeric keyboard where appropriate.
-- Keyboard opening must not hide the active input or primary action.
-- The primary action must remain reachable with safe-area / keyboard constraints.
-```
+These rules apply to **any Timiva tool** that uses a mobile bottom sheet with focusable inputs. They are shared product/QA rules, not optional polish.
 
-Tool-specific behavior:
+### 12.1 Mobile portrait sheet-open
 
 ```text
-Countdown Timer may auto-advance from Hours → Minutes → Seconds after each field is complete.
-This is Countdown Timer-specific and not a shared sheet requirement.
+- Sheet stays pinned to the visual viewport bottom.
+- Input focus must not scroll the background page into lower content
+  (Related Tools / You may also need / SEO blocks).
+- Primary sheet controls (fields + secondary options such as Include) must remain
+  fully visible, or scrollable inside the sheet panel.
+- Safari bottom toolbar / safe-area must not cover controls into an unusable state.
+- Background scroll lock must remain stable (msb-scroll-lock / msb-sheet-open).
 ```
+
+### 12.2 Mobile portrait + keyboard
+
+```text
+- Focused input must stay visible and editable.
+- Sheet content must not be covered into an unusable state by keyboard or Safari toolbar.
+- Small internal sheet scroll is allowed.
+- Whole-page background must not jump.
+- Do not add Done / Apply / Calculate unless the tool product spec explicitly requires it.
+- Portrait may lift sheet + result group together as one keyboard-open composition
+  (shared inset / shift). Do not lift only the sheet while leaving the result group behind.
+```
+
+### 12.3 Mobile landscape sheet-open without keyboard
+
+```text
+- Content-driven compact panel.
+- Do not reuse portrait fixed height.
+- Do not show a large empty panel / purple backplane.
+- Short-form tools should prefer compact sheet.
+- Primary fields should be fully visible; secondary options should stay visible
+  or lightly scrollable inside the panel.
+```
+
+### 12.4 Mobile landscape + keyboard + iOS input accessory bar
+
+This is a **separate required QA state**. Landscape sheet-open without keyboard is not enough.
+
+```text
+- When iOS keyboard + input accessory bar (Previous / Next / Done) appear:
+  do NOT force the entire bottom sheet panel above the keyboard.
+- Do NOT expose a large sheet backplane / purple panel between page content
+  and the accessory bar.
+- Keep page background stable (no jump to lower content).
+- Focused input must remain visible and editable.
+- iOS accessory bar may own Previous / Next / Done.
+- The full sheet does not need to remain fully visible in this state.
+  Priority: usable focused input + no broken layout.
+- If space is tight, avoid strange panel exposure; protect the focused input first.
+- Do not apply portrait keyboard-lift behavior to landscape.
+```
+
+Reference implementation pattern (Age Calculator, Owner-accepted):
+
+```text
+- Tool-local script: on landscape matchMedia, clear keyboard sync / do not set
+  sheet.style.bottom / height / max-height from visualViewport inset.
+- Tool-local CSS: landscape compact height:auto / fit-content + max-height cap
+  (override shared MSB fixed landscape height without editing shared MSB code).
+- stabilizePageScroll while sheet is open to prevent iOS focus scroll jump.
+```
+
+### 12.5 New-tool QA gate (sheet + input)
+
+Any new tool with mobile bottom sheet + input focus must pass these states before B2B:
+
+```text
+a. mobile portrait closed
+b. mobile portrait sheet-open
+c. mobile portrait sheet-open + keyboard
+d. mobile landscape closed
+e. mobile landscape sheet-open without keyboard
+f. mobile landscape sheet-open + keyboard + iOS accessory bar
+```
+
+B2B must not start until mobile sheet states above are Owner-accepted.
 
 ---
 

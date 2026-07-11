@@ -174,6 +174,32 @@ as-of 不是 today 時，日期旁顯示輕量 back icon
 19901101 → 1990 / 11 / 01
 ```
 
+### 逐鍵 continuous input（實作約束）
+
+純數字逐鍵輸入與 paste 同一串，最終結果必須一致。
+
+```text
+逐鍵輸入時先保留 raw digit stream，不要在第 5 / 6 碼就過早 commit 成固定 segment
+6 / 7 碼推斷可在顯示上預覽，但逐鍵過程中不可因此切到 segment-append，也不可視為輸入完成
+8 碼達成且 valid 時，可格式化為 YYYY / MM / DD
+6 / 7 碼可在 blur / Enter / paste complete / 明確完成輸入時再格式化
+```
+
+錯誤行為（不可接受）：
+
+```text
+逐鍵 19991122 → 變成 1999 / 01 / 12（第 6 碼過早用 6 碼規則鎖死）
+Desktop From 逐鍵到 199911 就 auto-focus 到 To
+```
+
+正確行為：
+
+```text
+逐鍵 19991122 與 paste 19991122 → 皆為 1999 / 11 / 22
+Desktop From 逐鍵 continuous：僅 8 碼 valid 後才可 From → To auto-focus
+blur / Enter / paste complete 後，valid 日期可視為完成
+```
+
 ---
 
 ## 6. Slash / dash 輸入規則
@@ -185,6 +211,7 @@ as-of 不是 today 時，日期旁顯示輕量 back icon
 不再套用純數字 6 / 7 / 8 碼推斷
 月 / 日可允許 1–2 位
 blur 或完成後可正規化為 YYYY / MM / DD
+鍵盤直接輸入 / 或 - 應可行，不應只支援 paste
 ```
 
 ---
@@ -226,6 +253,10 @@ Backspace / Delete 只影響目前 segment
 1990 / 04 / 04
 修改 month 時變成 1990 / 10 / 4
 → day 被吃掉或錯位，不可接受
+
+2000 / 1 / 23
+不可把 segmented value 重合併成 2000123 再跑 7 碼推斷
+→ 必須得到 2000 / 01 / 23
 ```
 
 ---

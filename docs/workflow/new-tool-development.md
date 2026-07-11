@@ -352,15 +352,40 @@ B0 應該是「V2 工具頁共用版型 scaffold」。
 
 ```text
 B0：V2 工具頁版型 scaffold
-B1A：下方內容層（About / How to use / FAQ / Related Tools）
+B1A：下方內容層 + sidebar 基礎互動
 B1B：上方工具靜態畫面
-B2+：互動程式、state machine、sheet、動畫、音效與其他動態效果
+B2+：工具核心互動（Smart Date Input、計算、sheet 輸入 state machine 等）
+```
+
+### B1A 必須包含
+
+```text
+About
+How to use
+Common uses / tags
+Tool-specific FAQ（標題為 {Tool Name} FAQ）
+FAQ JSON-LD
+Related Tools（最多 3）
+Mobile lower related rows
+Desktop drawer collapse / expand 行為（沿用既有 production drawer pattern）
+Drawer aria-expanded 與 accessible label
+Sidebar hover no-lift 防回歸檢查（validate-tool-drawer-related-hover）
+```
+
+B1A 完成後、進入 B1B 前，必須通過 `docs/workflow/tool-page-qa.md` §11A。
+
+說明：
+
+```text
+FAQ accordion 開合屬於 lower content 基礎互動，應在 B1A 完成。
+Desktop drawer collapse / expand 屬於 sidebar shell behavior，不是工具核心互動，應在 B1A 完成。
+B1A 不包含 Smart Date Input、日期計算、sheet 日期輸入 state machine 等工具核心互動。
 ```
 
 限制：
 
 ```text
-不要在同一批次混做版型、下方內容、上方靜態 UI、互動程式與動態效果，除非 Owner 明確批准。
+不要在同一批次混做版型、下方內容、上方靜態 UI、工具核心互動與動態效果，除非 Owner 明確批准。
 每個批次完成後都要先回報與驗收，再進下一批。
 ```
 
@@ -408,10 +433,18 @@ Mobile portrait keyboard-open composition：
 - 不使用大面積 ::after 或延伸底色遮空隙；sheet 本體維持正常 panel 高度，不可拉成大色塊或留下短暫異常高度。
 - sheet 開啟與 input focus 時維持 scroll lock；不可因 Safari input focus / visualViewport 把背景捲到下方內容。
 
-Mobile landscape keyboard-open：
+Mobile landscape keyboard-open / iOS input accessory bar：
+- 這是獨立必測狀態，不可只用一般 landscape sheet-open 判斷。
 - 不直接套用 portrait keyboard lift。
-- compact panel 在 keyboard-open 時仍應維持 compact。
-- 不可被推高、產生多餘色塊，或破壞已核准的 compact panel 狀態。
+- 當 iOS keyboard 與 input accessory bar（上一欄 / 下一欄 / 完成）出現時，
+  不應強迫整個 bottom sheet panel 抬到鍵盤上方。
+- 不應露出大面積 sheet 背板 / 紫色 panel。
+- 頁面背景要穩定，不可亂跳到 lower content。
+- Focused input 必須可見、可編輯；此狀態不要求完整展示整個 sheet。
+- iOS accessory bar 可以負責上一欄 / 下一欄 / 完成。
+- compact panel 在 keyboard-open 時仍應維持 compact（無鍵盤時亦同）。
+- 行為參考：Age Calculator Owner 已通過的 landscape + keyboard 狀態。
+- 詳細規則見 `docs/standards/mobile-sheet.md` §12。
 - landscape 若需例外，必須在該工具 product spec 或任務提詞明確指定。
 ```
 
@@ -425,8 +458,18 @@ Cursor 不得自行判斷某工具是否為例外。
 
 #### B1B / B2 前驗收
 
-進入 B2 前，必須通過 `docs/workflow/tool-page-qa.md` §11B 四種狀態檢查：
-mobile portrait closed / sheet-open、mobile landscape closed / sheet-open。
+進入 B2 / B2B 前，必須通過 `docs/workflow/tool-page-qa.md` §11B 六種狀態檢查：
+
+```text
+mobile portrait closed
+mobile portrait sheet-open
+mobile portrait sheet-open + keyboard
+mobile landscape closed
+mobile landscape sheet-open without keyboard
+mobile landscape sheet-open + keyboard + iOS input accessory bar
+```
+
+有 mobile bottom sheet + input focus 的工具，B2B 不可在上述狀態未通過前開始。
 
 
 ---
@@ -745,7 +788,9 @@ Mobile portrait 與 landscape 可共用同一 Sheet 實作，但 layout mode 必
 Mobile portrait keyboard-open 時，result group 與 bottom sheet 必須作為同一個 composition 一起為鍵盤讓位；不可只移動 sheet。
 不使用大面積 ::after / 延伸底色遮空隙；sheet 本體維持正常 panel 高度。
 Mobile landscape 不直接套用 portrait keyboard lift；compact panel 在 keyboard-open 時仍應維持 compact。
+Landscape + keyboard + iOS input accessory bar：不把整個 sheet 抬到鍵盤上方，不露出大面積背板；focused input 可用即可。
 Scroll lock 不應任意混用 fixed-body 策略；新工具需明確選用 msb-scroll-lock / msb-sheet-open，避免不必要混用 tool-operation-open。
+詳細共用規則：`docs/standards/mobile-sheet.md` §12。
 Pointer-based ring interaction 的 touch-action: none 只能加在 hit area，不可加在整頁或 stage。
 互動刻度應直接改變既有視覺元素（例如 tick 線段），避免 overlay 疊加造成破圖感。
 多語系主操作按鈕應內容驅動寬度、單行顯示；避免 locale 固定寬度把 grid 撐破。

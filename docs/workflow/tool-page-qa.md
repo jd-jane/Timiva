@@ -202,6 +202,9 @@ sheet 開啟與 input focus 時背景維持 scroll lock，沒有捲到 You may a
 手機橫式 sheet 沒有直接沿用直式 sheet 高度
 手機橫式 sheet 沒有大面積空白 panel
 landscape keyboard-open 維持 compact，沒有被 portrait keyboard lift 推高或產生多餘色塊
+landscape + keyboard + iOS input accessory bar：不把整個 sheet panel 抬到鍵盤上方
+landscape + keyboard + iOS input accessory bar：不露出大面積 sheet 背板 / 紫色 panel
+landscape + keyboard + iOS input accessory bar：focused input 可見可編輯；背景不亂跳
 ```
 
 Block 條件：
@@ -224,6 +227,7 @@ keyboard-open 用大面積延伸底色遮空隙，或 sheet 被拉成大色塊 /
 input focus 時背景被捲到 You may also need 或下方內容
 手機橫式 sheet 直接沿用直式高度或撐出大面積空白 panel
 landscape 被 portrait keyboard lift 影響，出現推高、多餘色塊或破壞 compact panel
+landscape + keyboard + iOS accessory bar 時整個 sheet 被抬到鍵盤上方並露出大面積背板
 ```
 
 ---
@@ -316,7 +320,24 @@ SEO 區塊放到主工具前面
 
 ## 11A. B1A lower content and sidebar QA
 
-B1A（lower content + SEO）完成後、進入 B1B 前，Owner browser review 必須至少對照 **一個已核准的 production 工具頁** 檢查：
+B1A 不只補 lower content 文案，也必須完成 lower content / sidebar 的基礎互動。
+
+B1A 完成範圍應包含：
+
+```text
+About
+How to use
+Common uses / tags
+Tool-specific FAQ
+FAQ JSON-LD
+Related Tools
+Mobile lower related rows
+Desktop drawer collapse / expand 行為
+Drawer aria-expanded 與 accessible label
+Sidebar hover no-lift 防回歸檢查
+```
+
+B1A 完成後、進入 B1B 前，Owner browser review 必須至少對照 **一個已核准的 production 工具頁** 檢查：
 
 ```text
 [ ] Lower content 結構與順序對齊既有正式工具（About → How to use → Common uses/tags → {Tool Name} FAQ）
@@ -334,6 +355,7 @@ B1A（lower content + SEO）完成後、進入 B1B 前，Owner browser review �
 [ ] Drawer aria-expanded 與 accessible label 正確
 [ ] Sidebar hover 不造成 layout shift
 [ ] Desktop drawer 修正不造成手機破版或水平捲軸
+[ ] node scripts/validate-tool-drawer-related-hover.mjs 通過
 ```
 
 若 Owner browser review 發現以上任一項失敗，**必須回到 B1A regression fix**，不得進入 B1B。
@@ -342,14 +364,19 @@ B1A（lower content + SEO）完成後、進入 B1B 前，Owner browser review �
 
 ## 11B. B1B / B2 前：手機第一屏控制區 QA gate
 
-新工具在 **B1B / B2 前**，Owner browser review 必須至少檢查以下四種狀態：
+新工具在 **B1B / B2 前**，若有 mobile bottom sheet + input focus，Owner browser review 必須至少檢查以下六種狀態：
 
 ```text
 [ ] mobile portrait closed state（手機直式、sheet 關閉）
 [ ] mobile portrait sheet-open state（手機直式、sheet 開啟）
+[ ] mobile portrait sheet-open + keyboard（手機直式、sheet 開啟 + 鍵盤）
 [ ] mobile landscape closed state（手機橫式、sheet 關閉）
-[ ] mobile landscape sheet-open state（手機橫式、sheet 開啟）
+[ ] mobile landscape sheet-open without keyboard（手機橫式、sheet 開啟、無鍵盤）
+[ ] mobile landscape sheet-open + keyboard + iOS input accessory bar（手機橫式、鍵盤 + 上一欄/下一欄/完成）
 ```
+
+> 詳細共用規則見 `docs/standards/mobile-sheet.md` §12。
+> B2B 不可在上述 mobile sheet 狀態未通過前開始。
 
 QA 必須確認：
 
@@ -380,6 +407,10 @@ QA 必須確認：
 [ ] landscape sheet 沒有直接套用直式 sheet 高度
 [ ] landscape sheet 沒有大面積空白 panel
 [ ] landscape keyboard-open 維持 compact，未被 portrait keyboard lift 影響
+[ ] landscape + keyboard + iOS accessory bar：沒有把整個 sheet panel 抬到鍵盤上方
+[ ] landscape + keyboard + iOS accessory bar：沒有露出大面積 sheet 背板 / 紫色 panel
+[ ] landscape + keyboard + iOS accessory bar：focused input 可見可編輯；背景穩定
+[ ] landscape + keyboard + iOS accessory bar：不要求完整展示整個 sheet；優先保護輸入可用
 ```
 
 適用範圍：

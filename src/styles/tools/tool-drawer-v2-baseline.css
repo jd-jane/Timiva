@@ -1,17 +1,15 @@
 /**
  * Tool Drawer V2 Baseline
  * Shared Related Tools drawer behavior for V2 tool pages.
+ *
+ * Use the shared frosted drawer shell class so every V2 tool that reuses
+ * ToolCard in the sidebar inherits no-lift hover — no per-tool allowlist.
+ * Home ToolCard keeps hover:-translate-y-2 (it does not use this shell).
  */
 
-/* Drawer ToolCard — no translateY hover; Tailwind v4 uses `translate`, not transform */
+/* Drawer ToolCard — no translateY / hover-lift; Tailwind v4 uses `translate` */
 @media (hover: hover) and (pointer: fine) {
-	:is(
-			[data-event-countdown-v2] [data-preview-drawer],
-			[data-date-range-v2] [data-drv2-drawer],
-			[data-countdown-timer-v2] [data-ctv2-drawer],
-			[data-year-progress-v2] [data-ypv2-drawer]
-		)
-		a:hover {
+	.preview-tool-drawer-frosted a:hover {
 		transform: none;
 		translate: none;
 		border-color: rgb(255 255 255 / 0.16);

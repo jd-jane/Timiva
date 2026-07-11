@@ -1,0 +1,25 @@
+---
+import "../../../styles/tools/timiva-tokens.css";
+import "../../../styles/tools/tool-design-system.css";
+import "../../../styles/tools/tool-result-v2-baseline.css";
+import "../../../styles/tools/tool-overlay-v2-baseline.css";
+import "../../../styles/tools/tool-drawer-v2-baseline.css";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import DaysBetweenDatesV2 from "../../../components/tools/days-between-dates-v2/DaysBetweenDatesV2.astro";
+import { getDaysBetweenDatesRouteMeta } from "../../../lib/daysBetweenDatesRouteMeta";
+import { type Locale } from "../../../i18n/config";
+
+const locale: Locale = "en";
+const routeMeta = getDaysBetweenDatesRouteMeta(locale);
+---
+
+<BaseLayout
+	title={routeMeta.title}
+	description={routeMeta.description}
+	canonicalUrl={routeMeta.canonicalUrl}
+	alternateUrls={routeMeta.alternateUrls}
+	headerVariant="inner"
+	locale={locale}
+>
+	<DaysBetweenDatesV2 locale={locale} />
+</BaseLayout>
