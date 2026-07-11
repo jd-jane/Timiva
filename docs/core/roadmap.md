@@ -1,7 +1,7 @@
 # Timiva V1 Roadmap
 
-> Updated: 2026-07-10
-> Main changes: Age Calculator deployed as V1.5 first Search Foundation tool; V1.5 redefined as Search Foundation／搜尋鋪路期；Daily Rhythm 完整補齊延後至 V2。
+> Updated: 2026-07-11
+> Main changes: Days Between Dates deployed as V1.5 second Search Foundation tool；Age Calculator deployed as V1.5 first Search Foundation tool；V1.5 redefined as Search Foundation／搜尋鋪路期；Daily Rhythm 完整補齊延後至 V2。
 
 ---
 
@@ -126,6 +126,24 @@ Canonical spec: [`docs/tools/age-calculator/product-spec.md`](../tools/age-calcu
 
 ---
 
+## 5.2 Days Between Dates — V1.5 second Search Foundation tool（deployed）
+
+| Item | Status |
+|---|---|
+| Order | **6** — Timiva sixth tool · V1.5 second Search Foundation tool |
+| Category | Important Dates / 重要日子 |
+| Routes | `/en/days-between-dates/`, `/zh/days-between-dates/` |
+| Product specification | Complete |
+| Implementation | Complete · V1.5 standalone + link integration |
+| Production | Deployed on timiva.app |
+| Standalone commit | `69ba30b` feat: add Days Between Dates standalone tool |
+| Deployed HEAD | `18a262c` feat: integrate Days Between Dates links |
+| B7 Production Verification | PASS · No blocking issues found |
+
+Canonical spec: [`docs/tools/days-between-dates/product-spec.md`](../tools/days-between-dates/product-spec.md)
+
+---
+
 ## 6. Phase 1.5 / V1.5 — Search Foundation／搜尋鋪路期
 
 V1.5 重新定義為 **Search Foundation**：優先開發高搜尋意圖、低維護的日期與時間工具，先建立自然搜尋入口。
@@ -135,7 +153,7 @@ V1.5 重新定義為 **Search Foundation**：優先開發高搜尋意圖、低�
 | Order | Tool | Category | Notes |
 |---:|---|---|---|
 | 5 | Age Calculator | Important Dates | **已完成 · 已上線** · first Search Foundation tool |
-| 6 | Days Between Dates | Important Dates | 高搜尋日期差 |
+| 6 | Days Between Dates | Important Dates | **已完成 · 已上線** · second Search Foundation tool |
 | 7 | Date Calculator / Add or Subtract Days | Important Dates | 高搜尋日期加減 |
 | 8 | Business Days Calculator | Important Dates | MVP：排除週末即可；不做國定假日資料庫 |
 | 9 | Hours Calculator | Important Dates / time utility | 高搜尋時數計算 |
@@ -226,6 +244,7 @@ Owner-confirmed deploy
 ```text
 V1 four tools + Year Progress: deployed on timiva.app
 Age Calculator (V1.5 first Search Foundation tool): deployed on timiva.app
+Days Between Dates (V1.5 second Search Foundation tool): deployed on timiva.app
 V1 SEO technical closeout: complete
 ```
 
@@ -263,6 +282,6 @@ PWA until core tool release timing is confirmed
 
 ```text
 V1.5 Search Foundation 下一工具：由 Owner 決定 / 規格化。
-暫定 candidates：Days Between Dates → Date Calculator → Business Days → Hours Calculator
+暫定 candidates：Date Calculator → Business Days → Hours Calculator
 （Lunar / Pet Age / Japanese Era 為 optional）
 ```

@@ -1,15 +1,16 @@
 # Days Between Dates / 日期差計算 — README
 
-> 建立日期：2026-07-11  
-> 狀態：Draft · Ready for Plan-first  
-> 適用工具：Timiva V1.5 Search Foundation 第六個工具  
+> 建立日期：2026-07-11
+> 最後更新：2026-07-11
+> 狀態：Production complete / Deployed
+> 適用工具：Timiva V1.5 Search Foundation 第二個工具 · Timiva 第六個工具
 > Canonical spec：`docs/tools/days-between-dates/product-spec.md`
 
 ---
 
 ## 1. 工具概述
 
-Days Between Dates / 日期差計算 是 Timiva V1.5 Search Foundation 的下一個日期工具。
+Days Between Dates / 日期差計算 是 Timiva V1.5 Search Foundation 的日期差工具，已正式上線於 `https://timiva.app`。
 
 它用於快速計算兩個日期之間相差幾天。
 
@@ -36,11 +37,35 @@ Days Between Dates / 日期差計算 是 Timiva V1.5 Search Foundation 的下一
 | EN route | `/en/days-between-dates/` |
 | ZH route | `/zh/days-between-dates/` |
 | Phase | V1.5 Search Foundation |
-| Tool order | 6 |
-| Status | Standalone commit `69ba30b` · Post-tool Link Integration implemented（pending Owner QA / commit） |
+| Tool order | 6（Timiva 第六個工具 · V1.5 Search Foundation 第二個工具） |
+| Status | **Production complete / Deployed** |
+| Standalone commit | `69ba30b` feat: add Days Between Dates standalone tool |
+| Link Integration / Deployed HEAD | `18a262c` feat: integrate Days Between Dates links |
+| B7 Production Verification | PASS · No blocking issues found |
 | Storage | MVP 不使用 LocalStorage |
 | URL state | MVP 不使用 URL sharing |
 | Backend | 不需要 |
+
+### Core shipped features
+
+```text
+Smart Date Input
+日期差計算（絕對差）
+Include both dates
+weeks and days / 週又 天
+invalid / incomplete → 結果歸零
+desktop range paste auto-split
+mobile sheet six-state QA
+Related Tools / FAQ / FAQ JSON-LD
+```
+
+### Link Integration
+
+```text
+All Tools：已加入 Days Between Dates
+Inbound Related：Date Range Calculator + Age Calculator 含 DBD
+Home：不加入 Featured（維持 4 張）
+```
 
 ---
 
@@ -725,14 +750,14 @@ Outbound（catalog `relatedIds` / `getRelatedTools`）：
 3. Event Countdown
 ```
 
-Post-tool Link Integration inbound（Owner 批准）：
+Post-tool Link Integration inbound（production）：
 
 ```text
 Date Range Calculator → [days-between-dates, event-countdown, age-calculator]
 Age Calculator → [date-range, days-between-dates, event-countdown]
-Event Countdown / Year Progress / Countdown Timer → 本輪不加 DBD
+Event Countdown / Year Progress / Countdown Timer → 未加入 DBD inbound
 Home Featured → 不加 DBD（維持 4 張）
-All Tools → 加入 DBD（EC → DRC → DBD → AC）
+All Tools → 已加入 DBD（EC → DRC → DBD → AC）
 ```
 
 排序理由：

@@ -5,6 +5,48 @@
 
 ---
 
+## 2026-07-11 — Days Between Dates production complete
+
+### 背景
+
+```text
+Days Between Dates standalone + Post-tool Link Integration 已完成並 push。
+B7 Production Verification 於 timiva.app 通過。
+```
+
+### 決策／現況
+
+```text
+Days Between Dates 已正式上線於 https://timiva.app。
+視為 V1.5 Search Foundation 第二個工具 · Timiva 第六個工具。
+standalone + link integration complete。
+B7 Production Verification：PASS · No blocking issues found。
+Standalone commit：69ba30b feat: add Days Between Dates standalone tool
+Link Integration commit / Deployed HEAD：18a262c feat: integrate Days Between Dates links
+```
+
+### 站內整合結果
+
+```text
+Home：不加入 Days Between Dates；維持固定 4 張 Featured
+  Date Range → Age Calculator → Event Countdown → Year Progress
+All Tools：加入 Days Between Dates
+  dates-events：Event Countdown → Date Range → Days Between Dates → Age Calculator
+Inbound Related Tools：
+  Date Range Calculator includes Days Between Dates
+  Age Calculator includes Days Between Dates
+  Event Countdown / Year Progress / Countdown Timer：未加入 DBD inbound
+```
+
+### 邊界
+
+```text
+不得在未授權任務中改寫已驗收 Days Between Dates 核心邏輯。
+文件以 docs/tools/days-between-dates/ 與 docs/project/current-status.md 為準。
+```
+
+---
+
 ## 2026-07-11 — Days Between Dates Post-tool Link Integration
 
 ### 背景
@@ -36,9 +78,8 @@ Icon：calendar（不用 plus-square）
 ### 狀態邊界
 
 ```text
-Link Integration 實作完成後等待 Owner QA。
-尚未 Link Integration commit（除非 Owner 授權）。
-未 push / 未 deploy。
+Link Integration 已完成並上線（見「Days Between Dates production complete」）。
+Deployed HEAD：18a262c。
 ```
 
 ---
@@ -66,7 +107,7 @@ V1.5 改為 Search Foundation／搜尋鋪路期。
 
 ```text
 5. Age Calculator — 已完成 · 已上線
-6. Days Between Dates
+6. Days Between Dates — 已完成 · 已上線
 7. Date Calculator / Add or Subtract Days
 8. Business Days Calculator
 9. Hours Calculator

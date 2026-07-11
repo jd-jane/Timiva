@@ -129,6 +129,16 @@ Age Calculator 為 Timiva **第五個工具**，已正式上線於 `https://timi
 
 ---
 
+## 4.2 Sixth tool — Days Between Dates（deployed）
+
+| Order | Tool | Category | Status / purpose |
+|---:|---|---|---|
+| 6 | Days Between Dates | Important Dates | Deployed · V1.5 second Search Foundation tool · standalone + link integration complete |
+
+Days Between Dates 為 Timiva **第六個工具**，已正式上線於 `https://timiva.app`。Standalone：`69ba30b`。Deployed HEAD：`18a262c`。
+
+---
+
 ## 5. Important Dates
 
 定位：
@@ -142,7 +152,7 @@ Age Calculator 為 Timiva **第五個工具**，已正式上線於 `https://timi
 | P0 | Event Countdown | 事件倒數 | 建立重要事件倒數 | Low |
 | P0 | Date Range Calculator | 日期區間計算 | 計算日期區間 | Low |
 | P0 | Age Calculator | 年齡計算 | 年齡與生日日期差 | Low — **已部署 · V1.5 first Search Foundation tool** |
-| P1 | Days Between Dates | 日期差計算 | 聚焦相差天數 | Low |
+| P1 | Days Between Dates | 日期差計算 | 聚焦相差天數 | Low — **已部署 · V1.5 second Search Foundation tool** |
 | P1 | Date Calculator / Add or Subtract Days | 日期加減 | 計算 N 天前後 | Low |
 | P1 | Business Days Calculator | 工作日計算 | 排除週末的工作日差 | Low — MVP 不做國定假日資料庫 |
 | P1 | Hours Calculator | 時數計算 | 時數／時間差計算 | Low |
@@ -282,7 +292,7 @@ Backend / account / sync
 
 ```text
 5. Age Calculator — deployed · first Search Foundation tool
-6. Days Between Dates
+6. Days Between Dates — deployed · second Search Foundation tool
 7. Date Calculator / Add or Subtract Days
 8. Business Days Calculator（MVP：排除週末；無國定假日資料庫）
 9. Hours Calculator

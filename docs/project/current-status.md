@@ -2,7 +2,7 @@
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
 > 更新日期：2026-07-11
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、Age Calculator V1.5（standalone + link integration）已上線（deployed HEAD `f48df91`）、Days Between Dates standalone commit `69ba30b` + Post-tool Link Integration 實作完成（待 Owner QA / commit；未 push / 未 deploy）、V1.5 為 Search Foundation／搜尋鋪路期。
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、Age Calculator V1.5 已上線、**Days Between Dates**（V1.5 Search Foundation 第二個工具／Timiva 第六個工具）已上線（deployed HEAD `18a262c`；B7 Production Verification PASS）、V1.5 為 Search Foundation／搜尋鋪路期。
 
 ---
 
@@ -21,7 +21,7 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具（含 Year Progress）與 **Age Calculator**（第五個工具）皆已上線；V1 SEO technical closeout 已完成。Age Calculator 視為 **V1.5 standalone + link integration 完成**；B7 Deploy / Production Verification 通過；deployed HEAD：`f48df91`（`feat: integrate Age Calculator links`）。**Days Between Dates**：standalone commit `69ba30b`；Post-tool Link Integration 已實作（Home 不加 DBD；All Tools + DRC/AC inbound）；待 Owner QA / Link Integration commit；`main` ahead of origin、未 push、未 deploy。 |
+| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具（含 Year Progress）、**Age Calculator**（第五個工具）、**Days Between Dates**（第六個工具／V1.5 Search Foundation 第二個工具）皆已上線。V1 SEO technical closeout 已完成。Days Between Dates：standalone + link integration complete；B7 Production Verification PASS；No blocking issues found；deployed HEAD：`18a262c`（`feat: integrate Days Between Dates links`）。Home Featured 維持 4 張（不含 DBD）。`main` 與 `origin/main` 同步。 |
 
 ### 1.1 Current work tracks（2026-07-11）
 
@@ -30,8 +30,12 @@
 ```text
 Event Countdown、Date Range Calculator、Countdown Timer、Year Progress：已部署 timiva.app
 Age Calculator：已部署 timiva.app（V1.5 standalone + link integration）
-Deployed HEAD：f48df91 feat: integrate Age Calculator links
-Cloudflare Pages 自動部署成功 · B7 Production Verification Pass
+Days Between Dates：已部署 timiva.app（V1.5 Search Foundation 第二個工具 · Timiva 第六個工具）
+  Routes：/en/days-between-dates/ · /zh/days-between-dates/
+  Standalone commit：69ba30b feat: add Days Between Dates standalone tool
+  Link Integration commit / Deployed HEAD：18a262c feat: integrate Days Between Dates links
+  B7 Production Verification：PASS · No blocking issues found
+Cloudflare Pages 自動部署成功
 V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22`）
 可選：Year Progress HTTPS Share verification（non-blocking）
 ```
@@ -40,17 +44,14 @@ V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22
 
 ```text
 Age Calculator：V1.5 完成並已上線（standalone + Post-tool Link Integration）
+Days Between Dates：V1.5 Search Foundation 第二個工具 · production complete
 Home Featured Tools 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress）
-Countdown Timer 仍保留於 All Tools 與工具頁
-Days Between Dates：
-  standalone commit：69ba30b939980b40a438f1d2016a641e2502d958
-  Post-tool Link Integration：實作完成 · 待 Owner QA
-  Home：不加入 DBD
-  All Tools：加入 DBD（dates-events：EC → DRC → DBD → AC）
-  Inbound Related：Date Range + Age Calculator 加入 DBD
-  未 push / 未 deploy
+  Home 不加入 Days Between Dates
+Countdown Timer 仍保留於 All Tools 與工具頁；未加入 DBD inbound Related
+All Tools：已加入 Days Between Dates（dates-events：EC → DRC → DBD → AC）
+Inbound Related：Date Range Calculator + Age Calculator 含 Days Between Dates
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
-暫定 next candidates（DBD 完成後）：
+暫定 next candidates：
   Date Calculator / Add or Subtract Days
   Business Days Calculator
   Hours Calculator
@@ -127,9 +128,10 @@ Date Range Calculator V2 — 已部署
 Countdown Timer V2 — 已部署 · 站內連結整合完成（2c44484）
 Year Progress V2 — 已部署 · 站內連結整合完成（f39f8bc, 20c379d）
 Age Calculator V2 — 已部署 · standalone + 站內連結整合完成（f48df91）
+Days Between Dates V2 — 已部署 · standalone + 站內連結整合完成（69ba30b, 18a262c）
 ```
 
-工具 README：`docs/tools/event-countdown/`、`docs/tools/date-range-calculator/`、`docs/tools/countdown-timer/`、`docs/tools/year-progress/`、`docs/tools/age-calculator/`
+工具 README：`docs/tools/event-countdown/`、`docs/tools/date-range-calculator/`、`docs/tools/countdown-timer/`、`docs/tools/year-progress/`、`docs/tools/age-calculator/`、`docs/tools/days-between-dates/`
 
 ---
 
@@ -443,8 +445,103 @@ Next step:
 
 ```text
 Age Calculator 上線阻塞項已關閉
+Days Between Dates 已接續完成並上線（見 §7.1）
+```
+
+---
+
+## 7.1 Days Between Dates current status
+
+**已正式上線 · V1.5 Search Foundation 第二個工具 · Timiva 第六個工具 · standalone + link integration 完成 · B7 Production Verification 通過 · No blocking issues found**
+
+Production URL：`https://timiva.app`
+
+Routes:
+
+```text
+/en/days-between-dates/
+/zh/days-between-dates/
+```
+
+Category:
+
+```text
+Important Dates / 重要日子
+```
+
+Production / release:
+
+```text
+Standalone commit：69ba30b feat: add Days Between Dates standalone tool
+Link Integration commit / Deployed HEAD：18a262c feat: integrate Days Between Dates links
+Cloudflare Pages 自動部署成功
+main 與 origin/main 同步
+B5 Final pre-push QA：Pass
+B6 push origin main：Pass
+B7 Production Verification：PASS · No blocking issues found
+```
+
+Core shipped features:
+
+```text
+Smart Date Input（純數字 6/7/8、slash / dash、segment edit）
+絕對日期差計算（順序無關）
+Include both dates（預設 Off；結果 +1）
+次結果：weeks and days / 週又 天
+empty / incomplete / invalid → 結果歸零
+Desktop range paste auto-split（例：2026/07/08-2026/09/17）
+Mobile sheet six-state QA · landscape keyboard / accessory 不整片上抬
+EN / ZH · About / How to / Common uses / FAQ / FAQ JSON-LD · Related Tools（3）
+MVP 無 LocalStorage、無 URL sharing
+ToolAdSlot is-disabled
+```
+
+站內連結整合：
+
+```text
+Home Featured Tools：維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress）
+  Days Between Dates 不加入 Home Featured
+All Tools EN / ZH：已加入 Days Between Dates
+  dates-events 排序：Event Countdown → Date Range → Days Between Dates → Age Calculator
+Outbound Related：Date Range → Age Calculator → Event Countdown
+Inbound Related：
+  Date Range Calculator includes Days Between Dates（替換 Countdown Timer）
+  Age Calculator includes Days Between Dates（替換 Year Progress）
+  Event Countdown / Year Progress / Countdown Timer：未加入 DBD inbound
+```
+
+B7 Production QA（2026-07-11）：
+
+```text
+Home EN / ZH — Pass（4 張、不含 DBD）
+All Tools EN / ZH — Pass（含 DBD、排序正確）
+Days Between Dates EN / ZH · 計算 / Include / range paste / mobile — Pass
+DRC / AC Related Tools — Pass
+Footer language switch — Pass
+SEO / sitemap / canonical / hreflang — Pass
+No blocking issues found
+```
+
+Primary specification:
+
+```text
+docs/tools/days-between-dates/product-spec.md
+docs/tools/days-between-dates/README.md
+```
+
+Protected / no-go boundary:
+
+```text
+不得在未授權任務中改寫 Days Between Dates 已驗收核心邏輯
+不得修改 Header、Footer、BaseLayout、Mobile Sheet baseline、既有工具程式
+```
+
+Next step:
+
+```text
+Days Between Dates 上線阻塞項已關閉
 下一個產品方向：V1.5 Search Foundation
-由 Owner 決定 / 規格化下一支搜尋型工具
+由 Owner 決定 / 規格化下一支搜尋型工具（暫定 Date Calculator）
 ```
 
 ---
@@ -891,6 +988,7 @@ Date Range Calculator V2 — Production
 Countdown Timer V2 — Production · site-integrated
 Year Progress V2 — Production · site-integrated
 Age Calculator V2 — Production · V1.5 standalone + link integration（f48df91）
+Days Between Dates V2 — Production · V1.5 Search Foundation 第二個工具 · Timiva 第六個工具（18a262c）
 GA4 + Basic Consent — deployed on timiva.app
 V1 SEO technical closeout — complete（docs `c5c0a22`）
 ```
@@ -898,8 +996,9 @@ V1 SEO technical closeout — complete（docs `c5c0a22`）
 Next workflow:
 
 ```text
-Age Calculator 上線完成
-Days Between Dates：standalone `69ba30b` + Link Integration 實作完成（待 Owner QA / commit；未 push / 未 deploy）
+Days Between Dates 上線完成（standalone 69ba30b + link integration 18a262c）
+B7 Production Verification：PASS · No blocking issues found
+Home Featured 維持 4 張（不含 DBD）
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
 暫定 candidates：Date Calculator → Business Days → Hours Calculator
 （Lunar / Pet Age / Japanese Era 為 optional）
@@ -931,7 +1030,7 @@ Recommended order:
 
 ```text
 1. Product development：決定 / 規格化下一支 V1.5 Search Foundation 工具
-   （暫定：Days Between Dates → Date Calculator → Business Days → Hours Calculator）
+   （暫定：Date Calculator → Business Days → Hours Calculator）
 2. Open Graph / Twitter Card（deferred SEO growth）
 3. WebApplication schema（deferred）
 4. Root HTTP 301 decision（deferred）
@@ -996,6 +1095,7 @@ docs/tools/date-range-calculator/README.md
 docs/tools/countdown-timer/README.md + product-spec.md
 docs/tools/year-progress/README.md + product-spec.md
 docs/tools/age-calculator/README.md + product-spec.md
+docs/tools/days-between-dates/README.md + product-spec.md
 ```
 
 ### Local-only（不納入 Git tracked）
@@ -1033,11 +1133,12 @@ Create an implementation plan only. Do not edit files yet.
 
 Timiva V1 已在正式網域 https://timiva.app 提供服務。
 
-已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2、Year Progress V2、Age Calculator V2（V1.5 standalone + link integration）。
+已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2、Year Progress V2、Age Calculator V2（V1.5 standalone + link integration）、Days Between Dates V2（V1.5 Search Foundation 第二個工具 · Timiva 第六個工具）。
 GA4 privacy-first Basic Consent 已在 timiva.app 驗證通過。
 V1 SEO technical closeout 已完成（Batch 1–3 production PASS；docs `c5c0a22`）。
-Age Calculator 已正式上線；deployed HEAD：`f48df91`；B7 Production Verification 通過；No blocking issues found。
-Days Between Dates：standalone `69ba30b`；Post-tool Link Integration 已實作（Home 不加；All Tools + DRC/AC inbound）；待 Owner QA / commit；未 push / 未 deploy。
+Age Calculator 已正式上線；deployed HEAD（AC）：`f48df91`。
+Days Between Dates 已正式上線；standalone `69ba30b`；Link Integration / deployed HEAD：`18a262c`；B7 Production Verification PASS；No blocking issues found。
+Home Featured 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress；不含 DBD）。
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期（高搜尋、低維護日期與時間工具；四大分類不變）。
 
 規格與流程：docs/tools/、docs/workflow/
