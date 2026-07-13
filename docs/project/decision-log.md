@@ -5,6 +5,66 @@
 
 ---
 
+## 2026-07-13 — Business Days Calculator moved ahead of Date Calculator
+
+### 背景
+
+```text
+Date Calculator / Add or Subtract Days 的產品功能規則已大致討論完成，
+但預期實作、邊界測試與視覺調整所需時間較多。
+
+Business Days Calculator 的功能較單純，
+且 Desktop / Mobile 日期輸入、日期區間選擇、Bottom Sheet、
+Smart Date Input 與 RWD 結構可高度沿用 Days Between Dates 已驗證基礎。
+```
+
+### 決策
+
+```text
+這是開發與實作優先順序調整，不是分類變更、產品方向變更、
+Date Calculator 取消／重做，也不是 V1.5 Search Foundation 策略變更。
+
+Business Days Calculator 成為 Timiva 第七個工具與下一支開發工具。
+Date Calculator / Add or Subtract Days 改為第八個工具。
+Hours Calculator 維持第九個工具。
+
+因此 Owner 決定先完成 Business Days Calculator，
+再接續 Date Calculator / Add or Subtract Days。
+```
+
+### 原因
+
+```text
+Business Days 可較快沿用 Days Between Dates 已驗證的日期輸入與區間 UI 基礎。
+Date Calculator 規則雖已大致討論完成，但實作與測試成本較高，延後可降低並行風險。
+```
+
+### 更新後順序
+
+```text
+5. Age Calculator — 已完成 · 已上線
+6. Days Between Dates — 已完成 · 已上線
+7. Business Days Calculator — 下一支開發工具
+8. Date Calculator / Add or Subtract Days — 接續開發
+9. Hours Calculator
+```
+
+### 不變邊界
+
+```text
+V1.5 仍為 Search Foundation／搜尋鋪路期
+四大產品分類不變
+Date Calculator 規則討論成果保留，但暫不進入實作
+Business Days Calculator MVP 維持：
+  只排除星期六與星期日
+  不做國定假日完整資料庫
+  不做國家／地區假日選擇
+  不做自訂工作週或自訂假日
+不因本決策修改 production 工具、routes、catalog 或程式碼
+```
+
+---
+
 ## 2026-07-11 — Days Between Dates production complete
 
 ### 背景
@@ -115,6 +175,8 @@ V1.5 改為 Search Foundation／搜尋鋪路期。
 11. Pet Age Calculator — optional
 12. Japanese Era Converter — optional
 ```
+
+> 註：此暫定順序已於 2026-07-13 調整，最新順序以後續決策「Business Days Calculator moved ahead of Date Calculator」為準。
 
 ### 邊界
 
