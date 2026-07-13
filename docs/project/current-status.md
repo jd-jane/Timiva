@@ -2,7 +2,7 @@
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
 > 更新日期：2026-07-13
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、Age Calculator V1.5 已上線、**Days Between Dates**（V1.5 Search Foundation 第二個工具／Timiva 第六個工具）已上線（deployed HEAD `18a262c`；B7 Production Verification PASS）、V1.5 為 Search Foundation／搜尋鋪路期；下一支開發工具改為 **Business Days Calculator**（2026-07-13 開發順序調整）。
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、Age Calculator V1.5 已上線、**Days Between Dates**（V1.5 Search Foundation 第二個工具／Timiva 第六個工具）已上線（deployed HEAD `18a262c`；B7 Production Verification PASS）、V1.5 為 Search Foundation／搜尋鋪路期；下一支開發工具改為 **Business Days Calculator**（2026-07-13 開發順序調整）；中文 Calculator 工具命名統一為「○○計算」（2026-07-13）。
 
 ---
 
@@ -66,6 +66,11 @@ Date Calculator / Add or Subtract Days：
 Business Days Calculator MVP 邊界維持：
   只排除星期六與星期日
   不做國定假日完整資料庫／國家假日選擇／自訂工作週或自訂假日
+中文 Calculator 工具命名（2026-07-13）：
+  統一「○○計算」（不加「器」、不用「計算機」）
+  Date Range → 日期區間計算；Age → 年齡計算；DBD → 日期差計算
+  Business Days → 工作日計算；Date Calculator → 日期加減計算；Hours → 時數計算
+  Event Countdown 命名現況本輪不統一
 ```
 
 ---

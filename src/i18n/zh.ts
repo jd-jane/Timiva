@@ -13,7 +13,7 @@ export const zh: Messages = {
         "建立重要日期或事件的倒數計時，介面簡潔、適合手機使用，快速查看距離目標日還剩多久。",
     },
     dateRangeCalculator: {
-      title: "日期區間計算器 — Timiva",
+      title: "日期區間計算 — Timiva",
       description:
         "快速計算兩個日期之間相差幾天，適合行程安排、專案規劃與日常日期查詢。",
     },
@@ -69,11 +69,11 @@ export const zh: Messages = {
     chips: ["重要日期", "日期計算", "年齡計算", "今年進度"],
     featuredTools: {
       "date-range": {
-        title: "日期區間計算機",
+        title: "日期區間計算",
         description: "快速計算兩個日期之間相差幾天、工作日與週末。",
       },
       "age-calculator": {
-        title: "年齡計算器",
+        title: "年齡計算",
         description:
           "快速計算完整歲數、精準的年／月／日與已走過的總天數，預設以今天或指定日期計算。",
       },
@@ -97,7 +97,7 @@ export const zh: Messages = {
         {
           question: "Timiva 有哪些工具？",
           answer:
-            "目前 Timiva 工具包含日期區間計算機、年齡計算器、事件倒數、今年進度與倒數計時器。這些工具分別對應日期計算、精準年齡、重要日期、長期時間進度，以及專注或日常任務的短計時。",
+            "目前 Timiva 工具包含日期區間計算、年齡計算、事件倒數、今年進度與倒數計時器。這些工具分別對應日期計算、精準年齡、重要日期、長期時間進度，以及專注或日常任務的短計時。",
         },
         {
           question: "如何開始使用 Timiva 的工具？",
@@ -184,7 +184,7 @@ export const zh: Messages = {
       relatedDescription: "查看剩餘天數。",
     },
     dateRange: {
-      title: "日期區間計算器",
+      title: "日期區間計算",
       description: "快速計算兩個日期之間相差幾天，包含工作日與週末。",
       compactDescription: "計算兩日期間隔。",
       relatedDescription: "計算日期差。",
@@ -202,7 +202,7 @@ export const zh: Messages = {
       relatedDescription: "一眼看見今年進度。",
     },
     ageCalculator: {
-      title: "年齡計算器",
+      title: "年齡計算",
       description:
         "快速計算完整歲數、精準的年／月／日與已走過的總天數，預設以今天或指定日期計算。",
       compactDescription: "計算精準年齡與生活總天數。",
@@ -261,7 +261,7 @@ export const zh: Messages = {
     },
   },
   dateRangeCalculator: {
-    kicker: "日期區間計算器",
+    kicker: "日期區間計算",
     totalDays: "總天數",
     workdays: "工作日",
     weekends: "週末",
@@ -278,11 +278,11 @@ export const zh: Messages = {
     nextMonth: "下一個月",
     weekdays: ["一", "二", "三", "四", "五", "六", "日"],
     about: {
-      heading: "什麼是日期區間計算器？",
-      body: "日期區間計算器可以幫你快速計算兩個日期之間相差多久，包含總天數、工作日與週末天數。適合用於旅遊天數、專案時程、截止日期與日常日期查詢。",
+      heading: "什麼是日期區間計算？",
+      body: "日期區間計算可以幫你快速計算兩個日期之間相差多久，包含總天數、工作日與週末天數。適合用於旅遊天數、專案時程、截止日期與日常日期查詢。",
     },
     howTo: {
-      heading: "如何使用日期區間計算器？",
+      heading: "如何使用日期區間計算？",
       body: "選擇開始日期與結束日期後，系統會立即顯示區間內的總天數、工作日與週末天數。手機版可點擊下方日期卡片開啟日曆。",
     },
     commonUses: {
@@ -301,7 +301,7 @@ export const zh: Messages = {
     relatedToolsDrawerAriaLabel: "相關工具抽屜",
     toggleRelatedToolsDrawerAriaLabel: "切換相關工具抽屜",
     faq: {
-      heading: "日期區間計算器 FAQ",
+      heading: "日期區間計算 FAQ",
       items: [
         {
           question: "如何計算兩個日期之間的天數？",

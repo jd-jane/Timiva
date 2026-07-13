@@ -5,6 +5,45 @@
 
 ---
 
+## 2026-07-13 — Chinese Calculator tool names standardized
+
+### 背景
+
+```text
+Owner 發現中文工具名稱不一致，同時出現「計算機」「計算器」「計算」。
+需要建立可長期套用的中文 Calculator 命名規則。
+```
+
+### 決策
+
+```text
+英文 Calculator 名稱不變。
+中文 Calculator 類工具統一使用「○○計算」。
+不加「器」，也不使用「計算機」。
+非 Calculator 類工具不受影響（例如倒數計時器保留「器」）。
+route / slug / tool ID / 英文名 / 排序 / 核心邏輯不變。
+Event Countdown 的「事件倒數／事件倒數計時器」現況本輪不統一。
+```
+
+### 正式對照
+
+```text
+Date Range Calculator → 日期區間計算
+Age Calculator → 年齡計算
+Days Between Dates → 日期差計算
+Business Days Calculator → 工作日計算
+Date Calculator / Add or Subtract Days → 日期加減計算
+Hours Calculator → 時數計算
+```
+
+### 長期規則位置
+
+```text
+docs/core/product-principles.md §4.1 中文 Calculator 工具命名
+```
+
+---
+
 ## 2026-07-13 — Business Days Calculator moved ahead of Date Calculator
 
 ### 背景

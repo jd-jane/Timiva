@@ -345,7 +345,7 @@ assert(
 	"EN Home age-calculator description matches catalog wording",
 );
 assert(
-	zh.home.featuredTools["age-calculator"]?.title === "年齡計算器",
+	zh.home.featuredTools["age-calculator"]?.title === "年齡計算",
 	"ZH Home age-calculator title exists",
 );
 assert(
@@ -354,12 +354,17 @@ assert(
 	"ZH Home age-calculator description matches catalog wording",
 );
 assert(en.tools.ageCalculator.title === "Age Calculator", "EN tools.ageCalculator exists");
-assert(zh.tools.ageCalculator.title === "年齡計算器", "ZH tools.ageCalculator exists");
+assert(zh.tools.ageCalculator.title === "年齡計算", "ZH tools.ageCalculator exists");
 assert(
 	en.tools.daysBetweenDates.title === "Days Between Dates",
 	"EN tools.daysBetweenDates exists",
 );
 assert(zh.tools.daysBetweenDates.title === "日期差計算", "ZH tools.daysBetweenDates exists");
+assert(
+	zh.home.featuredTools["date-range"]?.title === "日期區間計算",
+	"ZH Home date-range title uses 日期區間計算",
+);
+assert(zh.tools.dateRange.title === "日期區間計算", "ZH tools.dateRange uses 日期區間計算");
 assert(
 	!en.home.featuredTools["days-between-dates"],
 	"EN Home featuredTools has no days-between-dates entry",

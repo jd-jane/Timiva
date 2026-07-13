@@ -155,7 +155,7 @@ Days Between Dates 為 Timiva **第六個工具**，已正式上線於 `https://
 | P0 | Age Calculator | 年齡計算 | 年齡與生日日期差 | Low — **已部署 · V1.5 first Search Foundation tool** |
 | P1 | Days Between Dates | 日期差計算 | 聚焦相差天數 | Low — **已部署 · V1.5 second Search Foundation tool** |
 | P1 | Business Days Calculator | 工作日計算 | 排除週末的工作日差 | Low — **下一支開發工具** · MVP 不做國定假日資料庫 |
-| P1 | Date Calculator / Add or Subtract Days | 日期加減 | 計算 N 天前後 | Low — 接續 Business Days 之後 |
+| P1 | Date Calculator / Add or Subtract Days | 日期加減計算 | 計算 N 天前後 | Low — 接續 Business Days 之後 |
 | P1 | Hours Calculator | 時數計算 | 時數／時間差計算 | Low |
 | P2 | Lunar Date Converter | 農曆日期轉換 | 公曆／農曆日期轉換 | Low — optional；不做農民曆／宜忌／吉日 |
 | P2 | Pet Age Calculator | 寵物年齡換算 | 年齡換算參考 | Low — optional；不做健康／醫療建議 |
