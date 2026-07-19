@@ -1,9 +1,9 @@
 # Timiva Business Days Calculator 產品規格
 
 建立日期：2026-07-13
-最後更新：2026-07-13
-狀態：Final accepted product spec · Not implemented · Not committed · Not deployed
-工具順序：Timiva 第七個工具
+最後更新：2026-07-19
+狀態：Final accepted product spec · Production complete / Deployed · Deployed HEAD `8977fe5`
+工具順序：Timiva 第七個工具 · V1.5 Search Foundation 第三個工具
 開發階段：V1.5 Search Foundation
 分類：Important Dates／重要日子
 
@@ -23,7 +23,7 @@ ZH：工作日計算
 /zh/business-days-calculator/
 ```
 
-本規格階段不建立 route。
+正式路由已上線於 `https://timiva.app`。
 
 中文正式名稱統一為「工作日計算」：不加「器」，也不使用「計算機」。
 

@@ -216,6 +216,8 @@ timiva/
 │       ├── countdown-timer/
 │       ├── year-progress/
 │       ├── age-calculator/
+│       ├── days-between-dates/
+│       ├── business-days-calculator/
 │       └── shared/
 ├── agents/
 │   ├── README.md
@@ -293,9 +295,11 @@ timiva/
 | Date Range Calculator (DR) | 已部署 |
 | Countdown Timer (CT) | 已部署 |
 | Year Progress (YP) | 已部署 |
-| Age Calculator (AC) | 已部署 · V1.5 standalone + link integration complete |
+| Age Calculator (AC) | 已部署 · V1.5 first Search Foundation tool |
+| Days Between Dates (DBD) | 已部署 · V1.5 second Search Foundation tool |
+| Business Days Calculator (BDC) | 已部署 · V1.5 third Search Foundation tool |
 
-Canonical docs：`docs/tools/age-calculator/README.md`、`docs/tools/age-calculator/product-spec.md`
+Canonical docs：`docs/tools/<tool>/README.md`、`docs/tools/<tool>/product-spec.md`（例：age-calculator、days-between-dates、business-days-calculator）
 
 ---
 

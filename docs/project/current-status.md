@@ -1,8 +1,8 @@
 # Timiva 專案現況
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
-> 更新日期：2026-07-13
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、Age Calculator V1.5 已上線、**Days Between Dates**（V1.5 Search Foundation 第二個工具／Timiva 第六個工具）已上線（deployed HEAD `18a262c`；B7 Production Verification PASS）、V1.5 為 Search Foundation／搜尋鋪路期；下一支開發工具改為 **Business Days Calculator**（2026-07-13 開發順序調整）；中文 Calculator 工具命名統一為「○○計算」（2026-07-13）。
+> 更新日期：2026-07-19
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + **Business Days Calculator** production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、**Business Days Calculator**（V1.5 Search Foundation 第三個工具／Timiva 第七個工具）已上線（standalone `cc09f32`；Link Integration／Deployed HEAD `8977fe5`；Production QA PASS）、V1.5 為 Search Foundation／搜尋鋪路期；下一支開發工具為 **Date Calculator／日期加減計算**；中文 Calculator 工具命名統一為「○○計算」（2026-07-13）。
 
 ---
 
@@ -21,9 +21,9 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具（含 Year Progress）、**Age Calculator**（第五個工具）、**Days Between Dates**（第六個工具／V1.5 Search Foundation 第二個工具）皆已上線。V1 SEO technical closeout 已完成。Days Between Dates：standalone + link integration complete；B7 Production Verification PASS；No blocking issues found；deployed HEAD：`18a262c`（`feat: integrate Days Between Dates links`）。Home Featured 維持 4 張（不含 DBD）。下一支開發工具：**Business Days Calculator**（Timiva 第七個工具）。`main` 與 `origin/main` 同步。 |
+| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具（含 Year Progress）、**Age Calculator**（第五）、**Days Between Dates**（第六）、**Business Days Calculator**（第七個工具／V1.5 Search Foundation 第三個工具）皆已上線。V1 SEO technical closeout 已完成。Business Days Calculator：standalone `cc09f32` + link integration complete；Production QA PASS；No blocking issues found；Deployed HEAD：`8977fe5`（`feat: integrate Business Days Calculator links`）。Home Featured 維持 4 張（不含 BDC）。下一支開發工具：**Date Calculator／日期加減計算**。`main` 與 `origin/main` 同步。 |
 
-### 1.1 Current work tracks（2026-07-13）
+### 1.1 Current work tracks（2026-07-19）
 
 **Release track（production）：**
 
@@ -31,11 +31,13 @@
 Event Countdown、Date Range Calculator、Countdown Timer、Year Progress：已部署 timiva.app
 Age Calculator：已部署 timiva.app（V1.5 standalone + link integration）
 Days Between Dates：已部署 timiva.app（V1.5 Search Foundation 第二個工具 · Timiva 第六個工具）
-  Routes：/en/days-between-dates/ · /zh/days-between-dates/
-  Standalone commit：69ba30b feat: add Days Between Dates standalone tool
-  Link Integration commit / Deployed HEAD：18a262c feat: integrate Days Between Dates links
-  B7 Production Verification：PASS · No blocking issues found
+Business Days Calculator：已部署 timiva.app（V1.5 Search Foundation 第三個工具 · Timiva 第七個工具）
+  Routes：/en/business-days-calculator/ · /zh/business-days-calculator/
+  Standalone commit：cc09f32 feat: add Business Days Calculator standalone
+  Link Integration commit / Deployed HEAD：8977fe5 feat: integrate Business Days Calculator links
+  Production QA：PASS · No blocking issues found
 Cloudflare Pages 自動部署成功
+main 與 origin/main 同步
 V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22`）
 可選：Year Progress HTTPS Share verification（non-blocking）
 ```
@@ -45,27 +47,27 @@ V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22
 ```text
 Age Calculator：V1.5 完成並已上線（standalone + Post-tool Link Integration）
 Days Between Dates：V1.5 Search Foundation 第二個工具 · production complete
+Business Days Calculator：V1.5 Search Foundation 第三個工具 · production complete
 Home Featured Tools 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress）
-  Home 不加入 Days Between Dates
-Countdown Timer 仍保留於 All Tools 與工具頁；未加入 DBD inbound Related
-All Tools：已加入 Days Between Dates（dates-events：EC → DRC → DBD → AC）
-Inbound Related：Date Range Calculator + Age Calculator 含 Days Between Dates
+  Home 不加入 Days Between Dates、不加入 Business Days Calculator
+Countdown Timer 仍保留於 All Tools 與工具頁
+All Tools dates-events：
+  Event Countdown → Date Range Calculator → Days Between Dates → Business Days Calculator → Age Calculator
+Inbound Related：
+  Days Between Dates：Date Range Calculator → Business Days Calculator → Age Calculator
+  Date Range Calculator：Days Between Dates → Business Days Calculator → Event Countdown
+BDC outbound Related：Days Between Dates → Date Range Calculator → Event Countdown
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
-下一支開發工具：Business Days Calculator（Timiva 第七個工具）
-Date Calculator / Add or Subtract Days：
-  產品規則已大致討論完成，
-  但因實作、邊界測試與視覺調整成本較高，
-  延至 Business Days Calculator 之後（改為第八個工具）
+下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具）
+接續：Hours Calculator
 近期開發順序：
-  Business Days Calculator
   Date Calculator / Add or Subtract Days
   Hours Calculator
   Lunar Date Converter（optional）
   Pet Age Calculator（optional）
   Japanese Era Converter（optional）
-Business Days Calculator MVP 邊界維持：
-  只排除星期六與星期日
-  不做國定假日完整資料庫／國家假日選擇／自訂工作週或自訂假日
+Business Days Calculator 已上線邊界（維持）：
+  只排除星期六與星期日；起訖皆計入；不扣除國定假日
 中文 Calculator 工具命名（2026-07-13）：
   統一「○○計算」（不加「器」、不用「計算機」）
   Date Range → 日期區間計算；Age → 年齡計算；DBD → 日期差計算
@@ -142,9 +144,10 @@ Countdown Timer V2 — 已部署 · 站內連結整合完成（2c44484）
 Year Progress V2 — 已部署 · 站內連結整合完成（f39f8bc, 20c379d）
 Age Calculator V2 — 已部署 · standalone + 站內連結整合完成（f48df91）
 Days Between Dates V2 — 已部署 · standalone + 站內連結整合完成（69ba30b, 18a262c）
+Business Days Calculator V2 — 已部署 · standalone + 站內連結整合完成（cc09f32, 8977fe5）
 ```
 
-工具 README：`docs/tools/event-countdown/`、`docs/tools/date-range-calculator/`、`docs/tools/countdown-timer/`、`docs/tools/year-progress/`、`docs/tools/age-calculator/`、`docs/tools/days-between-dates/`
+工具 README：`docs/tools/event-countdown/`、`docs/tools/date-range-calculator/`、`docs/tools/countdown-timer/`、`docs/tools/year-progress/`、`docs/tools/age-calculator/`、`docs/tools/days-between-dates/`、`docs/tools/business-days-calculator/`
 
 ---
 
@@ -515,11 +518,11 @@ ToolAdSlot is-disabled
 Home Featured Tools：維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress）
   Days Between Dates 不加入 Home Featured
 All Tools EN / ZH：已加入 Days Between Dates
-  dates-events 排序：Event Countdown → Date Range → Days Between Dates → Age Calculator
-Outbound Related：Date Range → Age Calculator → Event Countdown
-Inbound Related：
-  Date Range Calculator includes Days Between Dates（替換 Countdown Timer）
-  Age Calculator includes Days Between Dates（替換 Year Progress）
+  dates-events 現行排序：Event Countdown → Date Range → Days Between Dates → Business Days Calculator → Age Calculator
+Outbound Related（現行）：Date Range Calculator → Business Days Calculator → Age Calculator
+Inbound Related（現行）：
+  Date Range Calculator includes Days Between Dates（與 Business Days Calculator）
+  Age Calculator includes Days Between Dates
   Event Countdown / Year Progress / Countdown Timer：未加入 DBD inbound
 ```
 
@@ -553,8 +556,101 @@ Next step:
 
 ```text
 Days Between Dates 上線阻塞項已關閉
-下一支開發工具：Business Days Calculator（Timiva 第七個工具）
-Date Calculator / Add or Subtract Days 延至 Business Days 之後
+Business Days Calculator 已接續完成並上線（見 §7.2）
+```
+
+---
+
+## 7.2 Business Days Calculator current status
+
+**已正式上線 · V1.5 Search Foundation 第三個工具 · Timiva 第七個工具 · standalone + link integration 完成 · Production QA 通過 · No blocking issues found**
+
+Production URL：`https://timiva.app`
+
+Routes:
+
+```text
+/en/business-days-calculator/
+/zh/business-days-calculator/
+```
+
+Category:
+
+```text
+Important Dates / 重要日子
+```
+
+Production / release:
+
+```text
+Product spec commit：f963a12 docs: add Business Days Calculator product spec
+Standalone commit：cc09f32 feat: add Business Days Calculator standalone
+Link Integration commit / Deployed HEAD：8977fe5 feat: integrate Business Days Calculator links
+Cloudflare Pages 自動部署成功
+main 與 origin/main 同步
+Production QA：PASS · No blocking issues found
+```
+
+Core shipped features:
+
+```text
+計算兩日期間工作日（星期一至星期五）
+起訖皆計入
+僅排除週六、週日；不扣除國定假日
+日期範圍：1900-01-01～2100-12-31
+Desktop：Smart Date Input + Calendar
+Mobile：Smart Date Input Bottom Sheet（無 Mobile Calendar）
+無 Clear／Calculate／LocalStorage／URL sharing
+Calendar icon 開啟完整 range selection
+Calendar 開啟後可切換只修改開始或結束日期
+edit 模式修改後保持開啟，由使用者自行關閉
+月份：3×4 grid；年份：1900–2100 固定高度可捲面板＋4 位輸入
+EN / ZH · About / How to / Common uses / FAQ / FAQ JSON-LD · Related Tools（3）
+ToolAdSlot is-disabled
+```
+
+站內連結整合：
+
+```text
+Home Featured Tools：維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress）
+  Business Days Calculator 不加入 Home Featured
+All Tools EN / ZH：已加入 Business Days Calculator
+  dates-events 排序：Event Countdown → Date Range → Days Between Dates → Business Days Calculator → Age Calculator
+Outbound Related：Days Between Dates → Date Range Calculator → Event Countdown
+Inbound Related：
+  Days Between Dates：Date Range Calculator → Business Days Calculator → Age Calculator
+  Date Range Calculator：Days Between Dates → Business Days Calculator → Event Countdown
+```
+
+Production QA（2026-07-19）：
+
+```text
+EN / ZH routes · All Tools · Related · SEO · Desktop / Mobile smoke — Pass
+No blocking issues found
+Known non-blocking：部署期間曾短暫 404，重試後恢復（CDN／部署延遲）
+```
+
+Canonical docs:
+
+```text
+docs/tools/business-days-calculator/product-spec.md
+docs/tools/business-days-calculator/README.md
+```
+
+Protected / no-go boundary:
+
+```text
+視為已上線 stable tool
+不得在未授權任務中改寫 Business Days Calculator 已驗收核心邏輯
+不得修改 Header、Footer、BaseLayout、Mobile Sheet baseline、既有工具程式
+```
+
+Next step:
+
+```text
+Business Days Calculator 上線阻塞項已關閉
+下一支開發工具：Date Calculator／日期加減計算
+接續：Hours Calculator
 ```
 
 ---
@@ -971,6 +1067,8 @@ Date Range calculation / date selection core
 Countdown Timer accepted implementation
 Year Progress accepted implementation（after Owner sign-off）
 Age Calculator accepted V1.5 implementation（standalone + link integration；已上線）
+Days Between Dates accepted V1.5 implementation（standalone + link integration；已上線）
+Business Days Calculator accepted V1.5 implementation（standalone + link integration；已上線）
 ToolAdSlot visual style
 ```
 
@@ -1002,6 +1100,7 @@ Countdown Timer V2 — Production · site-integrated
 Year Progress V2 — Production · site-integrated
 Age Calculator V2 — Production · V1.5 standalone + link integration（f48df91）
 Days Between Dates V2 — Production · V1.5 Search Foundation 第二個工具 · Timiva 第六個工具（18a262c）
+Business Days Calculator V2 — Production · V1.5 Search Foundation 第三個工具 · Timiva 第七個工具（8977fe5）
 GA4 + Basic Consent — deployed on timiva.app
 V1 SEO technical closeout — complete（docs `c5c0a22`）
 ```
@@ -1009,14 +1108,13 @@ V1 SEO technical closeout — complete（docs `c5c0a22`）
 Next workflow:
 
 ```text
-Days Between Dates 上線完成（standalone 69ba30b + link integration 18a262c）
-B7 Production Verification：PASS · No blocking issues found
-Home Featured 維持 4 張（不含 DBD）
+Business Days Calculator 上線完成（standalone cc09f32 + link integration 8977fe5）
+Production QA：PASS · No blocking issues found
+Home Featured 維持 4 張（不含 BDC）
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
-下一支開發工具：Business Days Calculator（Timiva 第七個工具）
-接續：Date Calculator / Add or Subtract Days → Hours Calculator
+下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具）
+接續：Hours Calculator
 （Lunar / Pet Age / Japanese Era 為 optional）
-Date Calculator 產品規則討論成果保留，但暫不進入實作
 ```
 
 Optional follow-up:
@@ -1043,8 +1141,8 @@ Phase A：重大變更、deploy 或 locked components 修改仍需 Owner 明確�
 Recommended order:
 
 ```text
-1. Product development：Business Days Calculator Plan-first / 規格化
-   （接續：Date Calculator → Hours Calculator）
+1. Product development：Date Calculator／日期加減計算 Plan-first / 規格化
+   （接續：Hours Calculator）
 2. Open Graph / Twitter Card（deferred SEO growth）
 3. WebApplication schema（deferred）
 4. Root HTTP 301 decision（deferred）
@@ -1147,14 +1245,15 @@ Create an implementation plan only. Do not edit files yet.
 
 Timiva V1 已在正式網域 https://timiva.app 提供服務。
 
-已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2、Year Progress V2、Age Calculator V2（V1.5 standalone + link integration）、Days Between Dates V2（V1.5 Search Foundation 第二個工具 · Timiva 第六個工具）。
+已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2、Year Progress V2、Age Calculator V2（V1.5 standalone + link integration）、Days Between Dates V2（V1.5 Search Foundation 第二個工具 · Timiva 第六個工具）、Business Days Calculator V2（V1.5 Search Foundation 第三個工具 · Timiva 第七個工具）。
 GA4 privacy-first Basic Consent 已在 timiva.app 驗證通過。
 V1 SEO technical closeout 已完成（Batch 1–3 production PASS；docs `c5c0a22`）。
 Age Calculator 已正式上線；deployed HEAD（AC）：`f48df91`。
 Days Between Dates 已正式上線；standalone `69ba30b`；Link Integration / deployed HEAD：`18a262c`；B7 Production Verification PASS；No blocking issues found。
-Home Featured 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress；不含 DBD）。
-下一支開發工具：Business Days Calculator（Timiva 第七個工具）。
-Date Calculator / Add or Subtract Days 延至 Business Days 之後（第八個工具）。
+Business Days Calculator 已正式上線；standalone `cc09f32`；Link Integration / deployed HEAD：`8977fe5`；Production QA PASS；No blocking issues found。
+Home Featured 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress；不含 DBD／BDC）。
+下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具）。
+接續：Hours Calculator。
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期（高搜尋、低維護日期與時間工具；四大分類不變）。
 
 規格與流程：docs/tools/、docs/workflow/

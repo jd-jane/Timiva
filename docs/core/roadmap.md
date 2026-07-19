@@ -1,7 +1,7 @@
 # Timiva V1 Roadmap
 
-> Updated: 2026-07-13
-> Main changes: Business Days Calculator moved ahead of Date Calculator in V1.5 development order；Days Between Dates / Age Calculator remain deployed；V1.5 remains Search Foundation／搜尋鋪路期。
+> Updated: 2026-07-19
+> Main changes: Business Days Calculator deployed（Timiva seventh tool · V1.5 third Search Foundation tool）；next tool is Date Calculator；V1.5 remains Search Foundation／搜尋鋪路期。
 
 ---
 
@@ -47,8 +47,8 @@ flowchart TD
 
     D --> D1[Age Calculator<br/>Deployed · first SF tool]
     D --> D2[Days Between Dates<br/>Deployed · second SF tool]
-    D --> D3[Business Days Calculator]
-    D --> D4[Date Calculator<br/>Add or Subtract Days]
+    D --> D3[Business Days Calculator<br/>Deployed · third SF tool]
+    D --> D4[Date Calculator<br/>Add or Subtract Days · next]
     D --> D5[Hours Calculator]
     D --> D6[Optional SF tools]
 
@@ -144,6 +144,25 @@ Canonical spec: [`docs/tools/days-between-dates/product-spec.md`](../tools/days-
 
 ---
 
+## 5.3 Business Days Calculator — V1.5 third Search Foundation tool（deployed）
+
+| Item | Status |
+|---|---|
+| Order | **7** — Timiva seventh tool · V1.5 third Search Foundation tool |
+| Category | Important Dates / 重要日子 |
+| Routes | `/en/business-days-calculator/`, `/zh/business-days-calculator/` |
+| Product specification | Complete |
+| Implementation | Complete · V1.5 standalone + link integration |
+| Production | Deployed on timiva.app |
+| Product spec commit | `f963a12` docs: add Business Days Calculator product spec |
+| Standalone commit | `cc09f32` feat: add Business Days Calculator standalone |
+| Deployed HEAD | `8977fe5` feat: integrate Business Days Calculator links |
+| Production QA | PASS · No blocking issues found |
+
+Canonical spec: [`docs/tools/business-days-calculator/product-spec.md`](../tools/business-days-calculator/product-spec.md)
+
+---
+
 ## 6. Phase 1.5 / V1.5 — Search Foundation／搜尋鋪路期
 
 V1.5 重新定義為 **Search Foundation**：優先開發高搜尋意圖、低維護的日期與時間工具，先建立自然搜尋入口。
@@ -154,8 +173,8 @@ V1.5 重新定義為 **Search Foundation**：優先開發高搜尋意圖、低�
 |---:|---|---|---|
 | 5 | Age Calculator | Important Dates | **已完成 · 已上線** · first Search Foundation tool |
 | 6 | Days Between Dates | Important Dates | **已完成 · 已上線** · second Search Foundation tool |
-| 7 | Business Days Calculator | Important Dates | **下一支開發工具** · MVP：排除週末即可；不做國定假日資料庫 |
-| 8 | Date Calculator / Add or Subtract Days | Important Dates | 高搜尋日期加減 · 接續 Business Days 之後 |
+| 7 | Business Days Calculator | Important Dates | **已完成 · 已上線** · third Search Foundation tool · MVP：排除週末；不做國定假日資料庫 |
+| 8 | Date Calculator / Add or Subtract Days | Important Dates | **下一支開發工具** · 高搜尋日期加減 |
 | 9 | Hours Calculator | Important Dates / time utility | 高搜尋時數計算 |
 | 10 | Lunar Date Converter | Important Dates | Optional · zh-Hant opportunity；不做農民曆／宜忌／吉日 |
 | 11 | Pet Age Calculator | Important Dates | Optional · emotional age-conversion；不做健康／醫療建議 |
@@ -245,6 +264,7 @@ Owner-confirmed deploy
 V1 four tools + Year Progress: deployed on timiva.app
 Age Calculator (V1.5 first Search Foundation tool): deployed on timiva.app
 Days Between Dates (V1.5 second Search Foundation tool): deployed on timiva.app
+Business Days Calculator (V1.5 third Search Foundation tool): deployed on timiva.app
 V1 SEO technical closeout: complete
 ```
 
@@ -281,7 +301,7 @@ PWA until core tool release timing is confirmed
 ## 12. Current next action
 
 ```text
-V1.5 Search Foundation 下一工具：Business Days Calculator（Timiva 第七個工具）。
-接續：Date Calculator / Add or Subtract Days → Hours Calculator
+V1.5 Search Foundation 下一工具：Date Calculator／日期加減計算（Timiva 第八個工具）。
+接續：Hours Calculator
 （Lunar / Pet Age / Japanese Era 為 optional）
 ```

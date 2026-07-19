@@ -5,6 +5,51 @@
 
 ---
 
+## 2026-07-19 — Business Days Calculator 正式上線與 Calendar interaction 決策
+
+### 背景
+
+```text
+Business Days Calculator／工作日計算完成 standalone、站內連結整合與 Production QA。
+需鎖定上線事實、Home／All Tools／Related 整合規則，以及 Desktop Calendar 最終互動，
+供後續工具與 Age Calculator 相關修正參考。
+```
+
+### 決策
+
+```text
+1. BDC 成為 Timiva 第七個工具、V1.5 Search Foundation 第三個工具；已正式上線。
+2. 工具只排除週六、週日；起訖皆計入；不維護國定假日資料庫。
+3. Home Featured 不加入 BDC；維持既有 4 張：
+   Date Range Calculator → Age Calculator → Event Countdown → Year Progress。
+4. All Tools dates-events 排序：
+   Event Countdown → Date Range Calculator → Days Between Dates → Business Days Calculator → Age Calculator。
+5. Inbound Related：
+   Days Between Dates：Date Range Calculator → Business Days Calculator → Age Calculator
+   Date Range Calculator：Days Between Dates → Business Days Calculator → Event Countdown
+6. BDC outbound Related：
+   Days Between Dates → Date Range Calculator → Event Countdown
+7. Desktop Calendar 最終互動：
+   - Calendar 關閉時，日期欄只做 Smart Date 快速輸入（不自動開日曆）
+   - Calendar icon 開啟完整 range 模式
+   - Calendar 已開啟時，點開始／結束欄切換單端修改（edit-start / edit-end）
+   - range 完成後自動關閉
+   - edit 模式選日後保持開啟，由使用者自行關閉
+8. 不採用原生月份／年份超長 <select>；BDC 使用月份 3×4 grid＋固定高度可捲年份面板（1900–2100）＋4 位輸入。
+9. Age Calculator 仍有相同原生 select 問題，留待獨立 regression fix；不視為本次 BDC 上線阻塞。
+10. Production QA PASS；Deployed HEAD：8977fe5。
+11. 下一支開發工具：Date Calculator／日期加減計算；接續 Hours Calculator。
+```
+
+### 影響
+
+```text
+BDC 視為已上線 stable tool；未授權不得改寫已驗收核心邏輯。
+後續日期工具可沿用 BDC Calendar 月份／年份面板模式，避免原生超長 select。
+```
+
+---
+
 ## 2026-07-13 — Chinese Calculator tool names standardized
 
 ### 背景
