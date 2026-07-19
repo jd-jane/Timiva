@@ -37,6 +37,11 @@ export const zh: Messages = {
       description:
         "快速計算兩個日期相差幾天，支援直接輸入日期，也可以選擇是否包含選擇的兩個日期。",
     },
+    businessDaysCalculator: {
+      title: "工作日計算｜Timiva",
+      description:
+        "計算兩個日期之間共有多少個工作日，並查看總天數與週末天數。開始日期與結束日期皆納入計算。",
+    },
     privacy: {
       title: "隱私權政策 — Timiva",
       description: "Timiva 如何處理您的資料與隱私。",
@@ -213,6 +218,12 @@ export const zh: Messages = {
       description: "快速計算兩個日期之間相差幾天。",
       compactDescription: "計算兩個日期之間相差幾天。",
       relatedDescription: "查看兩個日期之間相差幾天。",
+    },
+    businessDaysCalculator: {
+      title: "工作日計算",
+      description: "計算兩個日期之間的工作日數，排除星期六與星期日。",
+      compactDescription: "計算兩個日期之間的平日天數。",
+      relatedDescription: "計算兩個日期之間的工作日數。",
     },
     lifeProgress: {
       title: "人生進度條",
@@ -635,6 +646,76 @@ export const zh: Messages = {
           question: "這和日期區間計算有什麼不同？",
           answer:
             "日期差計算適合快速知道兩個日期相差幾天。日期區間計算則適合查看更多區間資訊，例如工作日或週末日。",
+        },
+      ],
+    },
+  },
+  businessDaysCalculator: {
+    kicker: "工作日計算",
+    primaryResultUnit: "個工作日",
+    totalDaysLabel: "總天數",
+    weekendDaysLabel: "週末天數",
+    fromDateLabel: "開始日期",
+    toDateLabel: "結束日期",
+    fromDateInputAriaLabel: "開始日期",
+    toDateInputAriaLabel: "結束日期",
+    dateInputPlaceholder: "YYYY / MM / DD",
+    upperControlsAriaLabel: "工作日計算日期區間控制",
+    mobileSelectDates: "選擇日期",
+    openDateSheetAriaLabel: "編輯日期",
+    sheetAriaLabel: "工作日計算日期輸入",
+    yearFieldLabel: "年",
+    monthFieldLabel: "月",
+    calendarLabel: "工作日計算日期區間日曆",
+    openCalendarAriaLabel: "開啟日期區間日曆",
+    previousMonth: "上個月",
+    nextMonth: "下個月",
+    weekdays: ["一", "二", "三", "四", "五", "六", "日"],
+    relatedToolsDrawerAriaLabel: "相關工具側欄",
+    toggleRelatedToolsDrawerAriaLabel: "切換相關工具側欄",
+    about: {
+      heading: "關於工作日計算",
+      body: "工作日計算可以算出兩個日期之間共有多少個星期一至星期五。開始日期與結束日期若為平日，都會納入計算；星期六與星期日會被排除。目前不扣除國定假日。",
+    },
+    howTo: {
+      heading: "如何使用工作日計算",
+      steps: [
+        "輸入開始日期與結束日期。",
+        "可直接輸入日期，或在桌機使用日曆選擇日期區間。",
+        "工具會自動顯示工作日數、總天數與週末天數。",
+      ],
+    },
+    commonUses: {
+      heading: "常見用途",
+      items: ["專案排程", "交付時程", "工作安排", "期限計算", "商務時程"],
+    },
+    faq: {
+      heading: "工作日計算常見問題",
+      items: [
+        {
+          question: "什麼是工作日？",
+          answer:
+            "星期一至星期五會計為工作日，星期六與星期日不會列入。",
+        },
+        {
+          question: "開始日期與結束日期會算進去嗎？",
+          answer:
+            "會。開始日期與結束日期若為平日，都會納入工作日數；若日期落在週末，則不會計為工作日。",
+        },
+        {
+          question: "工作日計算會扣除國定假日嗎？",
+          answer:
+            "不會。目前只排除星期六與星期日，不會扣除國定假日或其他自訂休假日。",
+        },
+        {
+          question: "如果開始日期晚於結束日期會怎麼處理？",
+          answer:
+            "工具會自動將較早的日期放在前面，再計算相同的日期區間，不需要重新輸入。",
+        },
+        {
+          question: "可以計算過去或未來的日期嗎？",
+          answer:
+            "可以。工具支援 1900 年 1 月 1 日至 2100 年 12 月 31 日之間的有效日期區間。",
         },
       ],
     },

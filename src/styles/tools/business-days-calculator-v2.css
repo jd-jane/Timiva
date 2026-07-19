@@ -1,0 +1,1147 @@
+/* Business Days Calculator V2 — B0/B1A content + B1B upper static UI */
+
+[data-business-days-calculator-v2] {
+	position: relative;
+	background: transparent;
+}
+
+[data-business-days-calculator-v2] > :not([data-bdcv2-drawer]):not(.bdcv2-calendar-popover) {
+	position: relative;
+}
+
+[data-business-days-calculator-v2] > [data-bdcv2-drawer] {
+	position: fixed;
+	inset-block: 0;
+	inset-inline-end: 0;
+	z-index: 25;
+}
+
+[data-business-days-calculator-v2] > .bdcv2-calendar-popover {
+	z-index: 80;
+}
+
+body:has([data-business-days-calculator-v2]) footer {
+	z-index: 2;
+}
+
+body:has([data-business-days-calculator-v2]) header {
+	position: relative;
+	z-index: 30;
+}
+
+[data-business-days-calculator-v2] .preview-tool-drawer-frosted {
+	background-color: rgb(5 8 31 / 0.6);
+	-webkit-backdrop-filter: blur(4px) saturate(150%);
+	backdrop-filter: blur(4px) saturate(150%);
+}
+
+/* 第一屏：沿用 V2 result-first baseline */
+[data-business-days-calculator-v2] .preview-tool-main-section {
+	--preview-header-height: 3.75rem;
+	position: relative;
+	z-index: 10;
+	margin-top: calc(-1 * var(--preview-header-height));
+	min-height: 100dvh;
+	background: transparent;
+}
+
+[data-business-days-calculator-v2] .preview-tool-first-screen {
+	box-sizing: border-box;
+	display: grid;
+	min-height: 100dvh;
+	place-items: center;
+	width: 100%;
+}
+
+[data-business-days-calculator-v2] .bdcv2-result-secondary {
+	display: grid;
+	grid-template-columns: repeat(2, auto);
+	gap: 40px;
+	width: fit-content;
+	max-width: min(100%, 300px);
+	margin-top: 1.5rem;
+	margin-inline: auto;
+}
+
+[data-business-days-calculator-v2] .bdcv2-result-secondary-item {
+	min-width: 0;
+}
+
+[data-business-days-calculator-v2] .bdcv2-result-secondary-number {
+	font-size: clamp(2.4rem, 10.5vw, 2.9rem);
+	font-weight: 400;
+	line-height: 0.92;
+	color: rgb(248 250 252 / 0.72);
+	font-variant-numeric: tabular-nums;
+}
+
+[data-business-days-calculator-v2] .bdcv2-result-secondary-label {
+	margin-top: 0.375rem;
+	color: rgb(148 163 184 / 0.85);
+	letter-spacing: normal;
+	text-transform: none;
+	opacity: 1;
+}
+
+/* Desktop input cluster：預設隱藏，桌機再顯示 */
+[data-business-days-calculator-v2] .bdcv2-input-cluster--desktop {
+	display: none;
+	width: 100%;
+	max-width: min(100%, 420px);
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+	margin-top: 2.5rem;
+	margin-inline: auto;
+}
+
+/* Mobile 底部主要操作：預設顯示，桌機隱藏 */
+[data-business-days-calculator-v2] .bdcv2-mobile-controls {
+	display: flex;
+	margin-top: 2rem;
+}
+
+/* DBD 式日期區間殼：icon 內嵌右側，日期字串保持置中 */
+[data-business-days-calculator-v2] .bdcv2-date-range-shell--desktop {
+	position: relative;
+	display: flex;
+	width: 100%;
+	min-width: 0;
+	/* 32px icon + 12px×2 padding + 1px×2 border = 58px */
+	box-sizing: border-box;
+	height: 58px;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	border-radius: 9999px;
+	border: 1px solid rgb(255 255 255 / 0.1);
+	background: rgb(255 255 255 / 0.05);
+	/* 扣除右側 52px icon 區域後，讓日期在剩餘空間內置中 */
+	padding: 12px 3.25rem 12px 0;
+	backdrop-filter: blur(4px);
+}
+
+[data-business-days-calculator-v2] .bdcv2-desktop-field {
+	display: flex;
+	min-width: 0;
+	flex: 1 1 0%;
+	align-items: center;
+}
+
+[data-business-days-calculator-v2] .bdcv2-desktop-field-inner {
+	display: flex;
+	min-width: 0;
+	width: 100%;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+[data-business-days-calculator-v2] .bdcv2-date-input {
+	box-sizing: border-box;
+	min-width: 0;
+	width: 100%;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: rgb(226 232 240);
+	font: inherit;
+	font-size: 0.9375rem;
+	line-height: 1.25rem;
+	letter-spacing: 0.01em;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+}
+
+[data-business-days-calculator-v2] .bdcv2-date-input:focus {
+	outline: none;
+}
+
+[data-business-days-calculator-v2] .bdcv2-date-input::placeholder {
+	color: rgb(148 163 184 / 0.55);
+}
+
+[data-business-days-calculator-v2] .bdcv2-date-separator {
+	flex-shrink: 0;
+	color: rgb(148 163 184);
+	font-size: 0.9375rem;
+	line-height: 1;
+}
+
+/* B2A：invalid icon（Desktop 欄位＋Sheet Y/M/D；低調、無紅框） */
+[data-business-days-calculator-v2] .bdcv2-date-invalid-icon,
+[data-bdcv2-sheet-portal] .bdcv2-date-invalid-icon {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	width: 0.875rem;
+	height: 0.875rem;
+	color: rgb(203 213 225 / 0.76);
+}
+
+[data-business-days-calculator-v2] .bdcv2-date-invalid-icon[hidden],
+[data-bdcv2-sheet-portal] .bdcv2-date-invalid-icon[hidden] {
+	display: none;
+}
+
+[data-business-days-calculator-v2] .bdcv2-date-invalid-icon svg,
+[data-bdcv2-sheet-portal] .bdcv2-date-invalid-icon svg {
+	width: 0.875rem;
+	height: 0.875rem;
+}
+
+/* Sheet Smart Date：icon 固定在日期文字右側 */
+[data-bdcv2-sheet-portal] .bdcv2-sheet-input-wrap {
+	display: flex;
+	min-width: 0;
+	flex: 1 1 0%;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+/* AC 式日曆按鈕：內嵌於輸入殼右側 */
+[data-business-days-calculator-v2] .bdcv2-calendar-toggle {
+	display: none;
+	position: absolute;
+	top: 50%;
+	right: 20px;
+	translate: 0 -50%;
+	flex-shrink: 0;
+	place-items: center;
+	width: 2rem;
+	height: 2rem;
+	padding: 0;
+	border: 0;
+	border-radius: 9999px;
+	color: rgb(220 218 240 / 0.9);
+	background: rgb(255 255 255 / 0.05);
+	cursor: pointer;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-toggle:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.45);
+	outline-offset: 2px;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-toggle svg {
+	width: 1.125rem;
+	height: 1.125rem;
+}
+
+[data-business-days-calculator-v2] .bdcv2-mobile-capsule {
+	width: 100%;
+	max-width: min(100%, 20rem);
+	font-variant-numeric: tabular-nums;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+[data-business-days-calculator-v2] .bdcv2-mobile-trigger-icon,
+[data-business-days-calculator-v2] .bdcv2-mobile-trigger-icon svg {
+	display: block;
+	width: var(--tool-mobile-portrait-control-icon-size, 1.125rem);
+	height: var(--tool-mobile-portrait-control-icon-size, 1.125rem);
+}
+
+[data-business-days-calculator-v2] .bdcv2-mobile-capsule:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.35);
+	outline-offset: 2px;
+}
+
+[data-business-days-calculator-v2] .tool-lower-content {
+	margin-top: var(--tool-stage-to-lower-content-spacing, 48px);
+}
+
+[data-business-days-calculator-v2] .bdcv2-keyword-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+[data-business-days-calculator-v2] .bdcv2-keyword-chip {
+	display: inline-flex;
+	align-items: center;
+	border-radius: 9999px;
+	border: 1px solid rgb(255 255 255 / 0.1);
+	background: rgb(255 255 255 / 0.04);
+	padding: 0.375rem 0.75rem;
+	font-size: 0.8125rem;
+	color: rgb(203 213 225);
+}
+
+/* Desktop calendar popover — AC 視覺基準 */
+[data-business-days-calculator-v2] .bdcv2-calendar-popover {
+	position: fixed;
+	z-index: 80;
+	width: min(22rem, calc(100vw - 2rem));
+	margin: 0;
+	transform: none;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-popover[hidden] {
+	display: none;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-panel {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 12px 18px 10px;
+	border-radius: 18px;
+	border: 1px solid rgb(255 255 255 / 0.08);
+	background: linear-gradient(
+		165deg,
+		rgb(120 108 210 / 0.22),
+		rgb(78 96 170 / 0.18)
+	);
+	box-shadow: 0 18px 48px rgb(0 0 0 / 0.42);
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+}
+
+[data-business-days-calculator-v2] .calendar-toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.375rem;
+	margin-bottom: 0.5rem;
+}
+
+/* 月份／年份受控選擇 — AC 視覺語言；不用原生 select */
+[data-business-days-calculator-v2] .bdcv2-calendar-selects {
+	display: flex;
+	flex: 1 1 auto;
+	align-items: center;
+	justify-content: center;
+	gap: 0.375rem;
+	min-width: 0;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-picker {
+	position: relative;
+	display: block;
+	min-width: 0;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-picker-trigger {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.375rem;
+	width: 100%;
+	min-width: 4.5rem;
+	max-width: 7.5rem;
+	min-height: 2.25rem;
+	padding: 0.25rem 1.75rem 0.25rem 0.625rem;
+	border-radius: 0.625rem;
+	border: 1px solid rgb(255 255 255 / 0.12);
+	background-color: rgb(255 255 255 / 0.08);
+	background-image: linear-gradient(45deg, transparent 50%, rgb(248 250 252 / 0.72) 50%),
+		linear-gradient(135deg, rgb(248 250 252 / 0.72) 50%, transparent 50%);
+	background-position:
+		calc(100% - 0.85rem) calc(50% - 0.1rem),
+		calc(100% - 0.55rem) calc(50% - 0.1rem);
+	background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
+	background-repeat: no-repeat;
+	color: rgb(248 250 252 / 0.94);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	line-height: 1.25;
+	cursor: pointer;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-picker-trigger:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.45);
+	outline-offset: 2px;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-picker-trigger[aria-expanded="true"] {
+	background-color: rgb(255 255 255 / 0.14);
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-picker-panel {
+	position: absolute;
+	top: calc(100% + 0.25rem);
+	left: 50%;
+	z-index: 6;
+	box-sizing: border-box;
+	padding: 0.5rem;
+	border-radius: 0.75rem;
+	border: 1px solid rgb(255 255 255 / 0.12);
+	background: linear-gradient(
+		165deg,
+		rgb(56 48 96 / 0.98),
+		rgb(42 52 92 / 0.98)
+	);
+	box-shadow: 0 14px 36px rgb(0 0 0 / 0.45);
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+	transform: translateX(-50%);
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-picker-panel[hidden] {
+	display: none;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-month-panel {
+	width: min(14.5rem, calc(100vw - 3rem));
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-month-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.25rem;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-month-option {
+	min-height: 2.125rem;
+	padding: 0.25rem 0.375rem;
+	border: 0;
+	border-radius: 0.5rem;
+	background: transparent;
+	color: rgb(248 250 252 / 0.94);
+	font-size: 0.75rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-month-option.is-selected,
+[data-business-days-calculator-v2] .bdcv2-calendar-year-option.is-selected {
+	color: #fff;
+	background: rgb(99 102 241 / 0.92);
+	box-shadow: inset 0 0 0 1px rgb(210 218 255 / 0.4);
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-year-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+	width: min(7.75rem, calc(100vw - 3rem));
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-year-input {
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 2.125rem;
+	padding: 0.25rem 0.5rem;
+	border-radius: 0.5rem;
+	border: 1px solid rgb(255 255 255 / 0.14);
+	background: rgb(255 255 255 / 0.08);
+	color: rgb(248 250 252 / 0.96);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+	letter-spacing: 0.04em;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-year-input:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.45);
+	outline-offset: 1px;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-year-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+	max-height: 12.5rem;
+	overflow-x: hidden;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding-right: 0.125rem;
+	/* Firefox：細捲軸 + 半透明 */
+	scrollbar-width: thin;
+	scrollbar-color: rgb(248 250 252 / 0.28) transparent;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-year-list::-webkit-scrollbar {
+	width: 0.25rem;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-year-list::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-year-list::-webkit-scrollbar-thumb {
+	border-radius: 9999px;
+	background: rgb(248 250 252 / 0.28);
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-year-list::-webkit-scrollbar-thumb:hover {
+	background: rgb(248 250 252 / 0.42);
+}
+
+[data-business-days-calculator-v2] .bdcv2-calendar-year-option {
+	flex: 0 0 auto;
+	min-height: 1.875rem;
+	padding: 0.2rem 0.5rem;
+	border: 0;
+	border-radius: 0.5rem;
+	background: transparent;
+	color: rgb(248 250 252 / 0.94);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+	cursor: pointer;
+}
+
+[data-business-days-calculator-v2] .calendar-nav-btn {
+	min-height: 2.25rem;
+	min-width: 2.25rem;
+	padding: 0.25rem 0.5rem;
+	border-radius: 0.625rem;
+	border: 1px solid rgb(255 255 255 / 0.12);
+	background: rgb(255 255 255 / 0.08);
+	font-size: 1rem;
+	font-weight: 500;
+	color: rgb(248 250 252 / 0.94);
+	cursor: pointer;
+	pointer-events: auto;
+}
+
+[data-business-days-calculator-v2] .calendar-nav-btn:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+[data-business-days-calculator-v2] .calendar-weekdays {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: 1px;
+	margin-bottom: 0.25rem;
+}
+
+[data-business-days-calculator-v2] .calendar-weekdays span {
+	text-align: center;
+	font-size: 0.6875rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	color: rgb(226 232 240 / 0.72);
+}
+
+[data-business-days-calculator-v2] .calendar-grid {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: 1px;
+}
+
+[data-business-days-calculator-v2] .calendar-cell--empty,
+[data-business-days-calculator-v2] .calendar-day {
+	min-height: 2.375rem;
+}
+
+[data-business-days-calculator-v2] .calendar-day {
+	position: relative;
+	display: grid;
+	place-items: center;
+	border: 0;
+	border-radius: 0.625rem;
+	background: transparent;
+	font-size: 0.8125rem;
+	font-weight: 500;
+	color: rgb(248 250 252 / 0.94);
+	cursor: pointer;
+	pointer-events: auto;
+	transition:
+		background 160ms ease,
+		color 160ms ease,
+		box-shadow 160ms ease;
+}
+
+[data-business-days-calculator-v2] .calendar-day.is-today {
+	box-shadow: inset 0 0 0 1.5px rgb(165 180 252 / 0.9);
+}
+
+/* Range highlight（對照 DRC 行為 class；視覺沿用 AC accent） */
+[data-business-days-calculator-v2] .calendar-day.is-in-range {
+	border-radius: 0;
+	background: rgb(99 102 241 / 0.28);
+}
+
+[data-business-days-calculator-v2] .calendar-day.is-range-start,
+[data-business-days-calculator-v2] .calendar-day.is-range-end,
+[data-business-days-calculator-v2] .calendar-day.is-range-single,
+[data-business-days-calculator-v2] .calendar-day.is-selected {
+	color: #fff;
+	background: rgb(99 102 241 / 0.92);
+	box-shadow: inset 0 0 0 1px rgb(210 218 255 / 0.4);
+	z-index: 1;
+}
+
+[data-business-days-calculator-v2] .calendar-day.is-range-start {
+	border-radius: 0.625rem 0 0 0.625rem;
+}
+
+[data-business-days-calculator-v2] .calendar-day.is-range-end {
+	border-radius: 0 0.625rem 0.625rem 0;
+}
+
+[data-business-days-calculator-v2] .calendar-day.is-range-single,
+[data-business-days-calculator-v2] .calendar-day.is-range-start.is-range-end {
+	border-radius: 0.625rem;
+}
+
+[data-business-days-calculator-v2] .calendar-day:disabled {
+	opacity: 0.28;
+	cursor: default;
+}
+
+[data-business-days-calculator-v2] .calendar-day:active:not(:disabled) {
+	transform: scale(0.97);
+}
+
+/* Mobile Sheet 兩欄 Smart Date */
+[data-bdcv2-sheet-portal] .bdcv2-sheet-fields {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	min-width: 0;
+	width: 100%;
+}
+
+/* Portrait sheet：內容驅動高度 + bottom safe-area，避免被 Safari toolbar 壓住 */
+@media (max-width: 767px) and (orientation: portrait) {
+	[data-bdcv2-sheet-portal][data-mobile-sheet-baseline] .bdcv2-sheet.msb-sheet.is-open {
+		box-sizing: border-box;
+		height: auto;
+		max-height: min(70dvh, 28rem);
+		padding-block-end: calc(1.5rem + env(safe-area-inset-bottom, 0px) + 0.75rem);
+	}
+
+	[data-bdcv2-sheet-portal][data-mobile-sheet-baseline] .bdcv2-sheet .msb-sheet-body {
+		flex: 0 1 auto;
+		min-height: 0;
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+}
+
+/* 手機橫式 sheet：內容驅動 compact（覆蓋 msb 固定高度；勿改 shared baseline） */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+	[data-bdcv2-sheet-portal][data-mobile-sheet-baseline] .bdcv2-sheet.msb-sheet.is-open {
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		height: fit-content;
+		min-height: 0;
+		max-height: min(40dvh, 9.75rem);
+		overflow: hidden;
+		padding-inline: 1rem;
+		padding-block-start: 0.25rem;
+		padding-block-end: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+	}
+
+	[data-bdcv2-sheet-portal][data-mobile-sheet-baseline] .bdcv2-sheet .msb-sheet-handle {
+		width: 2rem;
+		height: 0.1875rem;
+		flex-shrink: 0;
+		margin-block-start: 0;
+		margin-block-end: 0.375rem;
+	}
+
+	[data-bdcv2-sheet-portal][data-mobile-sheet-baseline] .bdcv2-sheet .msb-sheet-body {
+		flex: 0 1 auto;
+		min-height: 0;
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		padding-block: 0;
+		gap: 0.375rem;
+	}
+
+	[data-bdcv2-sheet-portal][data-mobile-sheet-baseline] .msb-sheet-fields.bdcv2-sheet-fields {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: 0.5rem;
+		flex-shrink: 0;
+	}
+}
+
+@media (hover: hover) and (pointer: fine) {
+	[data-business-days-calculator-v2] [data-bdcv2-drawer] a:hover {
+		transform: none;
+		translate: none;
+		border-color: rgb(255 255 255 / 0.16);
+		background-color: rgb(255 255 255 / 0.07);
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-calendar-toggle:hover {
+		background: rgb(255 255 255 / 0.1);
+	}
+
+	[data-business-days-calculator-v2] .calendar-nav-btn:hover:not(:disabled) {
+		background: rgb(255 255 255 / 0.14);
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-calendar-picker-trigger:hover {
+		background-color: rgb(255 255 255 / 0.12);
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-calendar-month-option:hover:not(.is-selected),
+	[data-business-days-calculator-v2] .bdcv2-calendar-year-option:hover:not(.is-selected) {
+		background: rgb(255 255 255 / 0.1);
+	}
+
+	[data-business-days-calculator-v2]
+		.calendar-day:hover:not(:disabled):not(.is-range-start):not(.is-range-end):not(
+			.is-range-single
+		):not(.is-in-range):not(.is-selected) {
+		background: rgb(255 255 255 / 0.1);
+	}
+}
+
+/* 結果主數字 — 對齊 Age Calculator／Days Between Dates */
+[data-business-days-calculator-v2] .preview-tool-result-number {
+	font-size: clamp(7.5rem, 38vw, 10.5rem);
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: -0.025em;
+	font-variant-numeric: tabular-nums;
+	color: rgb(248 250 252);
+	max-width: 100%;
+	text-align: center;
+}
+
+@media (min-width: 768px) {
+	[data-business-days-calculator-v2] .preview-tool-main-section {
+		--preview-header-height: 4.25rem;
+	}
+
+	/*
+	 * 桌機主結果：全寬欄內置中堆疊。
+	 * 5 位若仍用 13rem 會比 stage 更寬，margin-auto／max-content 會偏一邊看起來「歪」。
+	 */
+	[data-business-days-calculator-v2] .bdcv2-result-main {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		max-width: 100%;
+		margin-inline: auto;
+		text-align: center;
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-result-main .preview-tool-result-number,
+	[data-business-days-calculator-v2] .bdcv2-result-main .preview-tool-result-label {
+		display: block;
+		box-sizing: border-box;
+		width: auto;
+		max-width: 100%;
+		margin-inline: auto;
+		text-align: center;
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-result-number {
+		font-size: 13rem;
+	}
+
+	[data-business-days-calculator-v2][data-bdcv2-result-digits="5"] .preview-tool-result-number {
+		font-size: 10rem;
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-input-cluster--desktop {
+		display: flex;
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-calendar-toggle {
+		display: grid;
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-mobile-controls {
+		display: none;
+	}
+}
+
+@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
+	[data-business-days-calculator-v2] .bdcv2-result-secondary-number {
+		font-size: 36px;
+	}
+}
+
+/* 824–899px：沿用 DRC 的 56px 主要操作尺寸 */
+@media (min-width: 824px) and (max-width: 899px) {
+	[data-business-days-calculator-v2] .bdcv2-mobile-capsule {
+		min-height: var(--tool-mobile-portrait-control-min-height, 3.5rem);
+		min-width: var(--tool-mobile-portrait-control-min-height, 3.5rem);
+		padding: var(--tool-mobile-portrait-control-padding-y, 0.75rem)
+			var(--tool-mobile-portrait-control-padding-x, 1rem);
+		gap: var(--tool-mobile-portrait-control-gap, 0.5rem);
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+}
+
+/* 手機直式 — 結果區在扣除底部按鈕區後垂直置中；膠囊固定第一屏底部（DBD 基準） */
+@media (max-width: 767px) and (orientation: portrait) {
+	[data-business-days-calculator-v2] .bdcv2-result-secondary {
+		gap: 20px;
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-first-screen {
+		place-items: stretch;
+		min-height: 100dvh;
+		box-sizing: border-box;
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-stage {
+		display: grid;
+		grid-template-rows: minmax(0, 1fr) auto;
+		min-height: 100dvh;
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-result-group {
+		align-self: center;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		width: 100%;
+		min-height: 0;
+		pointer-events: none;
+		padding-inline: 0.75rem;
+		box-sizing: border-box;
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-result-block {
+		width: 100%;
+		max-width: 100%;
+		box-sizing: border-box;
+	}
+
+	/*
+	 * Digit-aware 主數字縮放（僅 mobile portrait）：
+	 * 1–3 位維持張力；4 位略縮；5 位明顯縮。
+	 * 有效結果最多 5 位（1900-01-01～2100-12-31 → 73,414 天）。
+	 * Sheet 開／關共用同一套字級規則。
+	 */
+	[data-business-days-calculator-v2][data-bdcv2-result-digits="1-3"] .preview-tool-result-number {
+		font-size: clamp(7.5rem, 38vw, 10.5rem);
+	}
+
+	[data-business-days-calculator-v2][data-bdcv2-result-digits="4"] .preview-tool-result-number {
+		font-size: clamp(6.5rem, 33vw, 9rem);
+	}
+
+	[data-business-days-calculator-v2][data-bdcv2-result-digits="5"] .preview-tool-result-number {
+		font-size: clamp(5.5rem, 27vw, 7rem);
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-input-cluster--desktop {
+		display: none;
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-controls {
+		position: relative;
+		align-self: center;
+		z-index: 25;
+		isolation: isolate;
+		margin-top: 0;
+		padding-bottom: 1rem;
+		pointer-events: auto;
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-mobile-controls {
+		display: flex;
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-mobile-capsule {
+		position: relative;
+		pointer-events: auto;
+		min-height: var(--tool-mobile-portrait-control-min-height, 3.5rem);
+		padding: var(--tool-mobile-portrait-control-padding-y, 0.75rem)
+			var(--tool-mobile-portrait-control-padding-x, 1rem);
+	}
+
+	[data-business-days-calculator-v2] [data-bdcv2-sheet-open]::after {
+		content: "";
+		position: absolute;
+		inset: -0.5rem;
+		z-index: -1;
+	}
+}
+
+/* Sheet-open：直式結果略縮；keyboard-open 與 sheet 共用 shift，避免結果停原位 */
+@media (max-width: 767px) and (orientation: portrait) {
+	[data-business-days-calculator-v2] .preview-tool-result-group {
+		transition: transform 220ms ease, opacity 220ms ease;
+	}
+
+	[data-business-days-calculator-v2][data-bdcv2-sheet-open="true"] .preview-tool-result-group {
+		opacity: 0.92;
+		transform: scale(0.9) translateY(-1.25rem);
+		transform-origin: center center;
+		pointer-events: none;
+	}
+
+	[data-business-days-calculator-v2][data-bdcv2-sheet-open="true"][data-bdcv2-keyboard-open="true"]
+		.preview-tool-result-group {
+		transform: scale(0.9) translateY(calc(-1.25rem - var(--bdcv2-keyboard-shift, 0px)));
+		transition: none;
+	}
+
+	[data-business-days-calculator-v2][data-bdcv2-sheet-open="true"] .preview-tool-controls {
+		opacity: 0;
+		pointer-events: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	[data-business-days-calculator-v2] .preview-tool-result-group {
+		transition: none;
+	}
+}
+
+/* 手機橫式 — 對齊 Date Range Calculator 的單屏三欄結果與底部操作 */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+	[data-business-days-calculator-v2] {
+		--bdcv2-landscape-title-result-gap: 0.875rem;
+		--bdcv2-landscape-result-number-size: 4.5rem;
+		--bdcv2-landscape-result-number-size-4: 3.25rem;
+		--bdcv2-landscape-result-number-size-5: 2.625rem;
+		--bdcv2-landscape-result-label-size: 0.6875rem;
+		/* 欄距適中：過大會在窄橫式 viewport 把 auto 欄壓扁後 overflow 重疊 */
+		--bdcv2-landscape-result-column-gap: 1.75rem;
+		--bdcv2-landscape-result-column-gap-4: 2.25rem;
+		--bdcv2-landscape-result-column-gap-5: 2.75rem;
+		--bdcv2-landscape-result-row-max: min(100%, 40rem);
+		--bdcv2-landscape-stage-controls-gap: 0.375rem;
+		--bdcv2-landscape-controls-bottom-inset: 1rem;
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-main-section {
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		justify-content: stretch;
+		min-height: auto;
+		height: 100dvh;
+		max-height: 100dvh;
+		overflow: hidden;
+		z-index: 15;
+		margin-top: calc(-1 * var(--preview-header-height));
+		padding-top: max(0.5rem, env(safe-area-inset-top));
+		padding-bottom: 0;
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-first-screen {
+		box-sizing: border-box;
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		align-items: stretch;
+		justify-content: stretch;
+		min-height: 0;
+		height: 100%;
+		max-height: none;
+		padding-block-start: 0.625rem;
+		padding-block-end: 0;
+		place-items: stretch;
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-stage {
+		display: grid;
+		grid-template-rows: minmax(0, 1fr) auto;
+		flex: 1 1 auto;
+		align-items: stretch;
+		align-content: stretch;
+		gap: var(--bdcv2-landscape-stage-controls-gap);
+		min-height: 0;
+		height: 100%;
+		width: 100%;
+		max-width: min(100%, 560px);
+		margin-inline: auto;
+		margin-block-start: 0.375rem;
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-input-cluster--desktop {
+		display: none;
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-stage > .preview-tool-result-group {
+		grid-row: 1;
+		align-self: stretch;
+		min-height: 0;
+		height: 100%;
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-stage > .preview-tool-controls {
+		grid-row: 2;
+		align-self: end;
+		justify-self: center;
+		margin-top: 0;
+		margin-bottom: var(--bdcv2-landscape-controls-bottom-inset);
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-result-group {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 0;
+		width: 100%;
+		height: 100%;
+		pointer-events: auto;
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-tool-name {
+		display: block;
+		width: 100%;
+		margin-top: 0;
+		margin-bottom: 0;
+		font-size: 0.8125rem;
+		line-height: 1.125rem;
+		text-align: center;
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-result-block {
+		display: grid;
+		grid-template-columns: repeat(3, max-content);
+		column-gap: var(--bdcv2-landscape-result-column-gap);
+		row-gap: 0;
+		align-items: end;
+		justify-content: center;
+		justify-items: center;
+		width: max-content;
+		max-width: 100%;
+		margin-inline: auto;
+		margin-top: var(--bdcv2-landscape-title-result-gap);
+		margin-bottom: 0;
+		box-sizing: border-box;
+		padding-inline: 0.25rem;
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-result-main,
+	[data-business-days-calculator-v2] .bdcv2-result-secondary-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: flex-end;
+		justify-self: center;
+		width: max-content;
+		min-width: max-content;
+		max-width: none;
+		box-sizing: border-box;
+		text-align: center;
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-result-secondary {
+		display: contents;
+		grid-template-columns: unset;
+		max-width: none;
+		margin: 0;
+		gap: 0;
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-result-number,
+	[data-business-days-calculator-v2] .bdcv2-result-secondary-number {
+		display: block;
+		width: max-content;
+		margin-inline: auto;
+		font-size: var(--bdcv2-landscape-result-number-size);
+		line-height: 1;
+		font-weight: 400;
+		font-variant-numeric: tabular-nums;
+		letter-spacing: -0.02em;
+		white-space: nowrap;
+		overflow: visible;
+		text-align: center;
+		color: rgb(248 250 252);
+	}
+
+	/* Landscape digit-aware：三欄共用縮放；位數愈多字級愈小、欄距略增 */
+	[data-business-days-calculator-v2][data-bdcv2-result-digits="4"] .preview-tool-result-number,
+	[data-business-days-calculator-v2][data-bdcv2-result-digits="4"] .bdcv2-result-secondary-number {
+		font-size: var(--bdcv2-landscape-result-number-size-4);
+	}
+
+	[data-business-days-calculator-v2][data-bdcv2-result-digits="4"] .preview-tool-result-block {
+		column-gap: var(--bdcv2-landscape-result-column-gap-4);
+	}
+
+	[data-business-days-calculator-v2][data-bdcv2-result-digits="5"] .preview-tool-result-number,
+	[data-business-days-calculator-v2][data-bdcv2-result-digits="5"] .bdcv2-result-secondary-number {
+		font-size: var(--bdcv2-landscape-result-number-size-5);
+	}
+
+	[data-business-days-calculator-v2][data-bdcv2-result-digits="5"] .preview-tool-result-block {
+		column-gap: var(--bdcv2-landscape-result-column-gap-5);
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-result-label,
+	[data-business-days-calculator-v2] .bdcv2-result-secondary-label {
+		display: block;
+		width: max-content;
+		max-width: none;
+		margin-top: 0.125rem;
+		margin-inline: auto;
+		padding-inline: 0;
+		font-size: var(--bdcv2-landscape-result-label-size);
+		line-height: 1rem;
+		letter-spacing: normal;
+		text-align: center;
+		text-transform: none;
+		white-space: nowrap;
+		color: rgb(148 163 184);
+		opacity: 1;
+	}
+
+	[data-business-days-calculator-v2] .preview-tool-controls {
+		display: flex;
+		flex-shrink: 0;
+		align-self: center;
+		justify-self: center;
+		position: relative;
+		z-index: 25;
+		isolation: isolate;
+		margin-top: 0;
+		width: 100%;
+		max-width: var(--bdcv2-landscape-result-row-max);
+		padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
+		gap: 0.375rem;
+		pointer-events: auto;
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-mobile-controls {
+		display: flex;
+	}
+
+	[data-business-days-calculator-v2] .bdcv2-mobile-capsule {
+		position: relative;
+		z-index: 1;
+		width: auto;
+		margin-inline: auto;
+		pointer-events: auto;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	/* Landscape sheet-open：結果略縮；不套用 portrait keyboard-lift */
+	[data-business-days-calculator-v2][data-bdcv2-sheet-open="true"] .preview-tool-result-group {
+		opacity: 0.92;
+		transform: scale(0.9) translateY(-1.25rem);
+		transform-origin: center center;
+		pointer-events: none;
+	}
+
+	[data-business-days-calculator-v2][data-bdcv2-sheet-open="true"] .preview-tool-controls {
+		opacity: 0;
+		pointer-events: none;
+	}
+}
+
+/* 較窄的手機橫式才使用 compact 按鈕，與 DRC breakpoint 一致 */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 823px) {
+	[data-business-days-calculator-v2] .bdcv2-mobile-capsule {
+		min-height: 1.75rem;
+		padding: 0.25rem 0.625rem;
+		font-size: 0.6875rem;
+		line-height: 1rem;
+	}
+}

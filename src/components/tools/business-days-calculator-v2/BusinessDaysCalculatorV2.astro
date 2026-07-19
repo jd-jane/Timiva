@@ -8,8 +8,8 @@ import { getRelatedTools, type CatalogToolId } from "../../../data/toolsCatalog"
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getMessages } from "../../../i18n/messages";
 import "../../../styles/tools/tool-mobile-sheet-v2-baseline.css";
-/* Tool-local sheet overrides must load after shared MSB baseline */
-import "../../../styles/tools/days-between-dates-v2.css";
+/* Tool-local styles load after shared MSB baseline */
+import "../../../styles/tools/business-days-calculator-v2.css";
 
 interface Props {
 	locale?: Locale;
@@ -17,8 +17,8 @@ interface Props {
 
 const { locale = "en" } = Astro.props;
 const messages = getMessages(locale);
-const m = messages.daysBetweenDates;
-const relatedTools = getRelatedTools("days-between-dates");
+const m = messages.businessDaysCalculator;
+const relatedTools = getRelatedTools("business-days-calculator");
 
 const toolCopy: Record<
 	CatalogToolId,
@@ -42,70 +42,77 @@ const relatedToolItems = relatedTools.map((tool) => ({
 }));
 
 const faqSchema = buildFaqPageJsonLd(m.faq.items);
-const resultLocale = locale === "zh" ? "zh" : "en";
+
+/* B2A：invalid icon aria label */
+const invalidDateMessage =
+	locale === "zh"
+		? "請輸入 1900–2100 之間的有效日期"
+		: "Enter a valid date between 1900 and 2100";
 ---
 
-<div
-	data-days-between-dates-v2
-	data-dbdv2-result-locale={resultLocale}
-	data-dbdv2-result-digits="1-3"
-	data-dbdv2-include-label-off={m.includeBothDates}
-	data-dbdv2-include-label-on={m.includeBothDatesActive}
->
-	{/* B1B / B2B：第一屏結果 + 日期輸入 + Include */}
-	<section data-dbdv2-main-tool class="preview-tool-main-section px-6">
+<div data-business-days-calculator-v2 data-bdcv2-result-digits="1-3" data-bdcv2-result-locale={locale === "zh" ? "zh" : "en"}>
+	{/* B1B：第一屏結果 + Desktop 區間框 + AC 式日曆鈕 + Mobile Sheet 入口 */}
+	<section data-bdcv2-main-tool class="preview-tool-main-section px-6">
 		<div class="preview-tool-first-screen">
 			<div class="preview-tool-stage tool-stage mx-auto w-full max-w-md md:max-w-lg">
 				<div class="preview-tool-result-group text-center">
 					<h1
-						class="dbdv2-tool-name preview-tool-landscape-compact-title text-sm font-medium tracking-normal text-slate-300 md:text-base"
+						class="bdcv2-tool-name preview-tool-landscape-compact-title text-sm font-medium tracking-normal text-slate-300 md:text-base"
 					>
 						{m.kicker}
 					</h1>
 
 					<div class="preview-tool-result-block mt-6 md:mt-8">
-						<p
-							class="preview-tool-result-number leading-none font-normal tracking-tight tabular-nums"
-							data-dbdv2-result-days
-							aria-label={`0 ${m.primaryResultUnit}`}
-						>
-							0
-						</p>
-						<p
-							class="preview-tool-result-label text-xs text-slate-400 md:text-sm"
-							data-dbdv2-result-unit
-						>
-							{m.primaryResultUnit}
-						</p>
+						<div class="bdcv2-result-main">
+							<p
+								class="preview-tool-result-number leading-none font-normal tracking-tight tabular-nums"
+								data-bdcv2-result-days
+								aria-label={`0 ${m.primaryResultUnit}`}
+							>
+								0
+							</p>
+							<p
+								class="preview-tool-result-label text-xs text-slate-400 md:text-sm"
+								data-bdcv2-result-unit
+							>
+								{m.primaryResultUnit}
+							</p>
+						</div>
 
-						<span class="dbdv2-result-divider" aria-hidden="true"></span>
-
-						<p
-							class="dbdv2-secondary-line"
-							data-dbdv2-result-weeks
-						>
-							{m.secondaryResultZero}
-						</p>
+						<div class="bdcv2-result-secondary">
+							<div class="bdcv2-result-secondary-item">
+								<div class="bdcv2-result-secondary-number" data-bdcv2-result-total-days>0</div>
+								<div class="preview-tool-result-label bdcv2-result-secondary-label text-xs text-slate-400/85 md:text-sm">
+									{m.totalDaysLabel}
+								</div>
+							</div>
+							<div class="bdcv2-result-secondary-item">
+								<div class="bdcv2-result-secondary-number" data-bdcv2-result-weekend-days>0</div>
+								<div class="preview-tool-result-label bdcv2-result-secondary-label text-xs text-slate-400/85 md:text-sm">
+									{m.weekendDaysLabel}
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 
-				{/* Desktop：長型雙日期 Smart Date Input + Include */}
+				{/* Desktop：DBD 式區間框 + AC 式日曆按鈕 */}
 				<div
-					class="dbdv2-input-cluster dbdv2-input-cluster--desktop"
+					class="bdcv2-input-cluster bdcv2-input-cluster--desktop"
 					aria-label={m.upperControlsAriaLabel}
 				>
 					<div
-						class="dbdv2-date-range-shell dbdv2-date-range-shell--desktop"
+						class="bdcv2-date-range-shell bdcv2-date-range-shell--desktop"
 						role="group"
 						aria-label={m.upperControlsAriaLabel}
 					>
-						<label class="dbdv2-desktop-field">
+						<label class="bdcv2-desktop-field" data-bdcv2-desktop-from-field>
 							<span class="sr-only">{m.fromDateLabel}</span>
-							<span class="dbdv2-desktop-field-inner">
+							<span class="bdcv2-desktop-field-inner">
 								<input
 									type="text"
-									class="dbdv2-date-input"
-									data-dbdv2-desktop-from
+									class="bdcv2-date-input"
+									data-bdcv2-desktop-from
 									inputmode="numeric"
 									autocomplete="off"
 									spellcheck="false"
@@ -113,10 +120,10 @@ const resultLocale = locale === "zh" ? "zh" : "en";
 									placeholder={m.dateInputPlaceholder}
 								/>
 								<span
-									class="dbdv2-date-invalid-icon"
-									data-dbdv2-desktop-from-invalid
+									class="bdcv2-date-invalid-icon"
+									data-bdcv2-desktop-from-invalid
 									hidden
-									aria-label={m.invalidDateMessage}
+									aria-label={invalidDateMessage}
 								>
 									<svg viewBox="0 0 16 16" aria-hidden="true">
 										<path
@@ -130,14 +137,14 @@ const resultLocale = locale === "zh" ? "zh" : "en";
 								</span>
 							</span>
 						</label>
-						<span class="dbdv2-date-separator" aria-hidden="true">—</span>
-						<label class="dbdv2-desktop-field">
+						<span class="bdcv2-date-separator" aria-hidden="true">—</span>
+						<label class="bdcv2-desktop-field" data-bdcv2-desktop-to-field>
 							<span class="sr-only">{m.toDateLabel}</span>
-							<span class="dbdv2-desktop-field-inner">
+							<span class="bdcv2-desktop-field-inner">
 								<input
 									type="text"
-									class="dbdv2-date-input"
-									data-dbdv2-desktop-to
+									class="bdcv2-date-input"
+									data-bdcv2-desktop-to
 									inputmode="numeric"
 									autocomplete="off"
 									spellcheck="false"
@@ -145,10 +152,10 @@ const resultLocale = locale === "zh" ? "zh" : "en";
 									placeholder={m.dateInputPlaceholder}
 								/>
 								<span
-									class="dbdv2-date-invalid-icon"
-									data-dbdv2-desktop-to-invalid
+									class="bdcv2-date-invalid-icon"
+									data-bdcv2-desktop-to-invalid
 									hidden
-									aria-label={m.invalidDateMessage}
+									aria-label={invalidDateMessage}
 								>
 									<svg viewBox="0 0 16 16" aria-hidden="true">
 										<path
@@ -162,57 +169,70 @@ const resultLocale = locale === "zh" ? "zh" : "en";
 								</span>
 							</span>
 						</label>
-					</div>
-
-					{/* Desktop：Include 純文字輔助選項（可切換；非膠囊） */}
-					<div class="dbdv2-include-option-wrap">
 						<button
 							type="button"
-							class="dbdv2-include-option"
-							data-dbdv2-include-toggle
-							aria-pressed="false"
+							class="bdcv2-calendar-toggle"
+							data-bdcv2-calendar-toggle
+							aria-expanded="false"
+							aria-controls="bdcv2-calendar-popover"
+							aria-label={m.openCalendarAriaLabel}
 						>
-							{m.includeBothDates}
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.5"
+								aria-hidden="true"
+							>
+								<rect x="3" y="5" width="18" height="16" rx="3"></rect>
+								<path d="M8 3v4M16 3v4M7 11h10" stroke-linecap="round"></path>
+							</svg>
 						</button>
 					</div>
 				</div>
 
-				{/* Mobile：第一屏底部主要操作按鈕（日期範圍膠囊） */}
+				{/* Mobile：開啟 Bottom Sheet */}
 				<div
-					class="preview-tool-controls dbdv2-mobile-controls flex flex-wrap justify-center gap-3"
+					class="preview-tool-controls bdcv2-mobile-controls flex flex-wrap justify-center gap-3"
 					aria-label={m.upperControlsAriaLabel}
 				>
 					<button
 						type="button"
-						class="preview-tool-control-btn dbdv2-mobile-capsule inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm font-medium text-slate-300 backdrop-blur-sm"
-						data-dbdv2-sheet-open
+						class="preview-tool-control-btn bdcv2-mobile-capsule inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm"
+						data-bdcv2-sheet-open
 						aria-label={m.openDateSheetAriaLabel}
 					>
-						<span
-							data-dbdv2-mobile-range
-							data-dbdv2-empty-label={m.mobileSelectDates}
-						>{m.mobileSelectDates}</span>
+						<span class="bdcv2-mobile-trigger-icon shrink-0" aria-hidden="true">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+								<rect x="3" y="5" width="18" height="16" rx="3"></rect>
+								<path d="M8 3v4M16 3v4M7 11h10" stroke-linecap="round"></path>
+							</svg>
+						</span>
+						<span data-bdcv2-mobile-range data-bdcv2-empty-label={m.mobileSelectDates}
+							>{m.mobileSelectDates}</span
+						>
 					</button>
 				</div>
 			</div>
 		</div>
 	</section>
 
+	{/* B1A：Desktop Related Tools drawer */}
 	<aside
-		data-dbdv2-drawer
+		data-bdcv2-drawer
 		data-open="true"
 		aria-label={m.relatedToolsDrawerAriaLabel}
 		class="pointer-events-none fixed inset-y-0 right-0 z-20 hidden xl:block"
 	>
 		<span class="hidden translate-x-[300px]" aria-hidden="true"></span>
 		<div
-			data-dbdv2-drawer-shell
+			data-bdcv2-drawer-shell
 			data-open="true"
 			class="preview-tool-drawer-frosted pointer-events-auto relative flex h-dvh rounded-tl-3xl rounded-bl-3xl border-l border-white/10 shadow-2xl shadow-black/25 ring-1 ring-inset ring-white/[0.04] transition-transform duration-200 ease-out"
 		>
 			<button
 				type="button"
-				data-dbdv2-drawer-toggle
+				data-bdcv2-drawer-toggle
 				aria-expanded="true"
 				class="relative z-10 flex w-14 shrink-0 items-center justify-center self-stretch text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
 				aria-label={m.toggleRelatedToolsDrawerAriaLabel}
@@ -250,14 +270,14 @@ const resultLocale = locale === "zh" ? "zh" : "en";
 			</button>
 
 			<div
-				data-dbdv2-drawer-panel
+				data-bdcv2-drawer-panel
 				class="relative z-10 flex h-full w-[300px] shrink-0 flex-col"
 			>
 				<div class="px-5 pb-3 pt-5">
 					<h2 class="text-lg font-semibold text-white">{messages.relatedTools.heading}</h2>
 				</div>
 				<ToolAdSlot variant="sidebar" locale={locale} state="is-disabled" />
-				<div class="flex-1 space-y-3 overflow-y-auto px-5 pb-5" data-dbdv2-drawer-related-tools>
+				<div class="flex-1 space-y-3 overflow-y-auto px-5 pb-5" data-bdcv2-drawer-related-tools>
 					{
 						relatedToolItems.map((tool) => (
 							<div>
@@ -275,19 +295,19 @@ const resultLocale = locale === "zh" ? "zh" : "en";
 		</div>
 	</aside>
 
-	{/* B1A：下方內容層 — About / How to use / Common uses / FAQ + JSON-LD / Related Tools */}
-	<div class="tool-lower-content mx-auto max-w-3xl px-6 pb-20 text-left" data-dbdv2-lower-content>
+	{/* B1A：下方內容 — Related / About / How to use / Common uses / FAQ + JSON-LD */}
+	<div class="tool-lower-content mx-auto max-w-3xl px-6 pb-20 text-left" data-bdcv2-lower-content>
 		<ToolAdSlot variant="main" locale={locale} state="is-disabled" />
 
 		<section
-			data-dbdv2-related-tools
+			data-bdcv2-related-tools
 			class="pb-12 xl:hidden"
-			aria-labelledby="dbdv2-related-heading"
+			aria-labelledby="bdcv2-related-heading"
 		>
-			<h2 id="dbdv2-related-heading" class="mb-4 text-lg font-semibold text-white">
+			<h2 id="bdcv2-related-heading" class="mb-4 text-lg font-semibold text-white">
 				{messages.relatedTools.heading}
 			</h2>
-			<div class="space-y-3" data-dbdv2-mobile-related-tools>
+			<div class="space-y-3" data-bdcv2-mobile-related-tools>
 				{
 					relatedToolItems.map((tool) => (
 						<RelatedToolRow
@@ -301,15 +321,15 @@ const resultLocale = locale === "zh" ? "zh" : "en";
 			</div>
 		</section>
 
-		<section class="pb-12" aria-labelledby="dbdv2-about-heading">
-			<h2 id="dbdv2-about-heading" class="mb-2 text-lg font-semibold text-white">
+		<section class="pb-12" aria-labelledby="bdcv2-about-heading">
+			<h2 id="bdcv2-about-heading" class="mb-2 text-lg font-semibold text-white">
 				{m.about.heading}
 			</h2>
 			<p class="text-sm leading-relaxed text-slate-400">{m.about.body}</p>
 		</section>
 
-		<section class="pb-12" aria-labelledby="dbdv2-howto-heading">
-			<h2 id="dbdv2-howto-heading" class="mb-2 text-lg font-semibold text-white">
+		<section class="pb-12" aria-labelledby="bdcv2-howto-heading">
+			<h2 id="bdcv2-howto-heading" class="mb-2 text-lg font-semibold text-white">
 				{m.howTo.heading}
 			</h2>
 			<ol class="list-decimal space-y-2 pl-5 text-sm leading-relaxed text-slate-400">
@@ -317,17 +337,17 @@ const resultLocale = locale === "zh" ? "zh" : "en";
 			</ol>
 		</section>
 
-		<section class="pb-12" aria-labelledby="dbdv2-tags-heading">
-			<h2 id="dbdv2-tags-heading" class="mb-4 text-lg font-semibold text-white">
+		<section class="pb-12" aria-labelledby="bdcv2-tags-heading">
+			<h2 id="bdcv2-tags-heading" class="mb-4 text-lg font-semibold text-white">
 				{m.commonUses.heading}
 			</h2>
-			<ul class="dbdv2-keyword-list" role="list">
-				{m.commonUses.items.map((item) => <li class="dbdv2-keyword-chip">{item}</li>)}
+			<ul class="bdcv2-keyword-list" role="list">
+				{m.commonUses.items.map((item) => <li class="bdcv2-keyword-chip">{item}</li>)}
 			</ul>
 		</section>
 
-		<section aria-labelledby="dbdv2-faq-heading">
-			<h2 id="dbdv2-faq-heading" class="mb-4 text-lg font-semibold text-white">
+		<section aria-labelledby="bdcv2-faq-heading">
+			<h2 id="bdcv2-faq-heading" class="mb-4 text-lg font-semibold text-white">
 				{m.faq.heading}
 			</h2>
 			<div class="border-t border-white/20">
@@ -372,15 +392,117 @@ const resultLocale = locale === "zh" ? "zh" : "en";
 			</div>
 		</section>
 	</div>
+
+	{/* Desktop Calendar popover — AC 視覺 + DRC range 行為（B2C） */}
+	<div
+		id="bdcv2-calendar-popover"
+		class="bdcv2-calendar-popover"
+		data-bdcv2-calendar-popover
+		role="dialog"
+		aria-label={m.calendarLabel}
+		aria-hidden="true"
+		hidden
+	>
+		<div class="calendar-panel calendar-card bdcv2-calendar-panel">
+			<div class="calendar-toolbar">
+				<button
+					type="button"
+					class="calendar-nav-btn"
+					data-bdcv2-calendar-prev
+					aria-label={m.previousMonth}
+				>
+					‹
+				</button>
+				<div class="bdcv2-calendar-selects">
+					<div class="bdcv2-calendar-picker" data-bdcv2-month-picker>
+						<button
+							type="button"
+							class="bdcv2-calendar-picker-trigger"
+							data-bdcv2-month-trigger
+							aria-expanded="false"
+							aria-haspopup="listbox"
+							aria-controls="bdcv2-calendar-month-panel"
+							aria-label={m.monthFieldLabel}
+						>
+							<span data-bdcv2-month-label>—</span>
+						</button>
+						<div
+							id="bdcv2-calendar-month-panel"
+							class="bdcv2-calendar-picker-panel bdcv2-calendar-month-panel"
+							data-bdcv2-month-panel
+							role="listbox"
+							aria-label={m.monthFieldLabel}
+							hidden
+						>
+							<div class="bdcv2-calendar-month-grid" data-bdcv2-month-grid></div>
+						</div>
+					</div>
+					<div class="bdcv2-calendar-picker" data-bdcv2-year-picker>
+						<button
+							type="button"
+							class="bdcv2-calendar-picker-trigger"
+							data-bdcv2-year-trigger
+							aria-expanded="false"
+							aria-haspopup="dialog"
+							aria-controls="bdcv2-calendar-year-panel"
+							aria-label={m.yearFieldLabel}
+						>
+							<span data-bdcv2-year-label>—</span>
+						</button>
+						<div
+							id="bdcv2-calendar-year-panel"
+							class="bdcv2-calendar-picker-panel bdcv2-calendar-year-panel"
+							data-bdcv2-year-panel
+							role="dialog"
+							aria-label={m.yearFieldLabel}
+							hidden
+						>
+							<input
+								type="text"
+								class="bdcv2-calendar-year-input"
+								data-bdcv2-year-input
+								inputmode="numeric"
+								autocomplete="off"
+								spellcheck="false"
+								maxlength="4"
+								aria-label={m.yearFieldLabel}
+							/>
+							<div
+								class="bdcv2-calendar-year-list"
+								data-bdcv2-year-list
+								role="listbox"
+								aria-label={m.yearFieldLabel}
+							>
+							</div>
+						</div>
+					</div>
+				</div>
+				<button
+					type="button"
+					class="calendar-nav-btn"
+					data-bdcv2-calendar-next
+					aria-label={m.nextMonth}
+				>
+					›
+				</button>
+			</div>
+
+			<div class="calendar-weekdays" aria-hidden="true">
+				{m.weekdays.map((day) => <span>{day}</span>)}
+			</div>
+
+			<div class="calendar-grid" data-bdcv2-calendar-grid></div>
+		</div>
+	</div>
 </div>
 
 <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 
-{/* B1B：Mobile sheet chrome（靜態欄位；僅最小 open/close） */}
-<div data-dbdv2-sheet-portal data-mobile-sheet-baseline hidden aria-hidden="true">
+{/* Mobile Sheet — Start／End 各一個 Smart Date Input */}
+<div data-bdcv2-sheet-portal data-mobile-sheet-baseline hidden aria-hidden="true">
 	<div
 		class="tool-operation-overlay"
-		data-dbdv2-sheet-overlay
+		data-bdcv2-sheet-overlay
 		data-tool-operation-overlay
 		hidden
 		aria-hidden="true"
@@ -388,26 +510,27 @@ const resultLocale = locale === "zh" ? "zh" : "en";
 	</div>
 
 	<div
-		class="msb-sheet dbdv2-sheet"
-		data-dbdv2-sheet
+		class="msb-sheet bdcv2-sheet"
+		data-bdcv2-sheet
 		role="dialog"
 		aria-modal="true"
 		aria-label={m.sheetAriaLabel}
 		aria-hidden="true"
+		tabindex="-1"
 		inert
 	>
 		<div class="msb-sheet-handle" aria-hidden="true"></div>
 
 		<div class="msb-sheet-body">
-			<div class="msb-sheet-fields dbdv2-sheet-fields">
-				<label class="msb-field" data-dbdv2-sheet-from-field>
+			<div class="msb-sheet-fields bdcv2-sheet-fields">
+				<label class="msb-field" data-bdcv2-sheet-from-field>
 					<span class="msb-input-shell">
 						<span class="msb-input-prefix">{m.fromDateLabel}</span>
-						<span class="dbdv2-sheet-input-wrap">
+						<span class="bdcv2-sheet-input-wrap">
 							<input
 								type="text"
-								class="msb-input dbdv2-date-input"
-								data-dbdv2-sheet-from
+								class="msb-input bdcv2-date-input"
+								data-bdcv2-sheet-from
 								inputmode="numeric"
 								autocomplete="off"
 								spellcheck="false"
@@ -415,10 +538,10 @@ const resultLocale = locale === "zh" ? "zh" : "en";
 								placeholder={m.dateInputPlaceholder}
 							/>
 							<span
-								class="dbdv2-date-invalid-icon"
-								data-dbdv2-sheet-from-invalid
+								class="bdcv2-date-invalid-icon"
+								data-bdcv2-sheet-from-invalid
 								hidden
-								aria-label={m.invalidDateMessage}
+								aria-label={invalidDateMessage}
 							>
 								<svg viewBox="0 0 16 16" aria-hidden="true">
 									<path
@@ -434,14 +557,14 @@ const resultLocale = locale === "zh" ? "zh" : "en";
 					</span>
 				</label>
 
-				<label class="msb-field" data-dbdv2-sheet-to-field>
+				<label class="msb-field" data-bdcv2-sheet-to-field>
 					<span class="msb-input-shell">
 						<span class="msb-input-prefix">{m.toDateLabel}</span>
-						<span class="dbdv2-sheet-input-wrap">
+						<span class="bdcv2-sheet-input-wrap">
 							<input
 								type="text"
-								class="msb-input dbdv2-date-input"
-								data-dbdv2-sheet-to
+								class="msb-input bdcv2-date-input"
+								data-bdcv2-sheet-to
 								inputmode="numeric"
 								autocomplete="off"
 								spellcheck="false"
@@ -449,10 +572,10 @@ const resultLocale = locale === "zh" ? "zh" : "en";
 								placeholder={m.dateInputPlaceholder}
 							/>
 							<span
-								class="dbdv2-date-invalid-icon"
-								data-dbdv2-sheet-to-invalid
+								class="bdcv2-date-invalid-icon"
+								data-bdcv2-sheet-to-invalid
 								hidden
-								aria-label={m.invalidDateMessage}
+								aria-label={invalidDateMessage}
 							>
 								<svg viewBox="0 0 16 16" aria-hidden="true">
 									<path
@@ -468,21 +591,10 @@ const resultLocale = locale === "zh" ? "zh" : "en";
 					</span>
 				</label>
 			</div>
-
-			<div class="dbdv2-sheet-include-wrap">
-				<button
-					type="button"
-					class="dbdv2-include-option"
-					data-dbdv2-include-toggle
-					aria-pressed="false"
-				>
-					{m.includeBothDates}
-				</button>
-			</div>
 		</div>
 	</div>
 </div>
 
 <script>
-	import "../../../scripts/days-between-dates";
+	import "../../../scripts/business-days-calculator";
 </script>

@@ -17,6 +17,7 @@ export const routePaths = {
   yearProgress: "/year-progress/",
   ageCalculator: "/age-calculator/",
   daysBetweenDates: "/days-between-dates/",
+  businessDaysCalculator: "/business-days-calculator/",
   allTools: "/tools/",
   privacy: "/privacy/",
   terms: "/terms/",

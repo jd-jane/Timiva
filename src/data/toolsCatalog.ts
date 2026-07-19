@@ -13,6 +13,7 @@ export type CatalogToolId =
   | "event-countdown"
   | "date-range"
   | "days-between-dates"
+  | "business-days-calculator"
   | "countdown-timer"
   | "year-progress"
   | "age-calculator"
@@ -55,6 +56,15 @@ export const catalogTools: CatalogTool[] = [
     featured: true,
     icon: "days-between-dates",
     relatedIds: ["date-range", "age-calculator", "event-countdown"],
+  },
+  {
+    id: "business-days-calculator",
+    slug: "business-days-calculator",
+    categoryId: "dates-events",
+    available: false,
+    featured: false,
+    icon: "calendar",
+    relatedIds: ["days-between-dates", "date-range", "event-countdown"],
   },
   {
     id: "countdown-timer",

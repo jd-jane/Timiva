@@ -35,6 +35,11 @@ export const en = {
       description:
         "Calculate the number of days between two dates with a fast, simple date input. You can also include both selected dates in the count.",
     },
+    businessDaysCalculator: {
+      title: "Business Days Calculator | Timiva",
+      description:
+        "Calculate business days between two dates. See the total number of weekdays and weekend days, with both start and end dates included.",
+    },
     privacy: {
       title: "Privacy Policy — Timiva",
       description: "How Timiva handles your data and privacy.",
@@ -227,6 +232,13 @@ export const en = {
       description: "Quickly calculate how many days are between two dates.",
       compactDescription: "Calculate the day difference between two dates.",
       relatedDescription: "Find the number of days between two dates.",
+    },
+    businessDaysCalculator: {
+      title: "Business Days Calculator",
+      description:
+        "Calculate the number of business days between two dates, excluding Saturdays and Sundays.",
+      compactDescription: "Count weekdays between two dates.",
+      relatedDescription: "Count business days between two dates.",
     },
     lifeProgress: {
       title: "Life Progress Bar",
@@ -660,6 +672,82 @@ export const en = {
           question: "How is this different from Date Range Calculator?",
           answer:
             "Days Between Dates gives a quick day count. Date Range Calculator is better when you need more range details such as workdays or weekends.",
+        },
+      ],
+    },
+  },
+  businessDaysCalculator: {
+    kicker: "Business Days Calculator",
+    primaryResultUnit: "business days",
+    totalDaysLabel: "days total",
+    weekendDaysLabel: "weekend days",
+    fromDateLabel: "Start date",
+    toDateLabel: "End date",
+    fromDateInputAriaLabel: "Start date",
+    toDateInputAriaLabel: "End date",
+    dateInputPlaceholder: "YYYY / MM / DD",
+    upperControlsAriaLabel: "Business days date range controls",
+    mobileSelectDates: "Select dates",
+    openDateSheetAriaLabel: "Edit dates",
+    sheetAriaLabel: "Business days date inputs",
+    yearFieldLabel: "Year",
+    monthFieldLabel: "Month",
+    calendarLabel: "Business days date range calendar",
+    openCalendarAriaLabel: "Open date range calendar",
+    previousMonth: "Previous month",
+    nextMonth: "Next month",
+    weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    relatedToolsDrawerAriaLabel: "Related tools drawer",
+    toggleRelatedToolsDrawerAriaLabel: "Toggle related tools drawer",
+    about: {
+      heading: "About the Business Days Calculator",
+      body: "The Business Days Calculator shows how many weekdays fall between two dates. Both the start and end dates are included when they fall on a Monday through Friday. Saturdays and Sundays are excluded, while public holidays are not deducted.",
+    },
+    howTo: {
+      heading: "How to use the Business Days Calculator",
+      steps: [
+        "Enter a start date and an end date.",
+        "Type the dates directly, or use the desktop calendar to select a date range.",
+        "View the number of business days, total days, and weekend days automatically.",
+      ],
+    },
+    commonUses: {
+      heading: "Common uses",
+      items: [
+        "Project schedules",
+        "Delivery estimates",
+        "Work planning",
+        "Deadline checks",
+        "Business timelines",
+      ],
+    },
+    faq: {
+      heading: "Business Days Calculator FAQ",
+      items: [
+        {
+          question: "What counts as a business day?",
+          answer:
+            "Monday through Friday count as business days. Saturdays and Sundays are excluded.",
+        },
+        {
+          question: "Are the start and end dates included?",
+          answer:
+            "Yes. Both dates are included when they fall on a weekday. If either date falls on a weekend, that date is not counted as a business day.",
+        },
+        {
+          question: "Does the calculator exclude public holidays?",
+          answer:
+            "No. The current version excludes Saturdays and Sundays only. Public holidays and custom days off are not deducted.",
+        },
+        {
+          question: "What happens if the dates are entered in reverse order?",
+          answer:
+            "The calculator automatically places the earlier date first and calculates the same date range.",
+        },
+        {
+          question: "Can I calculate past and future date ranges?",
+          answer:
+            "Yes. You can calculate any valid date range from January 1, 1900, through December 31, 2100.",
         },
       ],
     },

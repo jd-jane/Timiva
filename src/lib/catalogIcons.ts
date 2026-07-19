@@ -7,6 +7,7 @@ export const catalogIconMap: Record<
 	"event-countdown": "calendar",
 	"date-range": "plus-square",
 	"days-between-dates": "calendar",
+	"business-days-calculator": "calendar",
 	"countdown-timer": "timer",
 	"year-progress": "progress",
 	"age-calculator": "person",
