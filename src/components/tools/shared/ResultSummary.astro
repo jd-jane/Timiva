@@ -1,0 +1,89 @@
+---
+import {
+	computeRsDigits,
+	formatRsDisplayValue,
+	type RsLayout,
+	type RsSecondaryField,
+	type RsValueField,
+	type RsVariant,
+} from "../../../scripts/result-summary-controller.ts";
+import "../../../styles/tools/result-summary.css";
+
+interface Props {
+	primary: RsValueField;
+	secondary: [RsSecondaryField, RsSecondaryField];
+	layout: RsLayout;
+	variant?: RsVariant;
+	class?: string;
+	ariaLabel?: string;
+}
+
+const {
+	primary,
+	secondary,
+	layout,
+	variant = "standard",
+	class: className,
+	ariaLabel,
+} = Astro.props;
+
+const initialDigits = computeRsDigits([
+	primary.value,
+	secondary[0].value,
+	secondary[1].value,
+]);
+
+const primaryDisplay = formatRsDisplayValue(primary.value, primary.displayValue);
+const secondaryDisplays = secondary.map((field) =>
+	formatRsDisplayValue(field.value, field.displayValue),
+);
+
+const initialStatus = `${primary.label}: ${primaryDisplay}; ${secondary[0].label}: ${secondaryDisplays[0]}; ${secondary[1].label}: ${secondaryDisplays[1]}`;
+---
+
+<section
+	class:list={["rs", className]}
+	data-result-summary
+	data-rs-layout={layout}
+	data-rs-variant={variant}
+	data-rs-digits={initialDigits}
+	aria-label={ariaLabel}
+>
+	<div class="rs-primary">
+		<div
+			class="rs-value"
+			data-rs-value="primary"
+			data-rs-key="primary"
+			aria-label={primary.ariaLabel}
+		>
+			{primaryDisplay}
+		</div>
+		<div class="rs-label" data-rs-label="primary">{primary.label}</div>
+	</div>
+
+	<div class="rs-secondary">
+		<div class="rs-secondary-item" data-rs-key={secondary[0].key}>
+			<div
+				class="rs-value"
+				data-rs-value={secondary[0].key}
+				aria-label={secondary[0].ariaLabel}
+			>
+				{secondaryDisplays[0]}
+			</div>
+			<div class="rs-label" data-rs-label={secondary[0].key}>{secondary[0].label}</div>
+		</div>
+
+		<div class="rs-secondary-item" data-rs-key={secondary[1].key}>
+			<div
+				class="rs-value"
+				data-rs-value={secondary[1].key}
+				aria-label={secondary[1].ariaLabel}
+			>
+				{secondaryDisplays[1]}
+			</div>
+			<div class="rs-label" data-rs-label={secondary[1].key}>{secondary[1].label}</div>
+		</div>
+	</div>
+
+	<div class="rs-status" aria-live="polite" aria-atomic="true">{initialStatus}</div>
+</section>
