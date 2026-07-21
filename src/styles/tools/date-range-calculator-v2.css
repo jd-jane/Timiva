@@ -47,26 +47,8 @@ body:has([data-date-range-v2]) header {
 	backdrop-filter: blur(4px) saturate(150%);
 }
 
-[data-date-range-v2] .preview-tool-result-number {
-	font-size: clamp(7.5rem, 38vw, 10.5rem);
-	font-weight: 400;
-	line-height: 1;
-	letter-spacing: -0.025em;
-	font-variant-numeric: tabular-nums;
-	color: rgb(248 250 252);
-	background: none;
-	-webkit-background-clip: unset;
-	background-clip: unset;
-	-webkit-text-fill-color: currentcolor;
-	opacity: 1;
-}
-
 [data-date-range-v2] .drv2-tool-name {
 	margin-top: 0;
-}
-
-[data-date-range-v2] .preview-tool-result-label {
-	margin-top: 0.375rem;
 }
 
 @media (max-width: 767px) {
@@ -77,14 +59,6 @@ body:has([data-date-range-v2]) header {
 
 [data-date-range-v2] .date-range-page .tool-result-main {
 	margin-bottom: 0;
-}
-
-[data-date-range-v2] .date-range-page.sheet-open .preview-tool-result-number {
-	font-size: clamp(2.6rem, 14vw, 3.4rem);
-}
-
-[data-date-range-v2] .date-range-page.sheet-open .tool-result-secondary-number {
-	font-size: clamp(1.75rem, 8vw, 2.15rem);
 }
 
 [data-date-range-v2] .drv2-result-divider {
@@ -121,16 +95,8 @@ body:has([data-date-range-v2]) header {
 }
 
 @media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
-	[data-date-range-v2] .preview-tool-result-number {
-		font-size: 11rem;
-	}
-
 	[data-date-range-v2] .tool-result-stack .tool-header--compact {
 		margin-bottom: 0;
-	}
-
-	[data-date-range-v2] .preview-tool-result-label {
-		margin-top: 0.5rem;
 	}
 
 	[data-date-range-v2] .drv2-result-divider {
@@ -245,20 +211,6 @@ body:has([data-date-range-v2]) header {
 		display: none;
 	}
 
-	[data-date-range-v2] .date-range-page .tool-result--multi {
-		display: block;
-		margin-bottom: 0;
-	}
-
-	[data-date-range-v2] .date-range-page .tool-result--multi .tool-result-main {
-		margin-bottom: 0;
-	}
-
-	[data-date-range-v2] .date-range-page .tool-result--multi .tool-result-secondary {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
 	[data-date-range-v2] .preview-tool-controls {
 		display: flex;
 	}
@@ -352,34 +304,6 @@ body:has([data-date-range-v2]) header {
 @media (orientation: portrait) and (max-width: 899px),
 	(orientation: portrait) and (max-height: 699px),
 	(orientation: portrait) and (hover: none) {
-	/*
-	 * Portrait digit buckets：只縮結果數字，避免大位數撐寬整頁。
-	 * 必須搭配 data-range-layout=portrait，避免手機橫式誤用直式字級。
-	 * 工具名稱／標籤／日期按鈕尺寸不隨 bucket 變動。
-	 */
-	[data-date-range-v2] .date-range-page[data-range-layout="portrait"] {
-		--drv2-portrait-main-number-size: clamp(7.5rem, 38vw, 10.5rem);
-		--drv2-portrait-secondary-number-size: clamp(2.4rem, 10.5vw, 2.9rem);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="4"]
-		.date-range-page[data-range-layout="portrait"] {
-		--drv2-portrait-main-number-size: clamp(4.75rem, 24vw, 6.75rem);
-		--drv2-portrait-secondary-number-size: clamp(1.875rem, 8.25vw, 2.35rem);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="5"]
-		.date-range-page[data-range-layout="portrait"] {
-		--drv2-portrait-main-number-size: clamp(3.75rem, 18.5vw, 5.25rem);
-		--drv2-portrait-secondary-number-size: clamp(1.5rem, 6.75vw, 1.9rem);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="6+"]
-		.date-range-page[data-range-layout="portrait"] {
-		--drv2-portrait-main-number-size: clamp(2.5rem, 13vw, 3.5rem);
-		--drv2-portrait-secondary-number-size: clamp(1.125rem, 5vw, 1.4rem);
-	}
-
 	[data-date-range-v2] .preview-tool-first-screen {
 		place-items: stretch;
 		min-height: 100dvh;
@@ -409,6 +333,9 @@ body:has([data-date-range-v2]) header {
 		min-height: 0;
 		overflow-x: clip;
 		pointer-events: none;
+		/* 對齊 BDC portrait：結果區外層 inset 0.75rem（非 tool-hero-content 28px） */
+		padding-inline: 0.75rem;
+		box-sizing: border-box;
 	}
 
 	[data-date-range-v2] .date-range-page .tool-hero-preview .tool-hero-content {
@@ -418,43 +345,8 @@ body:has([data-date-range-v2]) header {
 		min-width: 0;
 		padding-top: max(44px, calc(env(safe-area-inset-top) + 40px));
 		padding-bottom: 0;
-		padding-inline: 28px;
+		padding-inline: 0;
 		overflow-x: clip;
-	}
-
-	[data-date-range-v2] .date-range-page .tool-result-main,
-	[data-date-range-v2] .date-range-page .tool-result-secondary-item {
-		box-sizing: border-box;
-		min-width: 0;
-		max-width: 100%;
-	}
-
-	[data-date-range-v2]
-		.date-range-page[data-range-layout="portrait"]
-		.preview-tool-result-number {
-		box-sizing: border-box;
-		max-width: 100%;
-		min-width: 0;
-		font-size: var(--drv2-portrait-main-number-size);
-		font-variant-numeric: tabular-nums;
-		line-height: 1;
-		white-space: nowrap;
-		overflow: hidden;
-		text-align: center;
-	}
-
-	[data-date-range-v2]
-		.date-range-page[data-range-layout="portrait"]
-		.tool-result-secondary-number {
-		box-sizing: border-box;
-		max-width: 100%;
-		min-width: 0;
-		font-size: var(--drv2-portrait-secondary-number-size);
-		font-variant-numeric: tabular-nums;
-		line-height: 0.92;
-		white-space: nowrap;
-		overflow: hidden;
-		text-align: center;
 	}
 
 	[data-date-range-v2] .preview-tool-controls {
@@ -496,55 +388,6 @@ body:has([data-date-range-v2]) header {
 		inset: -0.5rem;
 		z-index: -1;
 	}
-
-	/* Sheet open：數字再縮；僅 Portrait layout */
-	[data-date-range-v2]
-		.date-range-page[data-range-layout="portrait"].sheet-open
-		.preview-tool-result-number {
-		font-size: clamp(2.6rem, 14vw, 3.4rem);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="4"]
-		.date-range-page[data-range-layout="portrait"].sheet-open
-		.preview-tool-result-number {
-		font-size: clamp(2.15rem, 11.5vw, 2.85rem);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="5"]
-		.date-range-page[data-range-layout="portrait"].sheet-open
-		.preview-tool-result-number {
-		font-size: clamp(1.75rem, 9.5vw, 2.35rem);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="6+"]
-		.date-range-page[data-range-layout="portrait"].sheet-open
-		.preview-tool-result-number {
-		font-size: clamp(1.35rem, 7.5vw, 1.85rem);
-	}
-
-	[data-date-range-v2]
-		.date-range-page[data-range-layout="portrait"].sheet-open
-		.tool-result-secondary-number {
-		font-size: clamp(1.75rem, 8vw, 2.15rem);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="4"]
-		.date-range-page[data-range-layout="portrait"].sheet-open
-		.tool-result-secondary-number {
-		font-size: clamp(1.4rem, 6.5vw, 1.75rem);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="5"]
-		.date-range-page[data-range-layout="portrait"].sheet-open
-		.tool-result-secondary-number {
-		font-size: clamp(1.15rem, 5.5vw, 1.45rem);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="6+"]
-		.date-range-page[data-range-layout="portrait"].sheet-open
-		.tool-result-secondary-number {
-		font-size: clamp(0.95rem, 4.5vw, 1.2rem);
-	}
 }
 
 [data-date-range-v2] .date-range-page.sheet-open .preview-tool-controls {
@@ -576,17 +419,6 @@ body:has([data-date-range-v2]) header {
 	[data-date-range-v2] {
 		--drv2-visual-height: 100dvh;
 		--drv2-landscape-title-result-gap: 0.875rem;
-		--drv2-landscape-result-number-size: 5rem;
-		--drv2-landscape-result-number-size-3: 3.5rem;
-		--drv2-landscape-result-number-size-4: 3.25rem;
-		--drv2-landscape-result-number-size-5: 2.625rem;
-		--drv2-landscape-result-number-size-6: 1.5rem;
-		--drv2-landscape-result-label-size: 0.6875rem;
-		--drv2-landscape-result-column-gap: 2rem;
-		--drv2-landscape-result-column-gap-3: 0.5rem;
-		--drv2-landscape-result-column-gap-4: 1.25rem;
-		--drv2-landscape-result-column-gap-5: 0.75rem;
-		--drv2-landscape-result-column-gap-6: 0.25rem;
 		--drv2-landscape-result-row-max: min(100%, 40rem);
 		--drv2-landscape-stage-controls-gap: 0.375rem;
 		--drv2-landscape-controls-bottom-inset: 1rem;
@@ -738,135 +570,6 @@ body:has([data-date-range-v2]) header {
 	[data-date-range-v2] .date-range-page .tool-result-stack .preview-tool-result-block {
 		margin-top: var(--drv2-landscape-title-result-gap);
 		width: 100%;
-	}
-
-	/*
-	 * Three equal shrinkable columns — digit buckets scale type only when needed.
-	 * 1–3 維持核准 5rem；4／5／6+ 逐級縮小（僅此 landscape media）。
-	 */
-	[data-date-range-v2] .date-range-page .preview-tool-result-block.tool-result--multi {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		column-gap: var(--drv2-landscape-result-column-gap);
-		row-gap: 0;
-		align-items: end;
-		justify-content: center;
-		justify-items: center;
-		box-sizing: border-box;
-		width: 100%;
-		max-width: 100%;
-		margin-inline: auto;
-		margin-top: var(--drv2-landscape-title-result-gap);
-		margin-bottom: 0;
-		padding-inline: 0.25rem;
-	}
-
-	[data-date-range-v2] .date-range-page .preview-tool-result-block.tool-result--multi .tool-result-main {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-self: stretch;
-		box-sizing: border-box;
-		width: 100%;
-		min-width: 0;
-		max-width: 100%;
-		margin-top: 0;
-		margin-bottom: 0;
-		text-align: center;
-	}
-
-	[data-date-range-v2] .date-range-page .preview-tool-result-block.tool-result--multi .drv2-result-secondary,
-	[data-date-range-v2] .date-range-page .preview-tool-result-block.tool-result--multi .tool-result-secondary {
-		display: contents;
-		grid-template-columns: unset;
-		max-width: none;
-		margin: 0;
-		gap: 0;
-	}
-
-	[data-date-range-v2] .date-range-page .preview-tool-result-block.tool-result--multi .tool-result-secondary-item {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-self: stretch;
-		box-sizing: border-box;
-		width: 100%;
-		min-width: 0;
-		max-width: 100%;
-		text-align: center;
-	}
-
-	[data-date-range-v2] .date-range-page .preview-tool-result-block.tool-result--multi .preview-tool-result-number,
-	[data-date-range-v2] .date-range-page .preview-tool-result-block.tool-result--multi .tool-result-secondary-number {
-		box-sizing: border-box;
-		width: 100%;
-		max-width: 100%;
-		min-width: 0;
-		font-size: var(--drv2-landscape-result-number-size);
-		line-height: 1;
-		font-weight: 400;
-		font-variant-numeric: tabular-nums;
-		white-space: nowrap;
-		text-align: center;
-		overflow: hidden;
-		color: rgb(248 250 252);
-	}
-
-	[data-date-range-v2] .date-range-page .preview-tool-result-block.tool-result--multi .preview-tool-result-label,
-	[data-date-range-v2] .date-range-page .preview-tool-result-block.tool-result--multi .tool-result-secondary-label {
-		box-sizing: border-box;
-		width: 100%;
-		max-width: 100%;
-		min-width: 0;
-		margin-top: 0.125rem;
-		font-size: var(--drv2-landscape-result-label-size);
-		line-height: 1rem;
-		letter-spacing: normal;
-		text-transform: none;
-		text-align: center;
-		white-space: normal;
-		overflow-wrap: anywhere;
-		color: rgb(148 163 184);
-		opacity: 1;
-	}
-
-	/* Digit buckets：1–2 維持 5rem；3 略縮避免裁切；4／5／6+ 再縮 */
-	[data-date-range-v2][data-drv2-result-digits="3"] .date-range-page .preview-tool-result-block.tool-result--multi {
-		column-gap: var(--drv2-landscape-result-column-gap-3);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="3"] .date-range-page .preview-tool-result-block.tool-result--multi .preview-tool-result-number,
-	[data-date-range-v2][data-drv2-result-digits="3"] .date-range-page .preview-tool-result-block.tool-result--multi .tool-result-secondary-number {
-		font-size: var(--drv2-landscape-result-number-size-3);
-		letter-spacing: -0.03em;
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="4"] .date-range-page .preview-tool-result-block.tool-result--multi {
-		column-gap: var(--drv2-landscape-result-column-gap-4);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="4"] .date-range-page .preview-tool-result-block.tool-result--multi .preview-tool-result-number,
-	[data-date-range-v2][data-drv2-result-digits="4"] .date-range-page .preview-tool-result-block.tool-result--multi .tool-result-secondary-number {
-		font-size: var(--drv2-landscape-result-number-size-4);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="5"] .date-range-page .preview-tool-result-block.tool-result--multi {
-		column-gap: var(--drv2-landscape-result-column-gap-5);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="5"] .date-range-page .preview-tool-result-block.tool-result--multi .preview-tool-result-number,
-	[data-date-range-v2][data-drv2-result-digits="5"] .date-range-page .preview-tool-result-block.tool-result--multi .tool-result-secondary-number {
-		font-size: var(--drv2-landscape-result-number-size-5);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="6+"] .date-range-page .preview-tool-result-block.tool-result--multi {
-		column-gap: var(--drv2-landscape-result-column-gap-6);
-	}
-
-	[data-date-range-v2][data-drv2-result-digits="6+"] .date-range-page .preview-tool-result-block.tool-result--multi .preview-tool-result-number,
-	[data-date-range-v2][data-drv2-result-digits="6+"] .date-range-page .preview-tool-result-block.tool-result--multi .tool-result-secondary-number {
-		font-size: var(--drv2-landscape-result-number-size-6);
-		letter-spacing: -0.04em;
 	}
 
 	[data-date-range-v2] .drv2-result-divider {
@@ -1137,38 +840,6 @@ body:has([data-date-range-v2]) header {
 	color: rgb(244 243 248 / 0.72);
 	background: rgb(255 255 255 / 0.04);
 	border: 1px solid rgb(255 255 255 / 0.07);
-}
-
-/* Date Range V2 — multi-result secondary stats (supporting, not competing with main) */
-[data-date-range-v2] .drv2-result-secondary {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 0.875rem;
-	max-width: min(100%, 300px);
-	margin-inline: auto;
-	margin-top: 1.5rem;
-}
-
-[data-date-range-v2] .tool-result-secondary-number {
-	font-size: clamp(2.4rem, 10.5vw, 2.9rem);
-	line-height: 0.92;
-	font-weight: 400;
-	color: rgb(248 250 252 / 0.72);
-	opacity: 1;
-}
-
-[data-date-range-v2] .tool-result-secondary-label {
-	margin-top: 0.375rem;
-	letter-spacing: normal;
-	text-transform: none;
-	opacity: 1;
-}
-
-@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
-	[data-date-range-v2] .date-range-page .tool-result--multi .tool-result-secondary-number,
-	[data-date-range-v2] .tool-result-secondary-number {
-		font-size: 36px;
-	}
 }
 
 /* Sheet open — preview shrink for Date Range result group */
@@ -1709,16 +1380,8 @@ body:has([data-date-range-v2]) header {
 		padding-bottom: 32px;
 	}
 
-	[data-date-range-v2] .date-range-page .tool-result--multi {
-		margin-bottom: 32px;
-	}
-
 	[data-date-range-v2] .date-range-page .tool-desktop-cluster {
 		margin-top: 8px;
-	}
-
-	[data-date-range-v2] .date-range-page .drv2-result-secondary {
-		margin-top: 1.25rem;
 	}
 
 	[data-date-range-v2] .date-range-page .desktop-tool-control {
@@ -1808,4 +1471,14 @@ body:has([data-date-range-v2]) header {
 		position: relative;
 		z-index: 1;
 	}
+}
+
+/*
+ * ResultSummary external placement only — typography lives in result-summary.css.
+ */
+[data-date-range-v2] .preview-tool-result-block.drv2-result-summary {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
 }

@@ -1,6 +1,11 @@
 /*
  * ResultSummary shared styles — layout attr driven only.
  * Tools must not select .rs-* internals for layout / font-size / gap overrides.
+ *
+ * Phase D typography:
+ * - Desktop: 1–5 同尺寸；6+ 獨立縮小
+ * - Portrait: BDC 現行 production clamps（1–3／4／5）；6+ 既有 shared fallback
+ * - Landscape: 以 BDC 實際呈現比例校正；保留完整 1–2／3／4／5／6+ 階梯
  */
 
 [data-result-summary] {
@@ -48,7 +53,7 @@
 	border: 0;
 }
 
-/* Desktop — variant fallbacks；token 覆寫優先 */
+/* Desktop — 1–5 同尺寸；6+ 縮小；token 覆寫優先 */
 [data-result-summary][data-rs-layout="desktop"] {
 	display: flex;
 	flex-direction: column;
@@ -76,9 +81,6 @@
 
 [data-result-summary][data-rs-layout="desktop"][data-rs-variant="standard"] {
 	--rs-desktop-primary-size: 11rem;
-	--rs-desktop-primary-size-3: 9.5rem;
-	--rs-desktop-primary-size-4: 8rem;
-	--rs-desktop-primary-size-5: 6.5rem;
 	--rs-desktop-primary-size-6plus: 4.5rem;
 	--rs-desktop-secondary-size: 2.25rem;
 	--rs-desktop-secondary-size-6plus: 1.5rem;
@@ -87,45 +89,27 @@
 
 [data-result-summary][data-rs-layout="desktop"][data-rs-variant="spacious"] {
 	--rs-desktop-primary-size: 13rem;
-	--rs-desktop-primary-size-3: 12rem;
-	--rs-desktop-primary-size-4: 11rem;
-	--rs-desktop-primary-size-5: 10rem;
 	--rs-desktop-primary-size-6plus: 7rem;
 	--rs-desktop-secondary-size: 2.25rem;
 	--rs-desktop-secondary-size-6plus: 1.5rem;
 	--rs-desktop-label-size: 0.875rem;
 }
 
-[data-result-summary][data-rs-layout="desktop"][data-rs-digits="1-2"] .rs-primary .rs-value {
-	font-size: var(--rs-desktop-primary-size);
-}
-
-[data-result-summary][data-rs-layout="desktop"][data-rs-digits="3"] .rs-primary .rs-value {
-	font-size: var(--rs-desktop-primary-size-3);
-}
-
-[data-result-summary][data-rs-layout="desktop"][data-rs-digits="4"] .rs-primary .rs-value {
-	font-size: var(--rs-desktop-primary-size-4);
-}
-
+/* 1–2／3／4／5：同一 primary 尺寸 */
+[data-result-summary][data-rs-layout="desktop"][data-rs-digits="1-2"] .rs-primary .rs-value,
+[data-result-summary][data-rs-layout="desktop"][data-rs-digits="3"] .rs-primary .rs-value,
+[data-result-summary][data-rs-layout="desktop"][data-rs-digits="4"] .rs-primary .rs-value,
 [data-result-summary][data-rs-layout="desktop"][data-rs-digits="5"] .rs-primary .rs-value {
-	font-size: var(--rs-desktop-primary-size-5);
+	font-size: var(--rs-desktop-primary-size);
 }
 
 [data-result-summary][data-rs-layout="desktop"][data-rs-digits="6+"] .rs-primary .rs-value {
 	font-size: var(--rs-desktop-primary-size-6plus);
 }
 
+/* 1–2／3／4／5：同一 secondary 尺寸 */
 [data-result-summary][data-rs-layout="desktop"] .rs-secondary .rs-value {
 	font-size: var(--rs-desktop-secondary-size);
-}
-
-[data-result-summary][data-rs-layout="desktop"][data-rs-digits="4"] .rs-secondary .rs-value {
-	font-size: 2rem;
-}
-
-[data-result-summary][data-rs-layout="desktop"][data-rs-digits="5"] .rs-secondary .rs-value {
-	font-size: 1.75rem;
 }
 
 [data-result-summary][data-rs-layout="desktop"][data-rs-digits="6+"] .rs-secondary .rs-value {
@@ -140,7 +124,10 @@
 	font-size: 0.8125rem;
 }
 
-/* Portrait — DRC 核准 clamps；primary + secondary 同步縮 */
+/*
+ * Portrait — BDC 現行 production typography（1–3／4／5）。
+ * standard／spacious 不影響 Mobile；6+ 保留既有 shared fallback。
+ */
 [data-result-summary][data-rs-layout="portrait"] {
 	display: flex;
 	flex-direction: column;
@@ -148,6 +135,10 @@
 	justify-content: center;
 	min-width: 0;
 	overflow-x: clip;
+	/* BDC：1–3 位主數字 */
+	--rs-portrait-primary-size: clamp(7.5rem, 38vw, 10.5rem);
+	/* BDC：secondary 固定（不隨 1–5 bucket 縮） */
+	--rs-portrait-secondary-size: clamp(2.4rem, 10.5vw, 2.9rem);
 }
 
 [data-result-summary][data-rs-layout="portrait"] .rs-secondary {
@@ -163,48 +154,52 @@
 	min-width: 0;
 }
 
-[data-result-summary][data-rs-layout="portrait"] {
+/* 1–2 與 3 同档（BDC data-bdcv2-result-digits="1-3"） */
+[data-result-summary][data-rs-layout="portrait"][data-rs-digits="1-2"],
+[data-result-summary][data-rs-layout="portrait"][data-rs-digits="3"] {
 	--rs-portrait-primary-size: clamp(7.5rem, 38vw, 10.5rem);
 	--rs-portrait-secondary-size: clamp(2.4rem, 10.5vw, 2.9rem);
 }
 
-[data-result-summary][data-rs-layout="portrait"][data-rs-digits="3"] {
-	--rs-portrait-primary-size: clamp(6.25rem, 31vw, 8.75rem);
-	--rs-portrait-secondary-size: clamp(2.15rem, 9.25vw, 2.65rem);
-}
-
 [data-result-summary][data-rs-layout="portrait"][data-rs-digits="4"] {
-	--rs-portrait-primary-size: clamp(4.75rem, 24vw, 6.75rem);
-	--rs-portrait-secondary-size: clamp(1.875rem, 8.25vw, 2.35rem);
+	--rs-portrait-primary-size: clamp(6.5rem, 33vw, 9rem);
+	--rs-portrait-secondary-size: clamp(2.4rem, 10.5vw, 2.9rem);
 }
 
 [data-result-summary][data-rs-layout="portrait"][data-rs-digits="5"] {
-	--rs-portrait-primary-size: clamp(3.75rem, 18.5vw, 5.25rem);
-	--rs-portrait-secondary-size: clamp(1.5rem, 6.75vw, 1.9rem);
+	--rs-portrait-primary-size: clamp(5.5rem, 27vw, 7rem);
+	--rs-portrait-secondary-size: clamp(2.4rem, 10.5vw, 2.9rem);
 }
 
+/* 6+：既有 shared 安全 fallback（本輪不發明新尺寸） */
 [data-result-summary][data-rs-layout="portrait"][data-rs-digits="6+"] {
 	--rs-portrait-primary-size: clamp(2.5rem, 13vw, 3.5rem);
 	--rs-portrait-secondary-size: clamp(1.125rem, 5vw, 1.4rem);
 }
 
-[data-result-summary][data-rs-layout="portrait"] .rs-primary .rs-value,
-[data-result-summary][data-rs-layout="portrait"] .rs-secondary .rs-value {
+[data-result-summary][data-rs-layout="portrait"] .rs-primary .rs-value {
 	font-size: var(--rs-portrait-primary-size);
 }
 
 [data-result-summary][data-rs-layout="portrait"] .rs-secondary .rs-value {
 	font-size: var(--rs-portrait-secondary-size);
+	line-height: 0.92;
 	color: rgb(248 250 252 / 0.72);
 }
 
-/* Landscape — 三欄同字級 */
+/*
+ * Landscape — 三欄同字級。
+ * Phase D：以 BDC 實際呈現比例校正；內部 overflow／letter-spacing
+ * 對齊 BDC，避免 1fr + overflow:hidden 壓扁視覺；保留完整 digit ladder。
+ */
 [data-result-summary][data-rs-layout="landscape"] {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	align-items: center;
+	align-items: end;
+	justify-items: center;
 	gap: 1rem;
 	min-width: 0;
+	--rs-landscape-number-size: 5rem;
 }
 
 [data-result-summary][data-rs-layout="landscape"] .rs-secondary {
@@ -213,11 +208,12 @@
 
 [data-result-summary][data-rs-layout="landscape"] .rs-primary,
 [data-result-summary][data-rs-layout="landscape"] .rs-secondary-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-end;
 	min-width: 0;
-}
-
-[data-result-summary][data-rs-layout="landscape"] {
-	--rs-landscape-number-size: 5rem;
+	max-width: 100%;
 }
 
 [data-result-summary][data-rs-layout="landscape"][data-rs-digits="3"] {
@@ -238,6 +234,12 @@
 
 [data-result-summary][data-rs-layout="landscape"] .rs-value {
 	font-size: var(--rs-landscape-number-size);
+	line-height: 1;
+	letter-spacing: -0.02em;
+	/* 避免窄欄把數字裁成視覺上「偏小」；不改外部 stage 寬度 */
+	overflow: visible;
+	text-overflow: clip;
+	max-width: none;
 }
 
 [data-result-summary][data-rs-layout="landscape"] .rs-secondary .rs-value {
@@ -246,4 +248,10 @@
 
 [data-result-summary][data-rs-layout="landscape"][data-rs-digits="3"] .rs-value {
 	letter-spacing: -0.03em;
+}
+
+[data-result-summary][data-rs-layout="landscape"] .rs-label {
+	margin-top: 0.125rem;
+	font-size: 0.6875rem;
+	line-height: 1rem;
 }

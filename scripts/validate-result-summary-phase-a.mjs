@@ -257,10 +257,104 @@ for (const digits of ["1-2", "3", "4", "5", "6+"]) {
 	assert(css.includes(`data-rs-digits="${digits}"`), `CSS covers digits ${digits}`);
 }
 
-assert(css.includes("--rs-desktop-primary-size:"), "desktop 1-2 token exists");
-assert(css.includes("--rs-desktop-primary-size-3"), "desktop 3 token exists");
-assert(css.includes("--rs-desktop-primary-size-6plus"), "desktop 6+ token exists");
+assert(css.includes("--rs-desktop-primary-size:"), "desktop 1–5 primary token exists");
+assert(css.includes("--rs-desktop-primary-size-6plus"), "desktop 6+ primary token exists");
+assert(
+	!css.includes("--rs-desktop-primary-size-3") &&
+		!css.includes("--rs-desktop-primary-size-4") &&
+		!css.includes("--rs-desktop-primary-size-5:"),
+	"desktop no per-bucket 3／4／5 primary tokens",
+);
 assert(!css.includes("@media (orientation"), "shared CSS does not read viewport/orientation");
+
+/* Phase D Desktop：1–5 同尺寸；6+ 獨立縮小 */
+assert(
+	/\[data-rs-layout="desktop"\]\[data-rs-digits="1-2"\][\s\S]*?\[data-rs-digits="5"\][\s\S]*?\.rs-primary \.rs-value[\s\S]*?var\(--rs-desktop-primary-size\)/.test(
+		css,
+	),
+	"desktop primary 1–5 share --rs-desktop-primary-size",
+);
+assert(
+	/\[data-rs-layout="desktop"\]\[data-rs-digits="6\+"\] \.rs-primary \.rs-value[\s\S]*?var\(--rs-desktop-primary-size-6plus\)/.test(
+		css,
+	),
+	"desktop primary 6+ uses independent shrink token",
+);
+assert(
+	/\[data-rs-variant="standard"\][\s\S]*?--rs-desktop-primary-size:\s*11rem/.test(css),
+	"standard desktop primary 1–5 = 11rem",
+);
+assert(
+	/\[data-rs-variant="spacious"\][\s\S]*?--rs-desktop-primary-size:\s*13rem/.test(css),
+	"spacious desktop primary 1–5 = 13rem",
+);
+assert(
+	/\[data-rs-layout="desktop"\] \.rs-secondary \.rs-value[\s\S]*?var\(--rs-desktop-secondary-size\)/.test(
+		css,
+	) && /--rs-desktop-secondary-size:\s*2\.25rem/.test(css),
+	"desktop secondary 1–5 = 2.25rem",
+);
+assert(
+	!/\[data-rs-layout="desktop"\]\[data-rs-digits="4"\] \.rs-secondary/.test(css) &&
+		!/\[data-rs-layout="desktop"\]\[data-rs-digits="5"\] \.rs-secondary/.test(css),
+	"desktop secondary has no 4／5 mid-bucket shrink",
+);
+
+/* Phase D Portrait：BDC production clamps；variant 不影響 mobile */
+assert(
+	/\[data-rs-layout="portrait"\]\[data-rs-digits="1-2"\][\s\S]*?\[data-rs-digits="3"\][\s\S]*?clamp\(7\.5rem,\s*38vw,\s*10\.5rem\)/.test(
+		css,
+	),
+	"portrait 1–3 primary = BDC clamp(7.5rem, 38vw, 10.5rem)",
+);
+assert(
+	/\[data-rs-layout="portrait"\]\[data-rs-digits="4"\][\s\S]*?clamp\(6\.5rem,\s*33vw,\s*9rem\)/.test(
+		css,
+	),
+	"portrait 4 primary = BDC clamp(6.5rem, 33vw, 9rem)",
+);
+assert(
+	/\[data-rs-layout="portrait"\]\[data-rs-digits="5"\][\s\S]*?clamp\(5\.5rem,\s*27vw,\s*7rem\)/.test(
+		css,
+	),
+	"portrait 5 primary = BDC clamp(5.5rem, 27vw, 7rem)",
+);
+assert(
+	/\[data-rs-layout="portrait"\]\[data-rs-digits="6\+"\][\s\S]*?clamp\(2\.5rem,\s*13vw,\s*3\.5rem\)/.test(
+		css,
+	),
+	"portrait 6+ keeps shared fallback",
+);
+assert(
+	/\[data-rs-layout="portrait"\]\[data-rs-digits="4"\][\s\S]*?clamp\(2\.4rem,\s*10\.5vw,\s*2\.9rem\)/.test(
+		css,
+	) &&
+		/\[data-rs-layout="portrait"\]\[data-rs-digits="5"\][\s\S]*?clamp\(2\.4rem,\s*10\.5vw,\s*2\.9rem\)/.test(
+			css,
+		),
+	"portrait secondary 1–5 = BDC clamp(2.4rem, 10.5vw, 2.9rem)",
+);
+assert(
+	!/\[data-rs-layout="portrait"\]\[data-rs-variant/.test(css),
+	"portrait typography not gated by variant",
+);
+
+/* Phase D Landscape：完整五檔 + overflow visible */
+assert(
+	/\[data-rs-layout="landscape"\][\s\S]*?--rs-landscape-number-size:\s*5rem/.test(css),
+	"landscape 1–2 = 5rem",
+);
+assert(
+	/\[data-rs-layout="landscape"\]\[data-rs-digits="3"\][\s\S]*?3\.5rem/.test(css) &&
+		/\[data-rs-layout="landscape"\]\[data-rs-digits="4"\][\s\S]*?3\.25rem/.test(css) &&
+		/\[data-rs-layout="landscape"\]\[data-rs-digits="5"\][\s\S]*?2\.625rem/.test(css) &&
+		/\[data-rs-layout="landscape"\]\[data-rs-digits="6\+"\][\s\S]*?1\.5rem/.test(css),
+	"landscape 3／4／5／6+ ladder present",
+);
+assert(
+	/\[data-rs-layout="landscape"\] \.rs-value[\s\S]*?overflow:\s*visible/.test(css),
+	"landscape overflow visible avoids clip-as-small illusion",
+);
 
 assert(computeRsDigits([1, 2, 3]) === "1-2", "bucket 1-2");
 assert(computeRsDigits([100, 10, 200]) === "3", "bucket 3");

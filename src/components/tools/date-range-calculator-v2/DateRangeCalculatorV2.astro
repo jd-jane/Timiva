@@ -8,6 +8,7 @@ import { getRelatedTools, type CatalogToolId } from "../../../data/toolsCatalog"
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getDateRangeClientI18n } from "../../../i18n/clientMessages";
 import { getMessages } from "../../../i18n/messages";
+import ResultSummary from "../shared/ResultSummary.astro";
 
 interface Props {
 	locale?: Locale;
@@ -41,9 +42,17 @@ const relatedToolItems = relatedTools.map((tool) => ({
 }));
 
 const faqSchema = buildFaqPageJsonLd(m.faq.items);
+
+const rsPrimary = { value: 0, label: m.totalDays };
+const rsSecondary = [
+	{ key: "workdays", value: 0, label: m.workdays },
+	{ key: "weekends", value: 0, label: m.weekends },
+] as const;
 ---
 
-<div data-date-range-v2 data-drv2-result-digits="1-2">
+<div data-date-range-v2>
+	<!-- Layout contract：blocking sync load，須在 ResultSummary 首次 paint 前可用 -->
+	<script is:inline src="/scripts/date-range-layout-contract.js?v=dr21"></script>
 	<!-- 首屏工具區 -->
 	<section data-drv2-main-tool class="preview-tool-main-section px-6">
 		<section
@@ -69,32 +78,18 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 											</h1>
 										</header>
 
-										<section
-											class="tool-result tool-result--multi preview-tool-result-block mt-6 md:mt-0"
-											aria-live="polite"
-											aria-label={m.resultsLabel}
-										>
-										<div class="tool-result-main">
-											<div
-												class="preview-tool-result-number leading-none font-normal tracking-tight tabular-nums"
-												id="stat-total"
-											>
-												0
-											</div>
-											<div class="preview-tool-result-label text-xs text-slate-400 md:text-sm">{m.totalDays}</div>
-										</div>
-
-										<div class="tool-result-secondary drv2-result-secondary">
-											<div class="tool-result-secondary-item">
-												<div class="tool-result-secondary-number" id="stat-workdays">0</div>
-												<div class="preview-tool-result-label tool-result-secondary-label text-xs text-slate-400/85 md:text-sm">{m.workdays}</div>
-											</div>
-											<div class="tool-result-secondary-item">
-												<div class="tool-result-secondary-number" id="stat-weekends">0</div>
-												<div class="preview-tool-result-label tool-result-secondary-label text-xs text-slate-400/85 md:text-sm">{m.weekends}</div>
-											</div>
-										</div>
-									</section>
+										<ResultSummary
+											layout="desktop"
+											variant="standard"
+											ariaLabel={m.resultsLabel}
+											primary={rsPrimary}
+											secondary={[rsSecondary[0], rsSecondary[1]]}
+											class="preview-tool-result-block mt-6 md:mt-0 drv2-result-summary"
+										/>
+										<script is:inline>
+											/* Initial layout bootstrap — sync before first paint; layout attrs only */
+											window.TimivaDateRangeLayout?.applyLayoutAttrs(document);
+										</script>
 									</div>
 								</main>
 							</section>
@@ -628,13 +623,7 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 			document.body.style.overflow = "";
 			document.documentElement.style.overflow = "";
 
-			if (page && window.matchMedia("(orientation: portrait)").matches) {
-				page.dataset.rangeLayout = "portrait";
-			}
-		}
-
-		if (page && window.matchMedia("(orientation: portrait)").matches) {
-			page.dataset.rangeLayout = "portrait";
+			window.TimivaDateRangeLayout?.applyLayoutAttrs(document);
 		}
 
 		window.addEventListener("orientationchange", function () {
@@ -643,7 +632,12 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 		});
 	})();
 </script>
-<script is:inline src="/scripts/date-range.js?v=dr19"></script>
+<script>
+	import { init as initResultSummary } from "../../../scripts/result-summary-controller.ts";
+
+	initResultSummary();
+</script>
+<script defer src="/scripts/date-range.js?v=dr21"></script>
 
 <script is:inline>
 	document.addEventListener("DOMContentLoaded", () => {

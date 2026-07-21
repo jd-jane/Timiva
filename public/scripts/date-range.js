@@ -11,18 +11,22 @@ let rangeStart = null;
 /** @type {Date | null} */
 let rangeEnd = null;
 
+const layoutContract = window.TimivaDateRangeLayout;
+
 const DESKTOP_MEDIA = window.matchMedia(
-  "(min-width: 900px) and (min-height: 700px) and (hover: hover)"
+  layoutContract?.DESKTOP_MQ ??
+    "(min-width: 900px) and (min-height: 700px) and (hover: hover)"
 );
 
 const LANDSCAPE_DATE_MEDIA = window.matchMedia(
-  "(orientation: landscape) and (max-height: 700px) and (max-width: 1200px)"
+  layoutContract?.LANDSCAPE_MQ ??
+    "(orientation: landscape) and (max-height: 700px) and (max-width: 1200px)"
 );
 
 let savedScrollY = 0;
 let lastLayoutMode = null;
 
-const DR_JS_VERSION = "dr19";
+const DR_JS_VERSION = "dr21";
 
 function loadDateRangeI18n() {
   const fallback = {
@@ -156,14 +160,10 @@ let portraitPickerYear = viewYear;
 const clearButtons =
   document.querySelectorAll("[data-clear-dates]");
 
-const statTotal =
-  document.querySelector("#stat-total");
-
-const statWorkdays =
-  document.querySelector("#stat-workdays");
-
-const statWeekends =
-  document.querySelector("#stat-weekends");
+/** @type {HTMLElement | null} */
+const resultSummaryEl = document.querySelector(
+  "[data-date-range-v2] [data-result-summary]"
+);
 
 const rangeDisplayText =
   document.querySelector("#range-display-text");
@@ -222,42 +222,42 @@ function isSameDay(a, b) {
 }
 
 
-function resolveResultDigitBucket(totalDays, workdays, weekends) {
-  const maxDigits = Math.max(
-    String(Math.abs(totalDays)).length,
-    String(Math.abs(workdays)).length,
-    String(Math.abs(weekends)).length
-  );
-
-  if (maxDigits <= 2) {
-    return "1-2";
+function mapResultSummaryLayout(mode) {
+  if (layoutContract?.mapRsLayout) {
+    return layoutContract.mapRsLayout(mode);
   }
 
-  if (maxDigits === 3) {
-    return "3";
+  if (mode === "landscape-date") {
+    return "landscape";
   }
 
-  if (maxDigits === 4) {
-    return "4";
-  }
-
-  if (maxDigits === 5) {
-    return "5";
-  }
-
-  return "6+";
+  return mode;
 }
 
-function syncResultDigitBucket(totalDays, workdays, weekends) {
-  const root = document.querySelector("[data-date-range-v2]");
+function getDateRangeLayoutMode() {
+  if (layoutContract?.resolveLayoutMode) {
+    return layoutContract.resolveLayoutMode(window);
+  }
 
-  if (!root) {
+  if (!isMobileLayout()) {
+    return "desktop";
+  }
+
+  if (LANDSCAPE_DATE_MEDIA.matches) {
+    return "landscape-date";
+  }
+
+  return "portrait";
+}
+
+function syncResultSummaryLayout() {
+  if (!resultSummaryEl) {
     return;
   }
 
-  root.setAttribute(
-    "data-drv2-result-digits",
-    resolveResultDigitBucket(totalDays, workdays, weekends)
+  resultSummaryEl.setAttribute(
+    "data-rs-layout",
+    mapResultSummaryLayout(getDateRangeLayoutMode())
   );
 }
 
@@ -435,18 +435,6 @@ function isLandscapeDateMode() {
   return isMobileLayout() && LANDSCAPE_DATE_MEDIA.matches;
 }
 
-function getDateRangeLayoutMode() {
-  if (!isMobileLayout()) {
-    return "desktop";
-  }
-
-  if (LANDSCAPE_DATE_MEDIA.matches) {
-    return "landscape-date";
-  }
-
-  return "portrait";
-}
-
 function formatInputDate(date) {
   const year = String(date.getFullYear()).padStart(4, "0");
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -522,6 +510,7 @@ function syncLayoutMode() {
 
   const mode = getDateRangeLayoutMode();
   dateRangePage.dataset.rangeLayout = mode;
+  syncResultSummaryLayout();
 
   if (mode === "landscape-date") {
     rangeDisplayTrigger?.setAttribute("aria-controls", "range-landscape-panel");
@@ -706,22 +695,39 @@ function updateRangeDisplay() {
 function updateStats() {
   updateRangeDisplay();
 
-  if (!rangeStart || !rangeEnd) {
-    statTotal.textContent = "0";
-    statWorkdays.textContent = "0";
-    statWeekends.textContent = "0";
-    syncResultDigitBucket(0, 0, 0);
+  if (!resultSummaryEl) {
     return;
   }
 
-  const { workdays, weekends } =
-    countWorkdaysAndWeekends(rangeStart, rangeEnd);
-  const totalDays = countTotalDays(rangeStart, rangeEnd);
+  const detail =
+    !rangeStart || !rangeEnd
+      ? {
+          primary: { value: 0, displayValue: "0" },
+          secondary: [
+            { key: "workdays", value: 0, displayValue: "0" },
+            { key: "weekends", value: 0, displayValue: "0" },
+          ],
+        }
+      : (() => {
+          const { workdays, weekends } =
+            countWorkdaysAndWeekends(rangeStart, rangeEnd);
+          const totalDays = countTotalDays(rangeStart, rangeEnd);
 
-  statTotal.textContent = String(totalDays);
-  statWorkdays.textContent = String(workdays);
-  statWeekends.textContent = String(weekends);
-  syncResultDigitBucket(totalDays, workdays, weekends);
+          return {
+            primary: { value: totalDays, displayValue: String(totalDays) },
+            secondary: [
+              { key: "workdays", value: workdays, displayValue: String(workdays) },
+              { key: "weekends", value: weekends, displayValue: String(weekends) },
+            ],
+          };
+        })();
+
+  resultSummaryEl.dispatchEvent(
+    new CustomEvent("rs:update", {
+      bubbles: false,
+      detail,
+    })
+  );
 }
 
 

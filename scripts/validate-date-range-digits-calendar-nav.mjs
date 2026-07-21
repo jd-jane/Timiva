@@ -9,6 +9,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { computeRsDigits } from "../src/scripts/result-summary-controller.ts";
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -44,16 +45,7 @@ function countTotalDays(start, end) {
 }
 
 function resolveResultDigitBucket(totalDays, workdays, weekends) {
-	const maxDigits = Math.max(
-		String(Math.abs(totalDays)).length,
-		String(Math.abs(workdays)).length,
-		String(Math.abs(weekends)).length
-	);
-	if (maxDigits <= 2) return "1-2";
-	if (maxDigits === 3) return "3";
-	if (maxDigits === 4) return "4";
-	if (maxDigits === 5) return "5";
-	return "6+";
+	return computeRsDigits([totalDays, workdays, weekends]);
 }
 
 function parseCalendarYearInput(raw) {
@@ -72,6 +64,7 @@ const astro = read(
 );
 const script = read("public/scripts/date-range.js");
 const css = read("src/styles/tools/date-range-calculator-v2.css");
+const rsCss = read("src/styles/tools/result-summary.css");
 
 const portraitScreen = (() => {
 	const start = astro.indexOf('data-drv2-portrait-period-screen');
@@ -96,63 +89,135 @@ assert(
 	"no withdrawn bounds helpers/ISO in script"
 );
 
-/* Digit buckets */
-assert(/data-drv2-result-digits=["']1-2["']/.test(astro), "digit attr init");
+/* ResultSummary — Phase E cleanup complete */
+assert(/import ResultSummary/.test(astro), "ResultSummary component imported");
+assert(/\<ResultSummary/.test(astro), "ResultSummary rendered");
+assert(/variant="standard"/.test(astro), "DRC uses standard variant");
+assert(/key: "workdays"/.test(astro) && /key: "weekends"/.test(astro), "secondary keys");
 assert(
-	/function resolveResultDigitBucket/.test(script) &&
-		script.includes('return "6+"'),
-	"digit buckets exist"
+	(astro.match(/\<ResultSummary\b/g) || []).length === 1,
+	"exactly one ResultSummary in DRC astro",
 );
-assert(/repeat\(3,\s*minmax\(0,\s*1fr\)\)/.test(css), "landscape 3-col shrink");
-assert(/--drv2-landscape-result-number-size:\s*5rem/.test(css), "1-2 keeps 5rem");
+assert(!/#stat-total|#stat-workdays|#stat-weekends/.test(astro), "legacy stat ids removed from DOM");
+assert(!/data-drv2-result-digits/.test(astro), "root drv2 digit attr removed from astro");
+
+assert(/rs:update/.test(script), "date-range.js dispatches rs:update");
+assert(!/Phase E TODO/.test(script), "no temporary adapter TODO");
+assert(!/dispatchResultSummaryUpdate/.test(script), "no temporary adapter function");
+assert(!/data-rs-digits/.test(script), "DRC script does not write data-rs-digits");
+assert(/syncResultSummaryLayout/.test(script), "layout gate syncs data-rs-layout");
+assert(/mapResultSummaryLayout/.test(script), "landscape-date maps to landscape");
+assert(!/function resolveResultDigitBucket/.test(script), "no local bucket ladder in script");
+assert(!/syncResultDigitBucket/.test(script), "no syncResultDigitBucket in script");
+assert(!/data-drv2-result-digits/.test(script), "script does not write drv2 digit attr");
+assert(/initResultSummary/.test(astro), "shared controller init before date-range.js");
+assert(script.includes('DR_JS_VERSION = "dr21"'), "dr21 script version");
+
+/* Initial layout bootstrap — before first paint, shared contract with layout gate */
+const contract = read("public/scripts/date-range-layout-contract.js");
+assert(/TimivaDateRangeLayout/.test(contract), "layout contract exposes TimivaDateRangeLayout");
 assert(
-	/--drv2-landscape-result-number-size-3:\s*3\.5rem/.test(css) &&
-		/\[data-drv2-result-digits=["']3["']\]/.test(css),
-	"3-digit landscape size avoids clip"
+	contract.includes('"(min-width: 900px) and (min-height: 700px) and (hover: hover)"') &&
+		contract.includes('"(orientation: landscape) and (max-height: 700px) and (max-width: 1200px)"'),
+	"layout contract media queries match DRC gate",
 );
+assert(
+	/layoutContract\?\.DESKTOP_MQ/.test(script) && /layoutContract\?\.resolveLayoutMode/.test(script),
+	"date-range.js consumes layout contract for layout gate",
+);
+assert(
+	/date-range-layout-contract\.js/.test(astro) &&
+		!/<script[^>]*date-range-layout-contract[^>]*defer/.test(astro) &&
+		!/<script[^>]*date-range-layout-contract[^>]*async/.test(astro),
+	"layout contract loaded synchronously in astro",
+);
+assert(
+	/TimivaDateRangeLayout\?\.applyLayoutAttrs\(document\)/.test(astro),
+	"inline initial layout bootstrap after ResultSummary",
+);
+assert(
+	!/(applyLayoutAttrs|Initial layout bootstrap)[\s\S]{0,400}rs:update/.test(astro + contract),
+	"initial bootstrap does not dispatch rs:update",
+);
+assert(
+	!/applyLayoutAttrs[\s\S]{0,300}data-rs-digits/.test(contract),
+	"layout contract applyLayoutAttrs does not write data-rs-digits",
+);
+assert(
+	!/applyLayoutAttrs[\s\S]{0,300}rs-status/.test(contract),
+	"layout contract applyLayoutAttrs does not touch live region",
+);
+
+assert(
+	/data-rs-layout="landscape"[\s\S]*grid-template-columns:\s*repeat\(3/.test(rsCss),
+	"shared landscape 3-col layout"
+);
+assert(
+	/\[data-rs-layout="portrait"\]\[data-rs-digits="1-2"\][\s\S]*?\[data-rs-digits="3"\][\s\S]*?clamp\(7\.5rem,\s*38vw,\s*10\.5rem\)/.test(
+		rsCss,
+	),
+	"shared portrait 1–3 uses BDC production clamp",
+);
+assert(
+	/\[data-rs-layout="portrait"\]\[data-rs-digits="4"\][\s\S]*?clamp\(6\.5rem,\s*33vw,\s*9rem\)/.test(
+		rsCss,
+	) &&
+		/\[data-rs-layout="portrait"\]\[data-rs-digits="5"\][\s\S]*?clamp\(5\.5rem,\s*27vw,\s*7rem\)/.test(
+			rsCss,
+		),
+	"shared portrait 4／5 use BDC production clamps",
+);
+assert(
+	/\[data-rs-layout="desktop"\]\[data-rs-variant="standard"\][\s\S]*?--rs-desktop-primary-size:\s*11rem/.test(
+		rsCss,
+	) &&
+		!/--rs-desktop-primary-size-3/.test(rsCss),
+	"shared desktop standard: 1–5 flat 11rem（no mid-bucket tokens）",
+);
+assert(
+	/\[data-rs-layout="landscape"\][\s\S]*?--rs-landscape-number-size:\s*5rem/.test(rsCss) &&
+		/\[data-rs-layout="landscape"\] \.rs-value[\s\S]*?overflow:\s*visible/.test(rsCss),
+	"shared landscape 5rem ladder with overflow visible",
+);
+assert(
+	!/\.rs-value[\s\S]{0,80}font-size:/.test(css) ||
+		!/\[data-date-range-v2\][^{]*\.rs-/.test(css),
+	"DRC tool CSS does not override .rs-* internals",
+);
+assert(/\.drv2-result-summary/.test(css), "DRC external placement hook for ResultSummary");
+assert(!/preview-tool-result-number/.test(css), "no legacy preview-tool-result-number in DRC CSS");
+assert(!/tool-result-secondary-number/.test(css), "no legacy tool-result-secondary-number in DRC CSS");
+assert(!/data-drv2-result-digits/.test(css), "no data-drv2-result-digits rules in DRC CSS");
+assert(!/tool-result--multi/.test(css), "no legacy tool-result--multi rules in DRC CSS");
+assert(!/--drv2-portrait-main-number-size/.test(css), "no legacy portrait digit CSS vars");
+assert(!/--drv2-landscape-result-number-size/.test(css), "no legacy landscape digit CSS vars");
+
+/* Digit buckets — shared SSOT via controller */
 assert(resolveResultDigitBucket(0, 0, 0) === "1-2", "zeros → 1-2");
 assert(resolveResultDigitBucket(100, 100, 100) === "3", "3 digits → 3");
 assert(resolveResultDigitBucket(100000, 1, 1) === "6+", "6+ bucket");
 
-/* Portrait digit buckets — numbers only */
 assert(
-	/--drv2-portrait-main-number-size:/.test(css) &&
-		/--drv2-portrait-secondary-number-size:/.test(css) &&
-		/\[data-drv2-result-digits=["']4["']\][\s\S]*?--drv2-portrait-main-number-size:/.test(
-			css
-		) &&
-		/\[data-drv2-result-digits=["']5["']\][\s\S]*?--drv2-portrait-main-number-size:/.test(
-			css
-		) &&
-		/\[data-drv2-result-digits=["']6\+["']\][\s\S]*?--drv2-portrait-main-number-size:/.test(
-			css
-		),
-	"Portrait digit bucket CSS variables for 4 / 5 / 6+"
+	/\[data-rs-layout="portrait"\]\[data-rs-digits="4"\]/.test(rsCss) &&
+		/\[data-rs-layout="portrait"\]\[data-rs-digits="5"\]/.test(rsCss) &&
+		/\[data-rs-layout="portrait"\]\[data-rs-digits="6\+"\]/.test(rsCss),
+	"shared portrait digit buckets 4 / 5 / 6+"
 );
 assert(
-	/\.preview-tool-result-number[\s\S]*?var\(--drv2-portrait-main-number-size\)/.test(
-		css
-	) &&
-		/\.tool-result-secondary-number[\s\S]*?var\(--drv2-portrait-secondary-number-size\)/.test(
-			css
-		),
-	"Portrait applies digit vars only to result numbers"
+	/\[data-result-summary\][\s\S]*overflow-x:\s*clip/.test(rsCss),
+	"shared portrait overflow guard"
 );
 assert(
-	/overflow-x:\s*clip/.test(css),
-	"Portrait locks horizontal overflow to avoid page shrink"
+	/\[data-date-range-v2\] \.preview-tool-result-group[\s\S]*?padding-inline:\s*0\.75rem/.test(
+		css,
+	),
+	"DRC portrait result-group padding-inline aligns BDC (0.75rem)",
 );
 assert(
-	!/\[data-drv2-result-digits=["'](?:4|5|6\+)["']\][\s\S]{0,400}?\.preview-tool-control-btn[\s\S]{0,200}?font-size:/.test(
-		css
-	) &&
-		!/\[data-drv2-result-digits=["'](?:4|5|6\+)["']\][\s\S]{0,400}?\.drv2-tool-name[\s\S]{0,120}?font-size:/.test(
-			css
-		) &&
-		!/\[data-drv2-result-digits=["'](?:4|5|6\+)["']\][\s\S]{0,400}?\.preview-tool-result-label[\s\S]{0,120}?font-size:/.test(
-			css
-		),
-	"Digit buckets do not resize button, tool name, or labels"
+	/\[data-date-range-v2\] \.date-range-page \.tool-hero-preview \.tool-hero-content[\s\S]*?padding-inline:\s*0/.test(
+		css,
+	),
+	"DRC portrait tool-hero-content horizontal padding removed",
 );
 assert(
 	/\.preview-tool-control-btn[\s\S]*?min-height:\s*var\(--tool-mobile-portrait-control-min-height\)/.test(
