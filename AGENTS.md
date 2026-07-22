@@ -78,8 +78,15 @@ docs/wireframes/README.md
 ```text
 docs/workflow/new-tool-development.md
 docs/workflow/tool-page-qa.md
+docs/workflow/shared-component-reuse-gate.md
 docs/standards/seo-guidelines.md
 docs/tools/[tool-name]/README.md
+```
+
+### Shared UI pattern／第二次相同 pattern 任務 additionally read
+
+```text
+docs/workflow/shared-component-reuse-gate.md
 ```
 
 ### SEO / content tasks additionally read
@@ -146,6 +153,7 @@ Do not use inline style.
 Do not use !important.
 Do not use CSS id selectors.
 Prefer existing tokens and shared components.
+When the same UI pattern appears a second time, follow docs/workflow/shared-component-reuse-gate.md (Reuse Review before implementation).
 ```
 
 ---

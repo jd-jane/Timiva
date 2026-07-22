@@ -270,6 +270,7 @@ timiva/
 | [`owner-workflow.md`](workflow/owner-workflow.md) | **P/S/M/L 分層、角色分工、授權邊界** |
 | [`agent-review.md`](workflow/agent-review.md) | Targeted Agent Review 規則 |
 | [`new-tool-development.md`](workflow/new-tool-development.md) | 新工具開發規則 |
+| [`shared-component-reuse-gate.md`](workflow/shared-component-reuse-gate.md) | **Shared Component Reuse Gate**（canonical；第二次相同 UI pattern 強制 Reuse Review） |
 | [`tool-page-qa.md`](workflow/tool-page-qa.md) | 工具頁 QA checklist |
 | [`pre-deploy.md`](workflow/pre-deploy.md) | 部署前檢查 |
 | [`cursor-commands.md`](workflow/cursor-commands.md) | Cursor 指令模式 |

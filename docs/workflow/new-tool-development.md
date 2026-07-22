@@ -1,12 +1,14 @@
 # Timiva New Tool Development Rules V2
 
-> 最後更新：2026-07-08
+> 最後更新：2026-07-22
 
 ## 文件目的
 
 本文件定義 Timiva 新增工具時的開發判斷、MVP 範圍、頁面結構、狀態設計、資料保存、SEO、Related Tools 與 QA 注意事項。
 
 所有新工具都應先遵守本文件，再進入設計、開發與驗收。
+
+**Shared UI reuse：** 若任務出現第二次相同 UI pattern，必須先完成 Reuse Review。完整規則以 [`shared-component-reuse-gate.md`](shared-component-reuse-gate.md) 為準（本文件不重複全文）。
 
 ---
 
@@ -50,9 +52,12 @@ flowchart TD
     F -->|否| G[重設互動與內容]
     F -->|是| H[定義 MVP]
 
-    H --> I[確認主要輸入與主要結果]
-    I --> J[設計工具頁結構]
-    J --> K[實作單一 Atomic Component]
+H --> I[確認主要輸入與主要結果]
+I --> I2{相同 UI pattern 是否第二次出現?}
+I2 -->|是| I3[Reuse Review／shared-component-reuse-gate]
+I3 --> J[設計工具頁結構]
+I2 -->|否| J[設計工具頁結構]
+J --> K[實作單一 Atomic Component]
     K --> L[加入狀態 / 空狀態 / 錯誤處理]
     L --> M[視需要加入 LocalStorage / URL Sharing]
     M --> N[加入 Related Tools / FAQ / Meta]

@@ -1,6 +1,9 @@
 /**
- * Phase A validation for ResultSummary shared layer.
- * Run: node scripts/validate-result-summary-phase-a.mjs
+ * ResultSummary canonical shared validator.
+ * Run: node scripts/validate-result-summary.mjs
+ *
+ * Covers shared component／controller／CSS ownership + DRC／BDC integration contracts.
+ * Compile-only harness remains: scripts/compile-check-result-summary.mjs
  */
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
@@ -226,24 +229,44 @@ function validDetail(overrides = {}) {
 	};
 }
 
-console.log("validate-result-summary-phase-a");
+console.log("validate-result-summary");
 
 assert(existsSync(join(root, "src/components/tools/shared/ResultSummary.astro")), "ResultSummary.astro exists");
 assert(existsSync(join(root, "src/styles/tools/result-summary.css")), "result-summary.css exists");
 assert(existsSync(join(root, "src/scripts/result-summary-controller.ts")), "controller exists");
 assert(
+	!existsSync(join(root, "scripts/validate-result-summary-phase-a.mjs")),
+	"legacy phase-a validator removed（canonical is validate-result-summary.mjs）",
+);
+assert(
 	existsSync(join(root, "local-fixtures/result-summary/fixture-matrix.html")),
-	"dev-only fixture matrix exists",
+	"dev-only fixture matrix exists（local-fixtures only）",
 );
 
 const css = read("src/styles/tools/result-summary.css");
 const astro = read("src/components/tools/shared/ResultSummary.astro");
 
 assert(!astro.includes("digits?:"), "Props do not expose digits");
+const propsBlock = astro.match(/interface Props \{[\s\S]*?\n\}/)?.[0] ?? "";
+assert(propsBlock.length > 0, "Props interface present");
+assert(
+	!/\b(toolId|toolSlug|digits)\b/.test(propsBlock) &&
+		!/data-[a-zA-Z]/.test(propsBlock),
+	"Props have no tool-specific id／data props",
+);
 assert(astro.includes("computeRsDigits"), "SSR uses computeRsDigits");
-assert(astro.includes('class="rs-status"') && astro.includes('aria-live="polite"'), "accessibility status region exists");
+assert(
+	astro.includes('class="rs-status"') &&
+		astro.includes('aria-live="polite"') &&
+		astro.includes('aria-atomic="true"'),
+	"single .rs-status uses polite＋atomic",
+);
 const sectionTag = astro.match(/<section[\s\S]*?>/m)?.[0] ?? "";
 assert(!sectionTag.includes("aria-live"), "visual section root is not live region");
+assert(
+	(astro.match(/class="rs-status"/g) || []).length === 1,
+	"exactly one .rs-status in ResultSummary markup",
+);
 
 for (const layout of ["desktop", "portrait", "landscape"]) {
 	assert(css.includes(`data-rs-layout="${layout}"`), `CSS covers layout ${layout}`);
@@ -324,8 +347,9 @@ assert(
 assert(
 	/--rs-landscape-column-gap:\s*1\.75rem/.test(css) &&
 		/\[data-rs-digits="4"\][\s\S]*?--rs-landscape-column-gap:\s*2\.25rem/.test(css) &&
-		/\[data-rs-digits="5"\][\s\S]*?--rs-landscape-column-gap:\s*2\.75rem/.test(css),
-	"landscape digit-aware column-gap owned by shared",
+		/\[data-rs-digits="5"\][\s\S]*?--rs-landscape-column-gap:\s*2\.75rem/.test(css) &&
+		/\[data-rs-digits="6\+"\][\s\S]*?--rs-landscape-column-gap:\s*2\.75rem/.test(css),
+	"landscape digit-aware column-gap：1–2／3=1.75／4=2.25／5／6+=2.75",
 );
 assert(
 	!/\[data-rs-layout="landscape"\] \.rs-secondary\s*\{[^}]*column-gap\s*:/.test(css),
@@ -477,8 +501,13 @@ globalThis.document = originalDocument;
 const layoutRoot = createSummaryRoot();
 layoutRoot.setAttribute("data-rs-digits", "5");
 layoutRoot.querySelector('[data-rs-value="primary"]').textContent = "12345";
+layoutRoot.querySelector(".rs-status").textContent = "KEEP_STATUS";
 layoutRoot.setAttribute("data-rs-layout", "portrait");
 assert(layoutRoot.getAttribute("data-rs-digits") === "5", "layout attr change does not recalc bucket");
+assert(
+	layoutRoot.querySelector(".rs-status").textContent === "KEEP_STATUS",
+	"layout attr change does not update .rs-status",
+);
 
 const ssrValues = [42, 7, 3];
 const clientValues = [42, 7, 3];
@@ -517,8 +546,69 @@ const sitemapConfig = existsSync(join(root, "astro.config.mjs"))
 assert(!catalog.includes("ResultSummary"), "ResultSummary not in tools catalog");
 assert(!sitemapConfig.includes("result-summary"), "no sitemap entry for fixture");
 
+/* Production must not expose ResultSummary preview route or fixture hooks */
+assert(
+	!existsSync(join(root, "src/pages/preview/result-summary")) &&
+		!existsSync(join(root, "src/pages/preview/result-summary/index.astro")),
+	"no production preview route for ResultSummary",
+);
+
+const controllerSrc = read("src/scripts/result-summary-controller.ts");
+assert(
+	!controllerSrc.includes("local-fixtures") &&
+		!controllerSrc.includes("fixture-matrix") &&
+		!controllerSrc.includes("preview/result-summary"),
+	"controller has no fixture／preview hooks in production API",
+);
+assert(
+	!astro.includes("local-fixtures") && !css.includes("local-fixtures"),
+	"shared Astro／CSS have no fixture path hooks",
+);
+
+/* DRC／BDC integration contracts */
 const bdcCss = read("src/styles/tools/business-days-calculator-v2.css");
 const drcCss = read("src/styles/tools/date-range-calculator-v2.css");
+const bdcAstro = read(
+	"src/components/tools/business-days-calculator-v2/BusinessDaysCalculatorV2.astro",
+);
+const drcAstro = read(
+	"src/components/tools/date-range-calculator-v2/DateRangeCalculatorV2.astro",
+);
+const bdcScript = read("src/scripts/business-days-calculator.ts");
+const drcScript = read("public/scripts/date-range.js");
+const bdcContract = read("public/scripts/business-days-layout-contract.js");
+const drcContract = read("public/scripts/date-range-layout-contract.js");
+
+assert(
+	(bdcAstro.match(/<ResultSummary\b/g) || []).length === 1,
+	"BDC has exactly one ResultSummary",
+);
+assert(
+	(drcAstro.match(/<ResultSummary\b/g) || []).length === 1,
+	"DRC has exactly one ResultSummary",
+);
+assert(bdcAstro.includes('variant="spacious"'), "BDC variant=spacious");
+assert(drcAstro.includes('variant="standard"'), "DRC variant=standard");
+
+assert(
+	!/data-bdcv2-result-days|data-bdcv2-result-digits|preview-tool-result-number|dispatchResultSummaryUpdate/.test(
+		bdcAstro + bdcScript,
+	),
+	"BDC has no legacy result DOM／digit attrs／temporary adapter",
+);
+assert(
+	!/#stat-total|#stat-workdays|data-drv2-result-digits|dispatchResultSummaryUpdate|resolveResultDigitBucket/.test(
+		drcAstro + drcScript,
+	),
+	"DRC has no legacy result DOM／digit attrs／bucket／temporary adapter",
+);
+
+assert(
+	!/setAttribute\(\s*["']data-rs-digits/.test(bdcScript) &&
+		!/setAttribute\(\s*["']data-rs-digits/.test(drcScript),
+	"tools do not write data-rs-digits",
+);
+
 assert(
 	!/\.rs-value|\.rs-label|\.rs-primary|\.rs-secondary|\.rs-status/.test(bdcCss),
 	"BDC tool CSS has no .rs-* internal overrides",
@@ -527,14 +617,14 @@ assert(
 	!/preview-tool-result-number|bdcv2-result-secondary|bdcv2-result-main|data-bdcv2-result-digits/.test(
 		bdcCss,
 	),
-	"Phase H: BDC CSS has no legacy result typography／digit ladder",
+	"BDC CSS has no legacy result typography／digit ladder",
 );
 assert(
 	!/\.preview-tool-result-block[\s\S]{0,220}?grid-template-columns:\s*repeat\(3/.test(bdcCss) &&
 		!/\.bdcv2-result-summary[\s\S]{0,220}?grid-template-columns:\s*repeat\(3/.test(bdcCss) &&
 		!/--bdcv2-landscape-result-column-gap/.test(bdcCss) &&
 		!/\[data-rs-digits/.test(bdcCss),
-	"Phase H: BDC CSS does not own ResultSummary landscape grid／digit gap",
+	"BDC CSS does not own ResultSummary landscape grid／digit gap",
 );
 assert(
 	!/\[data-date-range-v2\][^{]*\.rs-(value|label|primary|secondary|status)/.test(drcCss) &&
@@ -547,6 +637,42 @@ assert(
 		!/\.drv2-result-summary[\s\S]{0,220}?grid-template-columns:\s*repeat\(3/.test(drcCss) &&
 		!/\[data-rs-digits/.test(drcCss),
 	"DRC tool CSS does not own ResultSummary landscape grid／digit gap",
+);
+
+assert(
+	/TimivaBusinessDaysLayout/.test(bdcContract) &&
+		/business-days-layout-contract\.js/.test(bdcAstro) &&
+		/TimivaBusinessDaysLayout\?\.applyLayoutAttrs/.test(bdcAstro) &&
+		/layoutContract\?\.resolveLayoutMode|TimivaBusinessDaysLayout/.test(bdcScript),
+	"BDC initial bootstrap + layout gate share TimivaBusinessDaysLayout contract",
+);
+assert(
+	/TimivaDateRangeLayout/.test(drcContract) &&
+		/date-range-layout-contract\.js/.test(drcAstro) &&
+		/TimivaDateRangeLayout\?\.applyLayoutAttrs/.test(drcAstro) &&
+		/layoutContract\?\.resolveLayoutMode|TimivaDateRangeLayout/.test(drcScript),
+	"DRC initial bootstrap + layout gate share TimivaDateRangeLayout contract",
+);
+
+const bdcLayoutGate =
+	bdcScript.match(/const syncResultSummaryLayout = \(\) => \{[\s\S]*?\n\t\};/)?.[0] ?? "";
+const drcLayoutGate =
+	drcScript.match(/function syncResultSummaryLayout\(\) \{[\s\S]*?\n\}/)?.[0] ?? "";
+assert(bdcLayoutGate.length > 0 && !bdcLayoutGate.includes("rs:update"), "BDC layout gate layout-only");
+assert(
+	drcLayoutGate.length > 0 && !drcLayoutGate.includes("rs:update"),
+	"DRC layout gate layout-only",
+);
+assert(
+	!/applyLayoutAttrs[\s\S]{0,300}(rs:update|data-rs-digits|rs-status)/.test(
+		bdcContract + drcContract,
+	),
+	"layout contracts do not touch digits／status／rs:update",
+);
+
+assert(
+	!/local-fixtures|fixture-matrix|preview\/result-summary/.test(bdcAstro + drcAstro + bdcCss + drcCss),
+	"DRC／BDC production have no preview／fixture references",
 );
 
 console.log(`\nResult: ${passed} passed, ${failed} failed`);

@@ -2087,3 +2087,34 @@ Canonical references: docs/standards/layout-system.md §6.7 F.7B,
 docs/workflow/tool-page-qa.md §7、§11B,
 docs/workflow/new-tool-development.md §8.2、§20.
 ```
+
+---
+
+## 2026-07-22 — ResultSummary shared foundation＋Reuse Gate
+
+### 決策
+
+```text
+ResultSummary 成為正式 shared 結果摘要元件。
+Date Range Calculator（standard）與 Business Days Calculator（spacious）已遷移。
+三 layout 的 typography／grid／gap／digits／accessibility 由 shared 擁有。
+Tool CSS 只做外部 composition；不得選 .rs-* 或接管 ResultSummary 內部 grid／gap。
+Shared Component Reuse Gate 正式啟用（canonical：docs/workflow/shared-component-reuse-gate.md）。
+Canonical validator：scripts/validate-result-summary.mjs。
+```
+
+### 原因
+
+```text
+DRC／BDC 第二次出現相同結果摘要 pattern；複製改名會造成兩套 digit／typography 漂移。
+必須以 shared DOM／controller／CSS + 工具 layout contract 形成可复用架構。
+```
+
+### 影響
+
+```text
+後續工具若需結果摘要，必須使用 ResultSummary。
+第二次相同 UI pattern 的 Plan 必須先做 Reuse Review。
+Phase A–I 完成（含 Owner Gate I PASS）；canonical validator 與 Reuse Gate 已就緒。
+本 checkpoint 尚未 push／deploy。
+```
