@@ -2,7 +2,7 @@
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
 > 更新日期：2026-07-22
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + **Business Days Calculator** production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、**Business Days Calculator**（V1.5 Search Foundation 第三個工具／Timiva 第七個工具）已上線（standalone `cc09f32`；Link Integration／Deployed HEAD `8977fe5`；Production QA PASS）、V1.5 為 Search Foundation／搜尋鋪路期；下一支開發工具為 **Date Calculator／日期加減計算**；中文 Calculator 工具命名統一為「○○計算」（2026-07-13）。**ResultSummary Phase A–I 完成**（DRC／BDC migration、canonical validator、Reuse Gate；Owner Gates PASS）。**Production deployed baseline = `origin/main`（尚未含 ResultSummary Phase A–I）；local `main` 含尚未 push／deploy 的 ResultSummary commits。**
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + **Business Days Calculator** production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、**Business Days Calculator**（V1.5 Search Foundation 第三個工具／Timiva 第七個工具）已上線（standalone `cc09f32`；Link Integration／Deployed HEAD `8977fe5`；Production QA PASS）、V1.5 為 Search Foundation／搜尋鋪路期；下一支開發工具為 **Date Calculator／日期加減計算**（尚未開始）；中文 Calculator 工具命名統一為「○○計算」（2026-07-13）。**ResultSummary Phase A–I 已完成、push、deploy**（Production HEAD：`c1aea32`；DRC `variant=standard`／BDC `variant=spacious`；Reuse Gate＋canonical validator 正式啟用；正式網域 EN／ZH × Desktop／Portrait／Landscape Owner QA PASS；無 blocking issue）。**Production deployed baseline 與 local `main`／`origin/main` 已同步。** 下一個獨立任務：**Age Calculator Desktop calendar 月份／年份下拉樣式修正**。
 
 ---
 
@@ -21,23 +21,25 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具（含 Year Progress）、**Age Calculator**（第五）、**Days Between Dates**（第六）、**Business Days Calculator**（第七個工具／V1.5 Search Foundation 第三個工具）皆已上線。V1 SEO technical closeout 已完成。Business Days Calculator：standalone `cc09f32` + link integration complete；Production QA PASS；No blocking issues found；Deployed HEAD：`8977fe5`（`feat: integrate Business Days Calculator links`）。Home Featured 維持 4 張（不含 BDC）。下一支開發工具：**Date Calculator／日期加減計算**。**Git 雙軌：** Production deployed baseline = `origin/main`（尚未含 ResultSummary Phase A–I）；local `main` 含已完成並通過 Owner Gates 的 ResultSummary Phase A–I／DRC／BDC migration／Reuse Gate，**尚未 push／deploy**。 |
+| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具（含 Year Progress）、**Age Calculator**（第五）、**Days Between Dates**（第六）、**Business Days Calculator**（第七個工具／V1.5 Search Foundation 第三個工具）皆已上線。V1 SEO technical closeout 已完成。Business Days Calculator：standalone `cc09f32` + link integration complete；Production QA PASS；No blocking issues found；Link Integration HEAD：`8977fe5`。**ResultSummary Phase A–I 已 push／deploy**（Production HEAD：`c1aea32`）；DRC／BDC 正式網域 Owner visual QA PASS（EN／ZH × Desktop／Portrait／Landscape；首次載入／首次計算／字級／欄距／Sheet／Panel PASS；無 blocking issue）。Home Featured 維持 4 張（不含 BDC）。**main = origin/main = production baseline（已同步）。** 下一個獨立任務：**Age Calculator Desktop calendar 月份／年份下拉樣式修正**。下一支開發工具：**Date Calculator／日期加減計算**（尚未開始）。 |
 
 ### 1.1 Current work tracks（2026-07-22）
 
-**Shared ResultSummary track（Phase A–I 完成；尚未 push／deploy）：**
+**Shared ResultSummary track（Phase A–I 完成 · 已 push／deploy）：**
 
 ```text
-Production deployed baseline：origin/main（尚未包含 ResultSummary Phase A–I）
-Local main：包含尚未 push 的 ResultSummary Phase A–I commits
+Production HEAD：c1aea32 docs: clarify ResultSummary release status
+Production deployed baseline = local main = origin/main（已同步）
 Shared foundation：ResultSummary.astro + result-summary-controller + result-summary.css
-DRC migration：variant=standard（commit fe42d3d）
-BDC migration：variant=spacious（commit 6d9cadc）
-三 layout（desktop／portrait／landscape）共用 shared typography／grid／gap
+DRC：variant=standard（commit fe42d3d）；共用 shared DOM／controller／CSS
+BDC：variant=spacious（commit 6d9cadc）；共用 shared DOM／controller／CSS
+三 layout（desktop／portrait／landscape）＋ digit behavior＋ accessibility：shared 擁有
 Reuse Gate 正式啟用：docs/workflow/shared-component-reuse-gate.md
 Canonical validator：scripts/validate-result-summary.mjs
-Phase A–I／DRC／BDC migration／Reuse Gate：完成並通過 Owner Gates
-尚未 push／deploy
+Cloudflare Pages：由 push 自動部署
+正式網域 Owner visual QA（EN／ZH × Desktop／Portrait／Landscape）：PASS
+首次載入、首次計算、字級、欄距、Sheet／Panel：PASS
+Blocking issue：無
 ```
 
 **Release track（production）：**
@@ -49,10 +51,12 @@ Days Between Dates：已部署 timiva.app（V1.5 Search Foundation 第二個工�
 Business Days Calculator：已部署 timiva.app（V1.5 Search Foundation 第三個工具 · Timiva 第七個工具）
   Routes：/en/business-days-calculator/ · /zh/business-days-calculator/
   Standalone commit：cc09f32 feat: add Business Days Calculator standalone
-  Link Integration commit / Deployed HEAD：8977fe5 feat: integrate Business Days Calculator links
+  Link Integration commit：8977fe5 feat: integrate Business Days Calculator links
   Production QA：PASS · No blocking issues found
+ResultSummary Phase A–I：已 push／deploy（Production HEAD：c1aea32）
+  DRC／BDC ResultSummary production visual QA：PASS
 Cloudflare Pages 自動部署成功
-Production deployed baseline：origin/main（尚未含 ResultSummary Phase A–I）
+Production deployed baseline：origin/main（= local main；已含 ResultSummary Phase A–I）
 V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22`）
 可選：Year Progress HTTPS Share verification（non-blocking）
 ```
@@ -72,8 +76,9 @@ Inbound Related：
   Days Between Dates：Date Range Calculator → Business Days Calculator → Age Calculator
   Date Range Calculator：Days Between Dates → Business Days Calculator → Event Countdown
 BDC outbound Related：Days Between Dates → Date Range Calculator → Event Countdown
+下一個獨立任務：Age Calculator Desktop calendar 月份／年份下拉樣式修正
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
-下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具）
+下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具；尚未開始）
 接續：Hours Calculator
 近期開發順序：
   Date Calculator / Add or Subtract Days
@@ -1110,12 +1115,13 @@ Do not push / deploy without Owner confirmation
 ```text
 Timiva — live on timiva.app
 Event Countdown V2 — Production
-Date Range Calculator V2 — Production
+Date Range Calculator V2 — Production · ResultSummary variant=standard
 Countdown Timer V2 — Production · site-integrated
 Year Progress V2 — Production · site-integrated
 Age Calculator V2 — Production · V1.5 standalone + link integration（f48df91）
 Days Between Dates V2 — Production · V1.5 Search Foundation 第二個工具 · Timiva 第六個工具（18a262c）
-Business Days Calculator V2 — Production · V1.5 Search Foundation 第三個工具 · Timiva 第七個工具（8977fe5）
+Business Days Calculator V2 — Production · V1.5 Search Foundation 第三個工具 · Timiva 第七個工具（8977fe5）· ResultSummary variant=spacious
+ResultSummary Phase A–I — Production（HEAD c1aea32）· Reuse Gate＋canonical validator 啟用
 GA4 + Basic Consent — deployed on timiva.app
 V1 SEO technical closeout — complete（docs `c5c0a22`）
 ```
@@ -1124,10 +1130,12 @@ Next workflow:
 
 ```text
 Business Days Calculator 上線完成（standalone cc09f32 + link integration 8977fe5）
-Production QA：PASS · No blocking issues found
+ResultSummary Phase A–I 已 push／deploy（Production HEAD：c1aea32）
+DRC／BDC production visual QA：PASS · No blocking issues found
 Home Featured 維持 4 張（不含 BDC）
+下一個獨立任務：Age Calculator Desktop calendar 月份／年份下拉樣式修正
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
-下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具）
+下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具；尚未開始）
 接續：Hours Calculator
 （Lunar / Pet Age / Japanese Era 為 optional）
 ```
@@ -1156,12 +1164,13 @@ Phase A：重大變更、deploy 或 locked components 修改仍需 Owner 明確�
 Recommended order:
 
 ```text
-1. Product development：Date Calculator／日期加減計算 Plan-first / 規格化
+1. Independent fix：Age Calculator Desktop calendar 月份／年份下拉樣式修正
+2. Product development：Date Calculator／日期加減計算 Plan-first / 規格化（尚未開始）
    （接續：Hours Calculator）
-2. Open Graph / Twitter Card（deferred SEO growth）
-3. WebApplication schema（deferred）
-4. Root HTTP 301 decision（deferred）
-5. Preview legacy cleanup decision
+3. Open Graph / Twitter Card（deferred SEO growth）
+4. WebApplication schema（deferred）
+5. Root HTTP 301 decision（deferred）
+6. Preview legacy cleanup decision
 ```
 
 Parallel / later:
@@ -1265,9 +1274,12 @@ GA4 privacy-first Basic Consent 已在 timiva.app 驗證通過。
 V1 SEO technical closeout 已完成（Batch 1–3 production PASS；docs `c5c0a22`）。
 Age Calculator 已正式上線；deployed HEAD（AC）：`f48df91`。
 Days Between Dates 已正式上線；standalone `69ba30b`；Link Integration / deployed HEAD：`18a262c`；B7 Production Verification PASS；No blocking issues found。
-Business Days Calculator 已正式上線；standalone `cc09f32`；Link Integration / deployed HEAD：`8977fe5`；Production QA PASS；No blocking issues found。
+Business Days Calculator 已正式上線；standalone `cc09f32`；Link Integration：`8977fe5`；Production QA PASS；No blocking issues found。
+ResultSummary Phase A–I 已 push／deploy；Production HEAD：`c1aea32`；DRC `variant=standard`／BDC `variant=spacious`；正式網域 Owner visual QA PASS；無 blocking issue。
+Production deployed baseline 與 local main／origin/main 已同步。
 Home Featured 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress；不含 DBD／BDC）。
-下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具）。
+下一個獨立任務：Age Calculator Desktop calendar 月份／年份下拉樣式修正。
+下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具；尚未開始）。
 接續：Hours Calculator。
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期（高搜尋、低維護日期與時間工具；四大分類不變）。
 

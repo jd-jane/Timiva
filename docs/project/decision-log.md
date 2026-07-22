@@ -5,6 +5,42 @@
 
 ---
 
+## 2026-07-22 — ResultSummary Phase A–I production deploy
+
+### 背景
+
+```text
+ResultSummary Phase A–I（shared foundation、DRC／BDC migration、Reuse Gate、canonical validator）
+已完成並通過 Owner Gates；本輪 push 至 main，由 Cloudflare Pages 自動部署。
+Owner 完成正式網域 production visual QA。
+```
+
+### 決策／現況
+
+```text
+1. ResultSummary Phase A–I 已完成、push、deploy。
+2. Production HEAD：c1aea32。
+3. DRC 使用 variant=standard；BDC 使用 variant=spacious。
+4. DRC／BDC 共用 shared DOM／controller／CSS、三 layout、digit behavior、accessibility。
+5. Reuse Gate（docs/workflow/shared-component-reuse-gate.md）與
+   canonical validator（scripts/validate-result-summary.mjs）已正式啟用。
+6. 正式網域 EN／ZH × Desktop／Mobile Portrait／Mobile Landscape Owner QA：PASS。
+7. 首次載入、首次計算、位數字級、欄距、Sheet／Panel：PASS。
+8. Blocking issue：無。
+9. Production deployed baseline 與 local main／origin/main 已同步。
+10. 下一個獨立任務：Age Calculator Desktop calendar 月份／年份下拉樣式修正。
+11. Date Calculator 尚未開始。
+```
+
+### 影響
+
+```text
+ResultSummary 已成為 production shared baseline。
+後續工具結果摘要必須走 ResultSummary＋Reuse Gate；不得複製 DRC／BDC 結果 DOM／CSS。
+```
+
+---
+
 ## 2026-07-19 — Business Days Calculator 正式上線與 Calendar interaction 決策
 
 ### 背景
@@ -2116,5 +2152,7 @@ DRC／BDC 第二次出現相同結果摘要 pattern；複製改名會造成兩�
 後續工具若需結果摘要，必須使用 ResultSummary。
 第二次相同 UI pattern 的 Plan 必須先做 Reuse Review。
 Phase A–I 完成（含 Owner Gate I PASS）；canonical validator 與 Reuse Gate 已就緒。
-本 checkpoint 尚未 push／deploy。
 ```
+
+> **歷史備註：** 本 entry 寫於 Phase I docs checkpoint 當下，當時尚未 push／deploy。
+> 後續已 push／deploy（Production HEAD：`c1aea32`）；見上方「2026-07-22 — ResultSummary Phase A–I production deploy」。
