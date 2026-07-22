@@ -65,7 +65,8 @@
 [data-result-summary][data-rs-layout="desktop"] .rs-secondary {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, auto));
-	gap: 0.875rem;
+	/* 0.875rem + 16px；standard／spacious 共用 */
+	column-gap: 1.875rem;
 	margin-top: 1.5rem;
 	max-width: min(100%, 300px);
 	min-width: 0;
@@ -144,7 +145,8 @@
 [data-result-summary][data-rs-layout="portrait"] .rs-secondary {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, auto));
-	gap: 1.25rem;
+	/* 1.25rem + 10px（8–12px 中位）；standard／spacious 共用 */
+	column-gap: 1.875rem;
 	margin-top: 1.25rem;
 	max-width: 100%;
 	min-width: 0;
@@ -188,17 +190,25 @@
 }
 
 /*
- * Landscape — 三欄同字級。
- * Phase D：以 BDC 實際呈現比例校正；內部 overflow／letter-spacing
- * 對齊 BDC，避免 1fr + overflow:hidden 壓扁視覺；保留完整 digit ladder。
+ * Landscape — 三欄同字級；內部 grid／digit-aware column-gap 由 shared 擁有。
+ * Phase D：字級 ladder；Phase H ownership：max-content 三欄 + digit gap
+ * （原 BDC 核准值，DRC／BDC 共用；無 tool-local override）。
  */
 [data-result-summary][data-rs-layout="landscape"] {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-template-columns: repeat(3, max-content);
 	align-items: end;
+	justify-content: center;
 	justify-items: center;
-	gap: 1rem;
+	column-gap: var(--rs-landscape-column-gap);
+	row-gap: 0;
+	width: max-content;
+	max-width: 100%;
 	min-width: 0;
+	margin-inline: auto;
+	box-sizing: border-box;
+	/* 1–2／3 預設欄距 */
+	--rs-landscape-column-gap: 1.75rem;
 	--rs-landscape-number-size: 5rem;
 }
 
@@ -221,14 +231,17 @@
 }
 
 [data-result-summary][data-rs-layout="landscape"][data-rs-digits="4"] {
+	--rs-landscape-column-gap: 2.25rem;
 	--rs-landscape-number-size: 3.25rem;
 }
 
 [data-result-summary][data-rs-layout="landscape"][data-rs-digits="5"] {
+	--rs-landscape-column-gap: 2.75rem;
 	--rs-landscape-number-size: 2.625rem;
 }
 
 [data-result-summary][data-rs-layout="landscape"][data-rs-digits="6+"] {
+	--rs-landscape-column-gap: 2.75rem;
 	--rs-landscape-number-size: 1.5rem;
 }
 

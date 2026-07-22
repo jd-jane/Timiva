@@ -7,6 +7,7 @@ import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
 import { getRelatedTools, type CatalogToolId } from "../../../data/toolsCatalog";
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getMessages } from "../../../i18n/messages";
+import ResultSummary from "../shared/ResultSummary.astro";
 import "../../../styles/tools/tool-mobile-sheet-v2-baseline.css";
 /* Tool-local styles load after shared MSB baseline */
 import "../../../styles/tools/business-days-calculator-v2.css";
@@ -48,9 +49,17 @@ const invalidDateMessage =
 	locale === "zh"
 		? "請輸入 1900–2100 之間的有效日期"
 		: "Enter a valid date between 1900 and 2100";
+
+const rsPrimary = { value: 0, label: m.primaryResultUnit };
+const rsSecondary = [
+	{ key: "total-days", value: 0, label: m.totalDaysLabel },
+	{ key: "weekend-days", value: 0, label: m.weekendDaysLabel },
+] as const;
 ---
 
-<div data-business-days-calculator-v2 data-bdcv2-result-digits="1-3" data-bdcv2-result-locale={locale === "zh" ? "zh" : "en"}>
+<div data-business-days-calculator-v2 data-bdcv2-result-locale={locale === "zh" ? "zh" : "en"}>
+	<!-- Layout contract：blocking sync load，須在 ResultSummary 首次 paint 前可用 -->
+	<script is:inline src="/scripts/business-days-layout-contract.js?v=bdc21"></script>
 	{/* B1B：第一屏結果 + Desktop 區間框 + AC 式日曆鈕 + Mobile Sheet 入口 */}
 	<section data-bdcv2-main-tool class="preview-tool-main-section px-6">
 		<div class="preview-tool-first-screen">
@@ -62,38 +71,18 @@ const invalidDateMessage =
 						{m.kicker}
 					</h1>
 
-					<div class="preview-tool-result-block mt-6 md:mt-8">
-						<div class="bdcv2-result-main">
-							<p
-								class="preview-tool-result-number leading-none font-normal tracking-tight tabular-nums"
-								data-bdcv2-result-days
-								aria-label={`0 ${m.primaryResultUnit}`}
-							>
-								0
-							</p>
-							<p
-								class="preview-tool-result-label text-xs text-slate-400 md:text-sm"
-								data-bdcv2-result-unit
-							>
-								{m.primaryResultUnit}
-							</p>
-						</div>
-
-						<div class="bdcv2-result-secondary">
-							<div class="bdcv2-result-secondary-item">
-								<div class="bdcv2-result-secondary-number" data-bdcv2-result-total-days>0</div>
-								<div class="preview-tool-result-label bdcv2-result-secondary-label text-xs text-slate-400/85 md:text-sm">
-									{m.totalDaysLabel}
-								</div>
-							</div>
-							<div class="bdcv2-result-secondary-item">
-								<div class="bdcv2-result-secondary-number" data-bdcv2-result-weekend-days>0</div>
-								<div class="preview-tool-result-label bdcv2-result-secondary-label text-xs text-slate-400/85 md:text-sm">
-									{m.weekendDaysLabel}
-								</div>
-							</div>
-						</div>
-					</div>
+					<ResultSummary
+						layout="desktop"
+						variant="spacious"
+						ariaLabel={m.kicker}
+						primary={rsPrimary}
+						secondary={[rsSecondary[0], rsSecondary[1]]}
+						class="preview-tool-result-block mt-6 md:mt-8 bdcv2-result-summary"
+					/>
+					<script is:inline>
+						/* Initial layout bootstrap — sync before first paint; layout attrs only */
+						window.TimivaBusinessDaysLayout?.applyLayoutAttrs(document);
+					</script>
 				</div>
 
 				{/* Desktop：DBD 式區間框 + AC 式日曆按鈕 */}
@@ -595,6 +584,11 @@ const invalidDateMessage =
 	</div>
 </div>
 
+<script>
+	import { init as initResultSummary } from "../../../scripts/result-summary-controller.ts";
+
+	initResultSummary();
+</script>
 <script>
 	import "../../../scripts/business-days-calculator";
 </script>

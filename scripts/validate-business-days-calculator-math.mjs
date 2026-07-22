@@ -163,8 +163,8 @@ assert(
 		"script wires B2B math",
 	);
 	assert(
-		script.includes("syncResultDisplay") || script.includes("data-bdcv2-result-days"),
-		"script updates result DOM",
+		script.includes("syncResultDisplay") || script.includes("rs:update"),
+		"script updates ResultSummary",
 	);
 	assert(
 		script.includes("resolveOrderedRange"),

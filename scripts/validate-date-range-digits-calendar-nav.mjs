@@ -149,8 +149,10 @@ assert(
 );
 
 assert(
-	/data-rs-layout="landscape"[\s\S]*grid-template-columns:\s*repeat\(3/.test(rsCss),
-	"shared landscape 3-col layout"
+	/data-rs-layout="landscape"[\s\S]*grid-template-columns:\s*repeat\(3,\s*max-content\)/.test(
+		rsCss,
+	),
+	"shared landscape 3-col max-content layout"
 );
 assert(
 	/\[data-rs-layout="portrait"\]\[data-rs-digits="1-2"\][\s\S]*?\[data-rs-digits="3"\][\s\S]*?clamp\(7\.5rem,\s*38vw,\s*10\.5rem\)/.test(

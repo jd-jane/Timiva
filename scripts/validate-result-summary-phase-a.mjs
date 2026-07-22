@@ -300,6 +300,38 @@ assert(
 	"desktop secondary has no 4／5 mid-bucket shrink",
 );
 
+/* Secondary column-gap：Desktop +16px、Portrait +10px；Landscape digit-aware 由 shared 擁有 */
+assert(
+	/\[data-rs-layout="desktop"\] \.rs-secondary[\s\S]*?column-gap:\s*1\.875rem/.test(css),
+	"desktop secondary column-gap = 1.875rem (0.875rem + 16px)",
+);
+assert(
+	/\[data-rs-layout="portrait"\] \.rs-secondary[\s\S]*?column-gap:\s*1\.875rem/.test(css),
+	"portrait secondary column-gap = 1.875rem (1.25rem + 10px)",
+);
+assert(
+	/\[data-rs-layout="desktop"\] \.rs-secondary[\s\S]*?margin-top:\s*1\.5rem/.test(css) &&
+		/\[data-rs-layout="portrait"\] \.rs-secondary[\s\S]*?margin-top:\s*1\.25rem/.test(css),
+	"primary→secondary vertical margin unchanged",
+);
+assert(
+	/\[data-rs-layout="landscape"\][\s\S]*?grid-template-columns:\s*repeat\(3,\s*max-content\)/.test(
+		css,
+	) &&
+		/\[data-rs-layout="landscape"\] \.rs-secondary[\s\S]*?display:\s*contents/.test(css),
+	"landscape shared 3-col max-content + secondary display:contents",
+);
+assert(
+	/--rs-landscape-column-gap:\s*1\.75rem/.test(css) &&
+		/\[data-rs-digits="4"\][\s\S]*?--rs-landscape-column-gap:\s*2\.25rem/.test(css) &&
+		/\[data-rs-digits="5"\][\s\S]*?--rs-landscape-column-gap:\s*2\.75rem/.test(css),
+	"landscape digit-aware column-gap owned by shared",
+);
+assert(
+	!/\[data-rs-layout="landscape"\] \.rs-secondary\s*\{[^}]*column-gap\s*:/.test(css),
+	"landscape secondary has no column-gap override",
+);
+
 /* Phase D Portrait：BDC production clamps；variant 不影響 mobile */
 assert(
 	/\[data-rs-layout="portrait"\]\[data-rs-digits="1-2"\][\s\S]*?\[data-rs-digits="3"\][\s\S]*?clamp\(7\.5rem,\s*38vw,\s*10\.5rem\)/.test(
@@ -484,6 +516,38 @@ const sitemapConfig = existsSync(join(root, "astro.config.mjs"))
 
 assert(!catalog.includes("ResultSummary"), "ResultSummary not in tools catalog");
 assert(!sitemapConfig.includes("result-summary"), "no sitemap entry for fixture");
+
+const bdcCss = read("src/styles/tools/business-days-calculator-v2.css");
+const drcCss = read("src/styles/tools/date-range-calculator-v2.css");
+assert(
+	!/\.rs-value|\.rs-label|\.rs-primary|\.rs-secondary|\.rs-status/.test(bdcCss),
+	"BDC tool CSS has no .rs-* internal overrides",
+);
+assert(
+	!/preview-tool-result-number|bdcv2-result-secondary|bdcv2-result-main|data-bdcv2-result-digits/.test(
+		bdcCss,
+	),
+	"Phase H: BDC CSS has no legacy result typography／digit ladder",
+);
+assert(
+	!/\.preview-tool-result-block[\s\S]{0,220}?grid-template-columns:\s*repeat\(3/.test(bdcCss) &&
+		!/\.bdcv2-result-summary[\s\S]{0,220}?grid-template-columns:\s*repeat\(3/.test(bdcCss) &&
+		!/--bdcv2-landscape-result-column-gap/.test(bdcCss) &&
+		!/\[data-rs-digits/.test(bdcCss),
+	"Phase H: BDC CSS does not own ResultSummary landscape grid／digit gap",
+);
+assert(
+	!/\[data-date-range-v2\][^{]*\.rs-(value|label|primary|secondary|status)/.test(drcCss) &&
+		(!/\.rs-value[\s\S]{0,80}font-size:/.test(drcCss) ||
+			!/\[data-date-range-v2\][^{]*\.rs-/.test(drcCss)),
+	"DRC tool CSS has no .rs-* internal overrides",
+);
+assert(
+	!/\.preview-tool-result-block[\s\S]{0,220}?grid-template-columns:\s*repeat\(3/.test(drcCss) &&
+		!/\.drv2-result-summary[\s\S]{0,220}?grid-template-columns:\s*repeat\(3/.test(drcCss) &&
+		!/\[data-rs-digits/.test(drcCss),
+	"DRC tool CSS does not own ResultSummary landscape grid／digit gap",
+);
 
 console.log(`\nResult: ${passed} passed, ${failed} failed`);
 

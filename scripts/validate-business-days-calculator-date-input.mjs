@@ -507,8 +507,9 @@ assert(
 	);
 	assert(
 		script.includes("syncResultDisplay") &&
-			script.includes("data-bdcv2-result-days"),
-		"B2B: script updates result numbers via syncResultDisplay",
+			script.includes("rs:update") &&
+			script.includes("[data-result-summary]"),
+		"B2B: script updates ResultSummary via syncResultDisplay + rs:update",
 	);
 	assert(
 		script.includes("formatPrimaryUnit") &&
@@ -578,38 +579,151 @@ assert(
 		"BDC landscape compact uses content-driven height",
 	);
 	assert(
-		script.includes("data-bdcv2-result-digits") &&
-			script.includes('"1-3"') &&
-			script.includes('"5"') &&
-			!script.includes('"6plus"'),
-		"B2B: digit-bucket attribute wired for 1-3／4／5 only（no 6plus; max days 73414）",
+		script.includes("syncResultSummaryLayout") &&
+			script.includes("data-rs-layout") &&
+			script.includes("TimivaBusinessDaysLayout"),
+		"layout gate syncs data-rs-layout via shared contract",
+	);
+	const layoutGateBlock =
+		script.match(/const syncResultSummaryLayout = \(\) => \{[\s\S]*?\n\t\};/)?.[0] ?? "";
+	assert(layoutGateBlock.length > 0, "syncResultSummaryLayout block present");
+	assert(!layoutGateBlock.includes("rs:update"), "layout gate does not dispatch rs:update");
+	assert(
+		!/syncResultSummaryLayout[\s\S]{0,200}rs-status/.test(script),
+		"layout gate does not update live region",
 	);
 	assert(
-		!css.includes('data-bdcv2-result-digits="6plus"') &&
-			!css.includes("result-number-size-6plus") &&
-			!css.includes("column-gap-6plus"),
-		"BDC CSS has no 6plus digit scaling",
+		script.includes("total-days") && script.includes("weekend-days"),
+		"B2B: secondary keys match ResultSummary markup",
 	);
 	assert(
-		css.includes('data-bdcv2-result-digits="5"') ||
-			css.includes("data-bdcv2-result-digits=\"5\""),
-		"BDC CSS has 5-digit result scaling",
+		script.includes("rs:update") &&
+			script.includes("syncResultDisplay") &&
+			!script.includes("dispatchResultSummaryUpdate"),
+		"Phase H: syncResultDisplay dispatches rs:update directly（no adapter）",
 	);
 	assert(
-		css.includes("repeat(3, max-content)") ||
-			css.includes("repeat(3,max-content)") ||
-			css.includes("repeat(3, auto)") ||
-			css.includes("repeat(3,auto)"),
-		"BDC landscape result columns use content-driven tracks",
+		!script.includes("Phase H") && !script.includes("Phase H delete"),
+		"Phase H: no Phase H TODO／adapter comments",
 	);
 	assert(
-		/orientation:\s*landscape[\s\S]*?\.bdcv2-result-secondary-label[\s\S]*?text-align:\s*center/.test(
-			css,
-		) || css.includes("text-align: center"),
-		"BDC landscape result labels are center-aligned under numbers",
+		!script.includes("data-bdcv2-result-digits") &&
+			!script.includes("data-bdcv2-result-days") &&
+			!script.includes("data-bdcv2-result-total") &&
+			!script.includes("data-bdcv2-result-weekend") &&
+			!script.includes("data-bdcv2-result-unit"),
+		"Phase H: no legacy result DOM hooks in script",
+	);
+	assert(
+		!script.includes("data-rs-digits") ||
+			!/setAttribute\(\s*["']data-rs-digits/.test(script),
+		"BDC script does not write data-rs-digits",
+	);
+	assert(
+		!css.includes("data-bdcv2-result-digits") &&
+			!css.includes("preview-tool-result-number") &&
+			!css.includes("bdcv2-result-secondary") &&
+			!css.includes("bdcv2-result-main") &&
+			!css.includes("result-number-size"),
+		"Phase H: no legacy result typography／digit ladder in BDC CSS",
+	);
+assert(
+		css.includes(".bdcv2-result-summary") &&
+			!css.includes("[data-rs-digits") &&
+			!/--bdcv2-landscape-result-column-gap/.test(css) &&
+			!/\.preview-tool-result-block[\s\S]{0,220}?grid-template-columns:\s*repeat\(3/.test(css) &&
+			!/\.bdcv2-result-summary[\s\S]{0,220}?grid-template-columns:\s*repeat\(3/.test(css),
+		"Phase H: BDC keeps external placement only；no ResultSummary internal grid／digit gap",
+	);
+	assert(
+		!css.includes(".rs-value") &&
+			!css.includes(".rs-label") &&
+			!css.includes(".rs-primary") &&
+			!css.includes(".rs-secondary") &&
+			!css.includes(".rs-status"),
+		"BDC CSS has no .rs-* internal overrides",
+	);
+	assert(
+		css.includes("padding-inline: 0.75rem") || css.includes("padding-inline:0.75rem"),
+		"Portrait result-group approved width inset retained",
+	);
+	assert(
+		css.includes("--bdcv2-landscape-title-result-gap") &&
+			css.includes("--bdcv2-landscape-stage-controls-gap"),
+		"Landscape stage／controls external composition retained",
 	);
 
-	// Markup：兩個 Smart Date + invalid icons；不再使用雙組 Y/M/D
+	assert(
+		/import ResultSummary/.test(component),
+		"ResultSummary component imported",
+	);
+	assert(
+		/<ResultSummary/.test(component),
+		"ResultSummary rendered",
+	);
+	assert(
+		(component.match(/<ResultSummary\b/g) || []).length === 1,
+		"exactly one ResultSummary in BDC astro",
+	);
+	assert(
+		!component.includes("data-bdcv2-result-days") &&
+			!component.includes("data-bdcv2-result-digits") &&
+			!component.includes("preview-tool-result-number") &&
+			!component.includes("bdcv2-result-main") &&
+			!component.includes("bdcv2-result-secondary"),
+		"Phase H: legacy result subtree removed from markup",
+	);
+	assert(
+		/business-days-layout-contract\.js/.test(component),
+		"blocking layout contract script present",
+	);
+	assert(
+		/TimivaBusinessDaysLayout\?\.applyLayoutAttrs\(document\)/.test(component),
+		"inline initial layout bootstrap after ResultSummary",
+	);
+	assert(
+		/initResultSummary/.test(component),
+		"shared controller init in astro",
+	);
+	assert(
+		component.includes('variant="spacious"'),
+		"BDC uses spacious variant",
+	);
+
+	const rsCss = readFileSync(
+		join(rootDir, "src/styles/tools/result-summary.css"),
+		"utf8",
+	);
+	assert(
+		/\[data-rs-layout="desktop"\] \.rs-secondary[\s\S]*?column-gap:\s*1\.875rem/.test(rsCss) &&
+			/\[data-rs-layout="portrait"\] \.rs-secondary[\s\S]*?column-gap:\s*1\.875rem/.test(rsCss),
+		"shared Desktop／Portrait secondary gap remains 1.875rem",
+	);
+	assert(
+		/\[data-rs-layout="landscape"\][\s\S]*?grid-template-columns:\s*repeat\(3,\s*max-content\)/.test(
+			rsCss,
+		) &&
+			/--rs-landscape-column-gap:\s*1\.75rem/.test(rsCss) &&
+			/\[data-rs-digits="4"\][\s\S]*?--rs-landscape-column-gap:\s*2\.25rem/.test(rsCss) &&
+			/\[data-rs-digits="5"\][\s\S]*?--rs-landscape-column-gap:\s*2\.75rem/.test(rsCss),
+		"shared Landscape owns max-content grid + digit-aware column-gap",
+	);
+
+	const contract = readFileSync(
+		join(rootDir, "public/scripts/business-days-layout-contract.js"),
+		"utf8",
+	);
+	assert(/TimivaBusinessDaysLayout/.test(contract), "layout contract exposes TimivaBusinessDaysLayout");
+	assert(
+		/applyLayoutAttrs[\s\S]*?data-rs-layout/.test(contract),
+		"contract applyLayoutAttrs sets data-rs-layout only",
+	);
+	assert(
+		!/(applyLayoutAttrs|Initial layout bootstrap)[\s\S]{0,400}rs:update/.test(
+			component + contract,
+		),
+		"initial bootstrap does not dispatch rs:update",
+	);
 	assert(
 		!component.includes("readonly"),
 		"B2A: inputs are no longer readonly",

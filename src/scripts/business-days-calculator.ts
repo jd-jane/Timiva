@@ -36,6 +36,20 @@ import {
 type FieldKey = "from" | "to";
 type ResultLocale = "en" | "zh";
 
+interface BusinessDaysLayoutContract {
+	DESKTOP_MQ: string;
+	LANDSCAPE_MQ: string;
+	resolveLayoutMode: (win?: Window) => "desktop" | "portrait" | "landscape-date";
+	mapRsLayout: (mode: "desktop" | "portrait" | "landscape-date") => "desktop" | "portrait" | "landscape";
+	applyLayoutAttrs: (doc?: Document) => void;
+}
+
+declare global {
+	interface Window {
+		TimivaBusinessDaysLayout?: BusinessDaysLayoutContract;
+	}
+}
+
 function resolveResultLocale(root: HTMLElement): ResultLocale {
 	const attr = root.getAttribute("data-bdcv2-result-locale");
 	if (attr === "zh" || attr === "en") {
@@ -68,6 +82,44 @@ function formatWeekendDaysLabel(weekendDays: number, locale: ResultLocale): stri
 	}
 
 	return weekendDays === 1 ? "weekend day" : "weekend days";
+}
+
+function initResultSummaryLayout(root: HTMLElement): void {
+	const layoutContract = window.TimivaBusinessDaysLayout;
+	const resultSummaryEl = root.querySelector<HTMLElement>("[data-result-summary]");
+
+	if (!resultSummaryEl || !layoutContract) {
+		return;
+	}
+
+	const desktopMedia = window.matchMedia(
+		layoutContract.DESKTOP_MQ ??
+			"(min-width: 900px) and (min-height: 700px) and (hover: hover)",
+	);
+	const landscapeMedia = window.matchMedia(
+		layoutContract.LANDSCAPE_MQ ??
+			"(orientation: landscape) and (max-height: 700px) and (max-width: 1200px)",
+	);
+
+	const syncResultSummaryLayout = () => {
+		const mode = layoutContract.resolveLayoutMode(window);
+		resultSummaryEl.setAttribute("data-rs-layout", layoutContract.mapRsLayout(mode));
+	};
+
+	syncResultSummaryLayout();
+
+	desktopMedia.addEventListener("change", syncResultSummaryLayout);
+	landscapeMedia.addEventListener("change", syncResultSummaryLayout);
+	window.addEventListener("resize", syncResultSummaryLayout);
+	window.addEventListener("orientationchange", () => {
+		window.setTimeout(syncResultSummaryLayout, 200);
+		window.setTimeout(syncResultSummaryLayout, 550);
+	});
+	window.addEventListener("pageshow", (event) => {
+		if (event.persisted) {
+			syncResultSummaryLayout();
+		}
+	});
 }
 
 function initDrawer(root: HTMLElement): void {
@@ -1088,19 +1140,7 @@ function initDateInputs(
 	const sheetFrom = document.querySelector<HTMLInputElement>("[data-bdcv2-sheet-from]");
 	const sheetTo = document.querySelector<HTMLInputElement>("[data-bdcv2-sheet-to]");
 	const mobileRange = root.querySelector<HTMLElement>("[data-bdcv2-mobile-range]");
-
-	const resultDays = root.querySelector<HTMLElement>("[data-bdcv2-result-days]");
-	const resultUnit = root.querySelector<HTMLElement>("[data-bdcv2-result-unit]");
-	const resultTotalDays = root.querySelector<HTMLElement>("[data-bdcv2-result-total-days]");
-	const resultWeekendDays = root.querySelector<HTMLElement>(
-		"[data-bdcv2-result-weekend-days]",
-	);
-	const resultTotalLabel = resultTotalDays?.parentElement?.querySelector<HTMLElement>(
-		".bdcv2-result-secondary-label",
-	);
-	const resultWeekendLabel = resultWeekendDays?.parentElement?.querySelector<HTMLElement>(
-		".bdcv2-result-secondary-label",
-	);
+	const resultSummaryEl = root.querySelector<HTMLElement>("[data-result-summary]");
 
 	const desktopFromInvalid = root.querySelector<HTMLElement>(
 		"[data-bdcv2-desktop-from-invalid]",
@@ -1165,43 +1205,41 @@ function initDateInputs(
 			}
 		}
 
+		if (!resultSummaryEl) {
+			return;
+		}
+
 		const primaryUnit = formatPrimaryUnit(counts.businessDays, resultLocale);
 		const totalLabel = formatTotalDaysLabel(counts.totalDays, resultLocale);
 		const weekendLabel = formatWeekendDaysLabel(counts.weekendDays, resultLocale);
-		// 三欄取最大位數，避免主結果 3 位、次要 4 位時仍用大字級造成橫式重疊
-		const digitCount = Math.max(
-			String(Math.abs(counts.businessDays)).length,
-			String(Math.abs(counts.totalDays)).length,
-			String(Math.abs(counts.weekendDays)).length,
+
+		resultSummaryEl.dispatchEvent(
+			new CustomEvent("rs:update", {
+				bubbles: false,
+				detail: {
+					primary: {
+						value: counts.businessDays,
+						displayValue: String(counts.businessDays),
+						label: primaryUnit,
+						ariaLabel: `${counts.businessDays} ${primaryUnit}`,
+					},
+					secondary: [
+						{
+							key: "total-days",
+							value: counts.totalDays,
+							displayValue: String(counts.totalDays),
+							label: totalLabel,
+						},
+						{
+							key: "weekend-days",
+							value: counts.weekendDays,
+							displayValue: String(counts.weekendDays),
+							label: weekendLabel,
+						},
+					],
+				},
+			}),
 		);
-		const digitBucket = digitCount <= 3 ? "1-3" : digitCount === 4 ? "4" : "5";
-
-		root.setAttribute("data-bdcv2-result-digits", digitBucket);
-
-		if (resultDays) {
-			resultDays.textContent = String(counts.businessDays);
-			resultDays.setAttribute("aria-label", `${counts.businessDays} ${primaryUnit}`);
-		}
-
-		if (resultUnit) {
-			resultUnit.textContent = primaryUnit;
-		}
-
-		if (resultTotalDays) {
-			resultTotalDays.textContent = String(counts.totalDays);
-		}
-
-		if (resultWeekendDays) {
-			resultWeekendDays.textContent = String(counts.weekendDays);
-		}
-
-		if (resultTotalLabel) {
-			resultTotalLabel.textContent = totalLabel;
-		}
-
-		if (resultWeekendLabel) {
-			resultWeekendLabel.textContent = weekendLabel;
-		}
 	};
 
 	const isAnyDateInputFocused = (): boolean =>
@@ -1584,6 +1622,7 @@ function bootstrap(): void {
 	}
 
 	initDrawer(root);
+	initResultSummaryLayout(root);
 
 	const calendarBridge: {
 		isOpen: () => boolean;
