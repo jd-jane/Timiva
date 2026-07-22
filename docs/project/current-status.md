@@ -2,7 +2,7 @@
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
 > 更新日期：2026-07-22
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + **Business Days Calculator** production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、**Business Days Calculator**（V1.5 Search Foundation 第三個工具／Timiva 第七個工具）已上線（standalone `cc09f32`；Link Integration／Deployed HEAD `8977fe5`；Production QA PASS）、V1.5 為 Search Foundation／搜尋鋪路期；下一支開發工具為 **Date Calculator／日期加減計算**；中文 Calculator 工具命名統一為「○○計算」（2026-07-13）。**ResultSummary Phase A–I 完成**：shared foundation、DRC／BDC 遷移、canonical validator、Reuse Gate 正式啟用；本 checkpoint **尚未 push／deploy**。
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + **Business Days Calculator** production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、**Business Days Calculator**（V1.5 Search Foundation 第三個工具／Timiva 第七個工具）已上線（standalone `cc09f32`；Link Integration／Deployed HEAD `8977fe5`；Production QA PASS）、V1.5 為 Search Foundation／搜尋鋪路期；下一支開發工具為 **Date Calculator／日期加減計算**；中文 Calculator 工具命名統一為「○○計算」（2026-07-13）。**ResultSummary Phase A–I 完成**（DRC／BDC migration、canonical validator、Reuse Gate；Owner Gates PASS）。**Production deployed baseline = `origin/main`（尚未含 ResultSummary Phase A–I）；local `main` 含尚未 push／deploy 的 ResultSummary commits。**
 
 ---
 
@@ -21,21 +21,23 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具（含 Year Progress）、**Age Calculator**（第五）、**Days Between Dates**（第六）、**Business Days Calculator**（第七個工具／V1.5 Search Foundation 第三個工具）皆已上線。V1 SEO technical closeout 已完成。Business Days Calculator：standalone `cc09f32` + link integration complete；Production QA PASS；No blocking issues found；Deployed HEAD：`8977fe5`（`feat: integrate Business Days Calculator links`）。Home Featured 維持 4 張（不含 BDC）。下一支開發工具：**Date Calculator／日期加減計算**。`main` 與 `origin/main` 同步。 |
+| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具（含 Year Progress）、**Age Calculator**（第五）、**Days Between Dates**（第六）、**Business Days Calculator**（第七個工具／V1.5 Search Foundation 第三個工具）皆已上線。V1 SEO technical closeout 已完成。Business Days Calculator：standalone `cc09f32` + link integration complete；Production QA PASS；No blocking issues found；Deployed HEAD：`8977fe5`（`feat: integrate Business Days Calculator links`）。Home Featured 維持 4 張（不含 BDC）。下一支開發工具：**Date Calculator／日期加減計算**。**Git 雙軌：** Production deployed baseline = `origin/main`（尚未含 ResultSummary Phase A–I）；local `main` 含已完成並通過 Owner Gates 的 ResultSummary Phase A–I／DRC／BDC migration／Reuse Gate，**尚未 push／deploy**。 |
 
 ### 1.1 Current work tracks（2026-07-22）
 
 **Shared ResultSummary track（Phase A–I 完成；尚未 push／deploy）：**
 
 ```text
+Production deployed baseline：origin/main（尚未包含 ResultSummary Phase A–I）
+Local main：包含尚未 push 的 ResultSummary Phase A–I commits
 Shared foundation：ResultSummary.astro + result-summary-controller + result-summary.css
 DRC migration：variant=standard（commit fe42d3d）
 BDC migration：variant=spacious（commit 6d9cadc）
 三 layout（desktop／portrait／landscape）共用 shared typography／grid／gap
 Reuse Gate 正式啟用：docs/workflow/shared-component-reuse-gate.md
 Canonical validator：scripts/validate-result-summary.mjs
-Phase A–I：完成（含 Owner Gate I PASS）
-本 checkpoint：尚未 push／deploy
+Phase A–I／DRC／BDC migration／Reuse Gate：完成並通過 Owner Gates
+尚未 push／deploy
 ```
 
 **Release track（production）：**
@@ -50,7 +52,7 @@ Business Days Calculator：已部署 timiva.app（V1.5 Search Foundation 第三�
   Link Integration commit / Deployed HEAD：8977fe5 feat: integrate Business Days Calculator links
   Production QA：PASS · No blocking issues found
 Cloudflare Pages 自動部署成功
-main 與 origin/main 同步
+Production deployed baseline：origin/main（尚未含 ResultSummary Phase A–I）
 V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22`）
 可選：Year Progress HTTPS Share verification（non-blocking）
 ```
