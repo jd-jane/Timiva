@@ -8,6 +8,7 @@ import { getRelatedTools, type CatalogToolId } from "../../../data/toolsCatalog"
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getMessages } from "../../../i18n/messages";
 import ResultSummary from "../shared/ResultSummary.astro";
+import DesktopCalendar from "../shared/DesktopCalendar.astro";
 import "../../../styles/tools/tool-mobile-sheet-v2-baseline.css";
 /* Tool-local styles load after shared MSB baseline */
 import "../../../styles/tools/business-days-calculator-v2.css";
@@ -382,107 +383,19 @@ const rsSecondary = [
 		</section>
 	</div>
 
-	{/* Desktop Calendar popover — AC 視覺 + DRC range 行為（B2C） */}
-	<div
-		id="bdcv2-calendar-popover"
-		class="bdcv2-calendar-popover"
-		data-bdcv2-calendar-popover
-		role="dialog"
-		aria-label={m.calendarLabel}
-		aria-hidden="true"
-		hidden
-	>
-		<div class="calendar-panel calendar-card bdcv2-calendar-panel">
-			<div class="calendar-toolbar">
-				<button
-					type="button"
-					class="calendar-nav-btn"
-					data-bdcv2-calendar-prev
-					aria-label={m.previousMonth}
-				>
-					‹
-				</button>
-				<div class="bdcv2-calendar-selects">
-					<div class="bdcv2-calendar-picker" data-bdcv2-month-picker>
-						<button
-							type="button"
-							class="bdcv2-calendar-picker-trigger"
-							data-bdcv2-month-trigger
-							aria-expanded="false"
-							aria-haspopup="listbox"
-							aria-controls="bdcv2-calendar-month-panel"
-							aria-label={m.monthFieldLabel}
-						>
-							<span data-bdcv2-month-label>—</span>
-						</button>
-						<div
-							id="bdcv2-calendar-month-panel"
-							class="bdcv2-calendar-picker-panel bdcv2-calendar-month-panel"
-							data-bdcv2-month-panel
-							role="listbox"
-							aria-label={m.monthFieldLabel}
-							hidden
-						>
-							<div class="bdcv2-calendar-month-grid" data-bdcv2-month-grid></div>
-						</div>
-					</div>
-					<div class="bdcv2-calendar-picker" data-bdcv2-year-picker>
-						<button
-							type="button"
-							class="bdcv2-calendar-picker-trigger"
-							data-bdcv2-year-trigger
-							aria-expanded="false"
-							aria-haspopup="dialog"
-							aria-controls="bdcv2-calendar-year-panel"
-							aria-label={m.yearFieldLabel}
-						>
-							<span data-bdcv2-year-label>—</span>
-						</button>
-						<div
-							id="bdcv2-calendar-year-panel"
-							class="bdcv2-calendar-picker-panel bdcv2-calendar-year-panel"
-							data-bdcv2-year-panel
-							role="dialog"
-							aria-label={m.yearFieldLabel}
-							hidden
-						>
-							<input
-								type="text"
-								class="bdcv2-calendar-year-input"
-								data-bdcv2-year-input
-								inputmode="numeric"
-								autocomplete="off"
-								spellcheck="false"
-								maxlength="4"
-								aria-label={m.yearFieldLabel}
-							/>
-							<div
-								class="bdcv2-calendar-year-list"
-								data-bdcv2-year-list
-								role="listbox"
-								aria-label={m.yearFieldLabel}
-							>
-							</div>
-						</div>
-					</div>
-				</div>
-				<button
-					type="button"
-					class="calendar-nav-btn"
-					data-bdcv2-calendar-next
-					aria-label={m.nextMonth}
-				>
-					›
-				</button>
-			</div>
-
-			<div class="calendar-weekdays" aria-hidden="true">
-				{m.weekdays.map((day) => <span>{day}</span>)}
-			</div>
-
-			<div class="calendar-grid" data-bdcv2-calendar-grid></div>
-		</div>
-	</div>
+	{/* Desktop Calendar — shared popover-compact；工具只保留 toggle／shell composition */}
+	<DesktopCalendar
+		variant="popover-compact"
+		idPrefix="bdcv2-calendar-popover"
+		weekdays={m.weekdays}
+		labels={{
+			calendar: m.calendarLabel,
+			previousMonth: m.previousMonth,
+			nextMonth: m.nextMonth,
+			month: m.monthFieldLabel,
+			year: m.yearFieldLabel,
+		}}
+	/>
 </div>
 
 <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />

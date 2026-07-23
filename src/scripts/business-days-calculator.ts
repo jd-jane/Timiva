@@ -5,7 +5,7 @@
  * B2A: Desktop／Mobile Smart Date Input 共用單一 state、
  *      empty/incomplete/valid/invalid、invalid icons、反向自動交換
  * B2B: UTC ordinal 工作日計算、即時結果、英文單複數 formatter
- * B2C: Desktop Calendar（AC 視覺 + DRC range 行為）寫入同一 from／to state
+ * B2C: Desktop Calendar via shared DesktopCalendar（popover-compact）adapter
  */
 import {
 	applySegmentInputChange,
@@ -32,6 +32,11 @@ import {
 	calculateBusinessDaysRange,
 	type BusinessDaysCount,
 } from "../lib/businessDaysCalculatorMath";
+import {
+	createDesktopCalendar,
+	type DesktopCalendarApi,
+	type SdcCalendarDate,
+} from "./desktop-calendar-controller";
 
 type FieldKey = "from" | "to";
 type ResultLocale = "en" | "zh";
@@ -405,8 +410,8 @@ type BdcDateApi = {
 };
 
 /**
- * B2C：Desktop Calendar — AC 視覺殼 + DRC range 選取行為。
- * 寫入 B2A 同一組 from／to segments；不另建第二套日期 state、不重做反向排序。
+ * B2C：Desktop Calendar adapter — shared DesktopCalendar（popover-compact）。
+ * 工具保留 pickMode／關閉規則／Smart Date 同步；shared 擁有 DOM／render／panels。
  */
 function initCalendarPopover(
 	root: HTMLElement,
@@ -419,707 +424,140 @@ function initCalendarPopover(
 	setPickModeIfOpen: (mode: CalendarPickMode) => void;
 } | null {
 	const toggle = root.querySelector<HTMLButtonElement>("[data-bdcv2-calendar-toggle]");
-	const popover = root.querySelector<HTMLElement>("[data-bdcv2-calendar-popover]");
-	const grid = root.querySelector<HTMLElement>("[data-bdcv2-calendar-grid]");
-	const monthTrigger = root.querySelector<HTMLButtonElement>("[data-bdcv2-month-trigger]");
-	const yearTrigger = root.querySelector<HTMLButtonElement>("[data-bdcv2-year-trigger]");
-	const monthLabel = root.querySelector<HTMLElement>("[data-bdcv2-month-label]");
-	const yearLabel = root.querySelector<HTMLElement>("[data-bdcv2-year-label]");
-	const monthPanel = root.querySelector<HTMLElement>("[data-bdcv2-month-panel]");
-	const yearPanel = root.querySelector<HTMLElement>("[data-bdcv2-year-panel]");
-	const monthGrid = root.querySelector<HTMLElement>("[data-bdcv2-month-grid]");
-	const yearList = root.querySelector<HTMLElement>("[data-bdcv2-year-list]");
-	const yearInput = root.querySelector<HTMLInputElement>("[data-bdcv2-year-input]");
-	const monthPicker = root.querySelector<HTMLElement>("[data-bdcv2-month-picker]");
-	const yearPicker = root.querySelector<HTMLElement>("[data-bdcv2-year-picker]");
-	const prevBtn = root.querySelector<HTMLButtonElement>("[data-bdcv2-calendar-prev]");
-	const nextBtn = root.querySelector<HTMLButtonElement>("[data-bdcv2-calendar-next]");
+	const calendarRoot = root.querySelector<HTMLElement>("[data-desktop-calendar]");
+	const inputShell = root.querySelector<HTMLElement>(".bdcv2-date-range-shell--desktop");
 
-	if (
-		!toggle ||
-		!popover ||
-		!grid ||
-		!monthTrigger ||
-		!yearTrigger ||
-		!monthLabel ||
-		!yearLabel ||
-		!monthPanel ||
-		!yearPanel ||
-		!monthGrid ||
-		!yearList ||
-		!yearInput ||
-		!monthPicker ||
-		!yearPicker ||
-		!prevBtn ||
-		!nextBtn
-	) {
+	if (!toggle || !calendarRoot) {
 		return null;
 	}
 
-	const locale = resolveResultLocale(root);
-	const intlLocale = locale === "zh" ? "zh-Hant" : "en-US";
-	const monthFormatter = new Intl.DateTimeFormat(intlLocale, { month: "short" });
-	const formatMonthOption = (month: number) =>
-		monthFormatter.format(new Date(2000, month - 1, 1));
-
-	type ToolbarPanel = "none" | "month" | "year";
-	let open = false;
+	const intlLocale = resolveResultLocale(root) === "zh" ? "zh-Hant" : "en-US";
 	let pickMode: CalendarPickMode = "range";
-	let toolbarPanel: ToolbarPanel = "none";
-	let yearListReady = false;
-	const now = new Date();
-	let viewYear = now.getFullYear();
-	let viewMonth = now.getMonth(); // 0-based
 
-	const GAP = 8;
-	const VIEWPORT_PAD = 16;
-	const inputShell = root.querySelector<HTMLElement>(".bdcv2-date-range-shell--desktop");
-
-	const clampViewToSelectableRange = () => {
-		if (viewYear < MIN_DATE_YEAR) {
-			viewYear = MIN_DATE_YEAR;
+	const readFieldDate = (key: FieldKey): SdcCalendarDate | null => {
+		const status = resolveFieldStatus(dateApi.getSegments(key));
+		if (status !== "valid") {
+			return null;
 		}
-		if (viewYear > MAX_DATE_YEAR) {
-			viewYear = MAX_DATE_YEAR;
-		}
-		if (viewMonth < 0) {
-			viewMonth = 0;
-		}
-		if (viewMonth > 11) {
-			viewMonth = 11;
-		}
+		return parseDateSegments(dateApi.getSegments(key));
 	};
 
-	const canGoPrevMonth = () =>
-		viewYear > MIN_DATE_YEAR || (viewYear === MIN_DATE_YEAR && viewMonth > 0);
-
-	const canGoNextMonth = () =>
-		viewYear < MAX_DATE_YEAR || (viewYear === MAX_DATE_YEAR && viewMonth < 11);
-
-	const positionPopover = () => {
-		const iconRect = toggle.getBoundingClientRect();
-		const shellRect = inputShell?.getBoundingClientRect() ?? iconRect;
-		const width = Math.min(22 * 16, window.innerWidth - VIEWPORT_PAD * 2);
-		popover.style.width = `${width}px`;
-
-		const height = popover.offsetHeight;
-		if (height <= 0) {
-			return;
-		}
-
-		const left = Math.min(
-			Math.max(VIEWPORT_PAD, iconRect.left),
-			window.innerWidth - width - VIEWPORT_PAD,
-		);
-
-		let top = shellRect.top - GAP - height;
-		if (top < VIEWPORT_PAD) {
-			top = VIEWPORT_PAD;
-		}
-
-		popover.style.left = `${left}px`;
-		popover.style.top = `${top}px`;
-	};
-
-	const repositionIfOpen = () => {
-		if (open) {
-			requestAnimationFrame(() => {
-				positionPopover();
-			});
-		}
-	};
-
-	const syncViewToCurrentRange = () => {
-		const from = parseDateSegments(dateApi.getSegments("from"));
-		const to = parseDateSegments(dateApi.getSegments("to"));
+	const syncViewToPickMode = (api: DesktopCalendarApi) => {
+		const from = readFieldDate("from");
+		const to = readFieldDate("to");
 		const anchor =
 			pickMode === "edit-end" ? (to ?? from) : (from ?? to);
 		if (anchor) {
-			viewYear = anchor.year;
-			viewMonth = anchor.month - 1;
-			clampViewToSelectableRange();
-			return;
-		}
-		const today = new Date();
-		viewYear = today.getFullYear();
-		viewMonth = today.getMonth();
-		clampViewToSelectableRange();
-	};
-
-	const syncToolbarLabels = () => {
-		monthLabel.textContent = formatMonthOption(viewMonth + 1);
-		yearLabel.textContent = String(viewYear);
-		prevBtn.disabled = !canGoPrevMonth();
-		nextBtn.disabled = !canGoNextMonth();
-	};
-
-	const ensureYearList = () => {
-		if (yearListReady) {
-			return;
-		}
-		const frag = document.createDocumentFragment();
-		for (let year = MIN_DATE_YEAR; year <= MAX_DATE_YEAR; year += 1) {
-			const btn = document.createElement("button");
-			btn.type = "button";
-			btn.className = "bdcv2-calendar-year-option";
-			btn.setAttribute("role", "option");
-			btn.setAttribute("data-bdcv2-year-option", String(year));
-			btn.textContent = String(year);
-			frag.appendChild(btn);
-		}
-		yearList.replaceChildren(frag);
-		yearListReady = true;
-	};
-
-	const syncYearListSelection = () => {
-		ensureYearList();
-		yearList.querySelectorAll<HTMLButtonElement>("[data-bdcv2-year-option]").forEach((btn) => {
-			const year = Number(btn.getAttribute("data-bdcv2-year-option"));
-			const selected = year === viewYear;
-			btn.classList.toggle("is-selected", selected);
-			btn.setAttribute("aria-selected", selected ? "true" : "false");
-		});
-	};
-
-	const scrollSelectedYearIntoView = () => {
-		const selected = yearList.querySelector<HTMLElement>(
-			`[data-bdcv2-year-option="${viewYear}"]`,
-		);
-		selected?.scrollIntoView({ block: "nearest" });
-	};
-
-	const renderMonthOptions = () => {
-		const frag = document.createDocumentFragment();
-		for (let month = 1; month <= 12; month += 1) {
-			const btn = document.createElement("button");
-			btn.type = "button";
-			btn.className = "bdcv2-calendar-month-option";
-			btn.setAttribute("role", "option");
-			btn.setAttribute("data-bdcv2-month-option", String(month));
-			btn.setAttribute("aria-selected", month === viewMonth + 1 ? "true" : "false");
-			if (month === viewMonth + 1) {
-				btn.classList.add("is-selected");
-			}
-			btn.textContent = formatMonthOption(month);
-			frag.appendChild(btn);
-		}
-		monthGrid.replaceChildren(frag);
-	};
-
-	const setToolbarPanel = (next: ToolbarPanel) => {
-		toolbarPanel = next;
-		const monthOpen = next === "month";
-		const yearOpen = next === "year";
-
-		monthPanel.hidden = !monthOpen;
-		yearPanel.hidden = !yearOpen;
-		monthTrigger.setAttribute("aria-expanded", monthOpen ? "true" : "false");
-		yearTrigger.setAttribute("aria-expanded", yearOpen ? "true" : "false");
-
-		if (monthOpen) {
-			renderMonthOptions();
-		}
-
-		if (yearOpen) {
-			ensureYearList();
-			syncYearListSelection();
-			yearInput.value = String(viewYear);
-			requestAnimationFrame(() => {
-				scrollSelectedYearIntoView();
-				yearInput.focus({ preventScroll: true });
-				yearInput.select();
-			});
+			api.setView(anchor.year, anchor.month);
 		}
 	};
 
-	const closeToolbarPanels = () => {
-		if (toolbarPanel === "none") {
-			return;
-		}
-		setToolbarPanel("none");
-	};
-
-	/** 僅在有效 4 位 1900–2100 時寫入 viewYear；無效不改狀態 */
-	const applyYearInputValueIfValid = (): boolean => {
-		const raw = yearInput.value.trim();
-		if (!/^\d{4}$/.test(raw)) {
-			return false;
-		}
-		const nextYear = Number(raw);
-		if (
-			!Number.isInteger(nextYear) ||
-			nextYear < MIN_DATE_YEAR ||
-			nextYear > MAX_DATE_YEAR
-		) {
-			return false;
-		}
-		viewYear = nextYear;
-		clampViewToSelectableRange();
-		return true;
-	};
-
-	const focusYearTrigger = () => {
-		yearTrigger.focus({ preventScroll: true });
-	};
-
-	/** 焦點／指標離開整個年份面板：驗證輸入後關閉 */
-	const leaveYearPanel = (options?: { focusTrigger?: boolean }): void => {
-		if (toolbarPanel !== "year") {
-			return;
-		}
-		applyYearInputValueIfValid();
-		closeToolbarPanels();
-		renderMonth();
-		repositionIfOpen();
-		if (options?.focusTrigger !== false) {
-			focusYearTrigger();
-		}
-	};
-
-	/** 從 list 選年：以選項為準（忽略輸入框草稿），關閉後焦點回年份按鈕 */
-	const selectYearFromOption = (year: number): void => {
-		viewYear = year;
-		clampViewToSelectableRange();
-		closeToolbarPanels();
-		renderMonth();
-		repositionIfOpen();
-		focusYearTrigger();
-	};
-
-	const ordinal = (date: CalendarDate): number =>
-		date.year * 10000 + date.month * 100 + date.day;
-
-	const dayClassNames = (
-		date: CalendarDate,
-		from: CalendarDate | null,
-		to: CalendarDate | null,
-	): string => {
-		const classes = ["calendar-day"];
-		const today = new Date();
-		if (
-			date.year === today.getFullYear() &&
-			date.month === today.getMonth() + 1 &&
-			date.day === today.getDate()
-		) {
-			classes.push("is-today");
-		}
-
-		if (!from) {
-			return classes.join(" ");
-		}
-
-		const cur = ordinal(date);
-		const startOrd = ordinal(from);
-
-		if (!to) {
-			if (cur === startOrd) {
-				classes.push("is-range-start", "is-range-single");
-			}
-			return classes.join(" ");
-		}
-
-		const ordered = resolveOrderedRange(
-			segmentsFromCalendarDate(from),
-			segmentsFromCalendarDate(to),
-		);
-		const lo = ordered ? ordinal(ordered.start) : Math.min(startOrd, ordinal(to));
-		const hi = ordered ? ordinal(ordered.end) : Math.max(startOrd, ordinal(to));
-
-		if (cur === lo && cur === hi) {
-			classes.push("is-range-start", "is-range-end", "is-range-single");
-		} else if (cur === lo) {
-			classes.push("is-range-start");
-		} else if (cur === hi) {
-			classes.push("is-range-end");
-		} else if (cur > lo && cur < hi) {
-			classes.push("is-in-range");
-		}
-
-		return classes.join(" ");
-	};
-
-	const isSelectable = (date: CalendarDate): boolean =>
-		date.year >= MIN_DATE_YEAR && date.year <= MAX_DATE_YEAR;
-
-	const renderMonth = () => {
-		clampViewToSelectableRange();
-		syncToolbarLabels();
-
-		const fromStatus = resolveFieldStatus(dateApi.getSegments("from"));
-		const toStatus = resolveFieldStatus(dateApi.getSegments("to"));
-		const from =
-			fromStatus === "valid" ? parseDateSegments(dateApi.getSegments("from")) : null;
-		const to = toStatus === "valid" ? parseDateSegments(dateApi.getSegments("to")) : null;
-
-		const firstWeekday = (new Date(viewYear, viewMonth, 1).getDay() + 6) % 7;
-		const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
-		const frag = document.createDocumentFragment();
-
-		for (let i = 0; i < firstWeekday; i += 1) {
-			const empty = document.createElement("span");
-			empty.className = "calendar-cell calendar-cell--empty";
-			empty.setAttribute("aria-hidden", "true");
-			frag.appendChild(empty);
-		}
-
-		for (let day = 1; day <= daysInMonth; day += 1) {
-			const date: CalendarDate = { year: viewYear, month: viewMonth + 1, day };
-			const btn = document.createElement("button");
-			btn.type = "button";
-			btn.className = dayClassNames(date, from, to);
-			btn.textContent = String(day);
-			btn.setAttribute("data-bdcv2-cal-day", String(day));
-			btn.setAttribute(
-				"aria-label",
-				locale === "zh"
-					? `${viewYear}年${viewMonth + 1}月${day}日`
-					: `${formatMonthOption(viewMonth + 1)} ${day}, ${viewYear}`,
+	const calendar = createDesktopCalendar({
+		root: calendarRoot,
+		variant: "popover-compact",
+		selectionMode: "range",
+		intlLocale,
+		yearList: {
+			min: MIN_DATE_YEAR,
+			max: MAX_DATE_YEAR,
+			mode: "full",
+		},
+		getMinDate: () => ({ year: MIN_DATE_YEAR, month: 1, day: 1 }),
+		getMaxDate: () => ({ year: MAX_DATE_YEAR, month: 12, day: 31 }),
+		getSelection: () => ({
+			start: readFieldDate("from"),
+			end: readFieldDate("to"),
+		}),
+		onSelect: ({ date }) => {
+			const result = dateApi.applyCalendarPick(date, pickMode);
+			// range 完成才關閉；edit-start／edit-end 保持開啟
+			return { shouldClose: result === "complete" };
+		},
+		getTrigger: () => toggle,
+		getPositionAnchor: () => inputShell ?? toggle,
+		placement: "above",
+		/**
+		 * Restore pre-migration BDC geometry:
+		 * left = calendar-icon left edge（偏右，避開中央結果）
+		 * top = date-shell top − gap − height
+		 */
+		resolvePopoverPosition: ({ width, height, gap, viewportPad, viewportWidth }) => {
+			const iconRect = toggle.getBoundingClientRect();
+			const shellRect = inputShell?.getBoundingClientRect() ?? iconRect;
+			const left = Math.min(
+				Math.max(viewportPad, iconRect.left),
+				viewportWidth - width - viewportPad,
 			);
-
-			if (!isSelectable(date)) {
-				btn.disabled = true;
+			let top = shellRect.top - gap - height;
+			if (top < viewportPad) {
+				top = viewportPad;
 			}
-
-			frag.appendChild(btn);
-		}
-
-		grid.replaceChildren(frag);
-
-		if (toolbarPanel === "month") {
-			renderMonthOptions();
-		}
-		if (toolbarPanel === "year") {
-			syncYearListSelection();
-			yearInput.value = String(viewYear);
-		}
-	};
-
-	const setOpen = (next: boolean) => {
-		open = next;
-		toggle.setAttribute("aria-expanded", String(open));
-		popover.hidden = !open;
-		popover.setAttribute("aria-hidden", String(!open));
-		if (open) {
-			syncViewToCurrentRange();
-			renderMonth();
-			requestAnimationFrame(() => {
-				positionPopover();
-			});
-		} else {
-			if (toolbarPanel === "year") {
-				applyYearInputValueIfValid();
+			return { left, top };
+		},
+		getOutsideClickExclusions: () => {
+			const exclusions: HTMLElement[] = [];
+			if (inputShell) {
+				exclusions.push(inputShell);
 			}
-			closeToolbarPanels();
-			pickMode = "range";
-		}
-	};
+			return exclusions;
+		},
+		onOpenChange: (open) => {
+			if (!open) {
+				pickMode = "range";
+			}
+		},
+	});
 
-	/** Calendar icon：開啟（或切回）range 模式 */
+	const unsubscribe = dateApi.subscribe(() => {
+		if (calendar.isOpen()) {
+			calendar.refresh();
+		}
+	});
+
 	const openWithMode = (mode: CalendarPickMode) => {
 		pickMode = mode;
-		if (open) {
-			closeToolbarPanels();
-			syncViewToCurrentRange();
-			renderMonth();
-			repositionIfOpen();
+		if (calendar.isOpen()) {
+			syncViewToPickMode(calendar);
+			calendar.refresh();
 			return;
 		}
-		setOpen(true);
+		calendar.open();
+		syncViewToPickMode(calendar);
 	};
 
-	/** Calendar 已開啟時：僅切換 edit／range mode，不關閉 */
 	const setPickModeIfOpen = (mode: CalendarPickMode) => {
-		if (!open) {
+		if (!calendar.isOpen()) {
 			return;
 		}
 		pickMode = mode;
-		closeToolbarPanels();
-		syncViewToCurrentRange();
-		renderMonth();
-		repositionIfOpen();
+		syncViewToPickMode(calendar);
+		calendar.refresh();
 	};
 
 	toggle.addEventListener("click", (event) => {
 		event.preventDefault();
 		event.stopPropagation();
-		if (open) {
-			setOpen(false);
+		if (calendar.isOpen()) {
+			calendar.close();
 			return;
 		}
 		openWithMode("range");
 	});
 
-	monthTrigger.addEventListener("click", (event) => {
-		event.preventDefault();
-		event.stopPropagation();
-		if (toolbarPanel === "year") {
-			leaveYearPanel({ focusTrigger: false });
-		}
-		setToolbarPanel(toolbarPanel === "month" ? "none" : "month");
-	});
-
-	yearTrigger.addEventListener("click", (event) => {
-		event.preventDefault();
-		event.stopPropagation();
-		if (toolbarPanel === "year") {
-			leaveYearPanel();
-		} else {
-			setToolbarPanel("year");
-		}
-	});
-
-	monthGrid.addEventListener("click", (event) => {
-		const target = event.target;
-		if (!(target instanceof HTMLElement)) {
-			return;
-		}
-		const option = target.closest<HTMLButtonElement>("[data-bdcv2-month-option]");
-		if (!option || !monthGrid.contains(option)) {
-			return;
-		}
-		event.preventDefault();
-		const month = Number(option.getAttribute("data-bdcv2-month-option"));
-		if (!Number.isInteger(month) || month < 1 || month > 12) {
-			return;
-		}
-		viewMonth = month - 1;
-		clampViewToSelectableRange();
-		closeToolbarPanels();
-		renderMonth();
-		repositionIfOpen();
-	});
-
-	// 先於 blur：按住年份選項時避免 input 失焦搶先還原／關閉
-	yearList.addEventListener("pointerdown", (event) => {
-		const target = event.target;
-		if (!(target instanceof HTMLElement)) {
-			return;
-		}
-		const option = target.closest<HTMLButtonElement>("[data-bdcv2-year-option]");
-		if (!option || !yearList.contains(option)) {
-			return;
-		}
-		event.preventDefault();
-	});
-
-	yearList.addEventListener("click", (event) => {
-		const target = event.target;
-		if (!(target instanceof HTMLElement)) {
-			return;
-		}
-		const option = target.closest<HTMLButtonElement>("[data-bdcv2-year-option]");
-		if (!option || !yearList.contains(option)) {
-			return;
-		}
-		event.preventDefault();
-		const year = Number(option.getAttribute("data-bdcv2-year-option"));
-		if (
-			!Number.isInteger(year) ||
-			year < MIN_DATE_YEAR ||
-			year > MAX_DATE_YEAR
-		) {
-			return;
-		}
-		selectYearFromOption(year);
-	});
-
-	yearInput.addEventListener("beforeinput", (event) => {
-		const inputEvent = event as InputEvent;
-		if (inputEvent.inputType?.startsWith("insert") && inputEvent.data) {
-			if (!/^\d+$/.test(inputEvent.data)) {
-				event.preventDefault();
-			}
-		}
-	});
-
-	yearInput.addEventListener("keydown", (event) => {
-		if (event.key !== "Enter") {
-			return;
-		}
-		event.preventDefault();
-		const raw = yearInput.value.trim();
-		if (!/^\d{4}$/.test(raw)) {
-			yearInput.value = String(viewYear);
-			return;
-		}
-		const nextYear = Number(raw);
-		if (
-			!Number.isInteger(nextYear) ||
-			nextYear < MIN_DATE_YEAR ||
-			nextYear > MAX_DATE_YEAR
-		) {
-			yearInput.value = String(viewYear);
-			return;
-		}
-		selectYearFromOption(nextYear);
-	});
-
-	yearInput.addEventListener("blur", () => {
-		// 等焦點落地：若仍在年份面板內（例如 Tab 到選項）則不驗證／不關
-		requestAnimationFrame(() => {
-			if (toolbarPanel !== "year") {
-				return;
-			}
-			const active = document.activeElement;
-			if (active instanceof Node && yearPanel.contains(active)) {
-				return;
-			}
-			leaveYearPanel();
-		});
-	});
-
-	prevBtn.addEventListener("click", (event) => {
-		event.preventDefault();
-		event.stopPropagation();
-		if (toolbarPanel === "year") {
-			leaveYearPanel({ focusTrigger: false });
-		} else {
-			closeToolbarPanels();
-		}
-		if (!canGoPrevMonth()) {
-			return;
-		}
-		viewMonth -= 1;
-		if (viewMonth < 0) {
-			viewMonth = 11;
-			viewYear -= 1;
-		}
-		clampViewToSelectableRange();
-		renderMonth();
-		repositionIfOpen();
-	});
-
-	nextBtn.addEventListener("click", (event) => {
-		event.preventDefault();
-		event.stopPropagation();
-		if (toolbarPanel === "year") {
-			leaveYearPanel({ focusTrigger: false });
-		} else {
-			closeToolbarPanels();
-		}
-		if (!canGoNextMonth()) {
-			return;
-		}
-		viewMonth += 1;
-		if (viewMonth > 11) {
-			viewMonth = 0;
-			viewYear += 1;
-		}
-		clampViewToSelectableRange();
-		renderMonth();
-		repositionIfOpen();
-	});
-
-	grid.addEventListener("click", (event) => {
-		const target = event.target;
-		if (!(target instanceof HTMLElement)) {
-			return;
-		}
-		const dayBtn = target.closest<HTMLButtonElement>("[data-bdcv2-cal-day]");
-		if (!dayBtn || !grid.contains(dayBtn) || dayBtn.disabled) {
-			return;
-		}
-		event.preventDefault();
-		event.stopPropagation();
-		if (toolbarPanel === "year") {
-			leaveYearPanel({ focusTrigger: false });
-		} else {
-			closeToolbarPanels();
-		}
-
-		const day = Number(dayBtn.getAttribute("data-bdcv2-cal-day"));
-		if (!Number.isInteger(day) || day < 1) {
-			return;
-		}
-
-		const result = dateApi.applyCalendarPick(
-			{
-				year: viewYear,
-				month: viewMonth + 1,
-				day,
-			},
-			pickMode,
-		);
-		renderMonth();
-		// range 完成才關閉；edit-start／edit-end 保持開啟以便連續微調
-		if (result === "complete") {
-			setOpen(false);
-		} else {
-			repositionIfOpen();
-		}
-	});
-
-	// 點日曆內、picker 外 → 關閉 toolbar 面板；避免冒泡到 document 關掉整顆 calendar
-	popover.addEventListener("pointerdown", (event) => {
-		event.stopPropagation();
-		if (toolbarPanel === "none") {
-			return;
-		}
-		const target = event.target;
-		if (!(target instanceof Node)) {
-			return;
-		}
-		const insideMonth = monthPicker.contains(target);
-		const insideYear = yearPicker.contains(target);
-		if (toolbarPanel === "month" && !insideMonth) {
-			closeToolbarPanels();
-		} else if (toolbarPanel === "year" && !insideYear) {
-			leaveYearPanel({ focusTrigger: false });
-		}
-	});
-
-	document.addEventListener("pointerdown", (event) => {
-		if (!open) {
-			return;
-		}
-		const target = event.target;
-		if (!(target instanceof Node)) {
-			return;
-		}
-		// Desktop 輸入殼內點擊（欄位切 mode／icon）不關閉；避免與 openWithMode 競速
-		if (
-			popover.contains(target) ||
-			toggle.contains(target) ||
-			inputShell?.contains(target)
-		) {
-			return;
-		}
-		setOpen(false);
-	});
-
-	window.addEventListener("resize", () => {
-		if (open) {
-			positionPopover();
-		}
-	});
-
-	dateApi.subscribe(() => {
-		if (open) {
-			renderMonth();
-		}
-	});
-
-	return {
-		close: () => setOpen(false),
-		isOpen: () => open,
+	const originalDestroy = calendar.destroy.bind(calendar);
+	const api = {
+		close: () => calendar.close(),
+		isOpen: () => calendar.isOpen(),
 		openWithMode,
 		setPickModeIfOpen,
-		handleEscape: () => {
-			if (!open) {
-				return false;
-			}
-			if (toolbarPanel === "year") {
-				leaveYearPanel();
-				return true;
-			}
-			if (toolbarPanel === "month") {
-				closeToolbarPanels();
-				return true;
-			}
-			setOpen(false);
-			return true;
+		handleEscape: () => calendar.handleEscape(),
+		destroy: () => {
+			unsubscribe();
+			originalDestroy();
 		},
 	};
+
+	return api;
 }
 
 
