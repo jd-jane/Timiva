@@ -1,0 +1,156 @@
+---
+/**
+ * Shared Desktop Calendar — foundation only（Phase A）。
+ * variant 僅允許 inline-large｜popover-compact。
+ */
+import "../../../styles/tools/desktop-calendar.css";
+
+export type SdcVariant = "inline-large" | "popover-compact";
+
+interface Props {
+	variant: SdcVariant;
+	weekdays: readonly string[];
+	labels: {
+		calendar: string;
+		previousMonth: string;
+		nextMonth: string;
+		month: string;
+		year: string;
+	};
+	class?: string;
+	/** 用於 aria-controls／id 前綴；同頁多 instance 時必須唯一 */
+	idPrefix?: string;
+}
+
+const {
+	variant,
+	weekdays,
+	labels,
+	class: className,
+	idPrefix = "sdc",
+} = Astro.props;
+
+if (variant !== "inline-large" && variant !== "popover-compact") {
+	throw new Error(
+		`DesktopCalendar: variant must be "inline-large" or "popover-compact" (got "${String(variant)}")`,
+	);
+}
+
+if (weekdays.length !== 7) {
+	throw new Error("DesktopCalendar: weekdays must contain exactly 7 labels");
+}
+
+const monthPanelId = `${idPrefix}-month-panel`;
+const yearPanelId = `${idPrefix}-year-panel`;
+const isPopover = variant === "popover-compact";
+---
+
+{/* Shared Desktop Calendar root｜工具只選 variant，不得覆寫 .sdc-* internals */}
+<div
+	id={idPrefix}
+	class:list={["sdc", className]}
+	data-desktop-calendar
+	data-sdc-variant={variant}
+	data-sdc-open="false"
+	role={isPopover ? "dialog" : undefined}
+	aria-label={labels.calendar}
+	aria-hidden={isPopover ? "true" : undefined}
+	hidden={isPopover ? true : undefined}
+>
+	<div class="sdc-panel">
+		{/* Toolbar｜上一月／月份／年份／下一月 */}
+		<div class="sdc-toolbar">
+			<button
+				type="button"
+				class="sdc-nav-btn"
+				data-sdc-prev
+				aria-label={labels.previousMonth}
+			>
+				‹
+			</button>
+
+			<div class="sdc-selects">
+				<div class="sdc-picker" data-sdc-month-picker>
+					<button
+						type="button"
+						class="sdc-picker-trigger"
+						data-sdc-month-trigger
+						aria-expanded="false"
+						aria-haspopup="listbox"
+						aria-controls={monthPanelId}
+						aria-label={labels.month}
+					>
+						<span data-sdc-month-label>—</span>
+					</button>
+					<div
+						id={monthPanelId}
+						class="sdc-picker-panel sdc-month-panel"
+						data-sdc-month-panel
+						role="listbox"
+						aria-label={labels.month}
+						hidden
+					>
+						<div class="sdc-month-grid" data-sdc-month-grid></div>
+					</div>
+				</div>
+
+				<div class="sdc-picker" data-sdc-year-picker>
+					<button
+						type="button"
+						class="sdc-picker-trigger"
+						data-sdc-year-trigger
+						aria-expanded="false"
+						aria-haspopup="dialog"
+						aria-controls={yearPanelId}
+						aria-label={labels.year}
+					>
+						<span data-sdc-year-label>—</span>
+					</button>
+					<div
+						id={yearPanelId}
+						class="sdc-picker-panel sdc-year-panel"
+						data-sdc-year-panel
+						role="dialog"
+						aria-label={labels.year}
+						hidden
+					>
+						<input
+							type="text"
+							class="sdc-year-input"
+							data-sdc-year-input
+							inputmode="numeric"
+							autocomplete="off"
+							spellcheck="false"
+							maxlength="4"
+							aria-label={labels.year}
+						/>
+						<div
+							class="sdc-year-list"
+							data-sdc-year-list
+							role="listbox"
+							aria-label={labels.year}
+						>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<button
+				type="button"
+				class="sdc-nav-btn"
+				data-sdc-next
+				aria-label={labels.nextMonth}
+			>
+				›
+			</button>
+		</div>
+
+		{/* Weekdays｜由工具 i18n 傳入 */}
+		<div class="sdc-weekdays" aria-hidden="true">
+			{weekdays.map((day) => <span>{day}</span>)}
+		</div>
+
+		{/* Day grid｜由 controller render */}
+		<div class="sdc-grid" data-sdc-grid></div>
+	</div>
+</div>

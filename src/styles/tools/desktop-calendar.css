@@ -1,0 +1,453 @@
+/**
+ * Shared Desktop Calendar styles
+ * Baseline visual：Business Days Calculator Desktop Calendar
+ * Variants（僅兩種）：popover-compact｜inline-large
+ * 工具不得覆寫 .sdc-* internals；差異只能走 variant tokens。
+ */
+
+/* —— Shared tokens（兩 variant 共用視覺語言） —— */
+.sdc {
+	--sdc-panel-radius: 18px;
+	--sdc-panel-padding: 12px 18px 10px;
+	--sdc-panel-border: 1px solid rgb(255 255 255 / 0.08);
+	--sdc-panel-bg: linear-gradient(
+		165deg,
+		rgb(120 108 210 / 0.22),
+		rgb(78 96 170 / 0.18)
+	);
+	--sdc-panel-shadow: 0 18px 48px rgb(0 0 0 / 0.42);
+	--sdc-toolbar-gap: 0.375rem;
+	--sdc-toolbar-margin-bottom: 0.5rem;
+	--sdc-selects-gap: 0.375rem;
+	--sdc-trigger-min-width: 4.5rem;
+	--sdc-trigger-max-width: 7.5rem;
+	--sdc-trigger-min-height: 2.25rem;
+	--sdc-trigger-font-size: 0.8125rem;
+	--sdc-trigger-radius: 0.625rem;
+	--sdc-nav-size: 2.25rem;
+	--sdc-weekday-font-size: 0.6875rem;
+	--sdc-weekday-margin-bottom: 0.25rem;
+	--sdc-grid-gap: 1px;
+	--sdc-day-min-height: 2.375rem;
+	--sdc-day-font-size: 0.8125rem;
+	--sdc-day-radius: 0.625rem;
+	--sdc-month-panel-width: min(14.5rem, calc(100vw - 3rem));
+	--sdc-month-option-min-height: 2.125rem;
+	--sdc-month-option-font-size: 0.75rem;
+	--sdc-year-panel-width: min(7.75rem, calc(100vw - 3rem));
+	--sdc-year-list-max-height: 12.5rem;
+	--sdc-year-option-min-height: 1.875rem;
+	--sdc-year-option-font-size: 0.8125rem;
+	--sdc-popover-width: min(22rem, calc(100vw - 2rem));
+	--sdc-popover-z: 80;
+
+	box-sizing: border-box;
+	margin: 0;
+}
+
+.sdc *,
+.sdc *::before,
+.sdc *::after {
+	box-sizing: border-box;
+}
+
+/* —— Variant：popover-compact（BDC／Age 核准 baseline 尺寸） —— */
+.sdc[data-sdc-variant="popover-compact"] {
+	position: fixed;
+	z-index: var(--sdc-popover-z);
+	width: var(--sdc-pos-width, var(--sdc-popover-width));
+	left: var(--sdc-pos-left, 0);
+	top: var(--sdc-pos-top, 0);
+	transform: none;
+}
+
+.sdc[data-sdc-variant="popover-compact"][hidden],
+.sdc[data-sdc-variant="popover-compact"][data-sdc-open="false"] {
+	display: none;
+}
+
+.sdc[data-sdc-variant="popover-compact"][data-sdc-open="true"] {
+	display: block;
+}
+
+/* —— Variant：inline-large（同語彙放大；僅尺寸／spacing tokens） —— */
+.sdc[data-sdc-variant="inline-large"] {
+	position: relative;
+	z-index: auto;
+	width: 100%;
+	max-width: min(100%, 30rem);
+	margin-inline: auto;
+	left: auto;
+	top: auto;
+
+	--sdc-panel-padding: 14px 20px 12px;
+	--sdc-toolbar-margin-bottom: 0.625rem;
+	--sdc-selects-gap: 0.5rem;
+	--sdc-trigger-min-width: 5rem;
+	--sdc-trigger-max-width: 8.5rem;
+	--sdc-trigger-min-height: 2.5rem;
+	--sdc-trigger-font-size: 0.875rem;
+	--sdc-nav-size: 2.5rem;
+	--sdc-weekday-font-size: 0.75rem;
+	--sdc-weekday-margin-bottom: 0.375rem;
+	--sdc-day-min-height: 2.75rem;
+	--sdc-day-font-size: 0.875rem;
+	--sdc-month-panel-width: min(16rem, calc(100vw - 3rem));
+	--sdc-month-option-min-height: 2.375rem;
+	--sdc-month-option-font-size: 0.8125rem;
+	--sdc-year-panel-width: min(8.5rem, calc(100vw - 3rem));
+	--sdc-year-list-max-height: 14rem;
+	--sdc-year-option-min-height: 2rem;
+	--sdc-year-option-font-size: 0.875rem;
+	--sdc-panel-shadow: none;
+}
+
+/* Panel｜玻璃漸層（兩 variant 共用語彙） */
+.sdc-panel {
+	width: 100%;
+	padding: var(--sdc-panel-padding);
+	border-radius: var(--sdc-panel-radius);
+	border: var(--sdc-panel-border);
+	background: var(--sdc-panel-bg);
+	box-shadow: var(--sdc-panel-shadow);
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+}
+
+.sdc[data-sdc-variant="inline-large"] .sdc-panel {
+	background: linear-gradient(
+		165deg,
+		rgb(120 108 210 / 0.12),
+		rgb(78 96 170 / 0.08)
+	);
+	border-color: rgb(255 255 255 / 0.06);
+}
+
+/* Toolbar */
+.sdc-toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--sdc-toolbar-gap);
+	margin-bottom: var(--sdc-toolbar-margin-bottom);
+}
+
+.sdc-selects {
+	display: flex;
+	flex: 1 1 auto;
+	align-items: center;
+	justify-content: center;
+	gap: var(--sdc-selects-gap);
+	min-width: 0;
+}
+
+.sdc-picker {
+	position: relative;
+	display: block;
+	min-width: 0;
+}
+
+.sdc-picker-trigger {
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.375rem;
+	width: 100%;
+	min-width: var(--sdc-trigger-min-width);
+	max-width: var(--sdc-trigger-max-width);
+	min-height: var(--sdc-trigger-min-height);
+	padding: 0.25rem 1.75rem 0.25rem 0.625rem;
+	border-radius: var(--sdc-trigger-radius);
+	border: 1px solid rgb(255 255 255 / 0.12);
+	background-color: rgb(255 255 255 / 0.08);
+	background-image: linear-gradient(45deg, transparent 50%, rgb(248 250 252 / 0.72) 50%),
+		linear-gradient(135deg, rgb(248 250 252 / 0.72) 50%, transparent 50%);
+	background-position:
+		calc(100% - 0.85rem) calc(50% - 0.1rem),
+		calc(100% - 0.55rem) calc(50% - 0.1rem);
+	background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
+	background-repeat: no-repeat;
+	color: rgb(248 250 252 / 0.94);
+	font-size: var(--sdc-trigger-font-size);
+	font-weight: 600;
+	line-height: 1.25;
+	cursor: pointer;
+}
+
+.sdc-picker-trigger:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.45);
+	outline-offset: 2px;
+}
+
+.sdc-picker-trigger[aria-expanded="true"] {
+	background-color: rgb(255 255 255 / 0.14);
+}
+
+.sdc-picker-panel {
+	position: absolute;
+	top: calc(100% + 0.25rem);
+	left: 50%;
+	z-index: 6;
+	padding: 0.5rem;
+	border-radius: 0.75rem;
+	border: 1px solid rgb(255 255 255 / 0.12);
+	background: linear-gradient(165deg, rgb(56 48 96 / 0.98), rgb(42 52 92 / 0.98));
+	box-shadow: 0 14px 36px rgb(0 0 0 / 0.45);
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+	transform: translateX(-50%);
+}
+
+.sdc-picker-panel[hidden] {
+	display: none;
+}
+
+.sdc-month-panel {
+	width: var(--sdc-month-panel-width);
+}
+
+.sdc-month-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.25rem;
+}
+
+.sdc-month-option {
+	min-height: var(--sdc-month-option-min-height);
+	padding: 0.25rem 0.375rem;
+	border: 0;
+	border-radius: 0.5rem;
+	background: transparent;
+	color: rgb(248 250 252 / 0.94);
+	font-size: var(--sdc-month-option-font-size);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.sdc-month-option.is-selected,
+.sdc-year-option.is-selected {
+	color: rgb(255 255 255);
+	background: rgb(99 102 241 / 0.92);
+	box-shadow: inset 0 0 0 1px rgb(210 218 255 / 0.4);
+}
+
+.sdc-year-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+	width: var(--sdc-year-panel-width);
+}
+
+.sdc-year-input {
+	width: 100%;
+	min-height: 2.125rem;
+	padding: 0.25rem 0.5rem;
+	border-radius: 0.5rem;
+	border: 1px solid rgb(255 255 255 / 0.14);
+	background: rgb(255 255 255 / 0.08);
+	color: rgb(248 250 252 / 0.96);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+	letter-spacing: 0.04em;
+}
+
+.sdc[data-sdc-variant="inline-large"] .sdc-year-input {
+	min-height: 2.375rem;
+	font-size: 0.875rem;
+}
+
+.sdc-year-input:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.45);
+	outline-offset: 1px;
+}
+
+.sdc-year-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+	max-height: var(--sdc-year-list-max-height);
+	overflow-x: hidden;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding-right: 0.125rem;
+	scrollbar-width: thin;
+	scrollbar-color: rgb(248 250 252 / 0.28) transparent;
+}
+
+.sdc-year-list::-webkit-scrollbar {
+	width: 0.25rem;
+}
+
+.sdc-year-list::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.sdc-year-list::-webkit-scrollbar-thumb {
+	border-radius: 9999px;
+	background: rgb(248 250 252 / 0.28);
+}
+
+.sdc-year-list::-webkit-scrollbar-thumb:hover {
+	background: rgb(248 250 252 / 0.42);
+}
+
+.sdc-year-option {
+	flex: 0 0 auto;
+	min-height: var(--sdc-year-option-min-height);
+	padding: 0.2rem 0.5rem;
+	border: 0;
+	border-radius: 0.5rem;
+	background: transparent;
+	color: rgb(248 250 252 / 0.94);
+	font-size: var(--sdc-year-option-font-size);
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+	cursor: pointer;
+}
+
+.sdc-nav-btn {
+	min-height: var(--sdc-nav-size);
+	min-width: var(--sdc-nav-size);
+	padding: 0.25rem 0.5rem;
+	border-radius: var(--sdc-trigger-radius);
+	border: 1px solid rgb(255 255 255 / 0.12);
+	background: rgb(255 255 255 / 0.08);
+	font-size: 1rem;
+	font-weight: 500;
+	color: rgb(248 250 252 / 0.94);
+	cursor: pointer;
+}
+
+.sdc-nav-btn:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.sdc-nav-btn:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.45);
+	outline-offset: 2px;
+}
+
+.sdc-weekdays {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: var(--sdc-grid-gap);
+	margin-bottom: var(--sdc-weekday-margin-bottom);
+}
+
+.sdc-weekdays span {
+	text-align: center;
+	font-size: var(--sdc-weekday-font-size);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	color: rgb(226 232 240 / 0.72);
+}
+
+.sdc-grid {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: var(--sdc-grid-gap);
+}
+
+.sdc-cell--empty,
+.sdc-day {
+	min-height: var(--sdc-day-min-height);
+}
+
+.sdc-day {
+	position: relative;
+	display: grid;
+	place-items: center;
+	border: 0;
+	border-radius: var(--sdc-day-radius);
+	background: transparent;
+	font-size: var(--sdc-day-font-size);
+	font-weight: 500;
+	color: rgb(248 250 252 / 0.94);
+	cursor: pointer;
+	transition:
+		background 160ms ease,
+		color 160ms ease,
+		box-shadow 160ms ease;
+}
+
+.sdc-day.is-today {
+	box-shadow: inset 0 0 0 1.5px rgb(165 180 252 / 0.9);
+}
+
+.sdc-day.is-in-range {
+	border-radius: 0;
+	background: rgb(99 102 241 / 0.28);
+}
+
+.sdc-day.is-range-start,
+.sdc-day.is-range-end,
+.sdc-day.is-range-single,
+.sdc-day.is-selected {
+	color: rgb(255 255 255);
+	background: rgb(99 102 241 / 0.92);
+	box-shadow: inset 0 0 0 1px rgb(210 218 255 / 0.4);
+	z-index: 1;
+}
+
+.sdc-day.is-range-start {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.sdc-day.is-range-end {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.sdc-day.is-range-single,
+.sdc-day.is-range-start.is-range-end {
+	border-radius: var(--sdc-day-radius);
+}
+
+.sdc-day.is-outside-month {
+	opacity: 0.4;
+}
+
+.sdc-day:disabled {
+	opacity: 0.28;
+	cursor: default;
+}
+
+.sdc-day:active:not(:disabled) {
+	transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.sdc-nav-btn:hover:not(:disabled) {
+		background: rgb(255 255 255 / 0.14);
+	}
+
+	.sdc-picker-trigger:hover {
+		background-color: rgb(255 255 255 / 0.12);
+	}
+
+	.sdc-month-option:hover:not(.is-selected),
+	.sdc-year-option:hover:not(.is-selected) {
+		background: rgb(255 255 255 / 0.1);
+	}
+
+	.sdc-day:hover:not(:disabled):not(.is-range-start):not(.is-range-end):not(.is-range-single):not(
+			.is-in-range
+		):not(.is-selected) {
+		background: rgb(255 255 255 / 0.1);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sdc-day {
+		transition-duration: 0s;
+	}
+
+	.sdc-day:active:not(:disabled) {
+		transform: none;
+	}
+}
