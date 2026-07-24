@@ -33,14 +33,29 @@ Owner 核准採用 label-only 修正顯示名稱，不遷移 internal category I
 8. Home marketing chips 不屬於四大分類標題；本輪不改（含 ZH「重要日期」）。
 9. 不改工具歸屬、排序、routes、slugs、Related mapping、SEO 或視覺 baseline。
 10. Implementation commit：e02e48f fix: align tool category display labels
-11. Canonical validator：scripts/validate-tool-category-labels.mjs（65 passed／0 failed）
-12. 尚未 push／deploy。
+11. Docs checkpoint：0fe3e1f docs: record tool category label alignment
+12. Canonical validator：scripts/validate-tool-category-labels.mjs（65 passed／0 failed）
+```
+
+### Production status
+
+```text
+已 push 並由 Cloudflare Pages auto-deploy（pushed range：5c55672..0fe3e1f）
+Production HEAD：0fe3e1f
+Owner Production Verification：PASS
+EN／ZH All Tools（/en/tools/、/zh/tools/）顯示正常
+正式分類標題正確
+Daily Rhythm 無 available 工具時仍隱藏
+main = origin/main
+working tree clean
+未 manual deploy
+label-only、internal IDs 保留等原決策不變
 ```
 
 ### 影響
 
 ```text
-正式 All Tools 與 preview 分類標題對齊產品語彙。
+正式 All Tools 與 preview 分類標題對齊產品語彙，並已成為 production baseline。
 後續分類顯示必須走 i18n allTools.categories＋validator；
 不得再把舊 UI 名稱寫成現行顯示名稱。
 ```
