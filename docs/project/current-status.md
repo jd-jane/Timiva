@@ -2,7 +2,7 @@
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
 > 更新日期：2026-07-24
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + **Business Days Calculator** production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、**Business Days Calculator**（V1.5 Search Foundation 第三個工具／Timiva 第七個工具）已上線（standalone `cc09f32`；Link Integration／Deployed HEAD `8977fe5`；Production QA PASS）、V1.5 為 Search Foundation／搜尋鋪路期；下一支開發工具為 **Date Calculator／日期加減計算**（尚未開始）；中文 Calculator 工具命名統一為「○○計算」（2026-07-13）。**ResultSummary Phase A–I 已完成、push、deploy**（Production HEAD：`c1aea32`）。**Shared Desktop Calendar Phase A–E implementation completed locally**（BDC／DRC Desktop／Age Birth＋As-of 已遷移；Owner Gate B／C／D Final PASS；commits `3c37d7a`→`f25d107`；canonical validator＋Reuse Gate 文件已就緒；**尚未 push／deploy，不可視為 production launched**）。Production deployed baseline 仍為 `origin/main`（`95d5179`）；local `main` ahead of `origin/main` by 4（含 Shared DesktopCalendar A–D）。
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + **Business Days Calculator** production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、**Business Days Calculator**（V1.5 Search Foundation 第三個工具／Timiva 第七個工具）已上線（standalone `cc09f32`；Link Integration／Deployed HEAD `8977fe5`；Production QA PASS）、V1.5 為 Search Foundation／搜尋鋪路期；中文 Calculator 工具命名統一為「○○計算」（2026-07-13）。**ResultSummary Phase A–I 已完成、push、deploy**（Production HEAD：`c1aea32`）。**Shared Desktop Calendar Phase A–E 已正式部署至 timiva.app**（Deployed HEAD：`5c55672`；`main`＝`origin/main`；Cloudflare Pages auto-deploy；未 manual deploy；Owner Production QA Desktop／Mobile Final PASS）。Canonical validator：`scripts/validate-desktop-calendar.mjs`（63 passed／0 failed）。下一個立即任務：修正目前正式工具頁／工具列表的分類名稱（另串處理；本文件不定義新分類名稱）。下一支開發工具：**Date Calculator／日期加減計算**（尚未開始；Desktop Calendar 必須 `popover-compact`）。
 ---
 
 ## 1. Project snapshot
@@ -20,29 +20,37 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具（含 Year Progress）、**Age Calculator**（第五）、**Days Between Dates**（第六）、**Business Days Calculator**（第七個工具／V1.5 Search Foundation 第三個工具）皆已上線。V1 SEO technical closeout 已完成。**ResultSummary Phase A–I 已 push／deploy**（Production HEAD：`c1aea32`）。**Shared Desktop Calendar Phase A–E 已在 local 完成**（BDC／DRC Desktop／Age 遷移＋canonical validator／docs；Owner Gate B／C／D Final PASS；**尚未 push／deploy**）。Production deployed baseline：`origin/main`＝`95d5179`；local `main` ahead by 4。Home Featured 維持 4 張（不含 BDC）。下一支開發工具：**Date Calculator／日期加減計算**（尚未開始）。 |
+| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具（含 Year Progress）、**Age Calculator**（第五）、**Days Between Dates**（第六）、**Business Days Calculator**（第七個工具／V1.5 Search Foundation 第三個工具）皆已上線。V1 SEO technical closeout 已完成。**ResultSummary Phase A–I 已 push／deploy**（Production HEAD：`c1aea32`）。**Shared Desktop Calendar 已正式部署**（Deployed HEAD：`5c55672`；`main`＝`origin/main`；Owner Production QA Desktop／Mobile Final PASS）。Home Featured 維持 4 張（不含 BDC）。下一個立即任務：正式工具頁／工具列表的分類名稱修正（另串）。下一支開發工具：**Date Calculator／日期加減計算**（尚未開始）。 |
 
 ### 1.1 Current work tracks（2026-07-24）
 
-**Shared Desktop Calendar track（Phase A–E · local complete · 尚未 push／deploy）：**
+**Shared Desktop Calendar track（Phase A–E · production deployed）：**
 
 ```text
-Local HEAD：f25d107 feat: migrate Age Calculator desktop calendars to DesktopCalendar
-origin/main／Production deployed baseline：95d5179（ResultSummary docs checkpoint）
-local main ahead of origin/main by 4（A–D production commits；E＝validator＋docs，未 commit）
+Deployed HEAD：5c55672 chore: formalize DesktopCalendar reuse gate
+main = origin/main = 5c55672（已同步）
+Cloudflare Pages auto-deploy：成功（未 manual deploy）
+Owner Production QA：Desktop／Mobile Final PASS
+Production smoke／signature：PASS
+  BDC EN／ZH → popover-compact
+  DRC EN／ZH → Desktop inline-large；Mobile legacy transitional path 保留
+  Age EN／ZH → Birth／As-of 各一 popover-compact
+
+Commit chain：
+  3c37d7a feat: add shared DesktopCalendar foundation
+  6f7ab99 feat: migrate Business Days Calculator to DesktopCalendar
+  9ce6c35 feat: migrate Date Range Calculator desktop calendar to DesktopCalendar
+  f25d107 feat: migrate Age Calculator desktop calendars to DesktopCalendar
+  5c55672 chore: formalize DesktopCalendar reuse gate
 
 Shared foundation：DesktopCalendar.astro＋desktop-calendar-controller＋desktop-calendar.css
 Variants（僅兩種）：inline-large｜popover-compact
-已遷移：
-  BDC → popover-compact（6f7ab99；Owner Gate B Final PASS）
-  DRC Desktop → inline-large（9ce6c35；Owner Gate C Final PASS）
-  Age Birth／As-of → 各一 popover-compact（f25d107；Owner Gate D Final PASS）
-Foundation commit：3c37d7a feat: add shared DesktopCalendar foundation
-Canonical validator：scripts/validate-desktop-calendar.mjs
-Reuse Gate／date-input／decision-log：Phase E 文件化（本輪）
-DRC Mobile legacy calendar：核准 transitional exception（仍保留 data-drv2-*）
-尚未 push／deploy → 不可寫成 production launched
+Canonical validator：scripts/validate-desktop-calendar.mjs（63 passed／0 failed）
+Reuse Gate／date-input：正式啟用
+Shared Desktop Calendar：正式視為 production baseline
+DRC Mobile legacy calendar：核准 transitional exception（仍保留 data-drv2-*；不得擴大為第二套 Desktop Calendar）
 Date Calculator：尚未開始（未來必須 popover-compact）
+下一個立即任務：修正目前正式工具頁／工具列表的分類名稱（另串；本處不定義新分類名稱）
 ```
 
 **Shared ResultSummary track（Phase A–I 完成 · 已 push／deploy）：**
@@ -70,11 +78,13 @@ Business Days Calculator：已部署 timiva.app（V1.5 Search Foundation 第三�
   Production QA：PASS · No blocking issues found
 ResultSummary Phase A–I：已 push／deploy（Production HEAD：c1aea32）
   DRC／BDC ResultSummary production visual QA：PASS
-Cloudflare Pages 自動部署成功
-Production deployed baseline：origin/main（`95d5179`；ResultSummary Phase A–I 已在 production）
+Shared Desktop Calendar Phase A–E：已正式部署（Deployed HEAD：`5c55672`）
+  BDC／DRC／Age EN／ZH production signature／Owner QA：PASS
+  Canonical validator：scripts/validate-desktop-calendar.mjs（63／0）
+Cloudflare Pages 自動部署成功（未 manual deploy）
+Production deployed baseline：origin/main＝`5c55672`（main 已同步）
 V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22`）
 可選：Year Progress HTTPS Share verification（non-blocking）
-Shared Desktop Calendar A–D：local commits 已完成，**尚未 push／deploy**
 ```
 
 **Product development track：**
@@ -92,10 +102,10 @@ Inbound Related：
   Days Between Dates：Date Range Calculator → Business Days Calculator → Age Calculator
   Date Range Calculator：Days Between Dates → Business Days Calculator → Event Countdown
 BDC outbound Related：Days Between Dates → Date Range Calculator → Event Countdown
-Age Calculator Desktop calendar native `<select>` 問題：已由 Shared DesktopCalendar Phase D 取代（local；尚未 push）
+Age Calculator Desktop calendar：已由 Shared DesktopCalendar Phase D 取代（production；Birth／As-of 各一 popover-compact）
+下一個立即任務：修正目前正式工具頁／工具列表的分類名稱（另串處理；本處不定義新分類名稱）
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
-下一支開發工具：Date Calculator／日期加減計算（尚未開始；Desktop Calendar 必須 popover-compact）
-下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具；尚未開始）
+下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具；尚未開始；Desktop Calendar 必須 popover-compact）
 接續：Hours Calculator
 近期開發順序：
   Date Calculator / Add or Subtract Days
@@ -440,10 +450,10 @@ f48df91 — feat: integrate Age Calculator links
 Core shipped features:
 
 ```text
-Desktop birth：單一智慧 input + calendar popover（month / year select）
+Desktop birth：單一智慧 input + Shared DesktopCalendar（popover-compact）
 Mobile birth：Year / Month / Day 三欄 + auto-advance
 As-of 預設 today
-Desktop As-of calendar + 非 today 時 back icon
+Desktop As-of：Shared DesktopCalendar（popover-compact）+ 非 today 時 back icon
 Mobile As-of 原生 date picker（無 back icon）
 invalid birth 歸零（B3C 已修 ReferenceError）
 empty / incomplete → 0、無 invalid icon
@@ -635,13 +645,13 @@ Core shipped features:
 起訖皆計入
 僅排除週六、週日；不扣除國定假日
 日期範圍：1900-01-01～2100-12-31
-Desktop：Smart Date Input + Calendar
+Desktop：Smart Date Input + Shared DesktopCalendar（popover-compact）
 Mobile：Smart Date Input Bottom Sheet（無 Mobile Calendar）
 無 Clear／Calculate／LocalStorage／URL sharing
 Calendar icon 開啟完整 range selection
 Calendar 開啟後可切換只修改開始或結束日期
 edit 模式修改後保持開啟，由使用者自行關閉
-月份：3×4 grid；年份：1900–2100 固定高度可捲面板＋4 位輸入
+月份：3×4 grid；年份：1900–2100 固定高度可捲面板＋4 位輸入（shared baseline）
 EN / ZH · About / How to / Common uses / FAQ / FAQ JSON-LD · Related Tools（3）
 ToolAdSlot is-disabled
 ```
@@ -1139,6 +1149,7 @@ Age Calculator V2 — Production · V1.5 standalone + link integration（f48df91
 Days Between Dates V2 — Production · V1.5 Search Foundation 第二個工具 · Timiva 第六個工具（18a262c）
 Business Days Calculator V2 — Production · V1.5 Search Foundation 第三個工具 · Timiva 第七個工具（8977fe5）· ResultSummary variant=spacious
 ResultSummary Phase A–I — Production（HEAD c1aea32）· Reuse Gate＋canonical validator 啟用
+Shared Desktop Calendar Phase A–E — Production（HEAD 5c55672）· Reuse Gate＋canonical validator 啟用
 GA4 + Basic Consent — deployed on timiva.app
 V1 SEO technical closeout — complete（docs `c5c0a22`）
 ```
@@ -1148,9 +1159,11 @@ Next workflow:
 ```text
 Business Days Calculator 上線完成（standalone cc09f32 + link integration 8977fe5）
 ResultSummary Phase A–I 已 push／deploy（Production HEAD：c1aea32）
-DRC／BDC production visual QA：PASS · No blocking issues found
+Shared Desktop Calendar Phase A–E 已正式部署（Deployed HEAD：5c55672）
+  Owner Production QA Desktop／Mobile：Final PASS · No blocking issues found
+  DRC Mobile legacy calendar：核准 transitional exception（仍保留）
 Home Featured 維持 4 張（不含 BDC）
-Shared Desktop Calendar Phase A–E：local complete（A–D commits；E＝validator＋docs）；尚未 push／deploy
+下一個立即任務：修正目前正式工具頁／工具列表的分類名稱（另串；本處不定義新分類名稱）
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
 下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具；尚未開始；Desktop Calendar → popover-compact）
 接續：Hours Calculator
@@ -1181,7 +1194,7 @@ Phase A：重大變更、deploy 或 locked components 修改仍需 Owner 明確�
 Recommended order:
 
 ```text
-1. Shared Desktop Calendar：Owner Gate E → 授權後再 commit Phase E／push／deploy（尚未 production launched）
+1. Maintenance：修正目前正式工具頁／工具列表的分類名稱（另串；本處不定義新分類名稱）
 2. Product development：Date Calculator／日期加減計算 Plan-first / 規格化（尚未開始；Desktop → popover-compact）
    （接續：Hours Calculator）
 3. Open Graph / Twitter Card（deferred SEO growth）
@@ -1293,9 +1306,11 @@ Age Calculator 已正式上線；deployed HEAD（AC）：`f48df91`。
 Days Between Dates 已正式上線；standalone `69ba30b`；Link Integration / deployed HEAD：`18a262c`；B7 Production Verification PASS；No blocking issues found。
 Business Days Calculator 已正式上線；standalone `cc09f32`；Link Integration：`8977fe5`；Production QA PASS；No blocking issues found。
 ResultSummary Phase A–I 已 push／deploy；Production HEAD：`c1aea32`；DRC `variant=standard`／BDC `variant=spacious`；正式網域 Owner visual QA PASS；無 blocking issue。
-Shared Desktop Calendar Phase A–E：local complete（commits `3c37d7a`→`f25d107`＋Phase E docs／validator）；Owner Gate B／C／D Final PASS；**尚未 push／deploy**。
-Production deployed baseline：`origin/main`＝`95d5179`；local `main` ahead by 4（A–D）。
+Shared Desktop Calendar Phase A–E 已正式部署至 timiva.app；Deployed HEAD：`5c55672`；`main`＝`origin/main`；Cloudflare Pages auto-deploy；未 manual deploy；Owner Production QA Desktop／Mobile Final PASS；canonical validator `scripts/validate-desktop-calendar.mjs`（63／0）；正式視為 production baseline。
+Commit chain：`3c37d7a` → `6f7ab99` → `9ce6c35` → `f25d107` → `5c55672`。
+BDC／Age：`popover-compact`；DRC Desktop：`inline-large`；DRC Mobile legacy transitional path 保留。
 Home Featured 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress；不含 DBD／BDC）。
+下一個立即任務：修正目前正式工具頁／工具列表的分類名稱（另串；本處不定義新分類名稱）。
 下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具；尚未開始；Desktop Calendar 必須 `popover-compact`）。
 接續：Hours Calculator。
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期（高搜尋、低維護日期與時間工具；四大分類不變）。

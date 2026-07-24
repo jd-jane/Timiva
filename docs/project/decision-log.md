@@ -5,7 +5,75 @@
 
 ---
 
-## 2026-07-24 — Shared DesktopCalendar Phase A–E（local；尚未 push／deploy）
+## 2026-07-24 — Shared Desktop Calendar production deployment complete
+
+### 背景
+
+```text
+BDC、DRC Desktop、Age Birth／As-of 原本存在重複 Desktop Calendar pattern。
+Phase A–E 已完成 foundation、三工具遷移、canonical validator 與正式文件化。
+本輪 push 至 origin/main，由 Cloudflare Pages 自動部署；Owner 完成正式網域 Production QA。
+```
+
+### 正式決策／現況
+
+```text
+1. Shared DesktopCalendar 已正式上線至 timiva.app。
+2. Production／Deployed HEAD：5c55672。
+3. main 與 origin/main 同步。
+4. Cloudflare Pages auto-deploy：成功；未執行 manual deploy。
+5. 僅允許兩種 variant：inline-large｜popover-compact。
+6. BDC visual language 為 shared baseline。
+7. BDC：popover-compact。
+8. DRC Desktop：inline-large。
+9. Age Birth／As-of：各一 popover-compact。
+10. 未來 Date Calculator 必須使用 popover-compact。
+11. 工具不得自行複製 Calendar DOM／controller／CSS。
+12. 工具 CSS 不得覆寫 .sdc-* internals。
+13. Canonical validator：scripts/validate-desktop-calendar.mjs（63 passed／0 failed）。
+14. Shared Desktop Calendar 正式視為 production baseline。
+15. Commit chain：
+    3c37d7a feat: add shared DesktopCalendar foundation
+    6f7ab99 feat: migrate Business Days Calculator to DesktopCalendar
+    9ce6c35 feat: migrate Date Range Calculator desktop calendar to DesktopCalendar
+    f25d107 feat: migrate Age Calculator desktop calendars to DesktopCalendar
+    5c55672 chore: formalize DesktopCalendar reuse gate
+```
+
+### Production verification
+
+```text
+BDC／DRC／Age EN／ZH HTTP／signature：PASS
+Desktop runtime smoke：PASS
+Mobile Owner QA：PASS
+Age Birth／As-of 互斥：PASS
+DRC Mobile transitional legacy path：無回歸
+Cloudflare Pages auto-deploy：PASS
+未 manual deploy
+Owner Production QA Desktop／Mobile：Final PASS
+```
+
+### 保留邊界
+
+```text
+DRC Mobile legacy Calendar 仍保留；未來需另立 Mobile Calendar 任務。
+不得把此例外擴大為第二套 Desktop Calendar。
+新 variant 預設拒絕；需要時須另開 L 層 Plan 並取得 Owner 核准。
+Date Calculator 尚未開始。
+下一項維護工作為工具分類名稱修正（另串），但不在本筆決策中定義新分類名稱。
+```
+
+### 影響
+
+```text
+後續工具 Desktop Calendar 必須走 Shared DesktopCalendar＋Reuse Gate。
+不得複製 BDC／DRC／Age calendar DOM／controller／CSS。
+Production baseline 以 origin/main＝5c55672 為準。
+```
+
+---
+
+## 2026-07-24 — Shared DesktopCalendar Phase A–E formalized（Reuse Gate／validator）
 
 ### 背景
 
@@ -13,6 +81,7 @@
 第二次以上 Desktop Calendar pattern（BDC／DRC／Age）觸發 Reuse Gate。
 Phase A–D 完成 shared foundation 與三工具 Desktop migration；
 Owner Gate B／C／D Final PASS；Phase E 建立 canonical validator 與文件收尾。
+（後續 production deploy 見同日「Shared Desktop Calendar production deployment complete」。）
 ```
 
 ### 決策
@@ -39,11 +108,12 @@ Owner Gate B／C／D Final PASS；Phase E 建立 canonical validator 與文件�
     未來 Mobile Calendar 共用化須另立任務。
 13. Canonical validator：scripts/validate-desktop-calendar.mjs
     （與 compile-check-desktop-calendar.mjs 分離）。
-14. Local commits（尚未 push／deploy）：
+14. Commit chain（後已 push／deploy；見同日 production deployment entry）：
     3c37d7a feat: add shared DesktopCalendar foundation
     6f7ab99 feat: migrate Business Days Calculator to DesktopCalendar
     9ce6c35 feat: migrate Date Range Calculator desktop calendar to DesktopCalendar
     f25d107 feat: migrate Age Calculator desktop calendars to DesktopCalendar
+    5c55672 chore: formalize DesktopCalendar reuse gate
 15. Date Calculator 尚未開始；未來只能接 popover-compact；
     需要新 variant → L 層 Plan＋Owner 核准（預設拒絕）。
 ```
@@ -53,7 +123,7 @@ Owner Gate B／C／D Final PASS；Phase E 建立 canonical validator 與文件�
 ```text
 後續工具 Desktop Calendar 必須走 Shared DesktopCalendar＋Reuse Gate。
 不得複製 BDC／DRC／Age calendar DOM／controller／CSS。
-Production 在 push／deploy 前仍以 origin/main（ResultSummary baseline）為準。
+Reuse Gate 與 canonical validator 自此正式文件化。
 ```
 
 ---
