@@ -384,14 +384,69 @@ icon 固定在欄位右側，不要讓版面跳動
 
 ## 12. Calendar / picker 行為
 
-### Desktop calendar popover
+### DesktopCalendar（Shared）與 Smart Date Input 分層
 
 ```text
-不應壓住主結果
-birth calendar 與 as-of calendar 不應同時開啟
-點外部 / Esc 可關閉
-選日期後更新結果
-month / year select 只切換 view，不代表選中日期
+Smart Date Input：文字輸入／解析／segment 行為（見本文件前述章節）
+DesktopCalendar：視覺選日 UI（shared component）
+
+兩者可並存於同一工具，但 ownership 不同：
+  Smart Date Input ≠ DesktopCalendar
+  不得把 calendar DOM／controller 當日期解析層
+```
+
+正式 shared 契約見：[`shared-component-reuse-gate.md`](../workflow/shared-component-reuse-gate.md) §7。
+
+### Shared DesktopCalendar variants（僅兩種）
+
+| Variant | 用途 |
+|---|---|
+| `inline-large` | Date Range Calculator Desktop inline |
+| `popover-compact` | Business Days Calculator、Age Calculator、未來 Date Calculator |
+
+```text
+禁止第三種 variant／尺寸別名／工具專屬皮膚。
+需要新 variant → L 層 Plan＋Owner 核准（預設拒絕）。
+yearList.mode = full｜nearby 是資料策略，不是 variant。
+  DRC Desktop：nearby ±10
+  BDC／Age：full（各自 min／max）
+```
+
+### Shared vs adapter ownership
+
+```text
+Shared 管理：
+  day grid、month 3×4、year input＋scroll list
+  previous／next、Esc 分層、outside click、focus return
+  popover／inline chrome、variant tokens（.sdc-*）
+
+Adapter 管理：
+  selection（single／range）
+  min／max、isDateSelectable
+  close policy、input／結果同步
+  placement／nudge／avoidRects／anchor
+  工具外層 Clear／triggers／sheet shell
+```
+
+### Desktop calendar 行為（核准基準）
+
+```text
+不應壓住主結果（可用 avoidRects／adapter positioning）
+同頁多 popover：Shared Registry 互斥（如 Age Birth／As-of）
+點外部／Esc 可關閉（popover）；Esc 先關 month／year panel
+選日期後依 adapter close policy 更新結果
+month／year 只切換 view，不代表已選定日期
+定位差異由 adapter 提供；不得 tool CSS 覆寫 .sdc-* 硬推位置
+```
+
+### Mobile 不屬於 Shared DesktopCalendar contract
+
+```text
+Mobile segmented input
+native date picker
+Bottom Sheet calendar（含 DRC Mobile legacy data-drv2-* 過渡例外）
+→ 不納入 DesktopCalendar shared contract
+→ DRC Mobile legacy 不得當作可新增第二套 Desktop Calendar 的先例
 ```
 
 ### As-of reset
@@ -400,6 +455,7 @@ month / year select 只切換 view，不代表選中日期
 Desktop：可使用日期旁 back icon
 Mobile：不使用 back icon
 Mobile：使用 native picker 內建清除 / 重置
+點 back-to-today 不得同時開啟 Calendar
 ```
 
 ---

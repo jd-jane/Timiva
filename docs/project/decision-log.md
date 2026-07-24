@@ -5,6 +5,59 @@
 
 ---
 
+## 2026-07-24 — Shared DesktopCalendar Phase A–E（local；尚未 push／deploy）
+
+### 背景
+
+```text
+第二次以上 Desktop Calendar pattern（BDC／DRC／Age）觸發 Reuse Gate。
+Phase A–D 完成 shared foundation 與三工具 Desktop migration；
+Owner Gate B／C／D Final PASS；Phase E 建立 canonical validator 與文件收尾。
+```
+
+### 決策
+
+```text
+1. 正式命名：DesktopCalendar、data-desktop-calendar、data-sdc-*、.sdc-*。
+2. 架構：Astro component＋base controller＋shared CSS＋thin adapters。
+3. Shared ownership：day grid、month 3×4、year input＋scroll list、
+   Esc／outside／focus、popover／inline chrome。
+4. Adapter ownership：selection、min／max、selectable、close policy、
+   input／結果同步、placement／nudge／avoidRects。
+5. Variant 僅兩種：inline-large（DRC Desktop）、popover-compact（BDC、Age、未來 Date Calculator）。
+6. 視覺 baseline：以 BDC Desktop Calendar 語彙為準；差異只走 variant tokens。
+7. yearList.mode full｜nearby 是資料策略，不是 variant。
+   DRC Desktop：nearby ±10；BDC／Age：full（各自 min／max）。
+8. DRC Clear 留在工具外層，不進 Shared Calendar。
+9. Age Birth／As-of 互斥：Shared DesktopCalendarRegistry＋adapter onBeforeOpen。
+10. Dynamic positioning：shared 使用 CSS variables（--sdc-pos-*）；
+    工具只提供 anchor／placement／nudge／avoidRects／resolvePopoverPosition。
+11. Tool CSS 不得覆寫 .sdc-* 或 [data-desktop-calendar] internals；
+    僅允許核准的 root stacking／composition。
+12. DRC Mobile／Intermediate／Landscape legacy data-drv2-* calendar
+    為核准 transitional exception；不代表可新增第二套 Desktop Calendar。
+    未來 Mobile Calendar 共用化須另立任務。
+13. Canonical validator：scripts/validate-desktop-calendar.mjs
+    （與 compile-check-desktop-calendar.mjs 分離）。
+14. Local commits（尚未 push／deploy）：
+    3c37d7a feat: add shared DesktopCalendar foundation
+    6f7ab99 feat: migrate Business Days Calculator to DesktopCalendar
+    9ce6c35 feat: migrate Date Range Calculator desktop calendar to DesktopCalendar
+    f25d107 feat: migrate Age Calculator desktop calendars to DesktopCalendar
+15. Date Calculator 尚未開始；未來只能接 popover-compact；
+    需要新 variant → L 層 Plan＋Owner 核准（預設拒絕）。
+```
+
+### 影響
+
+```text
+後續工具 Desktop Calendar 必須走 Shared DesktopCalendar＋Reuse Gate。
+不得複製 BDC／DRC／Age calendar DOM／controller／CSS。
+Production 在 push／deploy 前仍以 origin/main（ResultSummary baseline）為準。
+```
+
+---
+
 ## 2026-07-22 — ResultSummary Phase A–I production deploy
 
 ### 背景

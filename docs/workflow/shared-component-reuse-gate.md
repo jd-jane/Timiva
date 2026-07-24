@@ -1,7 +1,7 @@
 # Shared Component Reuse Gate
 
 > Canonical source：Timiva 共用 UI pattern 的 **Reuse Gate** 規則只以本文件為準。
-> 最後更新：2026-07-22
+> 最後更新：2026-07-24
 
 ## 文件目的
 
@@ -12,7 +12,7 @@
 - 任務入口：[`AGENTS.md`](../../AGENTS.md)
 - 新工具流程：[`new-tool-development.md`](new-tool-development.md)
 - 文件索引：[`docs/README.md`](../README.md)
-- 案例：`ResultSummary`（見本文 §6）
+- 案例：`ResultSummary`（§6）、`DesktopCalendar`（§7）
 
 ---
 
@@ -59,6 +59,7 @@ Implementation Plan 必須先做 Reuse Review，再進入實作。
     - validator／rollback
 11. **遷移完成後不得殘留**：temporary adapter、legacy hooks、重複 digit ladder、工具內第二套結果 DOM。
 12. **ResultSummary 為正式案例**（§6）。
+13. **DesktopCalendar 為正式案例**（§7）。第二次以上相同 Desktop Calendar pattern 必須優先重用 Shared DesktopCalendar；不得複製 calendar DOM／controller／CSS。
 
 ---
 
@@ -68,7 +69,7 @@ Implementation Plan 必須先做 Reuse Review，再進入實作。
 |---|---|---|
 | Shared component | DOM、typography、grid／gap、digits、a11y、`rs:update`／controller | 讀 viewport／orientation 自行判斷 layout |
 | Tool layout contract | `data-rs-layout`（或同等）首次 paint＋正式 gate | 寫 `data-rs-digits`、更新 live status、dispatch 結果更新 |
-| Tool CSS | stage、placement、margin／width、controls／sheet | 選內部 class；接管 ResultSummary root 的 grid／gap／字級 |
+| Tool CSS | stage、placement、margin／width、controls／sheet／root stacking | 選內部 class（`.rs-*`／`.sdc-*`）；接管 ResultSummary／DesktopCalendar 內部 grid／gap／字級／尺寸 |
 | Tool script | 計算完成後 dispatch 正式事件／呼叫正式 `update()` | temporary adapter、本地 digit bucket |
 
 ---
@@ -131,11 +132,52 @@ Initial bootstrap 與 layout gate 共用 contract
 
 ---
 
-## 7. 與其他文件的關係
+## 7. 正式案例：DesktopCalendar
+
+| 項目 | 位置／規則 |
+|---|---|
+| Shared DOM | `src/components/tools/shared/DesktopCalendar.astro` |
+| Controller | `src/scripts/desktop-calendar-controller.ts`（`createDesktopCalendar`、`DesktopCalendarRegistry`） |
+| Shared CSS | `src/styles/tools/desktop-calendar.css`（`.sdc-*`；僅 `inline-large`／`popover-compact` tokens） |
+| Naming | `DesktopCalendar`、`data-desktop-calendar`、`data-sdc-*`、`.sdc-*` |
+| Tool 外部 composition | trigger／input shell／anchor／host／root stacking（`z-index`）；不得選 `.sdc-*` |
+| Shared ownership | day grid、month 3×4、year input＋scroll list、Esc／outside click／focus、popover／inline chrome |
+| Adapter ownership | selection、min／max、selectable、close policy、input／結果同步、placement／nudge／avoidRects |
+| Variant（僅兩種） | `inline-large`（DRC Desktop）；`popover-compact`（BDC、Age、未來 Date Calculator） |
+| yearList | `full`｜`nearby` 為**資料策略**，不是第三 variant |
+| 已遷移工具 | BDC（`popover-compact`）；DRC Desktop（`inline-large`）；Age Birth／As-of（各一 `popover-compact`） |
+| Canonical validator | `node scripts/validate-desktop-calendar.mjs` |
+| Compile harness | `node scripts/compile-check-desktop-calendar.mjs`（獨立，不混入 canonical） |
+
+**Reuse Gate 通過標準（DesktopCalendar）：**
+
+```text
+第二次以上相同 Desktop Calendar pattern → 必須優先重用 Shared DesktopCalendar
+架構：Astro component＋base controller＋shared CSS＋thin adapters
+僅兩個 variant：inline-large｜popover-compact
+工具 CSS 不得覆寫 .sdc-*／[data-desktop-calendar] internals
+新工具不得複製 calendar DOM／controller／CSS 後改名
+未來 Date Calculator 必須使用 popover-compact；
+  需要新 variant → 另開 L 層 Plan＋Owner 核准（預設拒絕）
+Canonical validator PASS：scripts/validate-desktop-calendar.mjs
+```
+
+**DRC Mobile transitional exception（核准例外）：**
+
+```text
+DRC Mobile／Intermediate／Landscape Bottom Sheet 可暫時保留 legacy data-drv2-* calendar。
+此例外不代表可新增第二套 Desktop Calendar。
+Desktop 必須使用 Shared DesktopCalendar（inline-large）。
+未來 Mobile Calendar 共用化須另立任務，不得在 Desktop migration 順便重構。
+```
+
+---
+
+## 8. 與其他文件的關係
 
 | 文件 | 關係 |
 |---|---|
-| `docs/standards/date-input.md` | Date input 尚未抽 shared；穩定後評估時仍須過本 Gate |
+| `docs/standards/date-input.md` | Smart Date Input 與 DesktopCalendar 分層；Desktop Calendar 規範見該文件 §12 |
 | `docs/standards/mobile-sheet.md` | Sheet shared baseline；工具不得另造衝突規則 |
 | `docs/standards/interactive-controls.md` | Control motion／shadow 由 shared baseline 擁有 |
 | `docs/workflow/new-tool-development.md` | 新工具流程引用本 Gate，不重複全文 |
