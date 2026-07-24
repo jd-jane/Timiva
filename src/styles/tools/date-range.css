@@ -43,7 +43,7 @@
   .date-range-page .tool-desktop-main .tool-desktop-cluster,
   .date-range-page .tool-desktop-main .desktop-tool-control,
   .date-range-page .tool-desktop-main .desktop-tool-panel,
-  .date-range-page .tool-desktop-main .range-sheet {
+  .date-range-page .tool-desktop-main .drc-desktop-sdc-host {
     width: 100%;
     max-width: none;
     margin-inline: 0;
@@ -51,27 +51,16 @@
     box-sizing: border-box;
   }
 
-  .date-range-page .tool-desktop-main .calendar-panel {
-    width: 100%;
-    max-width: none;
-    margin-inline: 0;
-    box-sizing: border-box;
-    padding: 22px 28px 18px;
-    background: linear-gradient(
-      165deg,
-      rgba(120, 108, 210, 0.18),
-      rgba(78, 96, 170, 0.14)
-    );
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: none;
+  /* Desktop：legacy sheet 隱藏；Shared inline-large 為日曆主路徑 */
+  .date-range-page .tool-desktop-main .range-sheet,
+  .date-range-page .desktop-tool-panel .range-sheet {
+    display: none;
   }
 
-  .date-range-page .tool-desktop-main .calendar-panel .calendar-toolbar {
-    margin-bottom: 12px;
-  }
-
-  .date-range-page .tool-desktop-main .calendar-panel .calendar-clear-btn--inline {
-    margin-top: 12px;
+	.date-range-page .tool-desktop-main .drc-desktop-sdc-host {
+    display: block;
+    max-width: min(100%, 30rem);
+    margin-inline: auto;
   }
 
   .date-range-page .tool-desktop-main .tool-hero-content {
@@ -618,31 +607,6 @@
 @media (max-width: 600px), ((orientation: landscape) and (max-height: 700px) and (max-width: 1200px)) {
   .calendar-clear-btn--inline {
     display: none;
-  }
-}
-
-@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
-  .calendar-cell--empty,
-  .calendar-day {
-    min-height: 38px;
-  }
-
-  .calendar-day {
-    border-radius: 10px;
-    font-size: 0.86rem;
-  }
-
-  .calendar-day.is-range-start {
-    border-radius: 10px 0 0 10px;
-  }
-
-  .calendar-day.is-range-end {
-    border-radius: 0 10px 10px 0;
-  }
-
-  .calendar-day.is-range-single,
-  .calendar-day.is-range-start.is-range-end {
-    border-radius: 10px;
   }
 }
 

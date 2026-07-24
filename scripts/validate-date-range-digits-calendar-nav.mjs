@@ -111,7 +111,7 @@ assert(!/function resolveResultDigitBucket/.test(script), "no local bucket ladde
 assert(!/syncResultDigitBucket/.test(script), "no syncResultDigitBucket in script");
 assert(!/data-drv2-result-digits/.test(script), "script does not write drv2 digit attr");
 assert(/initResultSummary/.test(astro), "shared controller init before date-range.js");
-assert(script.includes('DR_JS_VERSION = "dr21"'), "dr21 script version");
+assert(script.includes('DR_JS_VERSION = "dr22"'), "dr22 script version");
 
 /* Initial layout bootstrap — before first paint, shared contract with layout gate */
 const contract = read("public/scripts/date-range-layout-contract.js");
@@ -228,19 +228,79 @@ assert(
 	"Portrait date button keeps fixed primary control height"
 );
 
-/* Desktop nav retained */
+/* Desktop → Shared DesktopCalendar；Mobile Sheet 保留 legacy */
+const desktopAdapter = read("src/scripts/date-range-desktop-calendar.ts");
+assert(
+	/import DesktopCalendar/.test(astro) &&
+		/variant="inline-large"/.test(astro) &&
+		/idPrefix="drc-sdc"/.test(astro),
+	"DRC Desktop mounts DesktopCalendar inline-large with unique idPrefix",
+);
+assert(
+	/data-drc-desktop-sdc-host/.test(astro) &&
+		/id=["']clear-range-desktop["']/.test(astro) &&
+		/drc-desktop-clear-text/.test(astro) &&
+		/drc-desktop-clear-wrap/.test(astro),
+	"Desktop Clear stays in outer SDC host as plain text control",
+);
+assert(
+	/\.drc-desktop-clear-text\s*\{[\s\S]*?font-size:\s*0\.875rem/.test(css) &&
+		/\.drc-desktop-clear-text\s*\{[\s\S]*?background:\s*none/.test(css) &&
+		/\.drc-desktop-clear-text:hover\s*\{[\s\S]*?color:\s*rgb\(226 232 240 \/ 0\.92\)/.test(
+			css,
+		),
+	"Desktop Clear text styles align Include both dates visual values",
+);
+assert(
+	!/\.drc-desktop-sdc-host \.calendar-clear-btn--inline/.test(css),
+	"Desktop Clear no longer uses full-width inline clear card styles",
+);
+assert(
+	/installDateRangeDesktopCalendarBinder/.test(astro) &&
+		/createDesktopCalendar/.test(desktopAdapter) &&
+		/mode:\s*"nearby"/.test(desktopAdapter) &&
+		/nearbyRadius:\s*10/.test(desktopAdapter),
+	"Desktop adapter uses createDesktopCalendar with nearby ±10",
+);
+assert(
+	/TimivaDateRangeDesktopCalendar\?\.bind/.test(script) &&
+		/function bindDesktopSharedCalendar/.test(script) &&
+		/isDesktopLayout\(\)/.test(script) &&
+		/notifyDesktopCalendar/.test(script),
+	"date-range.js bridges Desktop shared calendar without tool name in shared",
+);
+assert(
+	/if \(isDesktopLayout\(\)\) \{\s*notifyDesktopCalendar\(\);\s*return;/.test(script) ||
+		(/isDesktopLayout\(\)/.test(script) &&
+			/notifyDesktopCalendar\(\)/.test(script) &&
+			/Desktop → Shared DesktopCalendar/.test(script)),
+	"Desktop renderCalendar skips legacy DOM",
+);
+assert(
+	!/\.sdc-/.test(css) && !/\[data-desktop-calendar\]/.test(css),
+	"DRC tool CSS does not override shared calendar internals",
+);
+assert(
+	!/tool-desktop-main \.calendar-panel \.calendar-day/.test(css) &&
+		!/tool-desktop-main \.calendar-panel \.calendar-grid/.test(css),
+	"Desktop densify calendar internal overrides removed from DRC CSS",
+);
+
+/* Mobile legacy markup retained inside sheet */
 assert(
 	/data-drv2-desktop-nav/.test(astro) &&
 		/data-drv2-month-trigger/.test(astro) &&
 		/data-drv2-year-trigger/.test(astro) &&
-		/data-drv2-year-list/.test(astro),
-	"Desktop Month/Year triggers + nearby list markup retained"
+		/data-drv2-year-list/.test(astro) &&
+		/id=["']range-sheet["']/.test(astro) &&
+		/id=["']calendar-grid["']/.test(astro),
+	"Mobile Sheet legacy calendar markup retained",
 );
 assert(
 	/function setDesktopToolbarPanel/.test(script) &&
 		/function renderNearbyYearList/.test(script) &&
 		/isDesktopLayout/.test(script),
-	"Desktop panel + nearby list logic retained"
+	"Mobile/legacy panel + nearby list logic retained in date-range.js",
 );
 assert(!/<select\b/i.test(astro), "no native select");
 

@@ -26,7 +26,7 @@ const LANDSCAPE_DATE_MEDIA = window.matchMedia(
 let savedScrollY = 0;
 let lastLayoutMode = null;
 
-const DR_JS_VERSION = "dr21";
+const DR_JS_VERSION = "dr22";
 
 function loadDateRangeI18n() {
   const fallback = {
@@ -783,6 +783,7 @@ function syncSheetAccessibility() {
   }
 
   if (isMobileLayout()) {
+    rangeSheet.removeAttribute("inert");
     const isOpen = rangeSheet.classList.contains("is-open");
     rangeSheet.setAttribute("aria-hidden", isOpen ? "false" : "true");
     rangeSheet.setAttribute("aria-modal", "true");
@@ -791,7 +792,9 @@ function syncSheetAccessibility() {
     return;
   }
 
-  rangeSheet.setAttribute("aria-hidden", "false");
+  // Desktop：legacy sheet 隱藏；Shared inline-large 為主路徑
+  rangeSheet.setAttribute("aria-hidden", "true");
+  rangeSheet.setAttribute("inert", "");
   rangeSheet.removeAttribute("aria-modal");
   rangeDisplayTrigger?.setAttribute("tabindex", "-1");
 }
@@ -820,7 +823,38 @@ function handleDateCapsuleClick() {
    月曆渲染
 ------------------------------ */
 
+function toSdcDate(date) {
+  return {
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+    day: date.getDate(),
+  };
+}
+
+function fromSdcDate(parts) {
+  return createLocalDate(parts.year, parts.month - 1, parts.day);
+}
+
+/** @type {Set<() => void>} */
+const desktopCalendarListeners = new Set();
+
+function notifyDesktopCalendar() {
+  desktopCalendarListeners.forEach((listener) => {
+    try {
+      listener();
+    } catch {
+      // Adapter refresh errors must not break tool state
+    }
+  });
+}
+
 function renderCalendar() {
+  // Desktop → Shared DesktopCalendar；不操作 Mobile legacy DOM
+  if (isDesktopLayout()) {
+    notifyDesktopCalendar();
+    return;
+  }
+
   if (!calendarGrid) {
     return;
   }
@@ -1607,6 +1641,11 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
+  // Desktop Esc：由 Shared DesktopCalendar（capture）處理月份／年份分層
+  if (isDesktopLayout()) {
+    return;
+  }
+
   if (toolbarPanel !== "none") {
     closeDesktopToolbarPanels();
     return;
@@ -1632,6 +1671,27 @@ document.addEventListener("keydown", (event) => {
    初始化
 ------------------------------ */
 
+function bindDesktopSharedCalendar() {
+  window.TimivaDateRangeDesktopCalendar?.bind({
+    getSelection: () => ({
+      start: rangeStart ? toSdcDate(rangeStart) : null,
+      end: rangeEnd ? toSdcDate(rangeEnd) : null,
+    }),
+    applyPick: (date) => {
+      handleDaySelect(fromSdcDate(date));
+    },
+    subscribe: (listener) => {
+      desktopCalendarListeners.add(listener);
+      return () => {
+        desktopCalendarListeners.delete(listener);
+      };
+    },
+    isDesktop: () => isDesktopLayout(),
+    getDesktopMedia: () => DESKTOP_MEDIA,
+    getIntlLocale: () => dateRangeI18n.intlLocale || "en-US",
+  });
+}
+
 bindCalendarNav();
 syncCalendarNavVisibility();
 updateStats();
@@ -1639,6 +1699,7 @@ renderCalendar();
 syncLandscapeInputsFromState();
 syncLayoutMode();
 syncSheetAccessibility();
+bindDesktopSharedCalendar();
 lastLayoutMode = getDateRangeLayoutMode();
 
 DESKTOP_MEDIA.addEventListener("change", () => {
@@ -1651,6 +1712,8 @@ DESKTOP_MEDIA.addEventListener("change", () => {
     handleLayoutTransition();
   }
   syncCalendarNavVisibility();
+  syncSheetAccessibility();
+  bindDesktopSharedCalendar();
 });
 
 LANDSCAPE_DATE_MEDIA.addEventListener("change", scheduleLayoutTransitionAfterOrientation);

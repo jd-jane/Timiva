@@ -9,6 +9,7 @@ import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getDateRangeClientI18n } from "../../../i18n/clientMessages";
 import { getMessages } from "../../../i18n/messages";
 import ResultSummary from "../shared/ResultSummary.astro";
+import DesktopCalendar from "../shared/DesktopCalendar.astro";
 
 interface Props {
 	locale?: Locale;
@@ -52,7 +53,7 @@ const rsSecondary = [
 
 <div data-date-range-v2>
 	<!-- Layout contract：blocking sync load，須在 ResultSummary 首次 paint 前可用 -->
-	<script is:inline src="/scripts/date-range-layout-contract.js?v=dr21"></script>
+	<script is:inline src="/scripts/date-range-layout-contract.js?v=dr22"></script>
 	<!-- 首屏工具區 -->
 	<section data-drv2-main-tool class="preview-tool-main-section px-6">
 		<section
@@ -194,6 +195,35 @@ const rsSecondary = [
 				</div>
 
 				<section class="desktop-tool-panel">
+					{/* Desktop：Shared DesktopCalendar（inline-large）；Clear 留在工具外層 */}
+					<div class="drc-desktop-sdc-host" data-drc-desktop-sdc-host hidden>
+						<DesktopCalendar
+							variant="inline-large"
+							idPrefix="drc-sdc"
+							weekdays={m.weekdays}
+							labels={{
+								calendar: m.calendarLabel,
+								previousMonth: m.previousMonth,
+								nextMonth: m.nextMonth,
+								month: locale === "zh" ? "月份" : "Month",
+								year: locale === "zh" ? "年份" : "Year",
+							}}
+						/>
+						{/* Desktop Clear：純文字視覺（對齊 Days Between Dates Include both dates） */}
+						<div class="drc-desktop-clear-wrap">
+							<button
+								type="button"
+								class="drc-desktop-clear-text"
+								id="clear-range-desktop"
+								data-clear-dates
+								data-drc-desktop-clear
+							>
+								{m.clearDates}
+							</button>
+						</div>
+					</div>
+
+					{/* Mobile：legacy Bottom Sheet calendar（與 Desktop shared 雙路徑） */}
 					<div
 						class="tool-bottom-sheet range-sheet"
 						id="range-sheet"
@@ -388,7 +418,7 @@ const rsSecondary = [
 								<button
 									type="button"
 									class="calendar-clear-btn calendar-clear-btn--inline"
-									id="clear-range-desktop"
+									id="clear-range-sheet-inline"
 									data-clear-dates
 									data-drv2-calendar-clear
 								>
@@ -634,10 +664,12 @@ const rsSecondary = [
 </script>
 <script>
 	import { init as initResultSummary } from "../../../scripts/result-summary-controller.ts";
+	import { installDateRangeDesktopCalendarBinder } from "../../../scripts/date-range-desktop-calendar.ts";
 
 	initResultSummary();
+	installDateRangeDesktopCalendarBinder();
 </script>
-<script defer src="/scripts/date-range.js?v=dr21"></script>
+<script defer src="/scripts/date-range.js?v=dr22"></script>
 
 <script is:inline>
 	document.addEventListener("DOMContentLoaded", () => {

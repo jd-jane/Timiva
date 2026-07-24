@@ -1373,6 +1373,11 @@ body:has([data-date-range-v2]) header {
 	max-height: min(72dvh, 480px);
 }
 
+/* Desktop／Mobile dual-path host：預設隱藏 Shared DesktopCalendar */
+[data-date-range-v2] .drc-desktop-sdc-host {
+	display: none;
+}
+
 @media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
 	[data-date-range-v2] .date-range-page .tool-desktop-main {
 		justify-content: flex-start;
@@ -1412,43 +1417,55 @@ body:has([data-date-range-v2]) header {
 		color: rgb(244 243 248 / 0.62);
 	}
 
-	[data-date-range-v2] .date-range-page .tool-desktop-main .calendar-panel {
-		max-width: min(100%, 480px);
+	/* Desktop：顯示 Shared host；隱藏 legacy sheet（Mobile 路徑保留） */
+	[data-date-range-v2] .drc-desktop-sdc-host {
+		display: block;
+		width: 100%;
+		max-width: min(100%, 30rem);
 		margin-inline: auto;
-		padding: 12px 18px 10px;
-		background: linear-gradient(
-			165deg,
-			rgb(120 108 210 / 0.12),
-			rgb(78 96 170 / 0.08)
-		);
-		border-color: rgb(255 255 255 / 0.06);
+	}
+
+	[data-date-range-v2] .date-range-page .desktop-tool-panel .range-sheet,
+	[data-date-range-v2] .date-range-page .range-sheet {
+		display: none;
+	}
+
+	/* Desktop Clear：純文字（對齊 DBD Include both dates 視覺；無 toggle／selected） */
+	[data-date-range-v2] .drc-desktop-clear-wrap {
+		display: flex;
+		justify-content: center;
+		width: 100%;
+		margin-top: 0.5rem;
+	}
+
+	[data-date-range-v2] .drc-desktop-clear-text {
+		display: inline;
+		margin: 0;
+		padding: 0.375rem 0.5rem;
+		border: 0;
+		border-radius: 0;
+		background: none;
 		box-shadow: none;
+		font-size: 0.875rem;
+		font-weight: 500;
+		line-height: 1.25rem;
+		color: rgb(148 163 184 / 0.85);
+		text-decoration: none;
+		transform: none;
+		transition: color 180ms ease;
+		user-select: none;
+		-webkit-tap-highlight-color: transparent;
 	}
 
-	[data-date-range-v2] .date-range-page .tool-desktop-main .calendar-panel .calendar-toolbar {
-		margin-bottom: 6px;
+	[data-date-range-v2] .drc-desktop-clear-text:hover {
+		color: rgb(226 232 240 / 0.92);
+		transform: none;
+		text-decoration: none;
 	}
 
-	[data-date-range-v2] .date-range-page .tool-desktop-main .calendar-panel .calendar-weekdays {
-		margin-bottom: 2px;
-	}
-
-	[data-date-range-v2] .date-range-page .tool-desktop-main .calendar-panel .calendar-grid {
-		gap: 0;
-	}
-
-	[data-date-range-v2] .date-range-page .tool-desktop-main .calendar-panel .calendar-day {
-		min-height: 40px;
-		font-size: 0.8125rem;
-	}
-
-	[data-date-range-v2] .date-range-page .tool-desktop-main .calendar-panel .calendar-cell--empty {
-		min-height: 0;
-	}
-
-	[data-date-range-v2] .date-range-page .tool-desktop-main .calendar-panel .calendar-clear-btn--inline {
-		margin-top: 4px;
-		padding-block: 4px;
+	[data-date-range-v2] .drc-desktop-clear-text:disabled {
+		opacity: 0.4;
+		pointer-events: none;
 	}
 
 	[data-date-range-v2] .preview-tool-stage {
