@@ -44,6 +44,7 @@ class MiniElement {
 		this.textContent = "";
 		this.parent = null;
 		this.listeners = new Map();
+		this.hidden = false;
 	}
 
 	setAttribute(name, value) {
@@ -52,6 +53,10 @@ class MiniElement {
 
 	getAttribute(name) {
 		return this.attributes.has(name) ? this.attributes.get(name) : null;
+	}
+
+	removeAttribute(name) {
+		this.attributes.delete(name);
 	}
 
 	appendChild(child) {
@@ -105,6 +110,14 @@ class MiniElement {
 
 		if (selector === ".rs-status") {
 			return this.findDescendant((el) => el.className === "rs-status");
+		}
+
+		if (selector === "[data-rs-weekday]") {
+			return this.findDescendant((el) => el.getAttribute("data-rs-weekday") !== null);
+		}
+
+		if (selector === "[data-rs-support]") {
+			return this.findDescendant((el) => el.getAttribute("data-rs-support") !== null);
 		}
 
 		const keyMatch = selector.match(/^\[data-rs-key="([^"]+)"\]$/);
@@ -165,6 +178,7 @@ MiniElement.prototype.findAllDescendants = function findAllDescendants(matcher, 
 function createSummaryRoot(keys = ["weekdays", "weekends"]) {
 	const summary = new MiniElement("section");
 	summary.setAttribute("data-result-summary", "");
+	summary.setAttribute("data-rs-content", "numeric");
 	summary.setAttribute("data-rs-layout", "desktop");
 	summary.setAttribute("data-rs-variant", "standard");
 	summary.setAttribute("data-rs-digits", "1-2");
@@ -247,8 +261,15 @@ const css = read("src/styles/tools/result-summary.css");
 const astro = read("src/components/tools/shared/ResultSummary.astro");
 
 assert(!astro.includes("digits?:"), "Props do not expose digits");
-const propsBlock = astro.match(/interface Props \{[\s\S]*?\n\}/)?.[0] ?? "";
-assert(propsBlock.length > 0, "Props interface present");
+const propsBlock =
+	astro.match(/type Props =[\s\S]*?;/)?.[0] ??
+	astro.match(/interface Props \{[\s\S]*?\n\}/)?.[0] ??
+	"";
+assert(propsBlock.length > 0, "Props type／interface present");
+assert(
+	astro.includes("NumericProps") && astro.includes("TextualProps"),
+	"discriminated NumericProps／TextualProps present",
+);
 assert(
 	!/\b(toolId|toolSlug|digits)\b/.test(propsBlock) &&
 		!/data-[a-zA-Z]/.test(propsBlock),
@@ -264,8 +285,13 @@ assert(
 const sectionTag = astro.match(/<section[\s\S]*?>/m)?.[0] ?? "";
 assert(!sectionTag.includes("aria-live"), "visual section root is not live region");
 assert(
-	(astro.match(/class="rs-status"/g) || []).length === 1,
-	"exactly one .rs-status in ResultSummary markup",
+	(astro.match(/class="rs-status"/g) || []).length === 2,
+	"exactly one .rs-status per content branch (numeric＋textual)",
+);
+assert(
+	!astro.includes('aria-live="polite"') ||
+		(astro.match(/aria-live="polite"/g) || []).length === 2,
+	"live region only on .rs-status branches",
 );
 
 for (const layout of ["desktop", "portrait", "landscape"]) {
@@ -674,6 +700,212 @@ assert(
 	!/local-fixtures|fixture-matrix|preview\/result-summary/.test(bdcAstro + drcAstro + bdcCss + drcCss),
 	"DRC／BDC production have no preview／fixture references",
 );
+
+
+/* --- content mode: numeric default + textual contract --- */
+assert(
+	astro.includes('data-rs-content="numeric"') && astro.includes('data-rs-content="textual"'),
+	"Astro emits numeric and textual content attrs",
+);
+assert(
+	!/variant\s*=\s*["']date["']/.test(astro),
+	"no variant=date in ResultSummary",
+);
+assert(
+	controllerSrc.includes('content: "textual"') || controllerSrc.includes('RsTextualUpdateDetail'),
+	"controller exports textual update contract",
+);
+assert(controllerSrc.includes("readRsContent"), "controller exposes readRsContent");
+// applyTextualUpdate must not setAttribute data-rs-digits
+const applyTextualBlock =
+	controllerSrc.match(/function applyTextualUpdate\([\s\S]*?\n\}/)?.[0] ?? "";
+assert(applyTextualBlock.length > 0, "applyTextualUpdate exists");
+assert(
+	!applyTextualBlock.includes('setAttribute("data-rs-digits"') &&
+		!applyTextualBlock.includes("computeRsDigits"),
+	"textual update does not compute or set data-rs-digits",
+);
+assert(
+	applyTextualBlock.includes('removeAttribute("data-rs-digits")'),
+	"textual update clears data-rs-digits if present",
+);
+
+assert(
+	css.includes('[data-rs-content="textual"]') &&
+		css.includes('[data-rs-content="numeric"]'),
+	"CSS scopes numeric and textual content",
+);
+assert(
+	!/\[[^\]]*data-rs-content=["']textual["'][^\]]*\][^{]*\{[^}]*data-rs-digits/.test(css) &&
+		!/\[data-rs-content="textual"\][\s\S]*?\[data-rs-digits/.test(
+			css.split("/* -------------------------------------------------------------------------- */\n/* Textual mode")[1] ?? "",
+		),
+	"textual CSS does not select [data-rs-digits]",
+);
+
+const textualCss = css.includes("/* Textual mode")
+	? css.slice(css.indexOf("/* Textual mode"))
+	: css.slice(css.indexOf('[data-rs-content="textual"]'));
+assert(textualCss.length > 0, "textual CSS section present");
+assert(!/line-clamp\s*:/.test(textualCss), "textual CSS has no line-clamp");
+assert(
+	!/\.rs-support[^{]*\{[^}]*(text-overflow\s*:\s*ellipsis|line-clamp\s*:)/.test(textualCss),
+	"textual .rs-support has no ellipsis／line-clamp truncation",
+);
+assert(
+	/\.rs-support[\s\S]*?white-space:\s*normal/.test(textualCss) &&
+		/\.rs-support[\s\S]*?overflow:\s*visible/.test(textualCss),
+	"textual .rs-support uses natural wrap without clipping",
+);
+assert(
+	/\[data-rs-layout="landscape"\][\s\S]*?grid-template-areas:[\s\S]*?primary weekday/.test(
+		textualCss,
+	),
+	"textual landscape Primary + Weekday same row",
+);
+assert(
+	/:has\(\.rs-weekday\[hidden\]\)/.test(textualCss),
+	"textual landscape collapses when weekday hidden",
+);
+
+function createTextualRoot({ weekday = "", support = "" } = {}) {
+	const summary = new MiniElement("section");
+	summary.setAttribute("data-result-summary", "");
+	summary.setAttribute("data-rs-content", "textual");
+	summary.setAttribute("data-rs-layout", "desktop");
+	summary.setAttribute("data-rs-variant", "standard");
+
+	const primary = new MiniElement("div");
+	const primaryValue = new MiniElement("div");
+	primaryValue.setAttribute("data-rs-value", "primary");
+	primaryValue.textContent = "?";
+	primary.appendChild(primaryValue);
+	summary.appendChild(primary);
+
+	const weekdayEl = new MiniElement("div");
+	weekdayEl.setAttribute("data-rs-weekday", "");
+	weekdayEl.className = "rs-weekday";
+	if (!weekday) {
+		weekdayEl.hidden = true;
+	} else {
+		weekdayEl.textContent = weekday;
+	}
+	summary.appendChild(weekdayEl);
+
+	const supportEl = new MiniElement("div");
+	supportEl.setAttribute("data-rs-support", "");
+	supportEl.className = "rs-support";
+	if (!support) {
+		supportEl.hidden = true;
+	} else {
+		supportEl.textContent = support;
+	}
+	summary.appendChild(supportEl);
+
+	const status = new MiniElement("div");
+	status.className = "rs-status";
+	summary.appendChild(status);
+	return summary;
+}
+
+const textualValid = {
+	content: "textual",
+	primary: { text: "AUG 10, 2026", ariaLabel: "August 10, 2026" },
+	weekday: "Monday",
+	support: "Add 3 weeks to Jul 12, 2026.",
+};
+
+const textualRoot = createTextualRoot();
+assert(update(textualRoot, textualValid), "textual update accepted");
+assert(
+	textualRoot.getAttribute("data-rs-digits") === null,
+	"textual update does not leave data-rs-digits",
+);
+assert(
+	textualRoot.querySelector('[data-rs-value="primary"]').textContent === "AUG 10, 2026",
+	"textual primary text written",
+);
+assert(
+	textualRoot.querySelector("[data-rs-weekday]").textContent === "Monday" &&
+		textualRoot.querySelector("[data-rs-weekday]").hidden === false,
+	"textual weekday shown",
+);
+assert(
+	textualRoot.querySelector("[data-rs-support]").textContent.includes("Add 3 weeks") &&
+		textualRoot.querySelector("[data-rs-support]").hidden === false,
+	"textual support shown",
+);
+assert(
+	textualRoot.querySelector(".rs-status").textContent.includes("August 10, 2026") &&
+		textualRoot.querySelector(".rs-status").textContent.includes("Monday"),
+	"textual status uses ariaLabel and weekday",
+);
+
+assert(
+	update(textualRoot, {
+		content: "textual",
+		primary: { text: "?" },
+		weekday: null,
+		support: "Enter a start date, then add or subtract a time period.",
+	}),
+	"textual initial-like update accepted",
+);
+assert(
+	textualRoot.querySelector("[data-rs-weekday]").hidden === true &&
+		textualRoot.querySelector("[data-rs-weekday]").textContent === "",
+	"empty weekday hidden with no leftover text",
+);
+assert(
+	!textualRoot.querySelector(".rs-status").textContent.includes("Monday"),
+	"hidden weekday skipped in live-region status",
+);
+
+const textualRejectCases = [
+	{
+		label: "textual with secondary",
+		detail: { ...textualValid, secondary: [{ key: "a", value: 1 }, { key: "b", value: 2 }] },
+	},
+	{
+		label: "textual missing content key mismatch numeric payload",
+		detail: validDetail(),
+	},
+	{
+		label: "unknown content",
+		detail: { content: "date", primary: { text: "?" } },
+	},
+	{
+		label: "textual primary with numeric value field",
+		detail: { content: "textual", primary: { text: "?", value: 0 } },
+	},
+];
+
+for (const item of textualRejectCases) {
+	const rootEl = createTextualRoot({ weekday: "Keep", support: "Keep" });
+	rootEl.querySelector('[data-rs-value="primary"]').textContent = "KEEP";
+	assert(!update(rootEl, item.detail), `${item.label} rejected`);
+	assert(
+		rootEl.querySelector('[data-rs-value="primary"]').textContent === "KEEP",
+		`${item.label} no partial update`,
+	);
+}
+
+const numericRoot = createSummaryRoot();
+assert(
+	!update(numericRoot, textualValid),
+	"textual payload rejected on numeric root",
+);
+
+assert(
+	astro.includes("data-rs-weekday") && astro.includes("data-rs-support"),
+	"Astro textual markup includes weekday／support hooks",
+);
+const textualAstroBranch =
+	astro.match(/data-rs-content="textual"[\s\S]*?data-rs-content="numeric"/)?.[0] ?? "";
+assert(
+	textualAstroBranch.length > 0 && !textualAstroBranch.includes("rs-secondary"),
+	"textual branch has no rs-secondary",
+);
+
 
 console.log(`\nResult: ${passed} passed, ${failed} failed`);
 

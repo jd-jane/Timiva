@@ -4,86 +4,192 @@ import {
 	formatRsDisplayValue,
 	type RsLayout,
 	type RsSecondaryField,
+	type RsTextualPrimary,
 	type RsValueField,
 	type RsVariant,
 } from "../../../scripts/result-summary-controller.ts";
 import "../../../styles/tools/result-summary.css";
 
-interface Props {
+type RsContent = "numeric" | "textual";
+
+interface NumericProps {
+	content?: "numeric";
 	primary: RsValueField;
 	secondary: [RsSecondaryField, RsSecondaryField];
 	layout: RsLayout;
 	variant?: RsVariant;
 	class?: string;
 	ariaLabel?: string;
+	weekday?: never;
+	support?: never;
 }
 
+interface TextualProps {
+	content: "textual";
+	primary: RsTextualPrimary;
+	weekday?: string | null;
+	support?: string | null;
+	layout: RsLayout;
+	variant?: RsVariant;
+	class?: string;
+	ariaLabel?: string;
+	secondary?: never;
+}
+
+type Props = NumericProps | TextualProps;
+
 const {
-	primary,
-	secondary,
 	layout,
 	variant = "standard",
 	class: className,
 	ariaLabel,
 } = Astro.props;
 
-const initialDigits = computeRsDigits([
-	primary.value,
-	secondary[0].value,
-	secondary[1].value,
-]);
+const content: RsContent =
+	Astro.props.content === "textual" ? "textual" : "numeric";
 
-const primaryDisplay = formatRsDisplayValue(primary.value, primary.displayValue);
-const secondaryDisplays = secondary.map((field) =>
-	formatRsDisplayValue(field.value, field.displayValue),
-);
+const isTextual = content === "textual";
 
-const initialStatus = `${primary.label}: ${primaryDisplay}; ${secondary[0].label}: ${secondaryDisplays[0]}; ${secondary[1].label}: ${secondaryDisplays[1]}`;
+let initialDigits: string | undefined;
+let primaryDisplay = "";
+let secondaryDisplays: string[] = [];
+let initialStatus = "";
+let weekdayText = "";
+let supportText = "";
+let weekdayHidden = true;
+let supportHidden = true;
+let primaryAriaLabel: string | undefined;
+let numericPrimary: RsValueField | null = null;
+let numericSecondary: [RsSecondaryField, RsSecondaryField] | null = null;
+
+if (isTextual) {
+	const textualPrimary = Astro.props.primary as RsTextualPrimary;
+	primaryDisplay = textualPrimary.text;
+	primaryAriaLabel = textualPrimary.ariaLabel;
+
+	const rawWeekday = Astro.props.weekday;
+	weekdayText = typeof rawWeekday === "string" ? rawWeekday.trim() : "";
+	weekdayHidden = weekdayText.length === 0;
+
+	const rawSupport = Astro.props.support;
+	supportText = typeof rawSupport === "string" ? rawSupport.trim() : "";
+	supportHidden = supportText.length === 0;
+
+	const statusParts = [primaryAriaLabel?.trim() || primaryDisplay];
+	if (!weekdayHidden) statusParts.push(weekdayText);
+	if (!supportHidden) statusParts.push(supportText);
+	initialStatus = statusParts.join("; ");
+} else {
+	const props = Astro.props as NumericProps;
+	numericPrimary = props.primary;
+	numericSecondary = props.secondary;
+
+	initialDigits = computeRsDigits([
+		props.primary.value,
+		props.secondary[0].value,
+		props.secondary[1].value,
+	]);
+
+	primaryDisplay = formatRsDisplayValue(props.primary.value, props.primary.displayValue);
+	secondaryDisplays = props.secondary.map((field) =>
+		formatRsDisplayValue(field.value, field.displayValue),
+	);
+	primaryAriaLabel = props.primary.ariaLabel;
+
+	initialStatus = `${props.primary.label}: ${primaryDisplay}; ${props.secondary[0].label}: ${secondaryDisplays[0]}; ${props.secondary[1].label}: ${secondaryDisplays[1]}`;
+}
 ---
 
-<section
-	class:list={["rs", className]}
-	data-result-summary
-	data-rs-layout={layout}
-	data-rs-variant={variant}
-	data-rs-digits={initialDigits}
-	aria-label={ariaLabel}
->
-	<div class="rs-primary">
-		<div
-			class="rs-value"
-			data-rs-value="primary"
-			data-rs-key="primary"
-			aria-label={primary.ariaLabel}
+{
+	isTextual ? (
+		<section
+			class:list={["rs", className]}
+			data-result-summary
+			data-rs-content="textual"
+			data-rs-layout={layout}
+			data-rs-variant={variant}
+			aria-label={ariaLabel}
 		>
-			{primaryDisplay}
-		</div>
-		<div class="rs-label" data-rs-label="primary">{primary.label}</div>
-	</div>
-
-	<div class="rs-secondary">
-		<div class="rs-secondary-item" data-rs-key={secondary[0].key}>
-			<div
-				class="rs-value"
-				data-rs-value={secondary[0].key}
-				aria-label={secondary[0].ariaLabel}
-			>
-				{secondaryDisplays[0]}
+			<div class="rs-primary">
+				<div
+					class="rs-value"
+					data-rs-value="primary"
+					data-rs-key="primary"
+					aria-label={primaryAriaLabel}
+				>
+					{primaryDisplay}
+				</div>
 			</div>
-			<div class="rs-label" data-rs-label={secondary[0].key}>{secondary[0].label}</div>
-		</div>
 
-		<div class="rs-secondary-item" data-rs-key={secondary[1].key}>
 			<div
-				class="rs-value"
-				data-rs-value={secondary[1].key}
-				aria-label={secondary[1].ariaLabel}
+				class="rs-weekday"
+				data-rs-weekday
+				hidden={weekdayHidden}
 			>
-				{secondaryDisplays[1]}
+				{weekdayHidden ? "" : weekdayText}
 			</div>
-			<div class="rs-label" data-rs-label={secondary[1].key}>{secondary[1].label}</div>
-		</div>
-	</div>
 
-	<div class="rs-status" aria-live="polite" aria-atomic="true">{initialStatus}</div>
-</section>
+			<div
+				class="rs-support"
+				data-rs-support
+				hidden={supportHidden}
+			>
+				{supportHidden ? "" : supportText}
+			</div>
+
+			<div class="rs-status" aria-live="polite" aria-atomic="true">{initialStatus}</div>
+		</section>
+	) : (
+		<section
+			class:list={["rs", className]}
+			data-result-summary
+			data-rs-content="numeric"
+			data-rs-layout={layout}
+			data-rs-variant={variant}
+			data-rs-digits={initialDigits}
+			aria-label={ariaLabel}
+		>
+			<div class="rs-primary">
+				<div
+					class="rs-value"
+					data-rs-value="primary"
+					data-rs-key="primary"
+					aria-label={primaryAriaLabel}
+				>
+					{primaryDisplay}
+				</div>
+				<div class="rs-label" data-rs-label="primary">{numericPrimary?.label}</div>
+			</div>
+
+			<div class="rs-secondary">
+				<div class="rs-secondary-item" data-rs-key={numericSecondary![0].key}>
+					<div
+						class="rs-value"
+						data-rs-value={numericSecondary![0].key}
+						aria-label={numericSecondary![0].ariaLabel}
+					>
+						{secondaryDisplays[0]}
+					</div>
+					<div class="rs-label" data-rs-label={numericSecondary![0].key}>
+						{numericSecondary![0].label}
+					</div>
+				</div>
+
+				<div class="rs-secondary-item" data-rs-key={numericSecondary![1].key}>
+					<div
+						class="rs-value"
+						data-rs-value={numericSecondary![1].key}
+						aria-label={numericSecondary![1].ariaLabel}
+					>
+						{secondaryDisplays[1]}
+					</div>
+					<div class="rs-label" data-rs-label={numericSecondary![1].key}>
+						{numericSecondary![1].label}
+					</div>
+				</div>
+			</div>
+
+			<div class="rs-status" aria-live="polite" aria-atomic="true">{initialStatus}</div>
+		</section>
+	)
+}
