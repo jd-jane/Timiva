@@ -50,7 +50,7 @@ f39f8bc — feat: add Year Progress V2（工具本體）
 ```text
 toolsCatalog：year-progress available:true
 Home 第四張卡片：year-progress
-All Tools：Momentum 分類下可見
+All Tools：Life Progress 分類下可見
 四個正式工具 Related Tools 互連
 Countdown Timer 已改為 shared catalog getRelatedTools()
 自動化驗證：node scripts/validate-tool-link-integration.mjs

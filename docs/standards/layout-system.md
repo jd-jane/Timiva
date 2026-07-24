@@ -177,7 +177,7 @@ Header component 為 locked component，layout 任務不應随意修改。
 
 ### 5.2 分類區
 
-* 分類標題例：`Dates & Events`、`Momentum`、`Focus & Rhythm`
+* 分類標題例：`Important Dates`、`Timers & Focus`、`Daily Rhythm`、`Life Progress`
 * 標題左對齊：`text-left text-lg font-semibold`
 
 ### 5.3 工具卡片

@@ -5,6 +5,48 @@
 
 ---
 
+## 2026-07-24 — Formal tool category display names aligned
+
+### 背景
+
+```text
+正式產品文件已使用 Important Dates／Timers & Focus／Daily Rhythm／Life Progress，
+但 All Tools UI i18n 仍顯示舊名稱（Dates & Events／Productivity／Body & Flow／Momentum 等）。
+Owner 核准採用 label-only 修正顯示名稱，不遷移 internal category IDs。
+```
+
+### 決策
+
+```text
+1. 正式四分類顯示名稱鎖定：
+   Important Dates / 重要日子
+   Timers & Focus / 計時與專注
+   Daily Rhythm / 日常節奏
+   Life Progress / 人生進度
+2. 本次採用 label-only：只更新 allTools.categories EN／ZH 與 preview 標題。
+3. 不遷移 existing internal IDs：
+   dates-events／productivity／body-flow／momentum
+4. Internal IDs 是既有穩定 technical identifiers，不代表產品顯示名稱。
+5. 新 UI、active canonical 文件與未來新資料命名，不得再使用舊分類語彙作為顯示名稱。
+6. All Tools 空分類繼續隱藏（Daily Rhythm 無 available 工具時不顯示）。
+7. Preview／all-tools 顯示四分類，供 layout fixture 使用。
+8. Home marketing chips 不屬於四大分類標題；本輪不改（含 ZH「重要日期」）。
+9. 不改工具歸屬、排序、routes、slugs、Related mapping、SEO 或視覺 baseline。
+10. Implementation commit：e02e48f fix: align tool category display labels
+11. Canonical validator：scripts/validate-tool-category-labels.mjs（65 passed／0 failed）
+12. 尚未 push／deploy。
+```
+
+### 影響
+
+```text
+正式 All Tools 與 preview 分類標題對齊產品語彙。
+後續分類顯示必須走 i18n allTools.categories＋validator；
+不得再把舊 UI 名稱寫成現行顯示名稱。
+```
+
+---
+
 ## 2026-07-24 — Shared Desktop Calendar production deployment complete
 
 ### 背景
