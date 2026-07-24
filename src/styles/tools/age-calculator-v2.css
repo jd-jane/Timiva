@@ -5,13 +5,12 @@
 	background: transparent;
 }
 
-[data-age-calculator-v2] > :not([data-acv2-drawer]) {
+[data-age-calculator-v2] > :not([data-acv2-drawer]):not([data-desktop-calendar]) {
 	position: relative;
 }
 
-/* Desktop calendar popover 為 root 直屬子層，stacking 高於 main / lower / drawer */
-[data-age-calculator-v2] > .acv2-calendar-popover {
-	position: fixed;
+/* DesktopCalendar stacking only — 不覆寫 shared calendar internals */
+[data-age-calculator-v2] > [data-desktop-calendar] {
 	z-index: 80;
 }
 
@@ -457,184 +456,10 @@ body:has([data-age-calculator-v2]) header {
 		height: 1.125rem;
 	}
 
-	/* Desktop calendar popover — fixed，結果區右側；高於下方內容 */
-	[data-age-calculator-v2] .acv2-calendar-popover {
-		position: fixed;
-		z-index: 80;
-		width: min(22rem, calc(100vw - 2rem));
-		margin: 0;
-		transform: none;
-	}
-
-	[data-age-calculator-v2] .acv2-calendar-popover[hidden] {
-		display: none;
-	}
-
-	[data-age-calculator-v2] .acv2-calendar-panel {
-		box-sizing: border-box;
-		width: 100%;
-		padding: 12px 18px 10px;
-		border-radius: 18px;
-		border: 1px solid rgb(255 255 255 / 0.08);
-		background: linear-gradient(
-			165deg,
-			rgb(120 108 210 / 0.22),
-			rgb(78 96 170 / 0.18)
-		);
-		box-shadow: 0 18px 48px rgb(0 0 0 / 0.42);
-		-webkit-backdrop-filter: blur(12px);
-		backdrop-filter: blur(12px);
-	}
-
-	[data-age-calculator-v2] .calendar-toolbar {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.375rem;
-		margin-bottom: 0.5rem;
-	}
-
-	[data-age-calculator-v2] .acv2-calendar-selects {
-		display: flex;
-		flex: 1 1 auto;
-		align-items: center;
-		justify-content: center;
-		gap: 0.375rem;
-		min-width: 0;
-	}
-
-	[data-age-calculator-v2] .acv2-calendar-select-wrap {
-		position: relative;
-		display: block;
-		min-width: 0;
-	}
-
-	[data-age-calculator-v2] .acv2-calendar-select {
-		box-sizing: border-box;
-		width: 100%;
-		min-width: 4.5rem;
-		max-width: 7.5rem;
-		min-height: 2.25rem;
-		padding: 0.25rem 1.75rem 0.25rem 0.625rem;
-		border-radius: 0.625rem;
-		border: 1px solid rgb(255 255 255 / 0.12);
-		background-color: rgb(255 255 255 / 0.08);
-		background-image: linear-gradient(45deg, transparent 50%, rgb(248 250 252 / 0.72) 50%),
-			linear-gradient(135deg, rgb(248 250 252 / 0.72) 50%, transparent 50%);
-		background-position:
-			calc(100% - 0.85rem) calc(50% - 0.1rem),
-			calc(100% - 0.55rem) calc(50% - 0.1rem);
-		background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
-		background-repeat: no-repeat;
-		color: rgb(248 250 252 / 0.94);
-		font-size: 0.8125rem;
-		font-weight: 600;
-		line-height: 1.25;
-		appearance: none;
-		-webkit-appearance: none;
-		cursor: pointer;
-	}
-
-	[data-age-calculator-v2] .acv2-calendar-select:focus-visible {
-		outline: 2px solid rgb(255 255 255 / 0.45);
-		outline-offset: 2px;
-	}
-
-	[data-age-calculator-v2] .acv2-calendar-select option {
-		color: rgb(15 23 42);
-		background: rgb(248 250 252);
-	}
-
-	[data-age-calculator-v2] .calendar-nav-btn {
-		min-height: 2.25rem;
-		min-width: 2.25rem;
-		padding: 0.25rem 0.5rem;
-		border-radius: 0.625rem;
-		border: 1px solid rgb(255 255 255 / 0.12);
-		background: rgb(255 255 255 / 0.08);
-		font-size: 1rem;
-		font-weight: 500;
-		color: rgb(248 250 252 / 0.94);
-		cursor: pointer;
-	}
-
-	[data-age-calculator-v2] .calendar-nav-btn:disabled {
-		opacity: 0.35;
-		cursor: default;
-	}
-
-	[data-age-calculator-v2] .calendar-weekdays {
-		display: grid;
-		grid-template-columns: repeat(7, minmax(0, 1fr));
-		gap: 1px;
-		margin-bottom: 0.25rem;
-	}
-
-	[data-age-calculator-v2] .calendar-weekdays span {
-		text-align: center;
-		font-size: 0.6875rem;
-		font-weight: 600;
-		letter-spacing: 0.04em;
-		color: rgb(226 232 240 / 0.72);
-	}
-
-	[data-age-calculator-v2] .calendar-grid {
-		display: grid;
-		grid-template-columns: repeat(7, minmax(0, 1fr));
-		gap: 1px;
-	}
-
-	[data-age-calculator-v2] .calendar-cell--empty,
-	[data-age-calculator-v2] .calendar-day {
-		min-height: 2.375rem;
-	}
-
-	[data-age-calculator-v2] .calendar-day {
-		position: relative;
-		display: grid;
-		place-items: center;
-		border: 0;
-		border-radius: 0.625rem;
-		background: transparent;
-		font-size: 0.8125rem;
-		font-weight: 500;
-		color: rgb(248 250 252 / 0.94);
-		cursor: pointer;
-		transition:
-			background 160ms ease,
-			color 160ms ease,
-			box-shadow 160ms ease;
-	}
-
-	[data-age-calculator-v2] .calendar-day.is-today {
-		box-shadow: inset 0 0 0 1.5px rgb(165 180 252 / 0.9);
-	}
-
-	[data-age-calculator-v2] .calendar-day.is-selected {
-		color: #fff;
-		background: rgb(99 102 241 / 0.92);
-		box-shadow: inset 0 0 0 1px rgb(210 218 255 / 0.4);
-	}
-
-	[data-age-calculator-v2] .calendar-day:disabled {
-		opacity: 0.28;
-		cursor: default;
-	}
+	/* Desktop calendar internals → shared desktop-calendar.css */
 
 	@media (hover: hover) and (pointer: fine) {
 		[data-age-calculator-v2] .acv2-birth-capsule__icon:hover {
-			background: rgb(255 255 255 / 0.1);
-		}
-
-		[data-age-calculator-v2] .calendar-nav-btn:hover:not(:disabled) {
-			background: rgb(255 255 255 / 0.14);
-		}
-
-		[data-age-calculator-v2] .acv2-calendar-select:hover {
-			background-color: rgb(255 255 255 / 0.12);
-		}
-
-		[data-age-calculator-v2] .calendar-day:hover:not(:disabled):not(.is-selected) {
 			background: rgb(255 255 255 / 0.1);
 		}
 	}

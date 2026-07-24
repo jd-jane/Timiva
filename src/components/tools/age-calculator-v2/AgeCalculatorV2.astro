@@ -8,6 +8,7 @@ import { getRelatedTools, type CatalogToolId } from "../../../data/toolsCatalog"
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getMessages } from "../../../i18n/messages";
 import "../../../styles/tools/tool-mobile-sheet-v2-baseline.css";
+import DesktopCalendar from "../shared/DesktopCalendar.astro";
 
 interface Props {
 	locale?: Locale;
@@ -405,121 +406,33 @@ const clientI18n = {
 
 	<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 
-	{/* Desktop calendar popover — fixed，對齊結果區右側；不掛在 input 下方 */}
-	<div
-		id="acv2-calendar-popover"
-		class="acv2-calendar-popover"
-		data-acv2-calendar-popover
-		role="dialog"
-		aria-label={m.calendarLabel}
-		aria-hidden="true"
-		hidden
-	>
-		<div class="calendar-panel calendar-card acv2-calendar-panel">
-			<div class="calendar-toolbar">
-				<button
-					type="button"
-					class="calendar-nav-btn"
-					data-acv2-calendar-prev
-					aria-label={m.previousMonth}
-				>
-					‹
-				</button>
-				<div class="acv2-calendar-selects">
-					<label class="acv2-calendar-select-wrap">
-						<span class="sr-only">{m.monthFieldLabel}</span>
-						<select
-							class="acv2-calendar-select"
-							data-acv2-calendar-month-select
-							aria-label={m.monthFieldLabel}
-						>
-						</select>
-					</label>
-					<label class="acv2-calendar-select-wrap">
-						<span class="sr-only">{m.yearFieldLabel}</span>
-						<select
-							class="acv2-calendar-select"
-							data-acv2-calendar-year-select
-							aria-label={m.yearFieldLabel}
-						>
-						</select>
-					</label>
-				</div>
-				<button
-					type="button"
-					class="calendar-nav-btn"
-					data-acv2-calendar-next
-					aria-label={m.nextMonth}
-				>
-					›
-				</button>
-			</div>
+	{/* Desktop Birth Calendar — shared popover-compact */}
+	<DesktopCalendar
+		variant="popover-compact"
+		idPrefix="acv2-calendar-popover"
+		weekdays={m.weekdays}
+		labels={{
+			calendar: m.calendarLabel,
+			previousMonth: m.previousMonth,
+			nextMonth: m.nextMonth,
+			month: m.monthFieldLabel,
+			year: m.yearFieldLabel,
+		}}
+	/>
 
-			<div class="calendar-weekdays" aria-hidden="true">
-				{m.weekdays.map((day) => <span>{day}</span>)}
-			</div>
-
-			<div class="calendar-grid" data-acv2-calendar-grid></div>
-		</div>
-	</div>
-
-	{/* Desktop as-of calendar popover — 與 birth calendar 同一套視覺 */}
-	<div
-		id="acv2-asof-calendar-popover"
-		class="acv2-calendar-popover"
-		data-acv2-asof-calendar-popover
-		role="dialog"
-		aria-label={m.asOfCalendarLabel}
-		aria-hidden="true"
-		hidden
-	>
-		<div class="calendar-panel calendar-card acv2-calendar-panel">
-			<div class="calendar-toolbar">
-				<button
-					type="button"
-					class="calendar-nav-btn"
-					data-acv2-asof-calendar-prev
-					aria-label={m.previousMonth}
-				>
-					‹
-				</button>
-				<div class="acv2-calendar-selects">
-					<label class="acv2-calendar-select-wrap">
-						<span class="sr-only">{m.monthFieldLabel}</span>
-						<select
-							class="acv2-calendar-select"
-							data-acv2-asof-calendar-month-select
-							aria-label={m.monthFieldLabel}
-						>
-						</select>
-					</label>
-					<label class="acv2-calendar-select-wrap">
-						<span class="sr-only">{m.yearFieldLabel}</span>
-						<select
-							class="acv2-calendar-select"
-							data-acv2-asof-calendar-year-select
-							aria-label={m.yearFieldLabel}
-						>
-						</select>
-					</label>
-				</div>
-				<button
-					type="button"
-					class="calendar-nav-btn"
-					data-acv2-asof-calendar-next
-					aria-label={m.nextMonth}
-				>
-					›
-				</button>
-			</div>
-
-			<div class="calendar-weekdays" aria-hidden="true">
-				{m.weekdays.map((day) => <span>{day}</span>)}
-			</div>
-
-			<div class="calendar-grid" data-acv2-asof-calendar-grid></div>
-		</div>
-	</div>
+	{/* Desktop As-of Calendar — shared popover-compact；與 Birth 不同 idPrefix */}
+	<DesktopCalendar
+		variant="popover-compact"
+		idPrefix="acv2-asof-calendar-popover"
+		weekdays={m.weekdays}
+		labels={{
+			calendar: m.asOfCalendarLabel,
+			previousMonth: m.previousMonth,
+			nextMonth: m.nextMonth,
+			month: m.monthFieldLabel,
+			year: m.yearFieldLabel,
+		}}
+	/>
 </div>
 
 <div data-acv2-sheet-portal data-mobile-sheet-baseline hidden aria-hidden="true">
