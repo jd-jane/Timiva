@@ -173,10 +173,10 @@ export const zh: Messages = {
     heading: "全部工具",
     lead: "這裡整理 Timiva 目前已完成的工具，選一個就能立即開始使用。",
     categories: {
-      datesEvents: "日期與事件",
-      productivity: "效率與計時",
-      bodyFlow: "身體與節奏",
-      momentum: "長期進度",
+      datesEvents: "重要日子",
+      productivity: "計時與專注",
+      bodyFlow: "日常節奏",
+      momentum: "人生進度",
     },
   },
   tools: {

@@ -183,10 +183,10 @@ export const en = {
     heading: "All Tools",
     lead: "Every finished Timiva tool in one place—pick what you need and start in seconds.",
     categories: {
-      datesEvents: "Dates & Events",
-      productivity: "Productivity",
-      bodyFlow: "Body & Flow",
-      momentum: "Momentum",
+      datesEvents: "Important Dates",
+      productivity: "Timers & Focus",
+      bodyFlow: "Daily Rhythm",
+      momentum: "Life Progress",
     },
   },
   tools: {
