@@ -1,0 +1,1215 @@
+/**
+ * Adaptive Mobile Editor — B4 Mixed Controls UI Correction.
+ * Boundary: [data-ame-root]／.ame-*／--ame-* only. No MSB selectors.
+ * Presentation swap is CSS-only（orientation media）. No open／close on rotate.
+ */
+
+[data-ame-root] {
+	--ame-top-clearance: 4.5rem;
+	--ame-underlay-color: rgb(8 12 28 / 0.5);
+	--ame-surface: rgb(28 26 68);
+	--ame-border: var(--timiva-glass-border, rgb(255 255 255 / 0.14));
+	--ame-text: var(--timiva-text-primary, rgb(248 247 252 / 0.96));
+	--ame-text-muted: var(--timiva-text-muted, rgb(244 243 248 / 0.58));
+	--ame-action-primary-bg: var(--timiva-action-primary-bg, rgb(99 102 241 / 0.92));
+	--ame-choice-selected-bg: rgb(99 102 241 / 0.28);
+	--ame-choice-selected-border: rgb(165 180 252 / 0.72);
+	--ame-radius: 1.5rem;
+	--ame-row-radius: 0.75rem;
+	--ame-z-underlay: 50;
+	--ame-z-shell: 60;
+	/* Landscape: Cancel「C」與 Body 內文共用左緣；右側對稱 */
+	--ame-landscape-inline: 1.25rem;
+	--ame-numeric-label-width: auto;
+	--ame-numeric-field-gap: 0.875rem;
+	--ame-setting-gap: 0.875rem;
+	/* Form vertical rhythm：Date→Unit baseline；Choice Groups＋Setting Rows＋Toggle share */
+	--ame-form-stack-gap: 0.5rem;
+	--ame-setting-row-min-height: 3rem;
+	--ame-setting-row-padding-y: 0.625rem;
+	--ame-setting-row-padding-x: 0.875rem;
+	--ame-active-field-safe-gap: 1rem;
+	--ame-active-field-safe-gap-min: 0.75rem;
+	/* Choice Group floating label notch（Direction／Priority／Flags shared） */
+	--ame-group-surface: rgb(255 255 255 / 0.03);
+	--ame-group-label-bg: var(--ame-surface);
+	--ame-group-label-pad-x: 0.375rem;
+	--ame-group-label-start: 0.75rem;
+	--ame-group-border-width: 1px;
+	background: transparent;
+}
+
+html.ame-scroll-lock,
+body.ame-scroll-lock {
+	overflow: hidden;
+}
+
+[data-ame-root][data-ame-open="false"],
+[data-ame-root]:not([data-ame-open="true"]) {
+	display: none;
+	pointer-events: none;
+}
+
+[data-ame-root][data-ame-open="true"] {
+	display: block;
+	pointer-events: none;
+}
+
+[data-ame-root][data-ame-open="true"] .ame-underlay,
+[data-ame-root][data-ame-open="true"] .ame-shell {
+	pointer-events: auto;
+}
+
+.ame-underlay {
+	box-sizing: border-box;
+	position: fixed;
+	inset: 0;
+	z-index: var(--ame-z-underlay);
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: var(--ame-underlay-color);
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* Portrait: content-driven height; max only；no min-height floor */
+.ame-shell {
+	box-sizing: border-box;
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: var(--ame-z-shell);
+	display: flex;
+	max-height: calc(100dvh - var(--ame-top-clearance));
+	flex-direction: column;
+	overflow: hidden;
+	border: 1px solid var(--ame-border);
+	border-bottom: 0;
+	border-radius: var(--ame-radius) var(--ame-radius) 0 0;
+	background: var(--ame-surface);
+	color: var(--ame-text);
+	outline: none;
+}
+
+.ame-handle {
+	width: 2.5rem;
+	height: 0.25rem;
+	flex-shrink: 0;
+	margin: 0.5rem auto 0;
+	border-radius: 9999px;
+	background: rgb(255 255 255 / 0.28);
+}
+
+.ame-portrait-header {
+	box-sizing: border-box;
+	display: block;
+	flex-shrink: 0;
+	padding: 0.5rem 1.25rem 0.25rem;
+}
+
+.ame-portrait-title {
+	margin: 0;
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+	text-align: center;
+	color: var(--ame-text);
+}
+
+/* Landscape topbar — hidden in Portrait */
+.ame-topbar {
+	display: none;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding: 0.5rem 0.75rem;
+	border-bottom: 1px solid var(--ame-border);
+}
+
+.ame-topbar-leading {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	min-width: 0;
+}
+
+.ame-topbar-title {
+	margin: 0;
+	flex: 1 1 auto;
+	min-width: 0;
+	text-align: left;
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+}
+
+.ame-topbar-btn {
+	box-sizing: border-box;
+	flex-shrink: 0;
+	min-height: 2.75rem;
+	min-width: 0;
+	padding: 0.5rem 0.75rem;
+	border: 0;
+	border-radius: 9999px;
+	background: transparent;
+	color: var(--ame-text);
+	font: inherit;
+	font-size: 0.875rem;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.ame-topbar-btn--done {
+	font-weight: 600;
+	color: rgb(165 180 252);
+}
+
+.ame-topbar-btn--reset {
+	font-weight: 400;
+	color: rgb(255 255 255 / 0.68);
+	background: transparent;
+	border: 0;
+}
+
+/* B8.2 live lifecycle：hide Cancel chrome（underlay dismiss remains；no rollback affordance） */
+[data-ame-root][data-ame-lifecycle="live"] [data-ame-cancel] {
+	display: none;
+}
+
+/* Workspace: Body＋contextual Keypad dock */
+.ame-workspace {
+	box-sizing: border-box;
+	display: flex;
+	flex: 1 1 auto;
+	min-width: 0;
+	min-height: 0;
+	flex-direction: column;
+}
+
+/* Body owns scroll；Header／Action／Keypad dock stay fixed */
+.ame-body {
+	box-sizing: border-box;
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
+	padding: 0.75rem 1.25rem;
+	-webkit-overflow-scrolling: touch;
+}
+
+.ame-layout-main {
+	box-sizing: border-box;
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.ame-body-copy {
+	margin: 0;
+	font-size: 0.875rem;
+	line-height: 1.375rem;
+	color: var(--ame-text-muted);
+}
+
+.ame-body-copy + .ame-body-copy {
+	margin-top: 0.75rem;
+}
+
+/* Portrait action row: Reset left · Done right */
+.ame-action-row {
+	box-sizing: border-box;
+	display: flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.5rem;
+	padding: 0.5rem 1.25rem;
+	padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+	border-top: 1px solid var(--ame-border);
+}
+
+.ame-action-reset {
+	box-sizing: border-box;
+	display: inline-flex;
+	min-height: 2.75rem;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5rem 0.25rem;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: rgb(255 255 255 / 0.68);
+	font: inherit;
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.25rem;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.ame-action-reset:active,
+.ame-topbar-btn--reset:active {
+	opacity: 0.72;
+}
+
+.ame-action-done {
+	box-sizing: border-box;
+	display: inline-flex;
+	width: auto;
+	max-width: 100%;
+	min-height: 2.75rem;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5rem 1.25rem;
+	border-radius: 9999px;
+	border: 0;
+	border-color: transparent;
+	background: var(--ame-action-primary-bg);
+	color: white;
+	font: inherit;
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* Layout fixtures: hide Reset（no draft stress） */
+[data-ame-root]:not([data-ame-density="mixed"]):not([data-ame-density="numeric"]) [data-ame-reset] {
+	display: none;
+}
+
+[data-ame-root]:not([data-ame-density="mixed"]):not([data-ame-density="numeric"]) .ame-action-row {
+	justify-content: flex-end;
+}
+
+/* —— Setting rows（Date／Select／Numeric／Toggle） —— */
+
+.ame-numeric-panel {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	margin-top: 0;
+}
+
+.ame-setting-stack,
+.ame-numeric-panel {
+	box-sizing: border-box;
+	display: grid;
+	grid-template-columns: max-content minmax(0, 1fr);
+	row-gap: var(--ame-form-stack-gap);
+	column-gap: var(--ame-setting-gap);
+	min-width: 0;
+}
+
+.ame-setting-row {
+	box-sizing: border-box;
+	display: grid;
+	grid-template-columns: subgrid;
+	grid-column: 1 / -1;
+	width: 100%;
+	min-width: 0;
+	min-height: var(--ame-setting-row-min-height);
+	align-items: center;
+	gap: unset;
+	padding: var(--ame-setting-row-padding-y) var(--ame-setting-row-padding-x);
+	border: 1px solid var(--ame-border);
+	border-radius: var(--ame-row-radius);
+	background: rgb(255 255 255 / 0.04);
+	color: var(--ame-text);
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+button.ame-setting-row {
+	appearance: none;
+}
+
+.ame-setting-label,
+.ame-numeric-label {
+	box-sizing: border-box;
+	flex: 0 0 auto;
+	width: var(--ame-numeric-label-width);
+	margin: 0;
+	font-size: 0.75rem;
+	font-weight: 500;
+	line-height: 1rem;
+	color: var(--ame-text-muted);
+	white-space: nowrap;
+}
+
+.ame-setting-control {
+	box-sizing: border-box;
+	display: flex;
+	min-width: 0;
+	max-width: 100%;
+	align-items: center;
+	/* Value／selected text share one left origin；icons／toggle may sit right */
+	justify-content: flex-start;
+}
+
+.ame-setting-row--toggle .ame-setting-control {
+	justify-content: flex-end;
+}
+
+.ame-numeric-field[data-ame-active="true"] {
+	border-color: rgb(165 180 252 / 0.72);
+	background: rgb(255 255 255 / 0.07);
+}
+
+.ame-numeric-value {
+	box-sizing: border-box;
+	flex: 1 1 auto;
+	min-width: 0;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-align: left;
+	font-size: 1.25rem;
+	font-weight: 500;
+	line-height: 1.5rem;
+	letter-spacing: 0.02em;
+	font-variant-numeric: tabular-nums;
+}
+
+.ame-numeric-value--placeholder {
+	color: rgb(255 255 255 / 0.34);
+	font-weight: 400;
+}
+
+.ame-native-control {
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	max-width: 100%;
+	min-height: 2.25rem;
+	padding: 0.25rem 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: var(--ame-text);
+	font: inherit;
+	font-size: 0.875rem;
+	text-align: left;
+	color-scheme: dark;
+}
+
+.ame-native-control:focus {
+	outline: none;
+}
+
+.ame-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+/* —— Choice Setting Groups —— */
+
+.ame-setting-group {
+	box-sizing: border-box;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+	min-width: 0;
+	/* Kill fieldset UA defaults that break the top-border notch */
+	min-inline-size: 0;
+	/* External spacing owned only by form stack gap — no Direction／Group outer margins */
+	margin: 0;
+	margin-block: 0;
+	padding: 0.625rem;
+	padding-block-start: 0.875rem;
+	border: var(--ame-group-border-width) solid var(--ame-border);
+	border-radius: var(--ame-row-radius);
+	background: var(--ame-group-surface);
+}
+
+.ame-setting-group-label {
+	box-sizing: border-box;
+	/* Absolute float on the top border — notch = text + pad only */
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline-start: var(--ame-group-label-start);
+	transform: translateY(-50%);
+	z-index: 1;
+	display: inline-block;
+	width: max-content;
+	max-width: calc(100% - (var(--ame-group-label-start) * 2));
+	float: none;
+	margin: 0;
+	padding-block: 0;
+	padding-inline: var(--ame-group-label-pad-x);
+	border: 0;
+	/* Opaque Editor surface masks the border cleanly under the label */
+	background: var(--ame-group-label-bg);
+	color: var(--ame-text-muted);
+	font-size: 0.75rem;
+	font-weight: 500;
+	line-height: 1rem;
+	white-space: nowrap;
+	pointer-events: none;
+}
+
+.ame-choice-grid {
+	box-sizing: border-box;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.375rem;
+	min-width: 0;
+}
+
+/* Flags：Portrait 兩欄（default above）；Landscape keypad-hidden 三欄 below */
+[data-ame-choice-group="flags"] .ame-choice-grid {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ame-choice-row {
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.375rem;
+	min-width: 0;
+	min-height: 2.75rem;
+	padding: 0.5rem 0.625rem;
+	border: 1px solid transparent;
+	border-radius: 0.625rem;
+	background: transparent;
+	color: var(--ame-text);
+	font-size: 0.875rem;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.ame-choice-row:has(input:checked) {
+	border-color: var(--ame-choice-selected-border);
+	background: var(--ame-choice-selected-bg);
+}
+
+/*
+  Priority P→L height contract：
+  selected／unselected share identical box metrics.
+  selected may only change bg／border／check — never height／padding／stretch.
+*/
+[data-ame-choice-group="priority"] .ame-choice-grid {
+	align-items: start;
+	grid-auto-rows: max-content;
+}
+
+[data-ame-choice-group="priority"] .ame-choice-row {
+	align-self: start;
+	box-sizing: border-box;
+	min-height: 2.75rem;
+	min-block-size: 2.75rem;
+	height: auto;
+	block-size: max-content;
+	max-height: none;
+	max-block-size: none;
+	padding: 0.5rem 0.625rem;
+	padding-block: 0.5rem;
+	padding-inline: 0.625rem;
+}
+
+[data-ame-choice-group="priority"] .ame-choice-row:has(input:checked) {
+	min-height: 2.75rem;
+	min-block-size: 2.75rem;
+	height: auto;
+	block-size: max-content;
+	max-height: none;
+	max-block-size: none;
+	padding: 0.5rem 0.625rem;
+	padding-block: 0.5rem;
+	padding-inline: 0.625rem;
+	align-self: start;
+}
+
+.ame-choice-lead {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.375rem;
+	min-width: 0;
+}
+
+.ame-choice-symbol {
+	flex-shrink: 0;
+	font-size: 1rem;
+	line-height: 1;
+	color: var(--ame-text);
+}
+
+.ame-choice-text {
+	min-width: 0;
+	text-align: left;
+}
+
+.ame-choice-row input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+	appearance: none;
+}
+
+/* Single：未選不顯示空心圓；選取顯示 check */
+.ame-setting-group[data-ame-choice-mode="single"] .ame-choice-indicator {
+	box-sizing: border-box;
+	display: inline-flex;
+	width: 1.125rem;
+	height: 1.125rem;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: rgb(196 204 255);
+	font-size: 0.9375rem;
+	font-weight: 600;
+	line-height: 1;
+	opacity: 0;
+}
+
+.ame-setting-group[data-ame-choice-mode="single"] .ame-choice-row:has(input:checked) .ame-choice-indicator {
+	opacity: 1;
+}
+
+.ame-setting-group[data-ame-choice-mode="single"] .ame-choice-row:has(input:checked) .ame-choice-indicator::before {
+	content: "✓";
+}
+
+/* Multi：清楚的 checkbox 外框＋checked fill */
+.ame-setting-group[data-ame-choice-mode="multi"] .ame-choice-indicator {
+	box-sizing: border-box;
+	width: 1.125rem;
+	height: 1.125rem;
+	flex-shrink: 0;
+	border: 1.5px solid rgb(255 255 255 / 0.35);
+	border-radius: 0.3rem;
+	background: transparent;
+}
+
+.ame-setting-group[data-ame-choice-mode="multi"] .ame-choice-row:has(input:checked) .ame-choice-indicator {
+	border-color: rgb(165 180 252);
+	background: var(--ame-action-primary-bg);
+}
+
+.ame-setting-group[data-ame-choice-mode="multi"] .ame-choice-row:has(input:checked) .ame-choice-indicator::before {
+	content: "✓";
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+	color: white;
+	font-size: 0.75rem;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.ame-toggle {
+	box-sizing: border-box;
+	position: relative;
+	width: 3rem;
+	min-width: 3rem;
+	height: 1.75rem;
+	padding: 0;
+	border: 1px solid var(--ame-border);
+	border-radius: 9999px;
+	background: rgb(255 255 255 / 0.08);
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.ame-toggle-thumb {
+	position: absolute;
+	top: 0.15rem;
+	left: 0.15rem;
+	width: 1.3rem;
+	height: 1.3rem;
+	border-radius: 9999px;
+	background: rgb(248 247 252 / 0.9);
+}
+
+.ame-toggle--on,
+.ame-toggle[aria-checked="true"] {
+	background: rgb(99 102 241 / 0.55);
+	border-color: transparent;
+}
+
+.ame-toggle--on .ame-toggle-thumb,
+.ame-toggle[aria-checked="true"] .ame-toggle-thumb {
+	left: auto;
+	right: 0.15rem;
+}
+
+/* —— Keypad —— */
+
+.ame-layout-keypad {
+	box-sizing: border-box;
+	flex-shrink: 0;
+	display: none;
+	padding: 0.5rem 1.25rem 0.25rem;
+	border-top: 1px solid var(--ame-border);
+	background: var(--ame-surface);
+}
+
+.ame-keypad {
+	box-sizing: border-box;
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.5rem;
+}
+
+.ame-key {
+	box-sizing: border-box;
+	display: inline-flex;
+	min-height: 2.75rem;
+	min-width: 2.75rem;
+	align-items: center;
+	justify-content: center;
+	padding: 0.5rem;
+	border: 1px solid var(--ame-border);
+	border-radius: 0.75rem;
+	background: rgb(255 255 255 / 0.06);
+	color: var(--ame-text);
+	font: inherit;
+	font-size: 1.0625rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.ame-key--action {
+	font-size: 0.8125rem;
+	font-weight: 500;
+	color: rgb(255 255 255 / 0.78);
+	border-color: transparent;
+	background: transparent;
+}
+
+.ame-key-icon {
+	display: block;
+	flex-shrink: 0;
+}
+
+.ame-key:active {
+	opacity: 0.72;
+}
+
+/* Delete＋Hide share the last keypad cell */
+.ame-key-cluster {
+	box-sizing: border-box;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	align-items: stretch;
+	gap: 0.25rem;
+	min-width: 0;
+	min-height: 2.75rem;
+}
+
+.ame-key--cluster {
+	min-width: 2.75rem;
+	min-height: 2.75rem;
+	width: 100%;
+	padding: 0.25rem;
+	font-size: 0.75rem;
+}
+
+/* Density visibility */
+[data-ame-root][data-ame-density="numeric"] [data-ame-layout-fixtures],
+[data-ame-root][data-ame-density="mixed"] [data-ame-layout-fixtures] {
+	display: none;
+}
+
+[data-ame-root][data-ame-density="numeric"] [data-ame-numeric-panel] {
+	display: grid;
+}
+
+[data-ame-root][data-ame-density="mixed"] [data-ame-mixed-panel] {
+	display: flex;
+}
+
+[data-ame-root]:not([data-ame-density="numeric"]) [data-ame-numeric-panel],
+[data-ame-root]:not([data-ame-density="mixed"]) [data-ame-mixed-panel] {
+	display: none;
+}
+
+/* Contextual keypad: only when data-ame-keypad-visible=true */
+[data-ame-root][data-ame-keypad-visible="true"] [data-ame-layout-keypad] {
+	display: block;
+}
+
+[data-ame-root]:not([data-ame-keypad-visible="true"]) [data-ame-layout-keypad] {
+	display: none;
+}
+
+/* —— B4 Mixed panel —— */
+
+.ame-mixed-panel {
+	box-sizing: border-box;
+	display: none;
+	flex-direction: column;
+	gap: var(--ame-form-stack-gap);
+	min-width: 0;
+}
+
+.ame-mixed-grid {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	gap: var(--ame-form-stack-gap);
+	min-width: 0;
+}
+
+.ame-error {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0.625rem 0.75rem;
+	border: 1px solid rgb(248 113 113 / 0.45);
+	border-radius: 0.75rem;
+	background: rgb(248 113 113 / 0.12);
+	color: rgb(254 202 202);
+	font-size: 0.8125rem;
+	line-height: 1.25rem;
+}
+
+/* Landscape: same AME surface, full-bleed; CSS-only presentation */
+@media (orientation: landscape) and (max-height: 700px) {
+	.ame-underlay {
+		display: none;
+	}
+
+	.ame-shell {
+		inset: 0;
+		/* Constrain to viewport so flex children get a definite remaining height */
+		width: auto;
+		height: 100dvh;
+		max-height: 100dvh;
+		border: 0;
+		border-radius: 0;
+		background: var(--ame-surface);
+		padding-top: env(safe-area-inset-top, 0px);
+		padding-right: env(safe-area-inset-right, 0px);
+		padding-bottom: env(safe-area-inset-bottom, 0px);
+		padding-left: env(safe-area-inset-left, 0px);
+		overflow: hidden;
+	}
+
+	.ame-handle,
+	.ame-portrait-header,
+	.ame-action-row {
+		display: none;
+	}
+
+	/* Cancel＋Reset | Title（absolute center） | Done */
+	.ame-topbar {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		flex-shrink: 0;
+		column-gap: 0.5rem;
+		padding: 0.375rem 0;
+		border-bottom: 1px solid var(--ame-border);
+	}
+
+	.ame-topbar-leading {
+		grid-column: 1;
+		justify-self: start;
+		padding-left: var(--ame-landscape-inline);
+	}
+
+	.ame-topbar-title {
+		grid-column: 2;
+		justify-self: center;
+		flex: none;
+		margin: 0;
+		text-align: center;
+		pointer-events: none;
+	}
+
+	.ame-topbar-leading .ame-topbar-btn {
+		box-sizing: border-box;
+		min-height: 2.75rem;
+		min-width: 0;
+		margin: 0;
+		padding-top: 0.625rem;
+		padding-bottom: 0.625rem;
+		padding-left: 0;
+		padding-right: 0.75rem;
+		border: 0;
+		border-radius: 0;
+		background: transparent;
+		color: rgb(255 255 255 / 0.68);
+		font-weight: 400;
+	}
+
+	.ame-topbar-leading .ame-topbar-btn:active {
+		opacity: 0.72;
+	}
+
+	.ame-topbar > .ame-topbar-btn--done {
+		grid-column: 3;
+		justify-self: end;
+		box-sizing: border-box;
+		display: inline-flex;
+		width: auto;
+		max-width: 100%;
+		min-height: 2.5rem;
+		min-width: 0;
+		align-items: center;
+		justify-content: center;
+		margin: 0;
+		margin-right: var(--ame-landscape-inline);
+		padding: 0.375rem 1.1rem;
+		border: 0;
+		border-radius: 9999px;
+		background: var(--ame-action-primary-bg);
+		color: white;
+		font-weight: 500;
+	}
+
+	.ame-topbar > .ame-topbar-btn--done:active {
+		opacity: 0.88;
+	}
+
+	.ame-workspace {
+		flex: 1 1 auto;
+		min-height: 0;
+		flex-direction: row;
+		align-items: stretch;
+		gap: 0;
+		overflow: hidden;
+	}
+
+	/* Body scroll；內文 inset 在 layout-main／keypad */
+	.ame-body {
+		flex: 1 1 auto;
+		min-width: 0;
+		min-height: 0;
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		padding: 0;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.ame-layout-main {
+		box-sizing: border-box;
+		min-width: 0;
+		max-width: 100%;
+		padding-top: 1.25rem;
+		padding-right: var(--ame-landscape-inline);
+		padding-bottom: 1rem;
+		padding-left: var(--ame-landscape-inline);
+	}
+
+	/* Keypad hidden: form uses full width；restore right inset already on main */
+	[data-ame-root]:not([data-ame-keypad-visible="true"]) .ame-workspace {
+		flex-direction: column;
+	}
+
+	/* Keypad visible: left form pane＋right fixed keypad, top-aligned */
+	[data-ame-root][data-ame-keypad-visible="true"] .ame-workspace {
+		flex-direction: row;
+		align-items: stretch;
+	}
+
+	[data-ame-root][data-ame-keypad-visible="true"] .ame-body {
+		flex: 1 1 auto;
+		min-width: 0;
+		min-height: 0;
+	}
+
+	[data-ame-root][data-ame-keypad-visible="true"] .ame-layout-main {
+		padding-right: 0.75rem;
+	}
+
+	/*
+	  Landscape reduced-height: right Keypad pane is an independent scroll owner.
+	  Key sizes／gaps unchanged. Natural keypad height — scroll only when clipped.
+	*/
+	[data-ame-root][data-ame-keypad-visible="true"] .ame-layout-keypad {
+		box-sizing: border-box;
+		flex: 0 0 clamp(11.5rem, 42%, 16.5rem);
+		max-width: 42%;
+		min-height: 0;
+		margin-top: 0;
+		padding-top: 1.25rem;
+		padding-right: var(--ame-landscape-inline);
+		padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+		padding-left: 0.25rem;
+		border-top: 0;
+		align-self: stretch;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		overflow-x: hidden;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	[data-ame-root][data-ame-keypad-visible="true"] .ame-keypad {
+		gap: 0.375rem;
+		flex: 0 0 auto;
+		width: 100%;
+		height: auto;
+		min-height: 0;
+		align-content: start;
+	}
+
+	/* Landscape full-width multi-column when keypad hidden */
+	[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"]) .ame-mixed-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: var(--ame-form-stack-gap);
+		align-items: start;
+	}
+
+	[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+		[data-ame-choice-group="direction"] {
+		grid-column: 1 / -1;
+		/* Span only — no Direction-specific outer margin／gap */
+		margin-block: 0;
+	}
+
+	[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"]) .ame-setting-stack {
+		grid-column: 1 / -1;
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: var(--ame-form-stack-gap);
+	}
+
+	[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"]) .ame-setting-row {
+		display: flex;
+		grid-column: auto;
+		grid-template-columns: none;
+		align-items: center;
+		justify-content: flex-start;
+		gap: var(--ame-setting-gap);
+	}
+
+	[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+		.ame-setting-row--date,
+	[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+		.ame-setting-row--select,
+	[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+		.ame-setting-row--toggle {
+		grid-column: span 2;
+	}
+
+	[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+		.ame-setting-row.ame-numeric-field {
+		grid-column: span 1;
+	}
+
+	[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+		.ame-setting-control {
+		flex: 1 1 auto;
+		min-width: 0;
+		justify-content: flex-start;
+	}
+
+	[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+		.ame-setting-row--toggle
+		.ame-setting-control {
+		justify-content: flex-end;
+	}
+
+	[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+		[data-ame-choice-group="priority"],
+	[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+		[data-ame-choice-group="flags"] {
+		grid-column: span 1;
+		min-width: 0;
+	}
+
+	/* Flags internal grid：keypad hidden → 三欄 */
+	[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+		[data-ame-choice-group="flags"]
+		.ame-choice-grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	/* Direction／Priority remain two-up inside the card */
+	[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+		[data-ame-choice-mode="single"]
+		.ame-choice-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	/*
+	  Priority P→L：explicit landscape block-size normalization.
+	  Prevents first-rotate selected stretch；A↔B keeps identical height.
+	*/
+	[data-ame-choice-group="priority"] .ame-choice-grid {
+		align-items: start;
+		grid-auto-rows: max-content;
+	}
+
+	[data-ame-choice-group="priority"] .ame-choice-row,
+	[data-ame-choice-group="priority"] .ame-choice-row:has(input:checked) {
+		align-self: start;
+		min-height: 2.75rem;
+		min-block-size: 2.75rem;
+		height: auto;
+		block-size: max-content;
+		max-height: none;
+		max-block-size: none;
+		padding: 0.5rem 0.625rem;
+		padding-block: 0.5rem;
+		padding-inline: 0.625rem;
+	}
+
+	/* Narrow landscape: Numeric Fields wrap to 2 columns */
+	@media (max-width: 900px) {
+		[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+			.ame-setting-stack {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+			.ame-setting-row--date,
+		[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+			.ame-setting-row--select,
+		[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+			.ame-setting-row--toggle,
+		[data-ame-root][data-ame-density="mixed"]:not([data-ame-keypad-visible="true"])
+			.ame-setting-row.ame-numeric-field {
+			grid-column: span 1;
+		}
+	}
+
+	/* Keypad visible: single-column form, constrained by pane width */
+	[data-ame-root][data-ame-keypad-visible="true"][data-ame-density="mixed"] .ame-mixed-grid {
+		display: flex;
+		flex-direction: column;
+		gap: var(--ame-form-stack-gap);
+		max-width: 100%;
+	}
+
+	[data-ame-root][data-ame-keypad-visible="true"][data-ame-density="mixed"] .ame-setting-stack {
+		display: grid;
+		grid-template-columns: max-content minmax(0, 1fr);
+		max-width: 100%;
+	}
+
+	[data-ame-root][data-ame-keypad-visible="true"][data-ame-density="mixed"] .ame-setting-row {
+		display: grid;
+		grid-template-columns: subgrid;
+		grid-column: 1 / -1;
+		max-width: 100%;
+	}
+
+	/* Split pane：Flags／single 退為兩欄，避免 overflow */
+	[data-ame-root][data-ame-keypad-visible="true"][data-ame-density="mixed"] .ame-choice-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	[data-ame-root][data-ame-keypad-visible="true"] .ame-setting-group,
+	[data-ame-root][data-ame-keypad-visible="true"] .ame-setting-row,
+	[data-ame-root][data-ame-keypad-visible="true"] .ame-native-control {
+		max-width: 100%;
+	}
+}
+
+/*
+ * Shell／underlay are programmatic focus sinks（tabindex=-1）, not interactive chrome.
+ * Keep a11y focus target；never paint a sheet-wide ring（iOS Safari may treat
+ * programmatic focus as :focus-visible）. Interactive controls keep focus-visible below.
+ */
+.ame-shell:focus,
+.ame-shell:focus-visible,
+.ame-underlay:focus,
+.ame-underlay:focus-visible {
+	outline: none;
+	box-shadow: none;
+}
+
+.ame-topbar-btn:focus-visible,
+.ame-action-done:focus-visible,
+.ame-action-reset:focus-visible,
+.ame-numeric-field:focus-visible,
+.ame-key:focus-visible,
+.ame-toggle:focus-visible,
+.ame-native-control:focus-visible,
+.ame-choice-row:focus-within {
+	outline: 2px solid rgb(165 180 252);
+	outline-offset: -2px;
+}
+
+/*
+ * B8.1 Shared field-error primitive — triangle＋!；fixed slot；no layout shift.
+ * Controller toggles [data-ame-field-error]／[data-ame-field-error-text].
+ */
+.ame-field-error-slot {
+	box-sizing: border-box;
+	display: inline-flex;
+	flex-shrink: 0;
+	width: 0.875rem;
+	height: 1.25rem;
+	align-items: center;
+	justify-content: center;
+}
+
+.ame-field-error {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	width: 0.875rem;
+	height: 0.875rem;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: rgb(203 213 225 / 0.76);
+}
+
+.ame-field-error[hidden] {
+	visibility: hidden;
+	display: inline-flex;
+}
+
+.ame-field-error svg {
+	width: 0.875rem;
+	height: 0.875rem;
+}
+
+/*
+ * B8.1 Shared Portrait background scale.
+ * Tools mark [data-ame-background-scale-target] on the result content group only.
+ * Open ownership: sibling [data-ame-root][data-ame-open="true"]（no tool-specific attr）.
+ */
+@media (max-width: 767px) and (orientation: portrait) {
+	[data-ame-page-content]:has(~ [data-ame-root][data-ame-open="true"])
+		[data-ame-background-scale-target] {
+		transform: scale(0.92) translateY(-1.25rem);
+		transform-origin: center center;
+		transition: transform 240ms ease;
+	}
+}
+
+@media (orientation: landscape) {
+	[data-ame-page-content] [data-ame-background-scale-target] {
+		transform: none;
+	}
+}

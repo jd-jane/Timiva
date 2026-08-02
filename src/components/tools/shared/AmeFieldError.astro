@@ -1,0 +1,27 @@
+---
+/**
+ * AME shared field-error primitive（B8.1）.
+ * Triangle＋! SVG — Owner-approved look（same path as Desktop／Age）.
+ * Controller toggles [data-ame-field-error]／[data-ame-field-error-text]；no layout shift.
+ */
+interface Props {
+	fieldId: string;
+	/** Optional fixed id for aria-describedby（defaults to ame-field-error-{fieldId}）. */
+	errorId?: string;
+}
+
+const { fieldId, errorId = `ame-field-error-${fieldId}` } = Astro.props;
+---
+
+<span class="ame-field-error-slot" aria-hidden="true">
+	<span class="ame-field-error" data-ame-field-error={fieldId} hidden>
+		<svg viewBox="0 0 16 16" aria-hidden="true">
+			<path fill="currentColor" d="M8 1.75 14.25 14.25H1.75L8 1.75z"></path>
+			<path
+				fill="#0f172a"
+				d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+			></path>
+		</svg>
+	</span>
+</span>
+<span id={errorId} class="ame-sr-only" data-ame-field-error-text={fieldId} hidden></span>

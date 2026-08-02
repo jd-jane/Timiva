@@ -1,0 +1,432 @@
+---
+/**
+ * Shared Adaptive Mobile Editor — B7 Core Hardening shell＋B8.1 field-error primitive.
+ * Same DOM／state for Portrait sheet + Landscape full-screen.
+ * Slots: default fixtures · content region · error region.
+ * Selector boundary: [data-ame-root]／.ame-*／--ame-* only.
+ */
+import AmeFieldError from "./AmeFieldError.astro";
+
+interface Props {
+	ariaLabel: string;
+	title?: string;
+	id?: string;
+}
+
+const { ariaLabel, title = "Adaptive Mobile Editor", id } = Astro.props;
+---
+
+<div
+	data-ame-root
+	data-ame-open="false"
+	data-ame-density="mixed"
+	data-ame-keypad-visible="false"
+	hidden
+	aria-hidden="true"
+	id={id}
+>
+	<button
+		type="button"
+		class="ame-underlay"
+		data-ame-underlay
+		data-ame-close="cancel"
+		aria-label="Cancel"
+		tabindex="-1"
+	>
+	</button>
+
+	<div
+		class="ame-shell"
+		data-ame-shell
+		role="dialog"
+		aria-modal="true"
+		aria-label={ariaLabel}
+		tabindex="-1"
+		aria-hidden="true"
+	>
+		<!-- Portrait only: compact handle -->
+		<div class="ame-handle" data-ame-handle aria-hidden="true"></div>
+
+		<!-- Portrait only: thin title header（no Cancel／X） -->
+		<header class="ame-portrait-header" data-ame-portrait-header>
+			<p class="ame-portrait-title" data-ame-portrait-title>{title}</p>
+		</header>
+
+		<!-- Landscape only: Cancel＋Reset | Title（absolute center） | Done（live：Cancel hidden） -->
+		<header class="ame-topbar" data-ame-topbar>
+			<div class="ame-topbar-leading" data-ame-topbar-leading>
+				<button type="button" class="ame-topbar-btn" data-ame-close="cancel" data-ame-cancel>
+					Cancel
+				</button>
+				<button type="button" class="ame-topbar-btn ame-topbar-btn--reset" data-ame-reset>Reset</button>
+			</div>
+			<p class="ame-topbar-title" data-ame-title>{title}</p>
+			<button type="button" class="ame-topbar-btn ame-topbar-btn--done" data-ame-submit>
+				Done
+			</button>
+		</header>
+
+		<!--
+		  Workspace: Body（scroll）＋ contextual Keypad（fixed dock）.
+		  Portrait: keypad below Body, above action row — does not scroll with form.
+		  Landscape: keypad hidden → full-width form；visible → left form pane＋right keypad.
+		-->
+		<div class="ame-workspace" data-ame-workspace data-ame-layout-stage>
+			<div class="ame-body" data-ame-body>
+				<div class="ame-layout-main" data-ame-layout-main>
+					<div data-ame-layout-fixtures>
+						<slot>
+							<p class="ame-body-copy">Layout fixtures live in Lab slot.</p>
+						</slot>
+					</div>
+
+					<!-- Tool／Lab form content：named slot；Lab defaults remain fallback -->
+					<div data-ame-content>
+					<slot name="content">
+					<!-- Single Numeric Field foundation（Numeric fixture） -->
+					<div class="ame-numeric-panel" data-ame-numeric-panel>
+						<button
+							type="button"
+							class="ame-setting-row ame-numeric-field"
+							data-ame-numeric-field="days"
+							aria-labelledby="ame-numeric-days-label"
+							aria-describedby="ame-numeric-days-live"
+							data-ame-active="false"
+						>
+							<span class="ame-setting-label ame-numeric-label" id="ame-numeric-days-label"
+								>Days</span
+							>
+							<span class="ame-setting-control">
+								<span
+									class="ame-numeric-value ame-numeric-value--placeholder"
+									data-ame-numeric-value
+								>
+									0
+								</span>
+							</span>
+						</button>
+						<p
+							class="ame-numeric-live ame-sr-only"
+							data-ame-numeric-live
+							id="ame-numeric-days-live"
+							aria-live="polite"
+						>
+							Days empty
+						</p>
+					</div>
+
+					<!-- B4／B7 Mixed Controls Stress fixture（Lab adapter content） -->
+					<div class="ame-mixed-panel" data-ame-mixed-panel data-ame-mixed-stress>
+						<div class="ame-mixed-grid" data-ame-mixed-grid>
+							<!-- Direction: single-select Setting Group（兩欄） -->
+							<fieldset
+								class="ame-setting-group"
+								data-ame-choice-group="direction"
+								data-ame-choice-mode="single"
+							>
+								<legend class="ame-setting-group-label">Direction</legend>
+								<div class="ame-choice-grid" data-ame-choice-grid>
+									<label class="ame-choice-row">
+										<input
+											type="radio"
+											name="ame-direction"
+											value="plus"
+											data-ame-direction="plus"
+											checked
+										/>
+										<span class="ame-choice-lead">
+											<span class="ame-choice-symbol" aria-hidden="true">＋</span>
+											<span class="ame-choice-text">Add</span>
+										</span>
+										<span class="ame-choice-indicator" aria-hidden="true"></span>
+									</label>
+									<label class="ame-choice-row">
+										<input
+											type="radio"
+											name="ame-direction"
+											value="minus"
+											data-ame-direction="minus"
+										/>
+										<span class="ame-choice-lead">
+											<span class="ame-choice-symbol" aria-hidden="true">－</span>
+											<span class="ame-choice-text">Subtract</span>
+										</span>
+										<span class="ame-choice-indicator" aria-hidden="true"></span>
+									</label>
+								</div>
+							</fieldset>
+
+							<!-- Unified Setting Rows: Date／Unit／YMW D／Toggle -->
+							<div class="ame-setting-stack" data-ame-setting-stack data-ame-numeric-group>
+								<label class="ame-setting-row ame-setting-row--date">
+									<span class="ame-setting-label">Date</span>
+									<span class="ame-setting-control">
+										<input
+											class="ame-native-control"
+											type="date"
+											data-ame-date
+											data-ame-field="date"
+											aria-invalid="false"
+											aria-describedby="ame-field-error-date"
+										/>
+										<AmeFieldError fieldId="date" />
+									</span>
+								</label>
+
+								<label class="ame-setting-row ame-setting-row--select">
+									<span class="ame-setting-label">Unit preset</span>
+									<span class="ame-setting-control">
+										<select class="ame-native-control" data-ame-select>
+											<option value="custom">Custom</option>
+											<option value="week">1 week</option>
+											<option value="month">1 month</option>
+											<option value="year">1 year</option>
+										</select>
+									</span>
+								</label>
+
+								<button
+									type="button"
+									class="ame-setting-row ame-numeric-field"
+									data-ame-numeric-field="years"
+									data-ame-active="false"
+									aria-invalid="false"
+									aria-describedby="ame-field-error-years"
+								>
+									<span class="ame-setting-label ame-numeric-label">Years</span>
+									<span class="ame-setting-control">
+										<span
+											class="ame-numeric-value ame-numeric-value--placeholder"
+											data-ame-numeric-value>0</span
+										>
+										<AmeFieldError fieldId="years" />
+									</span>
+								</button>
+								<button
+									type="button"
+									class="ame-setting-row ame-numeric-field"
+									data-ame-numeric-field="months"
+									data-ame-active="false"
+									aria-invalid="false"
+									aria-describedby="ame-field-error-months"
+								>
+									<span class="ame-setting-label ame-numeric-label">Months</span>
+									<span class="ame-setting-control">
+										<span
+											class="ame-numeric-value ame-numeric-value--placeholder"
+											data-ame-numeric-value>0</span
+										>
+										<AmeFieldError fieldId="months" />
+									</span>
+								</button>
+								<button
+									type="button"
+									class="ame-setting-row ame-numeric-field"
+									data-ame-numeric-field="weeks"
+									data-ame-active="false"
+									aria-invalid="false"
+									aria-describedby="ame-field-error-weeks"
+								>
+									<span class="ame-setting-label ame-numeric-label">Weeks</span>
+									<span class="ame-setting-control">
+										<span
+											class="ame-numeric-value ame-numeric-value--placeholder"
+											data-ame-numeric-value>0</span
+										>
+										<AmeFieldError fieldId="weeks" />
+									</span>
+								</button>
+								<button
+									type="button"
+									class="ame-setting-row ame-numeric-field"
+									data-ame-numeric-field="days"
+									data-ame-active="false"
+									aria-invalid="false"
+									aria-describedby="ame-field-error-days"
+								>
+									<span class="ame-setting-label ame-numeric-label">Days</span>
+									<span class="ame-setting-control">
+										<span
+											class="ame-numeric-value ame-numeric-value--placeholder"
+											data-ame-numeric-value>0</span
+										>
+										<AmeFieldError fieldId="days" />
+									</span>
+								</button>
+
+								<div class="ame-setting-row ame-setting-row--toggle">
+									<span class="ame-setting-label" id="ame-toggle-label">Notify</span>
+									<span class="ame-setting-control">
+										<button
+											type="button"
+											class="ame-toggle"
+											data-ame-toggle
+											role="switch"
+											aria-checked="false"
+											aria-labelledby="ame-toggle-label"
+										>
+											<span class="ame-toggle-thumb" aria-hidden="true"></span>
+										</button>
+									</span>
+								</div>
+							</div>
+							<p class="ame-numeric-live ame-sr-only" data-ame-numeric-live aria-live="polite">
+								Days empty
+							</p>
+
+							<!-- Priority: single-select Setting Group（兩欄） -->
+							<fieldset
+								class="ame-setting-group"
+								data-ame-choice-group="priority"
+								data-ame-choice-mode="single"
+							>
+								<legend class="ame-setting-group-label">Priority</legend>
+								<div class="ame-choice-grid" data-ame-choice-grid>
+									<label class="ame-choice-row">
+										<input
+											type="radio"
+											name="ame-priority"
+											value="option-a"
+											data-ame-radio
+											checked
+										/>
+										<span class="ame-choice-lead">
+											<span class="ame-choice-text">Option A</span>
+										</span>
+										<span class="ame-choice-indicator" aria-hidden="true"></span>
+									</label>
+									<label class="ame-choice-row">
+										<input type="radio" name="ame-priority" value="option-b" data-ame-radio />
+										<span class="ame-choice-lead">
+											<span class="ame-choice-text">Option B</span>
+										</span>
+										<span class="ame-choice-indicator" aria-hidden="true"></span>
+									</label>
+								</div>
+							</fieldset>
+
+							<!-- Flags: multi-select Setting Group（P 兩欄／L 三欄） -->
+							<fieldset
+								class="ame-setting-group"
+								data-ame-choice-group="flags"
+								data-ame-choice-mode="multi"
+							>
+								<legend class="ame-setting-group-label">Flags</legend>
+								<div class="ame-choice-grid" data-ame-choice-grid>
+									<label class="ame-choice-row">
+										<input type="checkbox" data-ame-check="alpha" />
+										<span class="ame-choice-lead">
+											<span class="ame-choice-text">Alpha</span>
+										</span>
+										<span class="ame-choice-indicator" aria-hidden="true"></span>
+									</label>
+									<label class="ame-choice-row">
+										<input type="checkbox" data-ame-check="beta" />
+										<span class="ame-choice-lead">
+											<span class="ame-choice-text">Beta</span>
+										</span>
+										<span class="ame-choice-indicator" aria-hidden="true"></span>
+									</label>
+									<label class="ame-choice-row">
+										<input type="checkbox" data-ame-check="gamma" />
+										<span class="ame-choice-lead">
+											<span class="ame-choice-text">Gamma</span>
+										</span>
+										<span class="ame-choice-indicator" aria-hidden="true"></span>
+									</label>
+								</div>
+							</fieldset>
+						</div>
+					</div>
+					</slot>
+					</div>
+
+					<!-- Shared error region（AME host；message from adapter.validate） -->
+					<div data-ame-error-region>
+						<p class="ame-error" data-ame-error role="alert" aria-live="polite" hidden></p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Single Timiva Numeric Keypad（contextual dock · same instance P／L） -->
+			<div class="ame-layout-keypad" data-ame-layout-keypad>
+				<div class="ame-keypad" data-ame-keypad role="group" aria-label="Numeric keypad">
+					<button type="button" class="ame-key" data-ame-key="1" aria-label="Digit 1">1</button>
+					<button type="button" class="ame-key" data-ame-key="2" aria-label="Digit 2">2</button>
+					<button type="button" class="ame-key" data-ame-key="3" aria-label="Digit 3">3</button>
+					<button type="button" class="ame-key" data-ame-key="4" aria-label="Digit 4">4</button>
+					<button type="button" class="ame-key" data-ame-key="5" aria-label="Digit 5">5</button>
+					<button type="button" class="ame-key" data-ame-key="6" aria-label="Digit 6">6</button>
+					<button type="button" class="ame-key" data-ame-key="7" aria-label="Digit 7">7</button>
+					<button type="button" class="ame-key" data-ame-key="8" aria-label="Digit 8">8</button>
+					<button type="button" class="ame-key" data-ame-key="9" aria-label="Digit 9">9</button>
+					<button type="button" class="ame-key ame-key--action" data-ame-key="clear" aria-label="Clear">
+						Clear
+					</button>
+					<button type="button" class="ame-key" data-ame-key="0" aria-label="Digit 0">0</button>
+					<div class="ame-key-cluster" data-ame-key-cluster>
+						<button
+							type="button"
+							class="ame-key ame-key--action ame-key--cluster"
+							data-ame-key="delete"
+							aria-label="Delete digit"
+						>
+							<svg
+								class="ame-key-icon"
+								viewBox="0 0 24 24"
+								width="18"
+								height="18"
+								aria-hidden="true"
+							>
+								<path
+									d="M9.5 6.5h9a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-9L3.5 12l6-5.5Z"
+									fill="none"
+									stroke="currentColor"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="1.7"
+								></path>
+								<path
+									d="m13 9.5 5 5m0-5-5 5"
+									fill="none"
+									stroke="currentColor"
+									stroke-linecap="round"
+									stroke-width="1.7"
+								></path>
+							</svg>
+						</button>
+						<button
+							type="button"
+							class="ame-key ame-key--action ame-key--cluster"
+							data-ame-key="hide"
+							aria-label="Hide numeric keypad"
+						>
+							<svg
+								class="ame-key-icon"
+								viewBox="0 0 24 24"
+								width="18"
+								height="18"
+								aria-hidden="true"
+							>
+								<path
+									d="m7 10 5 5 5-5"
+									fill="none"
+									stroke="currentColor"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="1.7"
+								></path>
+							</svg>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Portrait only: Reset（left）＋ Done（right） -->
+		<div class="ame-action-row" data-ame-action-row>
+			<button type="button" class="ame-action-reset" data-ame-reset>Reset</button>
+			<button type="button" class="ame-action-done" data-ame-submit>Done</button>
+		</div>
+	</div>
+</div>

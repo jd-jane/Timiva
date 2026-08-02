@@ -1,0 +1,118 @@
+/**
+ * Adaptive Mobile Editor Lab chrome — B2.
+ * Must NOT set Editor geometry beyond page padding／fixture visibility.
+ */
+
+[data-ame-lab-page] {
+	min-height: 100dvh;
+}
+
+[data-ame-page-content] {
+	position: relative;
+	z-index: 0;
+}
+
+[data-ame-page-content][inert] {
+	opacity: 1;
+	visibility: visible;
+}
+
+/*
+ * B1.1 expensive visual retained as Lab-only diagnostic control.
+ * The shared Candidate stylesheet never imports this Current treatment.
+ */
+[data-ame-lab-page] [data-ame-root][data-ame-visual="current"] .ame-shell {
+	background: linear-gradient(
+		180deg,
+		var(--timiva-sheet-bg, rgb(28 26 68)),
+		var(--timiva-sheet-bg-end, rgb(18 22 48))
+	);
+}
+
+@media (orientation: landscape) and (max-height: 700px) {
+	[data-ame-lab-page] [data-ame-root][data-ame-visual="current"] .ame-shell {
+		background: var(--timiva-bg-aurora, #0f172a);
+	}
+}
+
+[data-ame-lab-page] .ame-lab-trigger {
+	box-sizing: border-box;
+	display: inline-flex;
+	min-height: 3rem;
+	min-width: 12rem;
+	align-items: center;
+	justify-content: center;
+	padding: 0.75rem 1.25rem;
+	border-radius: 9999px;
+	border: 1px solid rgb(255 255 255 / 0.14);
+	background: rgb(255 255 255 / 0.08);
+	color: rgb(226 232 240);
+	font: inherit;
+	font-size: 0.875rem;
+	font-weight: 500;
+	cursor: pointer;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+[data-ame-lab-page] .ame-lab-trigger:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+[data-ame-lab-page] .ame-lab-status {
+	margin: 0.75rem 0 0;
+	font-size: 0.625rem;
+	line-height: 1rem;
+	color: rgb(52 211 153 / 0.9);
+}
+
+[data-ame-lab-page] .ame-lab-diag-grid {
+	display: grid;
+	gap: 0.5rem;
+}
+
+[data-ame-lab-page] .ame-lab-diag-option {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	min-height: 2.5rem;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid rgb(255 255 255 / 0.1);
+	border-radius: 0.75rem;
+	background: rgb(255 255 255 / 0.04);
+	font-size: 0.75rem;
+	line-height: 1.25rem;
+	color: rgb(203 213 225);
+}
+
+[data-ame-lab-page] .ame-lab-diag-option input {
+	flex-shrink: 0;
+}
+
+[data-ame-lab-page] .ame-lab-diag-pre {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0.75rem;
+	overflow-x: auto;
+	border: 1px solid rgb(255 255 255 / 0.08);
+	border-radius: 0.5rem;
+	background: rgb(0 0 0 / 0.28);
+	color: rgb(148 163 184);
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 0.625rem;
+	line-height: 1rem;
+	white-space: pre-wrap;
+}
+
+[data-ame-lab-page] .ame-fixture-heading {
+	color: rgb(226 232 240);
+	font-weight: 500;
+}
+
+/* Density fixtures — visibility owned by lab boot; CSS reinforces single visible panel */
+[data-ame-root][data-ame-density="short"] [data-ame-fixture]:not([data-ame-fixture="short"]),
+[data-ame-root][data-ame-density="medium"] [data-ame-fixture]:not([data-ame-fixture="medium"]),
+[data-ame-root][data-ame-density="long"] [data-ame-fixture]:not([data-ame-fixture="long"]) {
+	display: none;
+}

@@ -1,0 +1,241 @@
+---
+/**
+ * Tool Component Lab — Adaptive Mobile Editor（active Mobile Editor reference）.
+ * noindex · not in catalog／sitemap. Isolated from legacy D1 MSB Lab.
+ * B9.2A：AME is the scoped canonical path for new multi-field Mobile Editors.
+ */
+import "../../../../styles/preview/adaptive-mobile-editor-lab.css";
+import "../../../../styles/tools/timiva-tokens.css";
+import "../../../../styles/tools/adaptive-mobile-editor.css";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import AdaptiveMobileEditor from "../../../../components/tools/shared/AdaptiveMobileEditor.astro";
+---
+
+<BaseLayout
+	title="Lab — Adaptive Mobile Editor"
+	description="Tool Component Lab for Shared Adaptive Mobile Editor candidate (B4 Mixed Controls)."
+	robots="noindex, nofollow"
+	headerVariant="inner"
+	locale="en"
+>
+	<div data-ame-lab-page class="relative w-full text-slate-100">
+		<!--
+		  Sibling contract: page content + ame root are siblings.
+		  Root must NOT sit inside transform／filter ancestors.
+		-->
+		<div data-ame-page-content class="px-6 pb-16 pt-8">
+			<div class="mx-auto w-full max-w-md text-center">
+				<p class="text-sm text-slate-400">Tool Component Lab · Active</p>
+				<h1 class="mt-2 text-base font-medium tracking-normal text-slate-300">
+					Adaptive Mobile Editor
+				</h1>
+				<p class="mx-auto mt-3 max-w-sm text-xs leading-snug text-slate-400">
+					B4 — Mixed Controls Stress. Optimized default. Change fixture only while closed.
+					Scoped canonical Mobile Editor reference for new multi-field tools.
+				</p>
+				<p class="mx-auto mt-2 max-w-sm text-[10px] leading-snug text-slate-500">
+					Legacy D1 Shared MSB Lab remains Historical／Superseded（direct preview route retained；
+					not for new-tool adoption）.
+				</p>
+				<p class="ame-lab-status" data-ame-lab-status aria-live="polite">booting…</p>
+				<p class="mx-auto mt-6 text-3xl font-light tracking-tight text-slate-100" data-ame-background-scale-target>
+					<span data-ame-lab-committed-days>—</span>
+					<span class="text-base text-slate-400"> days</span>
+				</p>
+				<p class="mt-1 text-xs text-slate-500" data-ame-lab-committed-summary>—</p>
+				<p class="mt-2 text-xs text-slate-500">
+					Committed page value（updates only on Done）
+				</p>
+				<div class="mt-8">
+					<button
+						type="button"
+						class="ame-lab-trigger"
+						data-ame-lab-open
+						data-ame-trigger-ready="false"
+						disabled
+					>
+						Open Editor
+					</button>
+				</div>
+			</div>
+
+			<section class="ame-lab-diag mx-auto mt-8 max-w-md text-left" aria-label="B4 fixtures">
+				<h2 class="text-sm font-medium text-slate-300">Fixture（互斥 · 關閉時切換）</h2>
+				<div class="ame-lab-diag-grid mt-3" data-ame-diag-densities>
+					<label class="ame-lab-diag-option">
+						<input
+							type="radio"
+							name="ame-diag-density"
+							value="mixed"
+							data-ame-diag-control
+							data-ame-diag-density="mixed"
+							checked
+						/>
+						<span>Mixed — B4 Owner Gate</span>
+					</label>
+					<label class="ame-lab-diag-option">
+						<input
+							type="radio"
+							name="ame-diag-density"
+							value="numeric"
+							data-ame-diag-control
+							data-ame-diag-density="numeric"
+						/>
+						<span>Numeric — B3 retained</span>
+					</label>
+					<label class="ame-lab-diag-option">
+						<input
+							type="radio"
+							name="ame-diag-density"
+							value="short"
+							data-ame-diag-control
+							data-ame-diag-density="short"
+						/>
+						<span>Short — layout diagnostic</span>
+					</label>
+					<label class="ame-lab-diag-option">
+						<input
+							type="radio"
+							name="ame-diag-density"
+							value="medium"
+							data-ame-diag-control
+							data-ame-diag-density="medium"
+						/>
+						<span>Medium — layout diagnostic</span>
+					</label>
+					<label class="ame-lab-diag-option">
+						<input
+							type="radio"
+							name="ame-diag-density"
+							value="long"
+							data-ame-diag-control
+							data-ame-diag-density="long"
+						/>
+						<span>Long — layout diagnostic</span>
+					</label>
+				</div>
+
+				<h2 class="mt-6 text-sm font-medium text-slate-300">Diag mode（互斥 · 關閉時切換）</h2>
+				<div class="ame-lab-diag-grid mt-3" data-ame-diag-modes>
+					<label class="ame-lab-diag-option">
+						<input
+							type="radio"
+							name="ame-diag-mode"
+							value="display"
+							data-ame-diag-control
+							data-ame-diag-mode="display"
+						/>
+						<span>1 Display only</span>
+					</label>
+					<label class="ame-lab-diag-option">
+						<input
+							type="radio"
+							name="ame-diag-mode"
+							value="lock"
+							data-ame-diag-control
+							data-ame-diag-mode="lock"
+						/>
+						<span>2 + Scroll lock</span>
+					</label>
+					<label class="ame-lab-diag-option">
+						<input
+							type="radio"
+							name="ame-diag-mode"
+							value="inert"
+							data-ame-diag-control
+							data-ame-diag-mode="inert"
+						/>
+						<span>3 + Inert</span>
+					</label>
+					<label class="ame-lab-diag-option">
+						<input
+							type="radio"
+							name="ame-diag-mode"
+							value="full"
+							data-ame-diag-control
+							data-ame-diag-mode="full"
+							checked
+						/>
+						<span>4 Full</span>
+					</label>
+				</div>
+
+				<h2 class="mt-6 text-sm font-medium text-slate-300">Visual A／B（Optimized is default）</h2>
+				<div class="ame-lab-diag-grid mt-3" data-ame-diag-visuals>
+					<label class="ame-lab-diag-option">
+						<input
+							type="radio"
+							name="ame-diag-visual"
+							value="flat"
+							data-ame-diag-control
+							data-ame-diag-visual="flat"
+							checked
+						/>
+						<span>Optimized（Flat-equivalent）</span>
+					</label>
+					<label class="ame-lab-diag-option">
+						<input
+							type="radio"
+							name="ame-diag-visual"
+							value="current"
+							data-ame-diag-control
+							data-ame-diag-visual="current"
+						/>
+						<span>Current（diagnostic only · not B4 Gate）</span>
+					</label>
+				</div>
+
+				<h2 class="mt-6 text-sm font-medium text-slate-300">Last open timing</h2>
+				<pre class="ame-lab-diag-pre mt-2" data-ame-lab-diag-pre>Pick Mixed fixture while closed, then tap Open once.</pre>
+			</section>
+
+			<section class="mx-auto mt-12 max-w-md text-left" aria-label="Lab notes">
+				<h2 class="text-sm font-medium text-slate-300">B4 scope</h2>
+				<ul class="mt-3 list-disc space-y-2 pl-5 text-xs leading-relaxed text-slate-400">
+					<li>± segment · native date · native select · Y／M／W／D keypad fields</li>
+					<li>Radio · ≥3 checkboxes · toggle · Reset（draft only · stay open）</li>
+					<li>Empty numerics → Done shows inline error · no second dialog</li>
+					<li>No custom listbox／portal／VV／B5</li>
+				</ul>
+			</section>
+		</div>
+
+		<AdaptiveMobileEditor id="ame-lab-editor" ariaLabel="Adaptive mobile editor lab" title="Editor">
+			<div data-ame-fixture="short" class="ame-fixture" hidden>
+				<p class="ame-body-copy">Short fixture — one quiet line. Sheet height must hug this.</p>
+			</div>
+			<div data-ame-fixture="medium" class="ame-fixture" hidden>
+				<p class="ame-body-copy ame-fixture-heading">Medium fixture</p>
+				<p class="ame-body-copy">
+					Title plus a few static paragraphs. Portrait should usually avoid scrolling.
+				</p>
+				<p class="ame-body-copy">
+					Layout remains calm: no form controls beyond Mixed／Numeric when those fixtures are
+					selected.
+				</p>
+				<p class="ame-body-copy">
+					Use this density to judge Header／Body／Action rhythm without overflow noise.
+				</p>
+			</div>
+			<div data-ame-fixture="long" class="ame-fixture" hidden>
+				<p class="ame-body-copy ame-fixture-heading">Long fixture</p>
+				<p class="ame-body-copy">
+					Enough copy to exceed Portrait max-height. Only the Body may scroll. Header and Done
+					stay fixed.
+				</p>
+				{
+					Array.from({ length: 18 }).map((_, i) => (
+						<p class="ame-body-copy">
+							Long block {i + 1} — static layout stress. No inputs. Rotate while open to confirm
+							state stays put.
+						</p>
+					))
+				}
+			</div>
+		</AdaptiveMobileEditor>
+	</div>
+
+	<script>
+		import "../../../../scripts/lab/adaptive-mobile-editor-lab";
+	</script>
+</BaseLayout>
