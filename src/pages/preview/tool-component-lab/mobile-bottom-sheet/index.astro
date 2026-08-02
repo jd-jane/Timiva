@@ -1,0 +1,508 @@
+---
+/**
+ * Tool Component Lab — Legacy Shared Mobile Bottom Sheet／D1（Historical）.
+ * Superseded for new-tool Mobile Editor adoption by Adaptive Mobile Editor（AME）.
+ * Retained：historical evidence · legacy CSS／interaction regression · future cleanup audit.
+ * Do not use as new formal-tool foundation. Direct route kept（no delete／redirect）.
+ * noindex · not in catalog／sitemap.
+ */
+import "../../../../styles/preview/mobile-bottom-sheet-lab.css";
+import "../../../../styles/tools/timiva-tokens.css";
+import "../../../../styles/tools/tool-result-v2-baseline.css";
+import "../../../../styles/tools/tool-overlay-v2-baseline.css";
+import "../../../../styles/tools/tool-mobile-sheet-v2-baseline.css";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import MobileBottomSheet from "../../../../components/tools/shared/MobileBottomSheet.astro";
+
+const longParagraphs = Array.from({ length: 18 }, (_, i) => {
+	return `Long fixture block ${i + 1}. Shared sheet max height is content-driven up to the near-fullscreen budget; only the body region may scroll while header and footer stay fixed.`;
+});
+---
+
+<BaseLayout
+	title="Lab — Mobile Bottom Sheet（Legacy／Historical）"
+	description="Legacy D1 Shared Mobile Bottom Sheet Lab — historical／superseded. New tools should evaluate Adaptive Mobile Editor."
+	robots="noindex, nofollow"
+	headerVariant="inner"
+	locale="en"
+>
+	<div data-msb-lab-page data-preview-tool-page data-msb-lab-archive="historical" class="relative w-full text-slate-100">
+		<!-- B9.2A Archive-in-Place：低干擾歷史狀態；不改 prototype 行為 -->
+		<aside class="msb-lab-archive-banner mx-auto mt-6 max-w-md px-6" role="note" aria-label="Legacy lab status">
+			<p class="msb-lab-archive-banner__eyebrow">Legacy · Historical · Superseded</p>
+			<p class="msb-lab-archive-banner__title">Shared Mobile Bottom Sheet／D1 Lab</p>
+			<p class="msb-lab-archive-banner__body">
+				此頁為歷史 Lab，不再作為新工具 Mobile Editor foundation。多欄 Mobile Editor 請先評估
+				<a class="msb-lab-archive-banner__link" href="/preview/tool-component-lab/adaptive-mobile-editor/">Adaptive Mobile Editor（AME）</a>。
+				保留用途：歷史決策證據、legacy CSS／interaction regression、未來獨立 cleanup 前的 consumer verification。
+				Production 正式工具仍可能使用 <code>tool-mobile-sheet-v2-baseline.css</code> 與 <code>msb-*</code> class，但不代表使用本 Lab 的 component／controller。
+			</p>
+		</aside>
+
+		<!-- Lab QA chrome: NOT docked to 100dvh bottom (avoids iOS home bar + missed taps) -->
+		<section class="msb-lab-qa-hero px-6 pt-8 pb-4" aria-label="Mobile bottom sheet lab stage">
+			<div class="mx-auto w-full max-w-md text-center">
+				<p class="text-sm text-slate-400">Tool Component Lab · Legacy</p>
+				<h1 class="mt-2 text-base font-medium tracking-normal text-slate-300">Mobile Bottom Sheet</h1>
+				<p class="mx-auto mt-3 max-w-sm text-xs leading-snug text-slate-400">
+					Phase D.1 — tap Composition／Focus Spike once (wait for ready). Historical fixtures retained.
+				</p>
+				<p
+					class="mx-auto mt-2 max-w-sm text-[10px] leading-snug text-emerald-400/90"
+					data-msb-lab-status
+					aria-live="polite"
+				>
+					booting…
+				</p>
+				<p class="mx-auto mt-4 text-3xl font-light tracking-tight text-slate-100" aria-live="polite">
+					<span class="preview-tool-result-number">12</span>
+					<span class="text-base text-slate-400"> days</span>
+				</p>
+			</div>
+		</section>
+
+		<section class="msb-lab-qa-actions px-6 pb-8" aria-label="Phase D.1 composition and focus spikes">
+			<div class="msb-lab-spike-grid mx-auto w-full max-w-md">
+				<button type="button" class="msb-lab-spike-btn" data-msb-lab-open="composition-spike">
+					Composition Spike
+				</button>
+				<button type="button" class="msb-lab-spike-btn" data-msb-lab-open="focus-spike">
+					Focus Spike
+				</button>
+			</div>
+
+			<details class="msb-lab-diag mx-auto mt-4 w-full max-w-md text-left" data-msb-lab-diag>
+				<summary class="cursor-pointer text-xs text-slate-400">Spike diagnostics (read-only)</summary>
+				<pre
+					class="msb-lab-diag-pre mt-2 overflow-x-auto text-[10px] leading-relaxed text-slate-400"
+					data-msb-lab-diag-pre
+				>
+Open a spike sheet to populate.
+				</pre>
+			</details>
+		</section>
+
+		<section class="msb-lab-qa-actions px-6 pb-10" aria-label="Frozen portrait fixtures">
+			<p class="mx-auto mb-3 max-w-md text-center text-xs text-slate-500">Frozen fixtures (secondary)</p>
+			<div class="msb-lab-fixture-grid mx-auto w-full max-w-md">
+				<button type="button" class="msb-lab-spike-btn msb-lab-spike-btn--secondary" data-msb-lab-open="short">
+					Short
+				</button>
+				<button type="button" class="msb-lab-spike-btn msb-lab-spike-btn--secondary" data-msb-lab-open="medium">
+					Medium
+				</button>
+				<button type="button" class="msb-lab-spike-btn msb-lab-spike-btn--secondary" data-msb-lab-open="long">
+					Long
+				</button>
+				<button type="button" class="msb-lab-spike-btn msb-lab-spike-btn--secondary" data-msb-lab-open="keyboard">
+					Keyboard
+				</button>
+				<button
+					type="button"
+					class="msb-lab-spike-btn msb-lab-spike-btn--secondary"
+					data-msb-lab-open="regions-none"
+				>
+					Regions: none
+				</button>
+				<button
+					type="button"
+					class="msb-lab-spike-btn msb-lab-spike-btn--secondary"
+					data-msb-lab-open="regions-header"
+				>
+					Regions: header
+				</button>
+				<button
+					type="button"
+					class="msb-lab-spike-btn msb-lab-spike-btn--secondary"
+					data-msb-lab-open="regions-footer"
+				>
+					Regions: footer
+				</button>
+				<button
+					type="button"
+					class="msb-lab-spike-btn msb-lab-spike-btn--secondary"
+					data-msb-lab-open="regions-both"
+				>
+					Regions: both
+				</button>
+			</div>
+		</section>
+
+		<section class="msb-lab-section" aria-label="Fake related tools">
+			<h2 class="text-sm font-medium text-slate-300">Fake Related Tools</h2>
+			<p class="mt-2 text-xs leading-snug text-slate-400">
+				Lab-only stand-ins. Background scroll lock must keep this section out of view while a sheet is
+				open.
+			</p>
+			<div class="msb-lab-fake-related mt-4">
+				<a href="#msb-lab-faq">Fake tool A — Days between dates</a>
+				<a href="#msb-lab-faq">Fake tool B — Business days</a>
+				<a href="#msb-lab-faq">Fake tool C — Countdown timer</a>
+			</div>
+		</section>
+
+		<section id="msb-lab-faq" class="msb-lab-section" aria-label="Lab FAQ">
+			<h2 class="text-sm font-medium text-slate-300">FAQ</h2>
+			<div class="mt-4 space-y-4 text-xs leading-relaxed text-slate-400">
+				<div>
+					<p class="font-medium text-slate-300">What is this page?</p>
+					<p class="mt-1">
+						A legacy／historical Tool Component Lab for D1 Shared Mobile Bottom Sheet. It is
+						<strong>superseded</strong> for new-tool Mobile Editor adoption by Adaptive Mobile Editor.
+						Retained for evidence and regression. It is noindex and excluded from sitemap and catalog.
+					</p>
+				</div>
+				<div>
+					<p class="font-medium text-slate-300">Should new tools adopt this Lab component?</p>
+					<p class="mt-1">
+						No. New multi-field Mobile Editors should evaluate AME first. This Lab still imports
+						<code>MobileBottomSheet.astro</code> for historical fixtures only — not a new formal-tool path.
+						Production tools may still use shared baseline CSS／<code>msb-*</code> without this component.
+					</p>
+				</div>
+				<div>
+					<p class="font-medium text-slate-300">Who owns keyboard geometry?</p>
+					<p class="mt-1">
+						Only the shared controller writes host CSS variables. Fixtures never set panel top,
+						bottom, height, or max-height.（Legacy D1 architecture retained as-is.）
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="msb-lab-section msb-lab-lower-spacer" aria-label="Lower content spacer">
+			<h2 class="text-sm font-medium text-slate-300">Lower content</h2>
+			<p class="mt-2 text-xs leading-snug text-slate-400">
+				Extra vertical space so background scroll regressions are obvious during keyboard focus checks.
+			</p>
+			{
+				Array.from({ length: 12 }, (_, i) => (
+					<p class="mt-3 text-xs text-slate-500">Lower spacer paragraph {i + 1}.</p>
+				))
+			}
+		</section>
+	</div>
+
+	<!-- D.1 Composition Spike: one input; no header/footer/auto-advance -->
+	<MobileBottomSheet
+		id="msb-lab-composition-spike"
+		labId="composition-spike"
+		ariaLabel="Composition spike"
+	>
+		<p class="msb-lab-copy">Composition Spike — one field. No auto-advance.</p>
+		<label class="msb-field">
+			<span class="msb-input-shell">
+				<span class="msb-input-prefix">N</span>
+				<input
+					class="msb-input"
+					type="text"
+					inputmode="numeric"
+					pattern="[0-9]*"
+					autocomplete="off"
+					placeholder="00"
+					aria-label="Composition spike field"
+					data-msb-spike-field
+				/>
+			</span>
+		</label>
+		<div class="msb-body-actions">
+			<button type="button" class="msb-action-primary" data-msb-close="action">Close</button>
+		</div>
+	</MobileBottomSheet>
+
+	<!-- D.1 Focus Spike: two inputs; manual A↔B only; fields fully visible -->
+	<MobileBottomSheet id="msb-lab-focus-spike" labId="focus-spike" ariaLabel="Focus spike">
+		<p class="msb-lab-copy">Focus Spike — A ↔ B manual only. No auto-advance.</p>
+		<div class="msb-sheet-fields msb-sheet-fields--cols-2">
+			<label class="msb-field">
+				<span class="msb-input-shell">
+					<span class="msb-input-prefix">A</span>
+					<input
+						class="msb-input"
+						type="text"
+						inputmode="numeric"
+						pattern="[0-9]*"
+						autocomplete="off"
+						placeholder="00"
+						aria-label="Focus spike field A"
+						data-msb-spike-field
+						data-msb-spike-field-a
+					/>
+				</span>
+			</label>
+			<label class="msb-field">
+				<span class="msb-input-shell">
+					<span class="msb-input-prefix">B</span>
+					<input
+						class="msb-input"
+						type="text"
+						inputmode="numeric"
+						pattern="[0-9]*"
+						autocomplete="off"
+						placeholder="00"
+						aria-label="Focus spike field B"
+						data-msb-spike-field
+						data-msb-spike-field-b
+					/>
+				</span>
+			</label>
+		</div>
+		<div class="msb-body-actions">
+			<button type="button" class="msb-action-primary" data-msb-close="action">Close</button>
+		</div>
+	</MobileBottomSheet>
+
+	<!-- Short: natural height; footer single capsule Close -->
+	<MobileBottomSheet id="msb-lab-short" labId="short" ariaLabel="Short fixture" hasFooter>
+		<p class="msb-lab-copy">Short content only.</p>
+		<button slot="footer" type="button" class="msb-action-primary" data-msb-close="action">
+			Close
+		</button>
+	</MobileBottomSheet>
+
+	<!-- Medium: Header + 2×2 + Footer dual actions -->
+	<MobileBottomSheet id="msb-lab-medium" labId="medium" ariaLabel="Medium fixture" hasHeader hasFooter>
+		<p slot="header" class="msb-sheet-header-title">Medium · 2×2 fields</p>
+		<div class="msb-sheet-fields msb-sheet-fields--cols-2">
+			<label class="msb-field">
+				<span class="msb-input-shell">
+					<span class="msb-input-prefix">A</span>
+					<input
+						class="msb-input"
+						type="text"
+						inputmode="numeric"
+						pattern="[0-9]*"
+						autocomplete="off"
+						placeholder="00"
+						aria-label="Field A"
+						data-msb-kb-field
+					/>
+				</span>
+			</label>
+			<label class="msb-field">
+				<span class="msb-input-shell">
+					<span class="msb-input-prefix">B</span>
+					<input
+						class="msb-input"
+						type="text"
+						inputmode="numeric"
+						pattern="[0-9]*"
+						autocomplete="off"
+						placeholder="00"
+						aria-label="Field B"
+						data-msb-kb-field
+					/>
+				</span>
+			</label>
+			<label class="msb-field">
+				<span class="msb-input-shell">
+					<span class="msb-input-prefix">C</span>
+					<input
+						class="msb-input"
+						type="text"
+						inputmode="numeric"
+						pattern="[0-9]*"
+						autocomplete="off"
+						placeholder="00"
+						aria-label="Field C"
+						data-msb-kb-field
+					/>
+				</span>
+			</label>
+			<label class="msb-field">
+				<span class="msb-input-shell">
+					<span class="msb-input-prefix">D</span>
+					<input
+						class="msb-input"
+						type="text"
+						inputmode="numeric"
+						pattern="[0-9]*"
+						autocomplete="off"
+						placeholder="00"
+						aria-label="Field D"
+						data-msb-kb-field
+					/>
+				</span>
+			</label>
+		</div>
+		<button slot="footer" type="button" class="msb-action-secondary" data-msb-close="action">
+			Cancel
+		</button>
+		<button slot="footer" type="button" class="msb-action-primary" data-msb-close="action">
+			Apply
+		</button>
+	</MobileBottomSheet>
+
+	<!-- Long: body-only scroll -->
+	<MobileBottomSheet id="msb-lab-long" labId="long" ariaLabel="Long fixture" hasHeader hasFooter>
+		<p slot="header" class="msb-sheet-header-title">Long · body scrolls</p>
+		<div class="msb-lab-long-block">
+			{longParagraphs.map((text) => <p>{text}</p>)}
+		</div>
+		<button slot="footer" type="button" class="msb-action-primary" data-msb-close="action">
+			Done
+		</button>
+	</MobileBottomSheet>
+
+	<!-- Keyboard: no autofocus; manual／retap／cross／auto-advance -->
+	<MobileBottomSheet
+		id="msb-lab-keyboard"
+		labId="keyboard"
+		ariaLabel="Keyboard fixture"
+		hasHeader
+		hasFooter
+	>
+		<p slot="header" class="msb-sheet-header-title">Keyboard · focus stability</p>
+		<div class="msb-sheet-fields msb-sheet-fields--cols-2">
+			<label class="msb-field">
+				<span class="msb-input-shell">
+					<span class="msb-input-prefix">Y</span>
+					<input
+						class="msb-input"
+						type="text"
+						inputmode="numeric"
+						pattern="[0-9]*"
+						autocomplete="off"
+						placeholder="00"
+						aria-label="Year-like field"
+						data-msb-kb-field
+					/>
+				</span>
+			</label>
+			<label class="msb-field">
+				<span class="msb-input-shell">
+					<span class="msb-input-prefix">M</span>
+					<input
+						class="msb-input"
+						type="text"
+						inputmode="numeric"
+						pattern="[0-9]*"
+						autocomplete="off"
+						placeholder="00"
+						aria-label="Month-like field"
+						data-msb-kb-field
+					/>
+				</span>
+			</label>
+			<label class="msb-field">
+				<span class="msb-input-shell">
+					<span class="msb-input-prefix">D</span>
+					<input
+						class="msb-input"
+						type="text"
+						inputmode="numeric"
+						pattern="[0-9]*"
+						autocomplete="off"
+						placeholder="00"
+						aria-label="Day-like field"
+						data-msb-kb-field
+					/>
+				</span>
+			</label>
+			<label class="msb-field">
+				<span class="msb-input-shell">
+					<span class="msb-input-prefix">X</span>
+					<input
+						class="msb-input"
+						type="text"
+						inputmode="numeric"
+						pattern="[0-9]*"
+						autocomplete="off"
+						placeholder="00"
+						aria-label="Extra field"
+						data-msb-kb-field
+					/>
+				</span>
+			</label>
+		</div>
+		<button slot="footer" type="button" class="msb-action-secondary" data-msb-close="action">
+			Cancel
+		</button>
+		<button slot="footer" type="button" class="msb-action-primary" data-msb-close="action">
+			Apply
+		</button>
+	</MobileBottomSheet>
+
+	<!-- Regions: body only — Close in body action group -->
+	<MobileBottomSheet id="msb-lab-regions-none" labId="regions-none" ariaLabel="Regions none fixture">
+		<p class="msb-lab-copy">Body only — no header, no footer.</p>
+		<div class="msb-body-actions">
+			<button type="button" class="msb-action-primary" data-msb-close="action">Close</button>
+		</div>
+	</MobileBottomSheet>
+
+	<!-- Regions: header + body — Close in body action group -->
+	<MobileBottomSheet
+		id="msb-lab-regions-header"
+		labId="regions-header"
+		ariaLabel="Regions header fixture"
+		hasHeader
+	>
+		<p slot="header" class="msb-sheet-header-title">Header present</p>
+		<p class="msb-lab-copy">Body with header, no footer region.</p>
+		<div class="msb-body-actions">
+			<button type="button" class="msb-action-primary" data-msb-close="action">Close</button>
+		</div>
+	</MobileBottomSheet>
+
+	<!-- Regions: body + footer — Close in footer -->
+	<MobileBottomSheet
+		id="msb-lab-regions-footer"
+		labId="regions-footer"
+		ariaLabel="Regions footer fixture"
+		hasFooter
+	>
+		<p class="msb-lab-copy">Body with footer, no header region.</p>
+		<button slot="footer" type="button" class="msb-action-primary" data-msb-close="action">
+			Close
+		</button>
+	</MobileBottomSheet>
+
+	<!-- Regions: all three -->
+	<MobileBottomSheet
+		id="msb-lab-regions-both"
+		labId="regions-both"
+		ariaLabel="Regions both fixture"
+		hasHeader
+		hasFooter
+	>
+		<p slot="header" class="msb-sheet-header-title">Header + footer</p>
+		<p class="msb-lab-copy">All three regions present.</p>
+		<button slot="footer" type="button" class="msb-action-primary" data-msb-close="action">
+			Close
+		</button>
+	</MobileBottomSheet>
+
+	<!--
+	  Instant tap probe (inline): Vite dev modules load slowly on phone Wi‑Fi.
+	  This proves the click fired even before the lab ES module is ready.
+	-->
+	<script is:inline>
+		(function () {
+			function setStatus(msg) {
+				var el = document.querySelector("[data-msb-lab-status]");
+				if (el) el.textContent = msg;
+			}
+			window.__msbLabPending = null;
+			document.addEventListener(
+				"click",
+				function (event) {
+					var target = event.target;
+					if (!target || !target.closest) return;
+					var trigger = target.closest("[data-msb-lab-open]");
+					if (!trigger) return;
+					var key = trigger.getAttribute("data-msb-lab-open");
+					if (!key) return;
+					setStatus("tap " + key + "… (js loading)");
+					window.__msbLabPending = { key: key, trigger: trigger, t: Date.now() };
+				},
+				true,
+			);
+			setStatus("html ready — waiting for lab js…");
+		})();
+	</script>
+
+	<script>
+		import "../../../../scripts/lab/mobile-bottom-sheet-lab";
+	</script>
+</BaseLayout>

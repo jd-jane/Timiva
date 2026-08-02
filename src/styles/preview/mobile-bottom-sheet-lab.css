@@ -1,0 +1,162 @@
+/**
+ * Tool Component Lab — Mobile Bottom Sheet page chrome helpers.
+ * Must NOT set panel top/bottom/height/max-height.
+ */
+
+[data-msb-lab-page] {
+	padding-bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+[data-msb-lab-page] .msb-lab-qa-hero {
+	position: relative;
+	z-index: 1;
+}
+
+[data-msb-lab-page] .msb-lab-qa-actions {
+	position: relative;
+	z-index: 2;
+}
+
+[data-msb-lab-page] .msb-lab-spike-grid,
+[data-msb-lab-page] .msb-lab-fixture-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.75rem;
+}
+
+[data-msb-lab-page] .msb-lab-spike-btn {
+	box-sizing: border-box;
+	display: inline-flex;
+	min-height: 3rem;
+	width: 100%;
+	align-items: center;
+	justify-content: center;
+	padding: 0.75rem 1rem;
+	border-radius: 9999px;
+	border: 1px solid rgb(255 255 255 / 0.14);
+	background: rgb(255 255 255 / 0.08);
+	color: rgb(226 232 240);
+	font: inherit;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	font-weight: 500;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+[data-msb-lab-page] .msb-lab-spike-btn--secondary {
+	background: rgb(255 255 255 / 0.04);
+	border-color: rgb(255 255 255 / 0.1);
+	font-size: 0.8125rem;
+}
+
+[data-msb-lab-page] .msb-lab-section {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 40rem;
+	margin-inline: auto;
+	padding-inline: 1.5rem;
+	padding-block: 2.5rem;
+}
+
+[data-msb-lab-page] .msb-lab-section + .msb-lab-section {
+	border-top: 1px solid rgb(255 255 255 / 0.08);
+}
+
+[data-msb-lab-page] .msb-lab-fake-related {
+	display: grid;
+	gap: 0.75rem;
+}
+
+[data-msb-lab-page] .msb-lab-fake-related a {
+	display: block;
+	padding: 0.875rem 1rem;
+	border-radius: 0.75rem;
+	border: 1px solid rgb(255 255 255 / 0.1);
+	background: rgb(255 255 255 / 0.04);
+	color: rgb(226 232 240);
+	text-decoration: none;
+}
+
+[data-msb-lab-page] .msb-lab-lower-spacer {
+	min-height: 70vh;
+}
+
+/* Lab fixture copy — scoped to Lab page, not shared adopter chrome */
+[data-msb-host] .msb-lab-copy {
+	margin: 0;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	color: rgb(203 213 225);
+}
+
+[data-msb-host] .msb-lab-long-block {
+	display: grid;
+	gap: 1rem;
+}
+
+[data-msb-host] .msb-lab-long-block p {
+	margin: 0;
+	font-size: 0.875rem;
+	line-height: 1.375rem;
+	color: rgb(203 213 225);
+}
+
+[data-msb-lab-page] .msb-lab-diag {
+	box-sizing: border-box;
+	padding: 0.5rem 0.75rem;
+	border-radius: 0.5rem;
+	border: 1px solid rgb(255 255 255 / 0.08);
+	background: rgb(0 0 0 / 0.25);
+}
+
+[data-msb-lab-page] .msb-lab-diag-pre {
+	margin: 0;
+	white-space: pre-wrap;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* B9.2A Archive-in-Place — historical status chrome only（no layout redesign） */
+[data-msb-lab-page] .msb-lab-archive-banner {
+	box-sizing: border-box;
+	padding: 0.75rem 0.875rem;
+	border: 1px solid rgb(255 255 255 / 0.12);
+	border-radius: 0.75rem;
+	background: rgb(15 23 42 / 0.72);
+	text-align: left;
+}
+
+[data-msb-lab-page] .msb-lab-archive-banner__eyebrow {
+	margin: 0;
+	font-size: 0.625rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: rgb(251 191 36 / 0.92);
+}
+
+[data-msb-lab-page] .msb-lab-archive-banner__title {
+	margin: 0.25rem 0 0;
+	font-size: 0.8125rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+	color: rgb(226 232 240);
+}
+
+[data-msb-lab-page] .msb-lab-archive-banner__body {
+	margin: 0.5rem 0 0;
+	font-size: 0.6875rem;
+	line-height: 1.125rem;
+	color: rgb(148 163 184);
+}
+
+[data-msb-lab-page] .msb-lab-archive-banner__body code {
+	font-size: 0.625rem;
+	color: rgb(203 213 225);
+}
+
+[data-msb-lab-page] .msb-lab-archive-banner__link {
+	color: rgb(165 180 252);
+	text-decoration: underline;
+	text-underline-offset: 0.125rem;
+}

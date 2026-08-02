@@ -1,0 +1,87 @@
+---
+/**
+ * Shared Mobile Bottom Sheet host — D1／MSB Lab path（Historical）.
+ * Superseded for new-tool Mobile Editor adoption by Adaptive Mobile Editor（AME）.
+ * Do not use for new formal tools. Do not delete without dedicated consumer audit／Owner Gate.
+ * Production baseline CSS（tool-mobile-sheet-v2-baseline.css／msb-*）remains separately active.
+ * Lab-only：future formal adopters must not treat this as the canonical Mobile Editor.
+ * Composition: full-page underlay + visualViewport layer + panel (bottom:0 in layer).
+ */
+
+interface Props {
+	ariaLabel: string;
+	showHandle?: boolean;
+	hasHeader?: boolean;
+	hasFooter?: boolean;
+	id?: string;
+	/** Lab-only fixture key; omit on formal adopters. */
+	labId?: string;
+}
+
+const {
+	ariaLabel,
+	showHandle = true,
+	hasHeader = false,
+	hasFooter = false,
+	id,
+	labId,
+} = Astro.props;
+---
+
+<div
+	data-msb-host
+	data-msb-portal
+	data-mobile-sheet-baseline
+	data-msb-open="false"
+	data-msb-keyboard="closed"
+	data-msb-lab={labId}
+	hidden
+	aria-hidden="true"
+	id={id}
+>
+	<!-- Full-page underlay: never shrinks with visualViewport -->
+	<div
+		class="tool-operation-overlay"
+		data-msb-overlay
+		data-tool-operation-overlay
+		hidden
+		aria-hidden="true"
+	>
+	</div>
+
+	<!-- Visual viewport sheet layer: aligns to VV; panel anchors to layer bottom -->
+	<div data-msb-vv-layer aria-hidden="true">
+		<div
+			class="msb-sheet"
+			data-msb-sheet
+			role="dialog"
+			aria-modal="true"
+			aria-label={ariaLabel}
+			tabindex="-1"
+			aria-hidden="true"
+			inert
+		>
+			{showHandle && <div class="msb-sheet-handle" aria-hidden="true"></div>}
+
+			{
+				hasHeader && (
+					<header class="msb-sheet-header" data-msb-region="header">
+						<slot name="header" />
+					</header>
+				)
+			}
+
+			<div class="msb-sheet-body" data-msb-region="body">
+				<slot />
+			</div>
+
+			{
+				hasFooter && (
+					<footer class="msb-action-row" data-msb-region="footer">
+						<slot name="footer" />
+					</footer>
+				)
+			}
+		</div>
+	</div>
+</div>
