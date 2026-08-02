@@ -1,7 +1,7 @@
 # Shared Component Reuse Gate
 
 > Canonical source：Timiva 共用 UI pattern 的 **Reuse Gate** 規則只以本文件為準。
-> 最後更新：2026-07-24
+> 最後更新：2026-08-02（B9.1：Adaptive Mobile Editor scoped canonical）
 
 ## 文件目的
 
@@ -12,7 +12,7 @@
 - 任務入口：[`AGENTS.md`](../../AGENTS.md)
 - 新工具流程：[`new-tool-development.md`](new-tool-development.md)
 - 文件索引：[`docs/README.md`](../README.md)
-- 案例：`ResultSummary`（§6）、`DesktopCalendar`（§7）
+- 案例：`ResultSummary`（§6）、`DesktopCalendar`（§7）、`AdaptiveMobileEditor`（§8）
 
 ---
 
@@ -23,7 +23,7 @@
 Implementation Plan 必須先做 Reuse Review，再進入實作。
 ```
 
-「相同 UI pattern」包含但不限於：結果摘要、日期輸入殼、Mobile Sheet、Related drawer、數字 digit ladder、工具主結果區。
+「相同 UI pattern」包含但不限於：結果摘要、日期輸入殼、**Mobile Editor／多欄 Bottom Sheet 編輯流**、Related drawer、數字 digit ladder、工具主結果區。
 
 ---
 
@@ -60,6 +60,7 @@ Implementation Plan 必須先做 Reuse Review，再進入實作。
 11. **遷移完成後不得殘留**：temporary adapter、legacy hooks、重複 digit ladder、工具內第二套結果 DOM。
 12. **ResultSummary 為正式案例**（§6）。
 13. **DesktopCalendar 為正式案例**（§7）。第二次以上相同 Desktop Calendar pattern 必須優先重用 Shared DesktopCalendar；不得複製 calendar DOM／controller／CSS。
+14. **Adaptive Mobile Editor（AME）為適用範圍內的正式 Mobile Editor foundation**（§8）。新工具多欄 mobile edit 必須先做 AME fit review；在第二個相似 pattern 出現前，不得另建平行 Mobile Editor foundation。
 
 ---
 
@@ -173,11 +174,77 @@ Desktop 必須使用 Shared DesktopCalendar（inline-large）。
 
 ---
 
-## 8. 與其他文件的關係
+## 8. 正式案例：Adaptive Mobile Editor（AME）
+
+| 項目 | 位置／規則 |
+|---|---|
+| Shared DOM | `src/components/tools/shared/AdaptiveMobileEditor.astro` |
+| Field-error primitive | `src/components/tools/shared/AmeFieldError.astro` |
+| Controller | `src/scripts/adaptive-mobile-editor-controller.ts` |
+| Numeric helpers | `src/lib/ameNumericDraft.ts` |
+| Shared CSS | `src/styles/tools/adaptive-mobile-editor.css`（`.ame-*`／`[data-ame-*]`／`--ame-*`） |
+| Naming | `AdaptiveMobileEditor`、`data-ame-*`、`.ame-*` |
+| Lab（非 catalog） | `/preview/tool-component-lab/adaptive-mobile-editor/` |
+| 第一正式 adopter | Date Calculator（`lifecycle: "live"`） |
+| Validators（實作批次維護） | `scripts/validate-adaptive-mobile-editor-lab.mjs` · `scripts/validate-adaptive-mobile-editor-contract.mjs` |
+
+### 8.1 Scoped canonical（不是強制所有手機輸入）
+
+```text
+AME 是「適用範圍內」的新工具 Mobile Editor foundation。
+AME 不是所有手機輸入介面的強制方案。
+```
+
+**適合 AME（新工具應優先 fit review）：**
+
+```text
+多欄位 mobile edit flow
+原生 date／select 與 Numeric Field 混合
+需要 Timiva Numeric Keypad
+Portrait Bottom Sheet＋Landscape Full-screen 同一 shell
+需要共用 focus、scroll lock、field error、Portrait background scale、Reset／Done lifecycle
+```
+
+**不適合 AME（plan 必須寫明原因）：**
+
+```text
+單一簡單欄位，inline interaction 更合理
+不需要 Editor shell
+自由文字或原生鍵盤輸入是核心
+工具已有更適合的產品專屬互動
+單次切換或簡單操作不需要 Bottom Sheet
+```
+
+### 8.2 既有工具策略
+
+```text
+不做全面遷移。
+已上線工具維持現況（含 tool-local sheets＋tool-mobile-sheet-v2-baseline.css／msb-*）。
+只有在現有 mobile input 確有問題，或該工具進行功能更新且 AME 明顯合適時，才個別評估。
+每個 adopter＝獨立 plan／allowlist／validators／production build preview／Owner Device Gate。
+不得與 D1／MSB cleanup 或其他工具 migration 合併。
+```
+
+### 8.3 Reuse Gate 通過標準（AME）
+
+```text
+新工具多欄 mobile edit → 先做 AME fit review（§8.1）
+採用 AME：sibling mount；每頁最多一個 instance；無 Portal／Registry／multi-instance／visualViewport
+不採用 AME：implementation plan 記錄產品／技術原因，並取得 Owner 核准
+第二個相似 Mobile Editor pattern 出現前，不得另建平行 foundation
+舊 MSB Lab／D1 Portal／Registry／visualViewport 路線不是新工具採用路徑
+Tool CSS 只做外部 composition；不得另造衝突的平行 Editor shell
+```
+
+正式互動／lifecycle／視覺契約見 [`docs/standards/mobile-sheet.md`](../standards/mobile-sheet.md)（AME 章節）與 [`new-tool-development.md`](new-tool-development.md)。
+
+---
+
+## 9. 與其他文件的關係
 
 | 文件 | 關係 |
 |---|---|
 | `docs/standards/date-input.md` | Smart Date Input 與 DesktopCalendar 分層；Desktop Calendar 規範見該文件 §12 |
-| `docs/standards/mobile-sheet.md` | Sheet shared baseline；工具不得另造衝突規則 |
+| `docs/standards/mobile-sheet.md` | Legacy Mobile Sheet style baseline＋**AME canonical interactive Editor**；工具不得另造衝突規則 |
 | `docs/standards/interactive-controls.md` | Control motion／shadow 由 shared baseline 擁有 |
 | `docs/workflow/new-tool-development.md` | 新工具流程引用本 Gate，不重複全文 |

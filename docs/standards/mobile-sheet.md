@@ -1,8 +1,54 @@
-﻿# Timiva Mobile Sheet Shared Style Spec V1
+﻿# Timiva Mobile Sheet／Mobile Editor Spec
 
-Date: 2026-06-14 (Created) · Last updated: 2026-07-11
+Date: 2026-06-14 (Created) · Last updated: 2026-08-02（B9.1：AME scoped canonical＋legacy MSB 邊界）
 Owner: Jane / Timiva
-Status: Accepted baseline · Keyboard / iOS accessory rules reinforced 2026-07-11 (Age Calculator reference) · Validated on Countdown Timer Custom sheet (Owner real-device, 2026-06-21) · ECV2 / DRV2 production unchanged
+Status: **Active** · AME＝適用範圍內的 canonical interactive Mobile Editor foundation · Legacy tool-local sheets＋`tool-mobile-sheet-v2-baseline.css`／`msb-*` 仍為 production dependency · Option D（刪除全部 D1／MSB）已否決
+
+---
+
+## 0. Canonical path（B9.1 · 必讀）
+
+### 0.1 Adaptive Mobile Editor（AME）— 新工具預設評估
+
+對**適合**的新工具多欄 mobile edit flow，canonical interactive foundation 是 **Adaptive Mobile Editor（AME）**：
+
+```text
+Shared：AdaptiveMobileEditor.astro · adaptive-mobile-editor-controller.ts · adaptive-mobile-editor.css
+Reuse Gate：docs/workflow/shared-component-reuse-gate.md §8
+New-tool workflow：docs/workflow/new-tool-development.md §22
+第一正式 live adopter：Date Calculator
+```
+
+AME **不是**所有手機輸入的強制方案。不適合時（單一欄位、inline、自由文字核心、無 Editor shell 需求等）必須在 implementation plan 說明原因，並取得 Owner 核准。
+
+### 0.2 Legacy Mobile Sheet style／tool-local sheets — 仍保留
+
+下列仍是 **production dependency**，AME canonicalization **不等於**自動遷移或刪除：
+
+```text
+src/styles/tools/tool-mobile-sheet-v2-baseline.css
+msb-* class contract（msb-sheet／msb-field／msb-input 等）
+msb-scroll-lock／msb-sheet-open（Age／DBD／BDC 等 tool scripts）
+Age／Days Between Dates／Business Days Calculator／Countdown Timer 的 tool-local sheets
+```
+
+既有工具只在確有問題或功能更新時個別評估 AME；**禁止全面遷移**。
+
+### 0.3 舊 MSB Lab／D1 路線 — 非新工具採用路徑
+
+```text
+MobileBottomSheet.astro／mobile-bottom-sheet-controller.ts（含 Registry）
+MSB Lab preview（/preview/tool-component-lab/mobile-bottom-sheet/）
+Portal／multi-instance Registry／visualViewport 實驗路線
+```
+
+上述視為**歷史或已被 AME 取代的實驗路線**，不再作為新工具採用路徑。
+**B9.1 不刪除、不移動、不封存**；後續僅能在獨立 B9.2 Gate＋exact allowlist 處理。
+**Option D（全部刪除 D1／MSB）明確否決**——因 baseline CSS／`msb-*` 仍被正式工具使用。
+
+### 0.4 本文件其餘章節
+
+§1 起保留既有 Mobile Sheet **style／field／overlay** baseline（Countdown／Age 等參考語彙）。新工具若走 AME，互動架構以 **§13 AME** 為準；style 語彙可參考本文，但不得再採用 MSB Lab Portal／Registry／VV 路徑。
 
 ---
 
@@ -479,4 +525,74 @@ Countdown Timer Custom time sheet expected behavior:
 - Auto-advances after each field is complete.
 - Cancel uses text-button style referencing Date Range sheet Clear.
 - Apply and start uses Timiva capsule style referencing Event Countdown sheet button size.
+```
+
+---
+
+## 17. Adaptive Mobile Editor（AME）canonical contract（B9.1）
+
+本節為 **新工具適用範圍內** 的 interactive Mobile Editor 契約。Legacy tool-local sheets（§0.2）不受本節強制改寫。
+
+### 17.1 Lifecycle
+
+僅兩個核准模式（`adapter.lifecycle`；預設 `submit`）：
+
+| Mode | 行為 |
+|---|---|
+| **`submit`** | Draft 至 Done；Cancel／Escape／underlay rollback；Done＝validate → commit → dismiss |
+| **`live`** | 有效／可同步的 draft 變更即時寫入 page state；Done 只關閉；Escape／underlay／API close 不 rollback；Reset 立即同步且 Editor 保持開啟；不顯示暗示 rollback 的 Cancel |
+
+第一正式 `live` adopter：**Date Calculator**。不得新增其他 mode，除非另有 Owner Plan／Decision Gate。
+
+### 17.2 Portrait
+
+```text
+Content-driven Bottom Sheet
+背景結果內容 target（[data-ame-background-scale-target]）使用 shared contract：
+  scale(0.92) translateY(-1.25rem)
+Header、trigger、AME root 與非 target 內容不縮放
+關閉後完整恢復
+不使用 blur、Aurora 或大型陰影
+Underlay 可點擊關閉；實際語意依 lifecycle（submit＝rollback dismiss；live＝只關閉）
+```
+
+### 17.3 Landscape
+
+```text
+Full-screen Editor（同一 AME surface；非 Aurora／tool-page bg）
+不套背景縮放
+topbar＋左右 pane
+左表單與右 Keypad 可獨立捲動
+reduced-height browser chrome 下最後一列 Keypad 必須可操作
+```
+
+### 17.4 Field error
+
+```text
+Shared triangle＋! SVG（AmeFieldError）
+icon 位於欄位值右側固定 slot
+不使用圓圈、紅框、底色或 layout shift
+field-level error 不使用底部 banner
+form-level error 才使用 shared error region
+保留 aria-invalid、aria-describedby 與 sr-only message
+```
+
+### 17.5 Focus
+
+```text
+Shell／underlay 可作為 programmatic focus sink（tabindex=-1）
+不顯示 whole-shell focus ring
+真正可操作元件保留 focus-visible
+關閉後 focus 回到原 trigger
+不以全域 CSS（例如 *:focus { outline: none }）移除 focus outline
+開啟時不得自動 focus native date 以致彈出系統 picker（除非產品明確要求）
+```
+
+### 17.6 Hard limits（重申）
+
+```text
+每頁最多一個 AME
+sibling mount；無 Portal／Registry／multi-instance／visualViewport
+Numeric Field＝button＋Timiva Numeric Keypad（非 native numeric keyboard／inputmode／contenteditable 取代）
+工具擁有 content／math／validation／reset／composition；AME 擁有 shell／focus／scroll／keypad／shared visual／lifecycle framework
 ```

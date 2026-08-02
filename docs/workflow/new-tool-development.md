@@ -794,8 +794,8 @@ Mobile portrait keyboard-open 時，result group 與 bottom sheet 必須作為�
 不使用大面積 ::after / 延伸底色遮空隙；sheet 本體維持正常 panel 高度。
 Mobile landscape 不直接套用 portrait keyboard lift；compact panel 在 keyboard-open 時仍應維持 compact。
 Landscape + keyboard + iOS input accessory bar：不把整個 sheet 抬到鍵盤上方，不露出大面積背板；focused input 可用即可。
-Scroll lock 不應任意混用 fixed-body 策略；新工具需明確選用 msb-scroll-lock / msb-sheet-open，避免不必要混用 tool-operation-open。
-詳細共用規則：`docs/standards/mobile-sheet.md` §12。
+Scroll lock：若工具仍使用 legacy tool-local Mobile Sheet（Age／DBD／BDC／CT 等既有路徑），維持 `msb-scroll-lock`／`msb-sheet-open`，避免不必要混用 `tool-operation-open`。**新工具若採用 AME，使用 AME 自有 scroll lock（`ame-scroll-lock`），不要另接 MSB controller／Portal／visualViewport。**
+詳細共用規則：`docs/standards/mobile-sheet.md`（含 AME 章節）。
 Pointer-based ring interaction 的 touch-action: none 只能加在 hit area，不可加在整頁或 stage。
 互動刻度應直接改變既有視覺元素（例如 tick 線段），避免 overlay 疊加造成破圖感。
 多語系主操作按鈕應內容驅動寬度、單行顯示；避免 locale 固定寬度把 grid 撐破。
@@ -846,3 +846,65 @@ node scripts/validate-tool-utility-control-baseline.mjs
 正式規範：[互動控制規範](../standards/interactive-controls.md)
 
 日期輸入（條件式）：若工具含日期欄位或快速日期輸入，正式規範見 [日期輸入標準](../standards/date-input.md)。
+
+---
+
+## 22. Adaptive Mobile Editor（AME · 2026-08-02 · B9.1）
+
+新工具若需要多欄 mobile 設定／編輯流，必須先做 **AME fit review**（見 [Shared Component Reuse Gate §8](shared-component-reuse-gate.md)）。AME 是 scoped canonical foundation，不是所有手機輸入的強制方案。
+
+### 22.1 架構硬限制
+
+```text
+每頁預設最多一個 AME instance
+AME root 與 [data-ame-page-content] 使用 sibling mount
+不使用 Portal
+不使用 Registry／multi-instance manager
+不使用 visualViewport
+Numeric Field＝button-like control＋Timiva Numeric Keypad
+不以 native numeric keyboard、inputmode 或 contenteditable 取代 AME Numeric Field
+原生 date／select 可保留
+```
+
+### 22.2 Ownership
+
+| 擁有者 | 負責 |
+|---|---|
+| 工具 | content composition、calculation、validation、reset payload、tool-specific field layout／composition CSS |
+| AME | shell、orientation presentation、focus lifecycle、inert／scroll lock、keypad、shared field error、Portrait background scale、lifecycle framework |
+
+### 22.3 Lifecycle（僅兩個核准模式）
+
+**`submit`（default）**
+
+```text
+適用：編輯完成後才套用；需要 Cancel／Escape／underlay rollback
+Done＝validate → commit → dismiss
+```
+
+**`live`（opt-in）**
+
+```text
+適用：工具 canonical behavior 原本就是輸入即時更新
+Done 只代表完成編輯並關閉
+Underlay／Escape／close 不 rollback
+Reset 立即同步且 Editor 保持開啟
+不顯示會暗示 rollback 的 Cancel
+第一正式 reference：Date Calculator
+```
+
+不得新增其他 lifecycle mode，除非另有 Owner Plan／Decision Gate。
+
+### 22.4 正式 adopter 最低交付
+
+```text
+獨立 plan
+exact allowlist
+validators
+production build preview（非 dev）
+Owner Device Gate
+不得與 D1／MSB cleanup 或其他工具 migration 合併
+不做既有工具全面遷移
+```
+
+視覺／focus／scale／field-error 契約見 [`docs/standards/mobile-sheet.md`](../standards/mobile-sheet.md) AME 章節。

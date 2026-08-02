@@ -5,6 +5,91 @@
 
 ---
 
+## 2026-08-02 — Adaptive Mobile Editor B9 Decision＋B9.1 Canonical Docs
+
+### 背景
+
+```text
+AME 已完成 Lab hardening（B7）、Date Calculator First Adopter（B8／B8.1／B8.2）、
+以及 B9 Decision Plan／Targeted Review。Owner 核准 scoped canonical 與 D1／MSB Option B。
+B9.1 僅更新 tracked canonical docs；不修改 runtime；不執行 cleanup。
+```
+
+### 決策（最終核准結果）
+
+```text
+1. B8.1 Shared Visual Contract Gate＝PASS。
+2. Shared Shell Focus Outline Gate＝PASS。
+3. B8.2 Live Update Lifecycle Gate＝PASS。
+4. B8 Date Calculator First Adopter＝COMPLETE。
+5. B9 Decision Gate＝PASS。
+6. AME＝scoped canonical Mobile Editor foundation（適合的新工具優先；非強制所有手機輸入）。
+7. 既有工具不做全面遷移；僅在確有問題或功能更新時個別評估。
+8. D1／MSB fate＝Option B：
+   - 舊 MSB Lab／D1 Portal／Registry／visualViewport 路線標記為歷史／已被 AME 取代；
+   - 保留 tool-mobile-sheet-v2-baseline.css、msb-*、msb-scroll-lock 與 Age／DBD／BDC／CT tool-local sheets。
+9. Option D（全部刪除 D1／MSB）明確否決。
+10. B9.1 Canonical Docs Adoption＝authorized；Owner Docs Gate＝**PASS**；B9.1＝**COMPLETE**。
+11. B9.2 cleanup、B9.3 next adopter＝尚未授權。
+12. Docs-only checkpoint commit 已授權；未授權 push／deploy。
+```
+
+### 影響
+
+```text
+Canonical：shared-component-reuse-gate.md §8、new-tool-development.md §22、
+mobile-sheet.md §0／§17、本 log、current-status。
+新工具多欄 mobile edit 必須先做 AME fit review。
+Lifecycle 僅 submit（default）｜live（opt-in）；Date Calculator 為 live reference。
+```
+
+---
+
+## 2026-07-25 — Date Calculator B1B Visual QA PASS
+
+### 背景
+
+```text
+Date Calculator（Timiva 第八個工具／V1.5 Search Foundation 第四個）已完成
+B0 scaffold、B1A lower content、Shared ResultSummary Compatibility Gate，
+以及 B1B 上方靜態視覺。Owner 完成 Desktop／Portrait／Landscape 實機 Visual QA。
+```
+
+### 決策（最終核准結果）
+
+```text
+1. B1B Visual QA：PASS（Owner 實機核准）。
+2. Desktop 最終版型：
+   Result stage 640px；controls group 512px 置中；
+   三列：Start date → Add／Subtract segmented → Years／Months／Weeks／Days grouped input；
+   Start date 與 duration group 同寬；
+   Initial「?」；Valid EN primary 5.5rem／ZH 5rem；
+   Initial weekday 無文字但保留垂直空槽。
+3. Mobile Portrait：
+   Initial「?」單行、下方自然 flow 收縮；
+   ZH Valid primary 4.125rem、兩行日期（NBSP 綁定單位）；
+   Bottom Sheet direction：EN「＋ Add／－ Subtract」、ZH「＋ 加上／－ 減去」、240px 連體等寬。
+4. Mobile Landscape：
+   EN Valid primary 3.75rem／ZH 3.375rem；
+   Valid＝Primary＋Weekday 同列；
+   Initial「?」單欄水平置中（不預留 weekday slot）；
+   Panel compact；direction 維持純「＋／－」。
+5. Valid fixture 保留供 B2 regression；Initial 為預設靜態畫面。
+6. Shared ResultSummary 五檔本輪未再修改；tool CSS 無 .rs-*。
+7. Catalog 維持 available:false；不得開始 Link Integration。
+8. 下一步：B2.1 Math（尚未開始、本輪未授權實作）。
+9. 未授權 commit／push／deploy。
+```
+
+### 影響
+
+```text
+B1B 視覺 baseline 鎖定；後續 B2 不得重開已核准版型，
+除非 Owner 明確授權視覺變更。Standalone 仍在 working tree。
+```
+
+---
+
 ## 2026-07-24 — Formal tool category display names aligned
 
 ### 背景
