@@ -1,0 +1,20 @@
+{
+  "label": "adaptive-mobile-editor-protected-baseline",
+  "version": 1,
+  "note": "Tracked HEAD hashes for non-AME production surfaces and Legacy MSB Lab. AME validators compare against git HEAD blobs so parallel dirty work does not false-fail. Update hashes only when Owner authorizes intentional production/MSB changes.",
+  "files": {
+    "src/styles/tools/tool-mobile-sheet-v2-baseline.css": "9ff3cf42a86e0db22a106a76c7d4e84ae8c6b2032dc922860787a2a9c3c4b5eb",
+    "src/components/tools/age-calculator-v2/AgeCalculatorV2.astro": "ec58662f6937984218c4adae8c5af19df07180784b5e8504213be7b22139419b",
+    "src/components/tools/days-between-dates-v2/DaysBetweenDatesV2.astro": "ce5c4a2105e775e3a76c5a4717596a04c9ac1643d6ae140c4bb7d2c622d6480d",
+    "src/components/tools/business-days-calculator-v2/BusinessDaysCalculatorV2.astro": "8af39c4b7ed0ef9f3cd97ff09d1c1c084f2c7b3656e2319d163cad6f4d43866e",
+    "src/components/tools/countdown-timer-v2/CountdownTimerV2.astro": "ce71865db50395ab73340ca9f418fcec4fbf074661252dda2a187cbad9a98153",
+    "src/components/tools/date-range-calculator-v2/DateRangeCalculatorV2.astro": "bd325595adae40a3d810d0b272d59f4b20fb5c7eec3afe8d22bb1dc8182f0ec4",
+    "src/components/tools/event-countdown-v2/EventCountdownV2.astro": "4a98746e5e4fb8a080124961cd552e33e94a72c59d82ecb1ebd1508e749dbb7a",
+    "src/components/tools/year-progress-v2/YearProgressV2.astro": "8844952f31d39b335239230239dc063da62c86b9c2c07d9679607808c7a8136e",
+    "src/components/tools/shared/MobileBottomSheet.astro": "f070f2e1099a5565184b73d3f95586307d9b17bab09431e8b71cd06ceedcff70",
+    "src/scripts/mobile-bottom-sheet-controller.ts": "0a4907af358dd4ad7e0644352e07432d036895a317f4fdacef6a6077e24a13a2",
+    "src/pages/preview/tool-component-lab/mobile-bottom-sheet/index.astro": "c0e9d23d3961d2154cbbb54f3f42c46f6baf548d4a15b3433583181ea385e8dd",
+    "src/scripts/lab/mobile-bottom-sheet-lab.ts": "17e4935963d699b9f43e1efc09ba329bd5d113a38d038407c9821a2d5be6aff0",
+    "src/styles/preview/mobile-bottom-sheet-lab.css": "5ad200e3f70c1b3a05e289924701c74e857da0ff0d3d726c633a984f40c72bc0"
+  }
+}
