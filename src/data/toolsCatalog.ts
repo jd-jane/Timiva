@@ -17,6 +17,7 @@ export type CatalogToolId =
   | "countdown-timer"
   | "year-progress"
   | "age-calculator"
+  | "date-calculator"
   | "life-progress";
 
 export interface CatalogTool {
@@ -46,7 +47,7 @@ export const catalogTools: CatalogTool[] = [
     available: true,
     featured: true,
     icon: "date-range",
-    relatedIds: ["days-between-dates", "business-days-calculator", "event-countdown"],
+    relatedIds: ["days-between-dates", "business-days-calculator", "date-calculator"],
   },
   {
     id: "days-between-dates",
@@ -55,7 +56,7 @@ export const catalogTools: CatalogTool[] = [
     available: true,
     featured: true,
     icon: "days-between-dates",
-    relatedIds: ["date-range", "business-days-calculator", "age-calculator"],
+    relatedIds: ["date-range", "business-days-calculator", "date-calculator"],
   },
   {
     id: "business-days-calculator",
@@ -64,7 +65,20 @@ export const catalogTools: CatalogTool[] = [
     available: true,
     featured: false,
     icon: "calendar",
-    relatedIds: ["days-between-dates", "date-range", "event-countdown"],
+    relatedIds: ["days-between-dates", "date-range", "date-calculator"],
+  },
+  {
+    id: "date-calculator",
+    slug: "date-calculator",
+    categoryId: "dates-events",
+    available: true,
+    featured: false,
+    icon: "calendar",
+    relatedIds: [
+      "days-between-dates",
+      "business-days-calculator",
+      "date-range",
+    ],
   },
   {
     id: "countdown-timer",

@@ -11,5 +11,6 @@ export const catalogIconMap: Record<
 	"countdown-timer": "timer",
 	"year-progress": "progress",
 	"age-calculator": "person",
+	"date-calculator": "calendar",
 	"life-progress": "progress",
 };
