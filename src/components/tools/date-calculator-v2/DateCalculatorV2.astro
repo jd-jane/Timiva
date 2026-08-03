@@ -1,0 +1,609 @@
+---
+import RelatedToolRow from "../../RelatedToolRow.astro";
+import ToolAdSlot from "../../ToolAdSlot.astro";
+import ToolCard from "../../ToolCard.astro";
+import AdaptiveMobileEditor from "../shared/AdaptiveMobileEditor.astro";
+import AmeFieldError from "../shared/AmeFieldError.astro";
+import DesktopCalendar from "../shared/DesktopCalendar.astro";
+import ResultSummary from "../shared/ResultSummary.astro";
+import { catalogIconMap } from "../../../lib/catalogIcons";
+import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
+import { getRelatedTools, type CatalogToolId } from "../../../data/toolsCatalog";
+import { getLocalizedPath, type Locale } from "../../../i18n/config";
+import { getMessages } from "../../../i18n/messages";
+import "../../../styles/tools/adaptive-mobile-editor.css";
+import "../../../styles/tools/date-calculator-v2.css";
+
+interface Props {
+	locale?: Locale;
+}
+
+const { locale = "en" } = Astro.props;
+const messages = getMessages(locale);
+const m = messages.dateCalculator;
+/* Shared calendar chrome 使用既有通用日期 labels；Date Calculator 不新增 i18n scope。 */
+const calendarCopy = messages.businessDaysCalculator;
+const relatedTools = getRelatedTools("date-calculator");
+
+const toolCopy: Record<
+	CatalogToolId,
+	{ title: string; relatedDescription: string }
+> = {
+	"event-countdown": messages.tools.eventCountdown,
+	"date-range": messages.tools.dateRange,
+	"countdown-timer": messages.tools.countdownTimer,
+	"year-progress": messages.tools.yearProgress,
+	"age-calculator": messages.tools.ageCalculator,
+	"days-between-dates": messages.tools.daysBetweenDates,
+	"business-days-calculator": messages.tools.businessDaysCalculator,
+	"life-progress": messages.tools.lifeProgress,
+	"date-calculator": messages.tools.dateCalculator,
+};
+
+const relatedToolItems = relatedTools.map((tool) => ({
+	href: getLocalizedPath(locale, `/${tool.slug}/`),
+	name: toolCopy[tool.id].title,
+	description: toolCopy[tool.id].relatedDescription,
+	icon: catalogIconMap[tool.id],
+}));
+
+const faqSchema = buildFaqPageJsonLd(m.faq.items);
+
+/* B1B 靜態 fixture：預設 Initial（靜態建置 bake）；?dcv2Fixture=valid 由同步 bootstrap 切 Valid */
+const fixtureParam = Astro.url.searchParams.get("dcv2Fixture");
+const fixtureMode = fixtureParam === "valid" ? "valid" : "initial";
+const preferSheetOpen = Astro.url.searchParams.get("dcv2Sheet") === "open";
+
+const isValidFixture = fixtureMode === "valid";
+const rsPrimary = {
+	text: isValidFixture ? m.fixtureValidPrimary : "?",
+};
+/* Initial：weekday 傳 null（shared 會 hidden）；空位由 tool host spacing 保留 */
+const rsWeekday = isValidFixture ? m.fixtureValidWeekday : null;
+const rsSupport = isValidFixture
+	? m.fixtureValidSupport
+	: m.resultInitialSupport;
+
+const durationFields = [
+	{ key: "years", label: m.yearsLabel },
+	{ key: "months", label: m.monthsLabel },
+	{ key: "weeks", label: m.weeksLabel },
+	{ key: "days", label: m.daysLabel },
+] as const;
+---
+
+{/* Date Calculator V2 — Desktop live＋B8 AME mobile First Adopter */}
+<div
+	data-date-calculator-v2
+	data-dcv2-locale={locale === "zh" ? "zh" : "en"}
+	data-dcv2-fixture={fixtureMode}
+	data-dcv2-valid-primary={m.fixtureValidPrimary}
+	data-dcv2-valid-weekday={m.fixtureValidWeekday}
+	data-dcv2-valid-support={m.fixtureValidSupport}
+	data-dcv2-copy-initial-support={m.resultInitialSupport}
+	data-dcv2-copy-starting-date={m.summaryStartingDate}
+	data-dcv2-copy-validation-start={m.validationStartDate}
+	data-dcv2-copy-validation-duration={m.validationDuration}
+	data-dcv2-copy-validation-range={m.validationOutOfRange}
+	data-dcv2-copy-validation-unsafe={m.validationUnsafeInteger}
+>
+	{/* Sibling mount：page content ＋ AME root（not nested；no portal） */}
+	<div data-ame-page-content>
+	{/* Layout contract：blocking sync load，須在 ResultSummary 首次 paint 前可用 */}
+	<script is:inline src="/scripts/date-calculator-layout-contract.js?v=dc1"></script>
+
+	{/* 第一屏：標題 + textual ResultSummary + Desktop／Mobile 靜態輸入殼 */}
+	<section data-dcv2-main-tool class="preview-tool-main-section px-6">
+		<div class="preview-tool-first-screen">
+			<div
+				class="preview-tool-stage tool-stage dcv2-tool-stage mx-auto w-full max-w-md md:max-w-lg"
+			>
+				<div class="preview-tool-result-group text-center" data-ame-background-scale-target>
+					<h1
+						class="dcv2-tool-name preview-tool-landscape-compact-title text-sm font-medium tracking-normal text-slate-300 md:text-base"
+					>
+						{m.kicker}
+					</h1>
+
+					{/*
+						variant=spacious：主日期為長字串（AUG 10, 2026／2026 年 8 月 10 日），
+						需比 standard 更清楚的焦點字級；不以 variant 表達內容結構。
+					*/}
+					<ResultSummary
+						content="textual"
+						layout="desktop"
+						variant="spacious"
+						ariaLabel={m.kicker}
+						primary={rsPrimary}
+						weekday={rsWeekday}
+						support={rsSupport}
+						class="preview-tool-result-block mt-6 md:mt-8 dcv2-result-summary"
+					/>
+					<script is:inline>
+						/* Initial／Valid／layout bootstrap — sync before first paint */
+						(function () {
+							var root = document.querySelector("[data-date-calculator-v2]");
+							if (!root) return;
+
+							/* 靜態建置下 Astro.url 常無 query；Owner review 以 location 同步切 Valid */
+							try {
+								var params = new URLSearchParams(location.search);
+								if (params.get("dcv2Fixture") === "valid") {
+									var primaryText = root.getAttribute("data-dcv2-valid-primary") || "";
+									var weekdayText = root.getAttribute("data-dcv2-valid-weekday") || "";
+									var supportText = root.getAttribute("data-dcv2-valid-support") || "";
+									root.setAttribute("data-dcv2-fixture", "valid");
+									var primaryEl = root.querySelector('[data-rs-value="primary"]');
+									var weekdayEl = root.querySelector("[data-rs-weekday]");
+									var supportEl = root.querySelector("[data-rs-support]");
+									var liveEl = root.querySelector("[data-result-summary] [aria-live]");
+									if (primaryEl && primaryText) primaryEl.textContent = primaryText;
+									if (weekdayEl && weekdayText) {
+										weekdayEl.textContent = weekdayText;
+										weekdayEl.hidden = false;
+									}
+									if (supportEl && supportText) supportEl.textContent = supportText;
+									if (liveEl) {
+										liveEl.textContent = [primaryText, weekdayText, supportText]
+											.filter(Boolean)
+											.join("; ");
+									}
+								}
+							} catch (_) {
+								/* ignore */
+							}
+
+							window.TimivaDateCalculatorLayout?.applyLayoutAttrs(document);
+						})();
+					</script>
+				</div>
+
+				{/* Desktop：三列操作（Start → ＋／－ → Y/M/W/D → Reset；不接 runtime） */}
+				<div
+					class="dcv2-input-cluster dcv2-input-cluster--desktop"
+					aria-label={m.upperControlsAriaLabel}
+				>
+					{/* 第一列：Start date + Calendar icon */}
+					<div class="dcv2-desktop-row dcv2-desktop-row--start" role="group">
+						<div
+							class="dcv2-start-capsule"
+							role="group"
+							aria-label={m.startDateLabel}
+						>
+							<div class="dcv2-start-input-wrap">
+								<div class="dcv2-start-date-inline">
+									<input
+										type="text"
+										class="dcv2-date-input"
+										data-dcv2-desktop-start
+										inputmode="numeric"
+										autocomplete="off"
+										spellcheck="false"
+										aria-label={m.startDateInputAriaLabel}
+										placeholder={m.dateInputPlaceholder}
+									/>
+									{/* Invalid icon：B2.2 僅 Desktop start；empty／incomplete 保持 hidden */}
+									<span
+										class="dcv2-date-invalid-icon"
+										data-dcv2-desktop-start-invalid
+										hidden
+										aria-hidden="true"
+									>
+										<svg viewBox="0 0 16 16" aria-hidden="true">
+											<path
+												fill="currentColor"
+												d="M8 1.75 14.25 14.25H1.75L8 1.75z"></path>
+											<path
+												fill="#0f172a"
+												d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+											></path>
+										</svg>
+									</span>
+								</div>
+							</div>
+							<button
+								type="button"
+								class="dcv2-calendar-toggle"
+								data-dcv2-calendar-toggle
+								aria-haspopup="dialog"
+								aria-expanded="false"
+								aria-controls="dcv2-calendar-popover"
+								aria-label={m.openCalendarAriaLabel}
+							>
+								<svg
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="1.5"
+									aria-hidden="true"
+								>
+									<rect x="3" y="5" width="18" height="16" rx="3"></rect>
+									<path d="M8 3v4M16 3v4M7 11h10" stroke-linecap="round"></path>
+								</svg>
+							</button>
+						</div>
+					</div>
+
+					{/* 第二列：方向選項（Tablet 視覺為兩顆；大型桌機為連體 segmented） */}
+					<div
+						class="dcv2-desktop-row dcv2-desktop-row--direction"
+						role="group"
+						aria-label={m.directionGroupAriaLabel}
+					>
+						<div class="dcv2-direction-control">
+							<button
+								type="button"
+								class="dcv2-direction-option is-active"
+								data-dcv2-direction="add"
+								aria-pressed="true"
+								aria-label={m.directionAddAriaLabel}
+							>
+								<span class="dcv2-direction-option__symbol" aria-hidden="true">＋</span>
+								<span class="dcv2-direction-option__label">{m.directionAddAriaLabel}</span>
+							</button>
+							<button
+								type="button"
+								class="dcv2-direction-option"
+								data-dcv2-direction="subtract"
+								aria-pressed="false"
+								aria-label={m.directionSubtractAriaLabel}
+							>
+								<span class="dcv2-direction-option__symbol" aria-hidden="true">－</span>
+								<span class="dcv2-direction-option__label">{m.directionSubtractAriaLabel}</span>
+							</button>
+						</div>
+					</div>
+
+					{/* 第三列：Years／Months／Weeks／Days 四等分 */}
+					<div class="dcv2-desktop-row dcv2-desktop-row--duration">
+						<div class="dcv2-duration-group" role="group">
+							{
+								durationFields.map((field) => (
+									<label class="dcv2-duration-field" data-dcv2-duration={field.key}>
+										<span class="sr-only">{field.label}</span>
+										<span class="dcv2-duration-shell">
+											<input
+												type="text"
+												class="dcv2-duration-input"
+												data-dcv2-duration-input={field.key}
+												inputmode="numeric"
+												autocomplete="off"
+												spellcheck="false"
+												aria-label={field.label}
+												placeholder={m.durationZeroPlaceholder}
+												value=""
+											/>
+											<span class="dcv2-duration-suffix" aria-hidden="true">
+												{field.label}
+											</span>
+										</span>
+									</label>
+								))
+							}
+						</div>
+					</div>
+
+					<button type="button" class="dcv2-reset" data-dcv2-reset tabindex="-1">
+						{m.resetLabel}
+					</button>
+				</div>
+
+				{/* Mobile：開啟 Bottom Sheet／Landscape panel 的靜態入口 */}
+				<div
+					class="preview-tool-controls dcv2-mobile-controls flex flex-wrap justify-center gap-3"
+					aria-label={m.upperControlsAriaLabel}
+				>
+					<button
+						type="button"
+						class="preview-tool-control-btn dcv2-mobile-capsule inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm"
+						data-dcv2-sheet-trigger
+						aria-label={m.openSheetAriaLabel}
+					>
+						<span class="dcv2-mobile-trigger-icon shrink-0" aria-hidden="true">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+								<rect x="3" y="5" width="18" height="16" rx="3"></rect>
+								<path d="M8 3v4M16 3v4M7 11h10" stroke-linecap="round"></path>
+							</svg>
+						</span>
+						<span>{m.setDateAndDuration}</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	{/* Desktop Related Tools drawer */}
+	<aside
+		data-dcv2-drawer
+		data-open="true"
+		aria-label={m.relatedToolsDrawerAriaLabel}
+		class="pointer-events-none fixed inset-y-0 right-0 z-20 hidden xl:block"
+	>
+		<span class="hidden translate-x-[300px]" aria-hidden="true"></span>
+		<div
+			data-dcv2-drawer-shell
+			data-open="true"
+			class="preview-tool-drawer-frosted pointer-events-auto relative flex h-dvh rounded-tl-3xl rounded-bl-3xl border-l border-white/10 shadow-2xl shadow-black/25 ring-1 ring-inset ring-white/[0.04] transition-transform duration-200 ease-out"
+		>
+			<button
+				type="button"
+				data-dcv2-drawer-toggle
+				aria-expanded="true"
+				class="relative z-10 flex w-14 shrink-0 items-center justify-center self-stretch text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+				aria-label={m.toggleRelatedToolsDrawerAriaLabel}
+			>
+				<svg
+					data-drawer-arrow-open
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="none"
+					class="h-7 w-7"
+					aria-hidden="true"
+				>
+					<path
+						d="M10 3L5 8l5 5"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+				<svg
+					data-drawer-arrow-closed
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 16 16"
+					fill="none"
+					class="hidden h-7 w-7"
+					aria-hidden="true"
+				>
+					<path
+						d="M6 3l5 5-5 5"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"></path>
+				</svg>
+			</button>
+
+			<div
+				data-dcv2-drawer-panel
+				class="relative z-10 flex h-full w-[300px] shrink-0 flex-col"
+			>
+				<div class="px-5 pb-3 pt-5">
+					<h2 class="text-lg font-semibold text-white">{messages.relatedTools.heading}</h2>
+				</div>
+				<ToolAdSlot variant="sidebar" locale={locale} state="is-disabled" />
+				<div class="flex-1 space-y-3 overflow-y-auto px-5 pb-5" data-dcv2-drawer-related-tools>
+					{
+						relatedToolItems.map((tool) => (
+							<div>
+								<ToolCard
+									href={tool.href}
+									name={tool.name}
+									description={tool.description}
+									icon={tool.icon}
+								/>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</div>
+	</aside>
+
+	{/* 下方內容：Mobile Related → About → How to → Common uses → FAQ */}
+	<div class="tool-lower-content mx-auto max-w-3xl px-6 pb-20 text-left" data-dcv2-lower-content>
+		<ToolAdSlot variant="main" locale={locale} state="is-disabled" />
+
+		<section
+			data-dcv2-related-tools
+			class="pb-12 xl:hidden"
+			aria-labelledby="dcv2-related-heading"
+		>
+			<h2 id="dcv2-related-heading" class="mb-4 text-lg font-semibold text-white">
+				{messages.relatedTools.heading}
+			</h2>
+			<div class="space-y-3" data-dcv2-mobile-related-tools>
+				{
+					relatedToolItems.map((tool) => (
+						<RelatedToolRow
+							href={tool.href}
+							name={tool.name}
+							description={tool.description}
+							icon={tool.icon}
+						/>
+					))
+				}
+			</div>
+		</section>
+
+		<section class="pb-12" aria-labelledby="dcv2-about-heading">
+			<h2 id="dcv2-about-heading" class="mb-2 text-lg font-semibold text-white">
+				{m.about.heading}
+			</h2>
+			<p class="text-sm leading-relaxed text-slate-400">{m.about.body}</p>
+		</section>
+
+		<section class="pb-12" aria-labelledby="dcv2-howto-heading">
+			<h2 id="dcv2-howto-heading" class="mb-2 text-lg font-semibold text-white">
+				{m.howTo.heading}
+			</h2>
+			<ol class="list-decimal space-y-2 pl-5 text-sm leading-relaxed text-slate-400">
+				{m.howTo.steps.map((step) => <li>{step}</li>)}
+			</ol>
+		</section>
+
+		<section class="pb-12" aria-labelledby="dcv2-tags-heading">
+			<h2 id="dcv2-tags-heading" class="mb-4 text-lg font-semibold text-white">
+				{m.commonUses.heading}
+			</h2>
+			<ul class="dcv2-keyword-list" role="list">
+				{m.commonUses.items.map((item) => <li class="dcv2-keyword-chip">{item}</li>)}
+			</ul>
+		</section>
+
+		<section aria-labelledby="dcv2-faq-heading">
+			<h2 id="dcv2-faq-heading" class="mb-4 text-lg font-semibold text-white">
+				{m.faq.heading}
+			</h2>
+			<div class="border-t border-white/20">
+				{
+					m.faq.items.map((item) => (
+						<details class="group border-b border-white/20 py-4">
+							<summary class="flex list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden">
+								<span>{item.question}</span>
+								<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 16 16"
+										fill="none"
+										class="h-4 w-4 group-open:hidden"
+										aria-hidden="true"
+									>
+										<path
+											d="M8 3.5v9M3.5 8h9"
+											stroke="currentColor"
+											stroke-width="1.5"
+											stroke-linecap="round"></path>
+									</svg>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 16 16"
+										fill="none"
+										class="hidden h-4 w-4 group-open:block"
+										aria-hidden="true"
+									>
+										<path
+											d="M3.5 8h9"
+											stroke="currentColor"
+											stroke-width="1.5"
+											stroke-linecap="round"></path>
+									</svg>
+								</span>
+							</summary>
+							<p class="mt-3 text-sm leading-relaxed text-slate-300">{item.answer}</p>
+						</details>
+					))
+				}
+			</div>
+		</section>
+	</div>
+
+	{/* Desktop Start Calendar — shared popover-compact；Mobile 無 trigger path */}
+	<DesktopCalendar
+		variant="popover-compact"
+		idPrefix="dcv2-calendar-popover"
+		weekdays={calendarCopy.weekdays}
+		labels={{
+			calendar: m.openCalendarAriaLabel,
+			previousMonth: calendarCopy.previousMonth,
+			nextMonth: calendarCopy.nextMonth,
+			month: m.monthsLabel,
+			year: m.yearsLabel,
+		}}
+	/>
+	</div>
+	{/* /data-ame-page-content */}
+
+	{/*
+	  B8 AME First Adopter — sibling of page content.
+	  Portrait／Landscape mobile edit；Desktop controls stay outside AME.
+	*/}
+	<AdaptiveMobileEditor
+		id="dcv2-ame"
+		ariaLabel={m.sheetAriaLabel}
+		title={m.setDateAndDuration}
+	>
+		{/*
+		  B8 UI correction：Start → Direction → 2×2 duration。
+		  Compact DC direction（not shared AME choice cards）。
+		*/}
+		<div slot="content" class="dcv2-ame-form" data-dcv2-ame-form>
+			<label class="ame-setting-row ame-setting-row--date dcv2-ame-start-row">
+				<span class="ame-setting-label">{m.startDateLabel}</span>
+				<span class="ame-setting-control dcv2-ame-start-control">
+					<input
+						class="ame-native-control dcv2-native-date"
+						type="date"
+						data-dcv2-ame-start
+						data-ame-field="startDate"
+						min="1900-01-01"
+						max="2200-12-31"
+						value=""
+						aria-label={m.startDateInputAriaLabel}
+						aria-invalid="false"
+						aria-describedby="ame-field-error-startDate"
+					/>
+					<AmeFieldError fieldId="startDate" />
+				</span>
+			</label>
+
+			<fieldset class="dcv2-ame-direction" data-dcv2-ame-direction-group>
+				<legend class="ame-sr-only">{m.directionGroupAriaLabel}</legend>
+				<div class="dcv2-ame-direction-track" role="presentation">
+					<label class="dcv2-ame-direction-option">
+						<input
+							type="radio"
+							name="dcv2-ame-direction"
+							value="add"
+							data-dcv2-ame-direction="add"
+							checked
+						/>
+						<span class="dcv2-ame-direction-face">
+							<span class="dcv2-ame-direction-symbol" aria-hidden="true">＋</span>
+							<span class="dcv2-ame-direction-text">{m.directionAddAriaLabel}</span>
+						</span>
+					</label>
+					<label class="dcv2-ame-direction-option">
+						<input
+							type="radio"
+							name="dcv2-ame-direction"
+							value="subtract"
+							data-dcv2-ame-direction="subtract"
+						/>
+						<span class="dcv2-ame-direction-face">
+							<span class="dcv2-ame-direction-symbol" aria-hidden="true">－</span>
+							<span class="dcv2-ame-direction-text">{m.directionSubtractAriaLabel}</span>
+						</span>
+					</label>
+				</div>
+			</fieldset>
+
+			<div class="dcv2-ame-duration-grid" data-ame-numeric-group>
+				{
+					durationFields.map((field) => (
+						<button
+							type="button"
+							class="ame-setting-row ame-numeric-field dcv2-ame-duration-field"
+							data-ame-numeric-field={field.key}
+							data-ame-active="false"
+							aria-invalid="false"
+							aria-describedby={`ame-field-error-${field.key}`}
+						>
+							<span class="ame-setting-label ame-numeric-label">{field.label}</span>
+							<span class="ame-setting-control dcv2-ame-numeric-control">
+								<span
+									class="ame-numeric-value ame-numeric-value--placeholder"
+									data-ame-numeric-value
+								>
+									{m.durationZeroPlaceholder}
+								</span>
+								<AmeFieldError fieldId={field.key} />
+							</span>
+						</button>
+					))
+				}
+			</div>
+		</div>
+	</AdaptiveMobileEditor>
+</div>
+
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+<script>
+	import { init as initResultSummary } from "../../../scripts/result-summary-controller.ts";
+
+	initResultSummary();
+</script>
+<script>
+	import "../../../scripts/date-calculator";
+</script>

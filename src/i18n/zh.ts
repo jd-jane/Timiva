@@ -42,6 +42,11 @@ export const zh: Messages = {
       description:
         "計算兩個日期之間共有多少個工作日，並查看總天數與週末天數。開始日期與結束日期皆納入計算。",
     },
+    dateCalculator: {
+      title: "日期加減計算｜Timiva",
+      description:
+        "從起始日期加上或減去年、月、週、日，立即得到新的目標日期。",
+    },
     privacy: {
       title: "隱私權政策 — Timiva",
       description: "Timiva 如何處理您的資料與隱私。",
@@ -224,6 +229,12 @@ export const zh: Messages = {
       description: "計算兩個日期之間的工作日數，排除星期六與星期日。",
       compactDescription: "計算兩個日期之間的平日天數。",
       relatedDescription: "計算兩個日期之間的工作日數。",
+    },
+    dateCalculator: {
+      title: "日期加減計算",
+      description: "從起始日期加上或減去年、月、週、日，立即得到新的目標日期。",
+      compactDescription: "對日期加減一段時間。",
+      relatedDescription: "對日期加上或減去年、月、週、日。",
     },
     lifeProgress: {
       title: "人生進度條",
@@ -817,6 +828,89 @@ export const zh: Messages = {
         {
           question: "可以在手機上使用嗎？",
           answer: "可以。Timiva 適合在手機、平板與桌面裝置上使用。",
+        },
+      ],
+    },
+  },
+  dateCalculator: {
+    kicker: "日期加減計算",
+    scaffoldLead: "從起始日期加上或減去年、月、週、日。",
+    relatedToolsDrawerAriaLabel: "相關工具側欄",
+    toggleRelatedToolsDrawerAriaLabel: "開啟或關閉相關工具側欄",
+    upperControlsAriaLabel: "日期與期間操作",
+    startDateLabel: "起始日期",
+    dateInputPlaceholder: "起始日期 YYYY / MM / DD",
+    startDateInputAriaLabel: "起始日期",
+    openCalendarAriaLabel: "開啟日曆",
+    yearsLabel: "年",
+    monthsLabel: "月",
+    weeksLabel: "週",
+    daysLabel: "日",
+    durationZeroPlaceholder: "0",
+    directionGroupAriaLabel: "加上或減去",
+    directionAddAriaLabel: "加上",
+    directionSubtractAriaLabel: "減去",
+    resetLabel: "重設",
+    setDateAndDuration: "設定日期與期間",
+    openSheetAriaLabel: "設定日期與期間",
+    sheetAriaLabel: "日期與期間",
+    resultInitialSupport: "輸入起始日期，再加上或減去一段時間。",
+    summaryStartingDate: "起始日期",
+    validationStartDate: "請輸入 1900 至 2200 之間的有效起始日期。",
+    validationDuration: "年／月／週／日請輸入非負整數。",
+    validationOutOfRange: "計算結果超出支援的日期範圍（1900–2200）。",
+    validationUnsafeInteger: "數字過大，請輸入較小的整數。",
+    /* 數字與單位以 NBSP 綁定，Portrait 可於組間換行，避免「日」單獨成行 */
+    fixtureValidPrimary: "2200\u00A0年 12\u00A0月 31\u00A0日",
+    fixtureValidWeekday: "星期三",
+    fixtureValidSupport: "從 2199 年 6 月 16 日起，加上 1 年 5 個月 6 週 3 天。",
+    about: {
+      heading: "什麼是日期加減計算？",
+      body: "日期加減計算可從起始日期加上或減去年、月、週、日，算出新的目標日期。你可以只填一種期間，也可以同時混合多種期間。計算使用自然日，不排除週末或國定假日。它不是用來量測兩個日期之間有多長的日期區間計算，也不是只計算平日的工作日計算。",
+    },
+    howTo: {
+      heading: "如何使用日期加減計算",
+      steps: [
+        "輸入起始日期。",
+        "選擇加上或減去。",
+        "輸入年、月、週與／或日。",
+        "查看目標日期與星期。",
+      ],
+    },
+    commonUses: {
+      heading: "常見用途",
+      items: ["加上天數", "減去天數", "日期加減", "未來日期", "過去日期", "混合期間"],
+    },
+    faq: {
+      heading: "日期加減計算 FAQ",
+      items: [
+        {
+          question: "如何計算某日期的幾天後？",
+          answer:
+            "輸入起始日期，選擇加上，再輸入天數，目標日期會立即更新。",
+        },
+        {
+          question: "可以同時加上年、月、週、日嗎？",
+          answer:
+            "可以。你可以只填一個單位，也可以同時填多個單位。計算順序固定為：年 → 月 → 週 → 日。",
+        },
+        {
+          question: "月底日期不存在時怎麼計算？",
+          answer:
+            "加減年或月後，如果目標月份沒有原本的日期，結果會調整為該月最後一個有效日期。閏年也依同樣規則處理。",
+        },
+        {
+          question: "一週是否固定等於七天？",
+          answer: "是。一週固定等於 7 個自然日。",
+        },
+        {
+          question: "是否會排除週末或國定假日？",
+          answer:
+            "不會。日期加減計算只使用自然日，不排除週末或國定假日。若只要計算平日，請使用工作日計算；若要量測兩個日期之間的長度，請使用日期區間計算。",
+        },
+        {
+          question: "可以計算過去的日期嗎？",
+          answer: "可以。選擇減去，即可從起始日期往回計算過去的目標日期。",
         },
       ],
     },

@@ -40,6 +40,11 @@ export const en = {
       description:
         "Calculate business days between two dates. See the total number of weekdays and weekend days, with both start and end dates included.",
     },
+    dateCalculator: {
+      title: "Date Calculator | Timiva",
+      description:
+        "Add or subtract years, months, weeks, and days from a start date to get a new target date instantly.",
+    },
     privacy: {
       title: "Privacy Policy — Timiva",
       description: "How Timiva handles your data and privacy.",
@@ -239,6 +244,13 @@ export const en = {
         "Calculate the number of business days between two dates, excluding Saturdays and Sundays.",
       compactDescription: "Count weekdays between two dates.",
       relatedDescription: "Count business days between two dates.",
+    },
+    dateCalculator: {
+      title: "Date Calculator",
+      description:
+        "Add or subtract years, months, weeks, and days from a start date to get a new target date instantly.",
+      compactDescription: "Add or subtract time from a date.",
+      relatedDescription: "Add or subtract years, months, weeks, and days.",
     },
     lifeProgress: {
       title: "Life Progress Bar",
@@ -851,6 +863,99 @@ export const en = {
           question: "Can I use this countdown on mobile?",
           answer:
             "Yes. Timiva is designed to work well on mobile, tablet, and desktop screens.",
+        },
+      ],
+    },
+  },
+  dateCalculator: {
+    kicker: "Date Calculator",
+    scaffoldLead:
+      "Add or subtract years, months, weeks, and days from a start date.",
+    relatedToolsDrawerAriaLabel: "Related tools drawer",
+    toggleRelatedToolsDrawerAriaLabel: "Toggle related tools drawer",
+    upperControlsAriaLabel: "Date and duration controls",
+    startDateLabel: "Start date",
+    dateInputPlaceholder: "Start date YYYY / MM / DD",
+    startDateInputAriaLabel: "Start date",
+    openCalendarAriaLabel: "Open calendar",
+    yearsLabel: "Years",
+    monthsLabel: "Months",
+    weeksLabel: "Weeks",
+    daysLabel: "Days",
+    durationZeroPlaceholder: "0",
+    directionGroupAriaLabel: "Add or subtract",
+    directionAddAriaLabel: "Add",
+    directionSubtractAriaLabel: "Subtract",
+    resetLabel: "Reset",
+    setDateAndDuration: "Set date and duration",
+    openSheetAriaLabel: "Set date and duration",
+    sheetAriaLabel: "Date and duration",
+    resultInitialSupport:
+      "Enter a start date, then add or subtract a time period.",
+    summaryStartingDate: "Starting date",
+    validationStartDate: "Enter a valid start date between 1900 and 2200.",
+    validationDuration: "Enter non-negative whole numbers for years, months, weeks, and days.",
+    validationOutOfRange: "That calculation is outside the supported date range (1900–2200).",
+    validationUnsafeInteger: "That number is too large. Enter a smaller whole number.",
+    fixtureValidPrimary: "DEC 31, 2200",
+    fixtureValidWeekday: "Wednesday",
+    fixtureValidSupport:
+      "Add 1 year, 5 months, 6 weeks, and 3 days to Jun 16, 2199.",
+    about: {
+      heading: "What is a Date Calculator?",
+      body: "Date Calculator helps you add or subtract years, months, weeks, and days from a start date to find a new target date. You can use a single unit or mix several units in one calculation. It uses calendar days only—weekends and public holidays are not excluded. It is not a date-range span tool like Date Range Calculator, and it is not a weekday-only counter like Business Days Calculator.",
+    },
+    howTo: {
+      heading: "How to use Date Calculator",
+      steps: [
+        "Enter a start date.",
+        "Choose whether to add or subtract.",
+        "Enter years, months, weeks, and/or days.",
+        "View the target date and weekday.",
+      ],
+    },
+    commonUses: {
+      heading: "Common uses",
+      items: [
+        "Add days",
+        "Subtract days",
+        "Date arithmetic",
+        "Future date",
+        "Past date",
+        "Mixed periods",
+      ],
+    },
+    faq: {
+      heading: "Date Calculator FAQ",
+      items: [
+        {
+          question: "How do I calculate a date a few days from now?",
+          answer:
+            "Enter a start date, choose add, enter the number of days, and the target date updates right away.",
+        },
+        {
+          question: "Can I add years, months, weeks, and days at the same time?",
+          answer:
+            "Yes. You can fill one unit or mix several units. Calculation always runs in this order: Year → Month → Week → Day.",
+        },
+        {
+          question: "What happens when a month-end date does not exist?",
+          answer:
+            "After adding or subtracting months or years, if that day does not exist in the target month, the result is clamped to the last valid day of that month. Leap years follow the same rule.",
+        },
+        {
+          question: "Is one week always equal to seven days?",
+          answer: "Yes. One week equals 7 calendar days.",
+        },
+        {
+          question: "Does this exclude weekends or public holidays?",
+          answer:
+            "No. Date Calculator uses calendar days only and does not skip weekends or public holidays. For weekday-only counts, use Business Days Calculator. To measure the span between two dates, use Date Range Calculator.",
+        },
+        {
+          question: "Can I calculate a past date?",
+          answer:
+            "Yes. Choose subtract to move backward from the start date and get a past target date.",
         },
       ],
     },
