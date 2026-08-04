@@ -861,10 +861,18 @@ body:has([data-date-calculator-v2]) header {
 	}
 }
 
-/* Mobile 底部控制：預設顯示 */
+/* Mobile 底部控制：預設顯示；寬度對齊 DBD capsule（100%／max 20rem） */
 [data-date-calculator-v2] .dcv2-mobile-controls {
 	display: flex;
 	margin-top: 2rem;
+}
+
+[data-date-calculator-v2] .dcv2-mobile-capsule {
+	width: 100%;
+	max-width: min(100%, 20rem);
+	font-variant-numeric: tabular-nums;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
 }
 
 [data-date-calculator-v2] .dcv2-mobile-trigger-icon svg {
@@ -1299,6 +1307,8 @@ body:has([data-date-calculator-v2]) header {
 		align-self: center;
 		z-index: 25;
 		isolation: isolate;
+		width: 100%;
+		max-width: 100%;
 		margin-top: 0;
 		padding-bottom: 1rem;
 		pointer-events: auto;
@@ -1314,6 +1324,7 @@ body:has([data-date-calculator-v2]) header {
 		min-height: var(--tool-mobile-portrait-control-min-height, 3.5rem);
 		padding: var(--tool-mobile-portrait-control-padding-y, 0.75rem)
 			var(--tool-mobile-portrait-control-padding-x, 1rem);
+		/* 寬度沿用 base：100%／max 20rem（對齊 DBD） */
 	}
 
 	/* B8.1：結果區縮放改由 AME shared [data-ame-background-scale-target] 負責。
@@ -1324,13 +1335,11 @@ body:has([data-date-calculator-v2]) header {
 	}
 }
 
-/* 橫式 closed：compact 第一屏 */
-@media (orientation: landscape) and (max-width: 1023px) {
-	[data-date-calculator-v2] .preview-tool-first-screen {
-		min-height: auto;
-		padding-block: 2rem 3rem;
-	}
-}
+/*
+ * 短橫式 compact 由下方 max-height:700px 規則處理。
+ * 勿再用 (landscape) and (max-width:1023px) 單獨把 min-height 改成 auto：
+ * 會誤傷 1023×812 這類「寬>高但高度足夠」的桌機視窗，第一屏無法垂直置中。
+ */
 
 @media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
 	[data-date-calculator-v2] .dcv2-input-cluster--desktop {
@@ -1340,6 +1349,13 @@ body:has([data-date-calculator-v2]) header {
 	[data-date-calculator-v2] .dcv2-mobile-controls {
 		display: flex;
 		margin-top: 1rem;
+	}
+
+	/* 橫式：主按鈕改回依文字寬度（直式仍維持 100%／max 20rem） */
+	[data-date-calculator-v2] .dcv2-mobile-capsule {
+		width: auto;
+		max-width: none;
+		margin-inline: auto;
 	}
 
 	/*
