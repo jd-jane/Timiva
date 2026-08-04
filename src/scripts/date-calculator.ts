@@ -178,7 +178,7 @@ function dispatchResultUpdate(
 }
 
 /**
- * Desktop duration overflow icon／aria-invalid — 與 duration controller 自身
+ * Desktop duration overflow／invalid icon／aria-invalid — 與 duration controller 自身
  * raw-input invalid 狀態合併，避免互相覆寫。
  */
 function syncDesktopDurationOverflow(
@@ -191,16 +191,30 @@ function syncDesktopDurationOverflow(
 		const input = root.querySelector<HTMLInputElement>(
 			`[data-dcv2-duration-input="${unit}"]`,
 		);
+		const icon = root.querySelector<HTMLElement>(
+			`[data-dcv2-duration-invalid="${unit}"]`,
+		);
 		if (!field) {
 			continue;
 		}
 
 		const isOverflow = unit === failingUnit;
+		const ownInvalid = durationSnapshot.units[unit].status === "invalid";
+		const showError = isOverflow || ownInvalid;
+
 		field.setAttribute("data-dcv2-duration-overflow", isOverflow ? "true" : "false");
+		field.setAttribute(
+			"data-dcv2-duration-status",
+			durationSnapshot.units[unit].status,
+		);
 
 		if (input) {
-			const ownInvalid = durationSnapshot.units[unit].status === "invalid";
-			input.setAttribute("aria-invalid", ownInvalid || isOverflow ? "true" : "false");
+			input.setAttribute("aria-invalid", showError ? "true" : "false");
+		}
+
+		if (icon) {
+			icon.hidden = !showError;
+			icon.setAttribute("aria-hidden", showError ? "false" : "true");
 		}
 	}
 }
@@ -531,9 +545,11 @@ function initDesktopCalendar(
 
 /**
  * B2.5：Direction＋Duration 共用 state — Desktop only（B8 起 mobile 走 AME draft）。
+ * Desktop duration 鍵盤／paste 寫入前套用與 AME 相同的 acceptDcAmeNumericCandidate range guard。
  */
 function initDirectionAndDuration(
 	root: HTMLElement,
+	dateApi: StartDateApi,
 ): DateCalculatorDurationController | null {
 	if (durationControllers.has(root)) {
 		return durationControllers.get(root) ?? null;
@@ -567,6 +583,21 @@ function initDirectionAndDuration(
 
 	const controller = createDurationController();
 
+	const buildDraftFromSnapshot = (snapshot: DurationSnapshot): DcAmeDraft => {
+		const startSnapshot = dateApi.getSnapshot();
+		return {
+			startDate:
+				startSnapshot.status === "valid" && startSnapshot.date
+					? formatCivilIso(startSnapshot.date)
+					: "",
+			direction: snapshot.direction,
+			years: snapshot.units.years.raw,
+			months: snapshot.units.months.raw,
+			weeks: snapshot.units.weeks.raw,
+			days: snapshot.units.days.raw,
+		};
+	};
+
 	const syncDom = (snapshot: DurationSnapshot) => {
 		for (const button of directionButtons) {
 			const value = readDirection(button);
@@ -590,13 +621,21 @@ function initDirectionAndDuration(
 			if (document.activeElement !== input) {
 				input.value = unitSnapshot.raw;
 			}
-			input.setAttribute(
-				"aria-invalid",
-				unitSnapshot.status === "invalid" ? "true" : "false",
+			const ownInvalid = unitSnapshot.status === "invalid";
+			const field = input.closest(".dcv2-duration-field");
+			const overflow =
+				field?.getAttribute("data-dcv2-duration-overflow") === "true";
+			const showError = ownInvalid || overflow;
+			input.setAttribute("aria-invalid", showError ? "true" : "false");
+			field?.setAttribute("data-dcv2-duration-status", unitSnapshot.status);
+			const icon = root.querySelector<HTMLElement>(
+				`[data-dcv2-duration-invalid="${unit}"]`,
 			);
-			input
-				.closest(".dcv2-duration-field")
-				?.setAttribute("data-dcv2-duration-status", unitSnapshot.status);
+			if (icon && !overflow) {
+				/* Overflow 狀態由 computeAndApplyResult 擁有；此處只同步 raw invalid。 */
+				icon.hidden = !ownInvalid;
+				icon.setAttribute("aria-hidden", ownInvalid ? "false" : "true");
+			}
 		}
 	};
 
@@ -627,7 +666,24 @@ function initDirectionAndDuration(
 		input.addEventListener(
 			"input",
 			() => {
-				controller.setDurationUnit(unit, input.value);
+				const candidate = input.value;
+				const snapshot = controller.getSnapshot();
+				const priorRaw = snapshot.units[unit].raw;
+
+				/* Backspace／Delete／Clear → empty：永遠允許 */
+				if (candidate.length === 0) {
+					controller.setDurationUnit(unit, "");
+					return;
+				}
+
+				const draft = buildDraftFromSnapshot(snapshot);
+				if (!acceptDcAmeNumericCandidate(draft, unit, candidate)) {
+					/* 超界／非數字 candidate：拒絕寫入，保留上一有效值；不 clamp／toast */
+					input.value = priorRaw;
+					return;
+				}
+
+				controller.setDurationUnit(unit, candidate);
 			},
 			{ signal },
 		);
@@ -847,9 +903,13 @@ function initRoot(root: HTMLElement): void {
 	initDrawer(root);
 
 	const dateApi = initDesktopStartDateInput(root);
-	const durationController = initDirectionAndDuration(root);
+	if (!dateApi) {
+		return;
+	}
 
-	if (!dateApi || !durationController) {
+	const durationController = initDirectionAndDuration(root, dateApi);
+
+	if (!durationController) {
 		return;
 	}
 

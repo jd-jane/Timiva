@@ -861,7 +861,7 @@ export const zh: Messages = {
     validationOutOfRange: "計算結果超出支援的日期範圍（1900–2200）。",
     validationUnsafeInteger: "數字過大，請輸入較小的整數。",
     /* 數字與單位以 NBSP 綁定，Portrait 可於組間換行，避免「日」單獨成行 */
-    fixtureValidPrimary: "2200\u00A0年 12\u00A0月 31\u00A0日",
+    fixtureValidPrimary: "2200\u00A0年\n12\u00A0月 31\u00A0日",
     fixtureValidWeekday: "星期三",
     fixtureValidSupport: "從 2199 年 6 月 16 日起，加上 1 年 5 個月 6 週 3 天。",
     about: {

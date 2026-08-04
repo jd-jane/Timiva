@@ -455,6 +455,67 @@ assert(/data-dcv2-direction/.test(astro), "Desktop direction controls retained")
 assert(/initDesktopStartDateInput|createStartDateController/.test(script), "Desktop start date runtime retained");
 assert(/createDateCalculatorCalendarAdapter/.test(script), "Desktop calendar adapter retained");
 assert(/data-dcv2-reset/.test(astro) && /initDesktopReset|data-dcv2-reset/.test(script), "Desktop Reset wired");
+assert(
+	/acceptDcAmeNumericCandidate\(draft, unit, candidate\)/.test(script) &&
+		/input\.value = priorRaw/.test(script) &&
+		/data-dcv2-duration-invalid/.test(astro) &&
+		/syncDesktopDurationOverflow/.test(script),
+	"Desktop duration range guard＋overflow ! icon retained（hotfix contract）",
+);
+
+/* Desktop primary result：single-line＋fluid shrink（drawer／narrow stage） */
+assert(
+	/container-type:\s*inline-size/.test(css) && /container-name:\s*dcv2-result/.test(css),
+	"Desktop result group is a size container for fluid primary",
+);
+assert(
+	/@media \(min-width:\s*768px\)[\s\S]*--rs-textual-primary-size:\s*clamp\(/.test(css),
+	"≥768px textual primary uses clamp：夠寬維持原字級；超出寬度才微縮",
+);
+assert(
+	/:is\(\s*\[data-rs-layout="desktop"\],\s*\[data-rs-layout="portrait"\]\s*\)/.test(css),
+	"Single-line／clamp covers desktop＋mid-width portrait layout attrs（768–899 tablet）",
+);
+assert(
+	/data-dcv2-locale="en"[\s\S]*clamp\([^)]*5\.5rem\)/.test(css),
+	"EN Desktop primary clamp max remains 5.5rem",
+);
+assert(
+	/\[data-rs-value="primary"\][\s\S]*white-space:\s*nowrap/.test(css) ||
+		/data-rs-value="primary"[\s\S]*white-space:\s*nowrap/.test(css),
+	"Desktop／mid-width primary date is nowrap（ZH／EN single line；no markup split）",
+);
+assert(
+	/data-rs-value="primary"[\s\S]*overflow-x:\s*clip/.test(css) &&
+		!/data-rs-value="primary"[\s\S]{0,200}text-overflow:\s*ellipsis/.test(css),
+	"Desktop primary avoids ellipsis crop；overflow clipped only as safety",
+);
+assert(
+	!/formatResultPrimary[\s\S]{0,200}\\u00A0|formatResultPrimary[\s\S]{0,120}nbsp/.test(
+		formatLib,
+	),
+	"Does not hard-fix primary via NBSP in formatResultPrimary",
+);
+assert(
+	/@media \(max-width:\s*767px\)[\s\S]*data-dcv2-locale="zh"[\s\S]*--rs-textual-primary-size:\s*4\.125rem/.test(
+		css,
+	) ||
+		/data-dcv2-locale="zh"[\s\S]*data-rs-layout="portrait"[\s\S]*--rs-textual-primary-size:\s*4\.125rem/.test(
+			css,
+		),
+	"ZH Portrait two-line target size retained",
+);
+assert(
+	/year\} 年\\n\$\{date\.month\}|year\} 年\\n/.test(formatLib) ||
+		/\$\{date\.year\} 年\\n\$\{date\.month\}/.test(formatLib),
+	"ZH formatResultPrimary inserts newline after 年（年／月日兩列）",
+);
+assert(
+	/@media \(max-width:\s*767px\)[\s\S]*data-dcv2-locale="zh"[\s\S]*data-rs-value="primary"[\s\S]*white-space:\s*pre-line/.test(
+		css,
+	),
+	"ZH ≤767 Portrait primary uses pre-line（受控兩行）",
+);
 
 console.log(`\nvalidate-date-calculator-adopter: ${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);

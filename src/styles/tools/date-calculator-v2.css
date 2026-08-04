@@ -75,6 +75,62 @@ body:has([data-date-calculator-v2]) header {
 	--rs-textual-primary-size: 5.5rem;
 }
 
+/*
+ * Desktop／中等桌機：主日期強制單行。
+ * 預設維持原字級（ZH 5rem／EN 5.5rem）；僅當整組超出結果容器寬度時，
+ * 才以 min(原字級, Ncqi) 等比微縮——不是一進來就縮小。
+ * - 公開 token＋data-rs-value；不改 shared ResultSummary
+ * - MQ ≥768：涵蓋 layout=desktop 與 768–899 仍為 layout=portrait 的中等桌機
+ * - 不改 Mobile ≤767／layout=landscape
+ */
+@media (min-width: 768px) {
+	[data-date-calculator-v2] .preview-tool-result-group {
+		container-type: inline-size;
+		container-name: dcv2-result;
+		width: 100%;
+		max-width: 100%;
+		min-width: 0;
+	}
+
+	[data-date-calculator-v2]
+		[data-result-summary][data-rs-content="textual"]:is(
+			[data-rs-layout="desktop"],
+			[data-rs-layout="portrait"]
+		) {
+		width: 100%;
+		max-width: 100%;
+		min-width: 0;
+		/*
+		 * 最長 ZH「2200 年 12 月 31 日」≈635px＠5rem。
+		 * 12.5cqi＠640px stage = 5rem → 夠寬時維持原大小；變窄才微縮。
+		 */
+		--rs-textual-primary-size: clamp(2.75rem, 12.5cqi, 5rem);
+	}
+
+	[data-date-calculator-v2][data-dcv2-locale="en"]
+		[data-result-summary][data-rs-content="textual"]:is(
+			[data-rs-layout="desktop"],
+			[data-rs-layout="portrait"]
+		) {
+		/* 13.75cqi＠640 = 5.5rem；夠寬維持原 EN 大字 */
+		--rs-textual-primary-size: clamp(3rem, 13.75cqi, 5.5rem);
+	}
+
+	[data-date-calculator-v2]
+		[data-result-summary][data-rs-content="textual"]:is(
+			[data-rs-layout="desktop"],
+			[data-rs-layout="portrait"]
+		)
+		[data-rs-value="primary"] {
+		white-space: nowrap;
+		max-width: 100%;
+		overflow-x: clip;
+		overflow-y: visible;
+		text-overflow: clip;
+		box-sizing: border-box;
+	}
+}
+
 /* Initial support 文案維持 16px */
 [data-date-calculator-v2][data-dcv2-fixture="initial"]
 	[data-result-summary][data-rs-content="textual"],
@@ -1206,8 +1262,9 @@ body:has([data-date-calculator-v2]) header {
 	}
 
 	/*
-	 * ZH Portrait：略放寬結果可用寬度 + 略縮 primary，目標兩行：
-	 * 2200 年 / 12 月 31 日（EN Portrait 維持 5.5rem，不動）。
+	 * ZH Portrait：主日期固定兩行 —「2021 年」／「7 月 1 日」。
+	 * formatResultPrimary 在「年」後插入 \\n；此處 pre-line 生效。
+	 * Desktop ≥768 為 nowrap，\\n 會併成空白，維持單行。
 	 */
 	[data-date-calculator-v2][data-dcv2-locale="zh"] .preview-tool-result-group {
 		padding-inline: 0.5rem;
@@ -1218,6 +1275,13 @@ body:has([data-date-calculator-v2]) header {
 	[data-date-calculator-v2][data-dcv2-locale="zh"]
 		[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
 		--rs-textual-primary-size: 4.125rem;
+	}
+
+	[data-date-calculator-v2][data-dcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"]
+		[data-rs-value="primary"] {
+		white-space: pre-line;
+		text-align: center;
 	}
 
 	[data-date-calculator-v2] .preview-tool-result-block {

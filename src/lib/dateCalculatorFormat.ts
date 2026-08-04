@@ -81,10 +81,10 @@ export function parseCivilIso(raw: string): CivilDate | null {
 	};
 }
 
-/** Primary result line — EN: AUG 10, 2026 · ZH: 2026 年 8 月 10 日 */
+/** Primary result — EN: AUG 10, 2026 · ZH: 年／月日兩段（Mobile pre-line；Desktop nowrap 併成單行） */
 export function formatResultPrimary(date: CivilDate, locale: DateCalculatorLocale): string {
 	if (locale === "zh") {
-		return `${date.year} 年 ${date.month} 月 ${date.day} 日`;
+		return `${date.year} 年\n${date.month} 月 ${date.day} 日`;
 	}
 	return `${EN_MONTHS_SHORT[date.month - 1]} ${date.day}, ${date.year}`;
 }

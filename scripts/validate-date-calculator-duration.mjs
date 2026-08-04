@@ -14,6 +14,13 @@ import {
 	isValidDurationInput,
 	normalizeDurationDigits,
 } from "../src/lib/dateCalculatorDuration.ts";
+import {
+	calculateDate,
+	DATE_CALCULATOR_MAX,
+	DATE_CALCULATOR_MIN,
+	isValidSupportedStartDate,
+} from "../src/lib/dateCalculatorMath.ts";
+import { parseCivilIso } from "../src/lib/dateCalculatorFormat.ts";
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (path) => readFileSync(join(rootDir, path), "utf8");
@@ -274,8 +281,29 @@ assert(
 );
 assert(
 	/controller\.setDirection\(value\)/.test(script) &&
-		/controller\.setDurationUnit\(unit, input\.value\)/.test(script),
-	"DOM events delegate to shared controller",
+		/acceptDcAmeNumericCandidate\(draft, unit, candidate\)/.test(script) &&
+		/controller\.setDurationUnit\(unit, candidate\)/.test(script),
+	"Desktop duration input uses AME candidate guard before setDurationUnit",
+);
+assert(
+	/candidate\.length === 0[\s\S]{0,120}setDurationUnit\(unit, ""\)/.test(script) ||
+		/candidate\.length === 0[\s\S]{0,160}setDurationUnit\(unit, ""\)/.test(script),
+	"Empty candidate（Delete／Clear）always writes through",
+);
+assert(
+	/input\.value = priorRaw/.test(script),
+	"Rejected candidate restores prior raw（no clamp）",
+);
+assert(
+	/data-dcv2-duration-invalid=\{field\.key\}/.test(astro) ||
+		/data-dcv2-duration-invalid=/.test(astro),
+	"Desktop duration fields expose invalid／overflow ! icon hooks",
+);
+assert(
+	/syncDesktopDurationOverflow/.test(script) &&
+		/data-dcv2-duration-invalid/.test(script) &&
+		/data-dcv2-duration-overflow/.test(script),
+	"Overflow／invalid path syncs ! icon＋aria-invalid",
 );
 assert(
 	/controller\.subscribe\(syncDom\)/.test(script),
@@ -402,6 +430,127 @@ for (const path of [
 		!source.includes("dateCalculatorDuration") &&
 			!source.includes("data-dcv2-duration"),
 		`${path} untouched by B2.5`,
+	);
+}
+
+/* --- Desktop duration range guard（mirror AME acceptDcAmeNumericCandidate） --- */
+/** Same math／range gate as acceptDcAmeNumericCandidate；avoids importing adapter（no .ts ext）. */
+function probeCandidate(draft, fieldId, candidateValue) {
+	if (candidateValue.length === 0) return true;
+	if (!/^\d+$/.test(candidateValue)) return false;
+	const numeric = Number(candidateValue);
+	if (!Number.isSafeInteger(numeric) || numeric < 0) return false;
+	const duration = {
+		years: Number(fieldId === "years" ? candidateValue : draft.years || "0"),
+		months: Number(fieldId === "months" ? candidateValue : draft.months || "0"),
+		weeks: Number(fieldId === "weeks" ? candidateValue : draft.weeks || "0"),
+		days: Number(fieldId === "days" ? candidateValue : draft.days || "0"),
+	};
+	const parsedStart = parseCivilIso(draft.startDate);
+	const start =
+		parsedStart && isValidSupportedStartDate(parsedStart)
+			? parsedStart
+			: draft.direction === "add"
+				? DATE_CALCULATOR_MIN
+				: DATE_CALCULATOR_MAX;
+	return calculateDate(start, draft.direction, duration).ok;
+}
+
+function desktopDraft(partial = {}) {
+	return {
+		startDate: "2020-01-01",
+		direction: "add",
+		years: "0",
+		months: "0",
+		weeks: "0",
+		days: "0",
+		...partial,
+	};
+}
+
+assert(
+	probeCandidate(desktopDraft(), "years", "180") === true,
+	"Desktop guard：years=180 from 2020 add accepted",
+);
+assert(
+	probeCandidate(desktopDraft(), "years", "181") === false,
+	"Desktop guard：years=181 from 2020 add rejected（超界）",
+);
+assert(
+	probeCandidate(desktopDraft(), "months", "99999") === false,
+	"Desktop guard：huge months rejected",
+);
+assert(
+	probeCandidate(desktopDraft(), "weeks", "999999") === false,
+	"Desktop guard：huge weeks rejected",
+);
+assert(
+	probeCandidate(desktopDraft(), "days", "99999999") === false,
+	"Desktop guard：huge days rejected",
+);
+assert(
+	probeCandidate(desktopDraft(), "years", "") === true,
+	"Desktop guard：empty years（Clear）accepted",
+);
+assert(
+	probeCandidate(desktopDraft({ direction: "subtract" }), "years", "121") === false,
+	"Desktop guard：subtract years=121 from 2020 rejected",
+);
+assert(
+	probeCandidate(desktopDraft({ direction: "subtract" }), "years", "120") === true,
+	"Desktop guard：subtract years=120 from 2020 accepted（2020−120≥1900）",
+);
+assert(
+	probeCandidate(desktopDraft({ startDate: "" }), "years", "301") === false,
+	"Desktop guard：no start — probe MIN／add rejects years=301",
+);
+assert(
+	probeCandidate(desktopDraft({ startDate: "" }), "years", "300") === true,
+	"Desktop guard：no start — probe MIN／add accepts years=300",
+);
+assert(
+	probeCandidate(desktopDraft({ years: "10" }), "years", "999999999999999999") === false,
+	"Desktop guard：paste beyond safe integer rejected（prior years kept by caller）",
+);
+assert(
+	probeCandidate(desktopDraft(), "days", "12a") === false,
+	"Desktop guard：non-digit paste／type rejected",
+);
+
+/* Simulate reject-keeps-prior：controller never sees rejected candidate */
+{
+	const controller = createDurationController();
+	controller.setDurationUnit("years", "5");
+	const prior = controller.getSnapshot().units.years.raw;
+	const draft = desktopDraft({ years: prior });
+	const rejected = !probeCandidate(draft, "years", "9999");
+	assert(rejected === true, "Simulate：9999 years rejected by guard");
+	assert(
+		controller.getSnapshot().units.years.raw === "5",
+		"Simulate：controller retains prior years=5 when candidate not written",
+	);
+	controller.setDurationUnit("years", "");
+	assert(
+		controller.getSnapshot().units.years.status === "empty",
+		"Simulate：Clear restores empty",
+	);
+	controller.destroy();
+}
+
+/* Fallback path：non-typing overflow → calculateDate out-of-range＋! icon wiring */
+{
+	const overflow = calculateDate(
+		{ year: 2020, month: 1, day: 1 },
+		"add",
+		{ years: 181, months: 0, weeks: 0, days: 0 },
+	);
+	assert(overflow.ok === false && overflow.reason === "out-of-range", "Fallback：out-of-range result");
+	assert(overflow.unit === "years", "Fallback：failing unit is years");
+	assert(
+		/result\.reason === "out-of-range"[\s\S]{0,200}syncDesktopDurationOverflow/.test(script) &&
+			/dispatchResultUpdate\(root, "\?"/.test(script) &&
+			/data-dcv2-duration-invalid/.test(astro),
+		"Fallback：?＋duration ! icon wired for non-typing overflow",
 	);
 }
 
