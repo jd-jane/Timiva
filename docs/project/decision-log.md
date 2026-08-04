@@ -5,6 +5,42 @@
 
 ---
 
+## 2026-08-04 — Date Calculator release readiness（local）＋AME／MSB archive chain
+
+### 背景
+
+```text
+Date Calculator／AME／Legacy MSB 路徑已於 local main 完成多段 checkpoint。
+Owner 核准 docs closure 寫回現況；尚未授權 push／deploy。
+```
+
+### 決策（最終核准結果）
+
+```text
+1. Legacy MSB Option B Archive-in-Place＝COMPLETE（5f244af）；Option C 未授權。
+2. AME foundation＋Lab＝2e096e0；AME validators＝d1e3ebd。
+3. Date Calculator standalone＝3d9600e。
+4. Link Integration＝ae1c751；Owner Link Integration QA＝PASS。
+5. DC canonical adopter validator＝d09dce2。
+6. Release validators（SEO／sitemap／category）＝6d1ce1c。
+7. DC／AME／MSB／SEO／sitemap／category／link validators與 build＝PASS。
+8. Home Featured 維持 4 張、不含 DC。
+9. All Tools dates-events：EC → DRC → DBD → BDC → DC → Age。
+10. Date Calculator＝implementation＋site integration COMPLETE（local）；
+    尚未 push／deploy；不得表述為已上線／production deployed。
+11. 下一支產品工具：Hours Calculator。
+12. 獨立 dirty 不納入本 closure：astro.config.mjs、Phase C tool-mobile-sheet-v2-baseline.css。
+```
+
+### 影響
+
+```text
+current-status／本 log／date-calculator README／product-architecture／roadmap
+以 local complete＋awaiting Push Gate 為準。
+```
+
+---
+
 ## 2026-08-02 — Adaptive Mobile Editor B9 Decision＋B9.1 Canonical Docs
 
 ### 背景

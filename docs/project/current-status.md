@@ -1,8 +1,8 @@
 # Timiva 專案現況
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
-> 更新日期：2026-08-02
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + **Business Days Calculator** production、GA4 privacy-first implementation、Search Console verification、V1 SEO technical closeout（`c5c0a22`）、**Business Days Calculator**（V1.5 Search Foundation 第三個工具／Timiva 第七個工具）已上線（standalone `cc09f32`；Link Integration／Deployed HEAD `8977fe5`；Production QA PASS）、V1.5 為 Search Foundation／搜尋鋪路期；中文 Calculator 工具命名統一為「○○計算」（2026-07-13）。**ResultSummary Phase A–I 已完成、push、deploy**（Production HEAD：`c1aea32`）。**Shared Desktop Calendar Phase A–E 已正式部署至 timiva.app**（Deployed HEAD：`5c55672`）。**四大分類顯示名稱已上線**（Production HEAD：`0fe3e1f`）。**Adaptive Mobile Editor：Lab hardening＋Date Calculator First Adopter COMPLETE；B9 Decision＝scoped canonical＋D1／MSB Option B；B9.1 Canonical Docs Adoption＝COMPLETE（Docs Gate PASS）；B9.2／B9.3 未授權。** **Date Calculator／日期加減計算：standalone 仍在 working tree；catalog `available:false`；Mobile＝AME `live`；不得開始 Link Integration。** Canonical validators：`scripts/validate-desktop-calendar.mjs`、`scripts/validate-tool-category-labels.mjs`、AME lab／contract validators。Production baseline：`origin/main`＝`571c67f`；本機 `main` ahead of `origin/main` by 1（`3956536`）；大量 AME／DC／MSB 未 commit 工作仍在 working tree。
+> 更新日期：2026-08-04
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + **Business Days Calculator** production（Deployed HEAD 見各工具節）。**Adaptive Mobile Editor**：Lab／foundation／validators 已 local commit（`2e096e0`／`d1e3ebd`）；B9 Decision＝scoped canonical；B9.1 Docs＝COMPLETE；**B9.2A Legacy MSB Archive-in-Place＝COMPLETE（`5f244af`）；Option C 未授權；B9.3 未授權。** **Date Calculator／日期加減計算（第八）：implementation＋site integration COMPLETE（local `main`）；standalone `3d9600e`；Link Integration `ae1c751`（Owner QA PASS）；adopter validator `d09dce2`；release validators `6d1ce1c`；catalog `available:true`；Home Featured 仍 4 張不含 DC；All Tools dates-events＝EC→DRC→DBD→BDC→DC→Age。尚未 push／deploy（不得寫成已上線）。** Production baseline：`origin/main`；本機 `main` ahead of `origin/main`（見 §1.1 commit chain）。獨立 dirty：`astro.config.mjs`、Phase C `tool-mobile-sheet-v2-baseline.css`（非本 closure）。下一支產品工具：**Hours Calculator**。
 ---
 
 ## 1. Project snapshot
@@ -20,11 +20,11 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具（含 Year Progress）、**Age Calculator**（第五）、**Days Between Dates**（第六）、**Business Days Calculator**（第七個工具／V1.5 Search Foundation 第三個工具）皆已上線。**Date Calculator（第八）：standalone working tree；B8 AME First Adopter COMPLETE；Mobile＝AME `live`；catalog `available:false`；runtime 尚未 commit／push／deploy。** **AME＝scoped canonical（B9 Decision PASS）；B9.1 Canonical Docs Adoption＝COMPLETE（Docs Gate PASS）；B9.2／B9.3 未授權。** Legacy MSB production CSS／tool-local sheets 維持。Home Featured 維持 4 張（不含 BDC／DC）。 |
+| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具、**Age**、**DBD**、**BDC** 皆已上線。**Date Calculator（第八）：local implementation＋Link Integration COMPLETE；尚未 push／deploy。** AME foundation／validators／MSB Archive-in-Place 已 local commit。Home Featured 維持 4 張（不含 BDC／DC）。下一支產品：**Hours Calculator**。 |
 
-### 1.1 Current work tracks（2026-08-02）
+### 1.1 Current work tracks（2026-08-04）
 
-**Adaptive Mobile Editor／D1（shared · local working tree）：**
+**Adaptive Mobile Editor／Legacy MSB（shared · local commits；尚未 push／deploy）：**
 
 ```text
 Status：B7 Lab Hardening PASS · B8 Date Calculator First Adopter COMPLETE
@@ -33,26 +33,40 @@ Gates：
   Shared Shell Focus Outline＝PASS
   B8.2 Live Update Lifecycle＝PASS
   B9 Decision Gate＝PASS（scoped canonical · D1／MSB Option B · Option D 否決）
-  B9.1 Canonical Docs Adoption＝COMPLETE（Owner Docs Gate PASS）
-  B9.2 cleanup＝NOT AUTHORIZED
+  B9.1 Canonical Docs Adoption＝COMPLETE
+  B9.2A Legacy MSB Archive-in-Place＝COMPLETE（commit 5f244af）
+  Option C（刪除 MSB Lab sources）＝NOT AUTHORIZED
   B9.3 next adopter＝NOT AUTHORIZED
-Legacy MSB：Lab／D1 Portal／Registry／VV＝歷史／非新工具路徑；baseline CSS／msb-*／Age／DBD／BDC／CT sheets＝KEEP
-Forbidden：B9.2／B9.3 auto-start · push／deploy without Owner
+Local commits（not on origin/main）：
+  5f244af chore: archive legacy mobile sheet lab
+  2e096e0 feat: add Adaptive Mobile Editor foundation
+  d1e3ebd test: normalize Adaptive Mobile Editor validators
+Legacy MSB：Lab＝Historical／Superseded；baseline CSS／msb-*／Age／DBD／BDC／CT sheets＝KEEP
+Validators：AME lab／contract PASS；MSB historical lab validator PASS（9b76cc5）
+Forbidden：push／deploy without Owner；Option C without Owner
 Docs：docs/workflow/shared-component-reuse-gate.md §8 · docs/standards/mobile-sheet.md §0／§17 · new-tool-development.md §22
 ```
 
-**Date Calculator／日期加減計算（Timiva 第八個工具 · V1.5 Search Foundation 第四 · standalone in progress）：**
+**Date Calculator／日期加減計算（Timiva 第八 · V1.5 Search Foundation 第四 · local complete；尚未 push／deploy）：**
 
 ```text
-Status：B8 AME First Adopter COMPLETE · Desktop／Mobile live behavior locked for AME path
-Historical：B0／B1A／B1B Visual QA PASS（2026-07-25）；後續 math／duration／AME batches 已在 working tree
+Status：implementation＋site integration COMPLETE（local main）
 Mobile：Adaptive Mobile Editor · lifecycle＝live · sibling mount
-Desktop：Smart Date Input＋DesktopCalendar popover-compact＋既有 live result（非 AME）
-Tool-owned：Direction／2×2 duration／candidate digit guard／dateCalculatorMath
-Catalog：available:false（不進 Home Featured／All Tools／inbound Related）
-Standalone：仍在 working tree；尚未 commit／push／deploy
-不得開始 Link Integration
-Next（產品）：另行授權（B9.2／B9.3／Link Integration／catalog 皆未自動授權）
+Desktop：Smart Date Input＋DesktopCalendar popover-compact＋live result
+Catalog：available:true · featured:false
+Home Featured：維持 4 張 · 不含 DC
+All Tools dates-events：EC → DRC → DBD → BDC → DC → Age
+Outbound Related：DBD → BDC → Date Range
+Inbound：DRC／DBD／BDC 各含 DC（仍 3 卡）
+Local commits（not on origin/main）：
+  3d9600e feat: add Date Calculator standalone tool
+  ae1c751 feat: integrate Date Calculator across site links（Owner Link QA PASS）
+  d09dce2 test: add Date Calculator adopter validator
+  6d1ce1c test: align validators for Date Calculator release
+Validators／build：DC adopter · link-integration · SEO head · sitemap · category-labels · AME · MSB · build＝PASS
+Release state：Committed locally · Pushed: No · Deployed: No
+  （不得表述為已上線／production deployed）
+Next product tool：Hours Calculator
 Docs：docs/tools/date-calculator/README.md · product-spec.md
 ```
 
@@ -65,9 +79,9 @@ Pushed range：5c55672..0fe3e1f
   e02e48f fix: align tool category display labels
   0fe3e1f docs: record tool category label alignment
 當次 production checkpoint（0fe3e1f）：main＝origin/main；working tree clean
-目前 local：main ahead of origin/main by 1（Shared ResultSummary textual compatibility：3956536）；
-Date Calculator B0／B1A／B1B 與 closeout docs 仍在 working tree
-Production baseline：origin/main＝571c67f
+目前 local：main ahead of origin/main（含 AME／DC／MSB／release validators／docs closures；見 §1.1）
+Date Calculator：local implementation＋Link Integration COMPLETE；尚未 push／deploy
+Production baseline：origin/main
 Cloudflare Pages auto-deploy：成功（未 manual deploy）
 Owner Production Verification：PASS
   /en/tools/、/zh/tools/ 顯示正常
@@ -83,9 +97,9 @@ Daily Rhythm：無 available 工具時繼續隱藏（不顯示空分類）
 Preview／all-tools：已同步四組正式 EN 名稱（layout fixture）
 Internal IDs 保留（不遷移）：
   dates-events · productivity · body-flow · momentum
-Canonical validator：scripts/validate-tool-category-labels.mjs（65 passed／0 failed）
+Canonical validator：scripts/validate-tool-category-labels.mjs（對齊 DC／LI：6d1ce1c）
 Home ZH chip「重要日期」：未改（marketing chip，不是分類標題）
-Date Calculator：B8 AME First Adopter COMPLETE（見上方 Date Calculator／AME tracks；非 production catalog）
+Date Calculator：catalog available:true · All Tools 含 DC（local；尚未 deploy）
 ```
 
 **Shared Desktop Calendar track（Phase A–E · production deployed）：**
@@ -112,7 +126,7 @@ Canonical validator：scripts/validate-desktop-calendar.mjs（63 passed／0 fail
 Reuse Gate／date-input：正式啟用
 Shared Desktop Calendar：正式視為 production baseline
 DRC Mobile legacy calendar：核准 transitional exception（仍保留 data-drv2-*；不得擴大為第二套 Desktop Calendar）
-Date Calculator：B8 COMPLETE（standalone working tree；Desktop Calendar＝popover-compact）
+Date Calculator：B8 COMPLETE · Desktop Calendar＝popover-compact · local integrated（尚未 push／deploy）
 ```
 
 **Shared ResultSummary track（Phase A–I 完成 · 已 push／deploy）：**
@@ -144,10 +158,9 @@ Shared Desktop Calendar Phase A–E：已正式部署（Deployed HEAD：`5c55672
   BDC／DRC／Age EN／ZH production signature／Owner QA：PASS
   Canonical validator：scripts/validate-desktop-calendar.mjs（63／0）
 Cloudflare Pages 自動部署成功（未 manual deploy）
-Production deployed baseline（timiva.app）：origin/main＝`571c67f`
-  （含 Shared Desktop Calendar＋四大分類顯示名稱；labels alignment docs checkpoint 0fe3e1f）
-目前 local：main ahead of origin/main by 1（Shared ResultSummary textual compatibility：3956536）；
-Date Calculator B0／B1A／B1B 與 closeout docs 仍在 working tree
+Production deployed baseline（timiva.app）：origin/main
+目前 local：main ahead of origin/main（含 AME／DC／MSB／release validators；尚未 push）
+Date Calculator：local implementation＋Link Integration COMPLETE；尚未 push／deploy
 V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22`）
 可選：Year Progress HTTPS Share verification（non-blocking）
 ```
@@ -167,19 +180,19 @@ All Tools 分類顯示（正式名稱；空分類隱藏）：
   Life Progress／人生進度（momentum）
   Daily Rhythm／日常節奏（body-flow）：無 available 工具 → 不顯示
 All Tools dates-events 排序：
-  Event Countdown → Date Range Calculator → Days Between Dates → Business Days Calculator → Age Calculator
-Inbound Related：
-  Days Between Dates：Date Range Calculator → Business Days Calculator → Age Calculator
-  Date Range Calculator：Days Between Dates → Business Days Calculator → Event Countdown
-BDC outbound Related：Days Between Dates → Date Range Calculator → Event Countdown
+  Event Countdown → Date Range Calculator → Days Between Dates → Business Days Calculator → Date Calculator → Age Calculator
+Inbound Related（DC Link Integration）：
+  Date Range：Days Between Dates → Business Days Calculator → Date Calculator
+  Days Between Dates：Date Range → Business Days Calculator → Date Calculator
+  Business Days：Days Between Dates → Date Range → Date Calculator
+DC outbound Related：Days Between Dates → Business Days Calculator → Date Range
 Age Calculator Desktop calendar：已由 Shared DesktopCalendar Phase D 取代（production；Birth／As-of 各一 popover-compact）
 四大分類顯示名稱：已上線（Production HEAD：0fe3e1f；Owner Production Verification PASS）
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
-Date Calculator／日期加減計算：B8 AME First Adopter COMPLETE；Mobile＝AME `live`；catalog `available:false`；standalone 尚未 commit
-  Desktop Calendar＝popover-compact；不得開始 Link Integration；B9.2／B9.3 未授權
-接續工具：Hours Calculator（在 DC standalone／Link 路徑另行授權之後）
+Date Calculator／日期加減計算：local implementation＋Link Integration COMPLETE；catalog available:true；尚未 push／deploy
+  Desktop Calendar＝popover-compact；Home Featured 不含 DC
+下一支產品工具：Hours Calculator
 近期開發順序：
-  Date Calculator（standalone working tree · AME live · 待 Owner commit／Link 授權）
   Hours Calculator
   Lunar Date Converter（optional）
   Pet Age Calculator（optional）
@@ -767,8 +780,8 @@ Next step:
 
 ```text
 Business Days Calculator 上線阻塞項已關閉
-下一支開發工具：Date Calculator／日期加減計算
-接續：Hours Calculator
+Date Calculator：local implementation＋Link Integration COMPLETE（尚未 push／deploy）
+下一支開發工具：Hours Calculator
 ```
 
 ---
@@ -1239,13 +1252,12 @@ Shared Desktop Calendar Phase A–E 已正式部署（Deployed HEAD：5c55672）
   正式 All Tools 顯示三類；Daily Rhythm 空分類隱藏；internal IDs 保留
   Cloudflare Pages auto-deploy：成功；未 manual deploy
   當次 production checkpoint（0fe3e1f）：main＝origin/main；working tree clean
-目前 local：main ahead of origin/main by 1（Shared ResultSummary textual compatibility：3956536）；
-Date Calculator B0／B1A／B1B 與 closeout docs 仍在 working tree
-Production baseline：origin/main＝571c67f
-Home Featured 維持 4 張（不含 BDC）
+目前 local：main ahead of origin/main（含 AME／DC／MSB／release validators；見 §1.1）
+Date Calculator：local implementation＋Link Integration COMPLETE；尚未 push／deploy
+Production baseline：origin/main
+Home Featured 維持 4 張（不含 BDC／DC）
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
-下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具；B8 AME First Adopter COMPLETE；standalone 尚未 commit；Desktop Calendar → popover-compact）
-接續：Hours Calculator
+下一支開發工具：Hours Calculator
 （Lunar / Pet Age / Japanese Era 為 optional）
 ```
 
@@ -1273,9 +1285,8 @@ Phase A：重大變更、deploy 或 locked components 修改仍需 Owner 明確�
 Recommended order:
 
 ```text
-1. Product development：Date Calculator／日期加減計算 — standalone／Link／catalog 路徑須另行 Owner 授權
-   （B8 AME First Adopter COMPLETE · Mobile＝AME live；未授權 commit／Link Integration；B9.2／B9.3 未授權）
-   （接續工具：Hours Calculator）
+1. Product development：Hours Calculator（下一支）
+   （Date Calculator：local complete · 尚未 Owner push／deploy）
 2. Open Graph / Twitter Card（deferred SEO growth）
 3. WebApplication schema（deferred）
 4. Root HTTP 301 decision（deferred）
@@ -1396,12 +1407,12 @@ BDC／Age：`popover-compact`；DRC Desktop：`inline-large`；DRC Mobile legacy
   Home ZH chip「重要日期」未改（marketing chip）
   Cloudflare Pages auto-deploy：成功；未 manual deploy
   當次 production checkpoint（0fe3e1f）：main＝origin/main；working tree clean
-目前 local：main ahead of origin/main by 1（Shared ResultSummary textual compatibility：3956536）；
-Date Calculator B0／B1A／B1B 與 closeout docs 仍在 working tree
-Production baseline：origin/main＝571c67f
-Home Featured 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress；不含 DBD／BDC）。
-下一支開發工具：Date Calculator／日期加減計算（Timiva 第八個工具；B8 AME First Adopter COMPLETE；Mobile＝AME `live`；尚未 commit；Desktop Calendar 必須 `popover-compact`）。
-接續：Hours Calculator。
+目前 local：main ahead of origin/main（含 AME／DC／MSB／release validators／docs；見 §1.1）
+Date Calculator：local implementation＋Link Integration COMPLETE；尚未 push／deploy
+Production baseline：origin/main
+Home Featured 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress；不含 DBD／BDC／DC）。
+下一支開發工具：Hours Calculator。
+Date Calculator／日期加減計算：local complete（第八；尚未 push／deploy）；Desktop Calendar＝`popover-compact`。
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期（高搜尋、低維護日期與時間工具；四大分類不變）。
 
 規格與流程：docs/tools/、docs/workflow/

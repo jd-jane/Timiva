@@ -1,8 +1,8 @@
 # Date Calculator / 日期加減計算 — README
 
-> 建立日期：2026-07-24  
-> 更新日期：2026-08-02（B8 AME First Adopter COMPLETE · B9.1 docs reference）  
-> 狀態：**B8 Date Calculator First Adopter COMPLETE** · standalone 尚未 commit · catalog `available:false`  
+> 建立日期：2026-07-24
+> 更新日期：2026-08-04（release readiness · local complete）
+> 狀態：**implementation＋site integration COMPLETE（local）** · catalog `available:true` · **尚未 push／deploy**
 > Canonical product spec：`docs/tools/date-calculator/product-spec.md`
 
 ---
@@ -29,15 +29,17 @@ ZH：日期加減計算
 
 ---
 
-## 3. 分類與開發順序
+## 3. 分類與站內連結
 
 | 項目 | 內容 |
 |---|---|
 | Category | Important Dates／重要日子（`dates-events`） |
 | Tool order | Timiva 第八個工具 · V1.5 Search Foundation 第四個工具 |
 | Level | L — New Tool MVP |
+| Catalog | `available:true` · `featured:false` |
+| Home Featured | 不含 DC（維持 4 卡） |
 
-未來 Link Integration（另行授權；本階段不實作）時，All Tools `dates-events` 順序記錄為：
+All Tools `dates-events` 順序：
 
 ```text
 Event Countdown
@@ -48,7 +50,8 @@ Event Countdown
 → Age Calculator
 ```
 
-Standalone 期間 catalog：`available:false`（不進 All Tools／inbound Related／Home Featured）。
+Outbound Related：Days Between Dates → Business Days Calculator → Date Range。
+Inbound：DRC／DBD／BDC 各含 Date Calculator（仍各 3 卡）。
 
 ---
 
@@ -58,67 +61,47 @@ Standalone 期間 catalog：`available:false`（不進 All Tools／inbound Relat
 docs/tools/date-calculator/product-spec.md
 ```
 
-Implementation Plan（local-only）：
-
-```text
-local-docs/plans/date-calculator/2026-07-24-date-calculator-implementation-plan.md
-```
-
 ---
 
 ## 5. MVP 範圍摘要
 
 包含：起始日期、全域加／減、年／月／週／日（可混合）、即時計算、完整結果日期＋星期＋摘要、初始／無效 `?`、錯誤 icon、Reset、Desktop／Mobile portrait／landscape、EN／ZH、About／How to／FAQ／FAQ JSON-LD／Related／Meta。
 
-不做：Today／常用期間快捷、Calculate／Apply／Done、Copy／URL share／Native Share、LocalStorage、多組計算、工作日／假日排除、時區切換、帳號／後端／資料庫。
-
-Outbound Related（已確認）：Days Between Dates → Date Range Calculator → Business Days Calculator。
+不做：Today／常用期間快捷、Calculate／Apply／Done（live Done＝只關閉）、Copy／URL share／Native Share、LocalStorage、多組計算、工作日／假日排除、時區切換、帳號／後端／資料庫。
 
 ---
 
-## 6. 開發批次
+## 6. Checkpoint commits（local · 尚未 push）
 
 ```text
-D0 — Docs Canonicalization
-B0 — V2 scaffold
-B1A — Lower content
-Shared ResultSummary Compatibility／Owner Gate
-B1B — 上方靜態視覺
-B2+ — Atomic functionality
-→ Standalone Final → commit 授權 → Link Integration（另行授權）
+3d9600e feat: add Date Calculator standalone tool
+ae1c751 feat: integrate Date Calculator across site links
+d09dce2 test: add Date Calculator adopter validator
+6d1ce1c test: align validators for Date Calculator release
 ```
 
-B1B 硬依賴 Shared ResultSummary Compatibility Owner Gate。
+相關 AME／MSB：
+
+```text
+5f244af chore: archive legacy mobile sheet lab（Option B；Option C 未授權）
+2e096e0 feat: add Adaptive Mobile Editor foundation
+d1e3ebd test: normalize Adaptive Mobile Editor validators
+```
 
 ---
 
-## 7. Shared baseline
+## 7. Mobile／Desktop
 
 ```text
-ResultSummary
-DesktopCalendar · variant=popover-compact（Desktop）
-Smart Date Input（Desktop）
-Adaptive Mobile Editor（Mobile · lifecycle＝live）
+Mobile：Adaptive Mobile Editor（lifecycle＝live；sibling mount；非 MSB Portal）
+Desktop：Smart Date Input／calendar／live result（非 AME）
 ```
 
-### 7.1 Mobile AME reference（B8 COMPLETE · 精簡）
-
-```text
-Mobile 編輯殼：Adaptive Mobile Editor（sibling mount；非 MSB Portal）
-lifecycle：live（輸入即時更新結果；Done＝關閉；Escape／underlay 不 rollback）
-Desktop：維持 Smart Date Input／calendar／live result（非 AME）
-工具自有：Direction、2×2 duration、candidate digit guard、dateCalculatorMath、validation／formatting
-Shared 契約：field-error、Portrait background scale、shell focus outline、Numeric Keypad
-Canonical：docs/workflow/shared-component-reuse-gate.md §8 · docs/standards/mobile-sheet.md §17
-```
-
-舊「Mobile Sheet」字樣若出現在歷史批次敘述中，以本節 AME 為準；不得解讀為仍走 MSB Lab／D1 新採用路徑。
+舊「Mobile Sheet」歷史敘述以 AME 為準；不得解讀為仍走 MSB Lab／D1 新採用路徑。
 
 ---
 
-## 8. Protected scope
-
-除非任務明確授權，否則不修改：
+## 8. Locked（除非任務明確授權）
 
 ```text
 Header
@@ -128,8 +111,6 @@ Global background
 Shared containers
 既有已驗證工具核心邏輯
 Preview baseline layout
-ResultSummary／DesktopCalendar（Date Calculator 主線外之獨立 shared task 另授權）
-Home Featured／All Tools／他工具 Related（Link Integration 另授權）
 ```
 
 不 commit／push／deploy，除非 Owner 明確授權。
@@ -139,14 +120,16 @@ Home Featured／All Tools／他工具 Related（Link Integration 另授權）
 ## 9. 目前狀態
 
 ```text
-B8 Date Calculator First Adopter＝COMPLETE（含 B8.1／B8.2／Focus Outline Gates PASS）
+B8 Date Calculator First Adopter＝COMPLETE
 Mobile＝AME live · Desktop live 維持
-Catalog：available:false
-Standalone：尚未 commit／push／deploy
-未開始 Link Integration
-B9.1 Canonical Docs：COMPLETE（Owner Docs Gate PASS）
-B9.2／B9.3：未授權
-
-歷史錨點：B1B Visual QA PASS（2026-07-25）仍為早期視覺 baseline 證據；
-後續功能／AME 批次以 B8 COMPLETE 與 product-spec／local reports 為準。
+Catalog：available:true · featured:false
+Standalone＋Link Integration＝COMPLETE（local）
+Owner Link Integration QA＝PASS
+Canonical adopter validator＝PASS（d09dce2）
+Release validators（SEO／sitemap／category）＝PASS（6d1ce1c）
+Pushed：No
+Deployed：No
+  （不得表述為已上線／production deployed）
+下一支產品工具：Hours Calculator
+B9.2A MSB Archive-in-Place＝COMPLETE；Option C／B9.3 未授權
 ```
