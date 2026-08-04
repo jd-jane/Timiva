@@ -49,21 +49,27 @@ const EXPECTED_CATEGORY_ASSIGNMENTS = {
 	"age-calculator": "dates-events",
 	"countdown-timer": "productivity",
 	"year-progress": "momentum",
+	"date-calculator": "dates-events",
 	"life-progress": "momentum",
 };
 
 const EXPECTED_RELATED_IDS = {
 	"event-countdown": ["date-range", "countdown-timer", "age-calculator"],
-	"date-range": ["days-between-dates", "business-days-calculator", "event-countdown"],
-	"days-between-dates": ["date-range", "business-days-calculator", "age-calculator"],
+	"date-range": ["days-between-dates", "business-days-calculator", "date-calculator"],
+	"days-between-dates": ["date-range", "business-days-calculator", "date-calculator"],
 	"business-days-calculator": [
 		"days-between-dates",
 		"date-range",
-		"event-countdown",
+		"date-calculator",
 	],
 	"countdown-timer": ["event-countdown", "date-range", "year-progress"],
 	"year-progress": ["event-countdown", "date-range", "age-calculator"],
 	"age-calculator": ["date-range", "days-between-dates", "event-countdown"],
+	"date-calculator": [
+		"days-between-dates",
+		"business-days-calculator",
+		"date-range",
+	],
 };
 
 const DATES_EVENTS_ORDER = [
@@ -71,6 +77,7 @@ const DATES_EVENTS_ORDER = [
 	"date-range",
 	"days-between-dates",
 	"business-days-calculator",
+	"date-calculator",
 	"age-calculator",
 ];
 
@@ -193,7 +200,7 @@ assert(
 	JSON.stringify(categoryIds) === JSON.stringify(STABLE_CATEGORY_IDS),
 	"toolCategories ids remain dates-events → productivity → body-flow → momentum",
 );
-assert(catalogTools.length === 8, "catalogTools still has 8 entries");
+assert(catalogTools.length === 9, "catalogTools still has 9 entries");
 
 for (const [toolId, categoryId] of Object.entries(EXPECTED_CATEGORY_ASSIGNMENTS)) {
 	const tool = catalogTools.find((entry) => entry.id === toolId);
@@ -238,7 +245,11 @@ assert(
 );
 
 const availableCount = catalogTools.filter((tool) => tool.available).length;
-assert(availableCount === 7, "available production tool count remains 7");
+assert(availableCount === 8, "available production tool count remains 8");
+assert(
+	catalogTools.find((tool) => tool.id === "date-calculator")?.available === true,
+	"date-calculator is available",
+);
 
 /* --- built All Tools pages --- */
 const enToolsHtml = readDist("en/tools/index.html");
