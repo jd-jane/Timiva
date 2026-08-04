@@ -299,7 +299,7 @@ timiva/
 | Age Calculator (AC) | 已部署 · V1.5 first Search Foundation tool |
 | Days Between Dates (DBD) | 已部署 · V1.5 second Search Foundation tool |
 | Business Days Calculator (BDC) | 已部署 · V1.5 third Search Foundation tool |
-| Date Calculator (DC) | local complete（standalone＋Link Integration）；**尚未 push／deploy** |
+| Date Calculator (DC) | **已部署** · Production HEAD：`df2d82b` · V1.5 fourth Search Foundation tool |
 | Hours Calculator | **下一支產品工具** |
 
 Canonical docs：`docs/tools/<tool>/README.md`、`docs/tools/<tool>/product-spec.md`（例：date-calculator、age-calculator、days-between-dates、business-days-calculator）

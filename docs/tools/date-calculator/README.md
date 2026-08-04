@@ -1,8 +1,9 @@
 # Date Calculator / 日期加減計算 — README
 
 > 建立日期：2026-07-24
-> 更新日期：2026-08-04（release readiness · local complete）
-> 狀態：**implementation＋site integration COMPLETE（local）** · catalog `available:true` · **尚未 push／deploy**
+> 更新日期：2026-08-05（production deployed）
+> 狀態：**DEPLOYED** · Owner Production QA＝PASS · Desktop Hotfix Verification＝PASS · catalog `available:true`
+> Production HEAD：`df2d82b`
 > Canonical product spec：`docs/tools/date-calculator/product-spec.md`
 
 ---
@@ -71,16 +72,25 @@ docs/tools/date-calculator/product-spec.md
 
 ---
 
-## 6. Checkpoint commits（local · 尚未 push）
+## 6. Release／hotfix commits
 
 ```text
 3d9600e feat: add Date Calculator standalone tool
 ae1c751 feat: integrate Date Calculator across site links
 d09dce2 test: add Date Calculator adopter validator
 6d1ce1c test: align validators for Date Calculator release
+4545121 docs: record Date Calculator release readiness
+adf34be fix: harden Date Calculator desktop duration and result layout
+df2d82b fix: polish Date Calculator result layout
 ```
 
-相關 AME／MSB：
+```text
+Initial release HEAD：4545121
+Desktop hotfix：adf34be＋df2d82b
+Deployed／Production HEAD：df2d82b
+```
+
+相關 AME／MSB（同 release chain）：
 
 ```text
 5f244af chore: archive legacy mobile sheet lab（Option B；Option C 未授權）
@@ -123,13 +133,18 @@ Preview baseline layout
 B8 Date Calculator First Adopter＝COMPLETE
 Mobile＝AME live · Desktop live 維持
 Catalog：available:true · featured:false
-Standalone＋Link Integration＝COMPLETE（local）
+Standalone＋Link Integration＝COMPLETE
 Owner Link Integration QA＝PASS
+Owner Production QA＝PASS
+Desktop Hotfix Verification＝PASS
+  duration guard／paste／Add／Subtract／Clear／?＋!／ZH result layout
+  EN／ZH · Desktop／Mobile 無回歸
 Canonical adopter validator＝PASS（d09dce2）
 Release validators（SEO／sitemap／category）＝PASS（6d1ce1c）
-Pushed：No
-Deployed：No
-  （不得表述為已上線／production deployed）
+Pushed：Yes
+Deployed：Yes · Production HEAD：df2d82b
+Cloudflare Pages：main push auto-deploy（未 manual deploy）
 下一支產品工具：Hours Calculator
 B9.2A MSB Archive-in-Place＝COMPLETE；Option C／B9.3 未授權
+Independent dirty（not this release）：astro.config.mjs · Phase C CSS
 ```

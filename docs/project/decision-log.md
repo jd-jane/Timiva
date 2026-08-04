@@ -5,13 +5,51 @@
 
 ---
 
+## 2026-08-05 — Date Calculator production deployment＋Desktop Hotfix
+
+### 背景
+
+```text
+Date Calculator 已完成 Owner Production QA 與 Desktop Hotfix Verification。
+Cloudflare Pages 由 main push 自動部署；未 manual deploy。
+```
+
+### 決策（最終核准結果）
+
+```text
+1. Date Calculator／日期加減計算正式上線。
+2. Owner Production QA＝PASS。
+3. Desktop Hotfix Verification＝PASS
+   （duration guard／paste／Add／Subtract／Clear／?＋!／ZH result layout；
+    EN／ZH · Desktop／Mobile 無回歸）。
+4. Standalone＝3d9600e。
+5. Link Integration＝ae1c751。
+6. Initial release HEAD＝4545121。
+7. Desktop hotfix＝adf34be＋df2d82b。
+8. Deployed／Production HEAD＝df2d82b。
+9. Home Featured 維持 4 張、不含 DC。
+10. 下一支產品工具：Hours Calculator。
+11. astro.config.mjs 與 Phase C tool-mobile-sheet-v2-baseline.css
+    不屬於本次 release，仍獨立保留 dirty。
+```
+
+### 影響
+
+```text
+current-status／本 log／date-calculator README／product-architecture／roadmap／docs README
+以 production deployed（HEAD df2d82b）為準。
+```
+
+---
+
 ## 2026-08-04 — Date Calculator release readiness（local）＋AME／MSB archive chain
 
 ### 背景
 
 ```text
 Date Calculator／AME／Legacy MSB 路徑已於 local main 完成多段 checkpoint。
-Owner 核准 docs closure 寫回現況；尚未授權 push／deploy。
+Owner 核准 docs closure 寫回現況；當時尚未授權 push／deploy。
+（後續 production deployment 見上方 2026-08-05 entry。）
 ```
 
 ### 決策（最終核准結果）
@@ -26,8 +64,8 @@ Owner 核准 docs closure 寫回現況；尚未授權 push／deploy。
 7. DC／AME／MSB／SEO／sitemap／category／link validators與 build＝PASS。
 8. Home Featured 維持 4 張、不含 DC。
 9. All Tools dates-events：EC → DRC → DBD → BDC → DC → Age。
-10. Date Calculator＝implementation＋site integration COMPLETE（local）；
-    尚未 push／deploy；不得表述為已上線／production deployed。
+10. Date Calculator＝implementation＋site integration COMPLETE（local；當日）；
+    當時尚未 push／deploy（已由 2026-08-05 deployment 取代）。
 11. 下一支產品工具：Hours Calculator。
 12. 獨立 dirty 不納入本 closure：astro.config.mjs、Phase C tool-mobile-sheet-v2-baseline.css。
 ```
@@ -36,7 +74,7 @@ Owner 核准 docs closure 寫回現況；尚未授權 push／deploy。
 
 ```text
 current-status／本 log／date-calculator README／product-architecture／roadmap
-以 local complete＋awaiting Push Gate 為準。
+以當時 local complete＋awaiting Push Gate 為準（歷史）。
 ```
 
 ---
