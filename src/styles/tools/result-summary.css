@@ -5,6 +5,7 @@
  * content="numeric" | "textual"：
  * - numeric：既有 digit ladder／三欄 landscape
  * - textual：獨立排列與字級 token；不讀 data-rs-digits；support 不截斷
+ * - textual support：white-space:pre-line — 字串內 \\n 可顯示 1–2 行同層級輔助文字
  *
  * Phase D numeric typography:
  * - Desktop: 1–5 同尺寸；6+ 獨立縮小
@@ -278,7 +279,7 @@
 }
 
 /* -------------------------------------------------------------------------- */
-/* Textual mode — 不讀 data-rs-digits；support 自然換行、不截斷                 */
+/* Textual mode — 不讀 data-rs-digits；support 自然換行、不截斷；pre-line 保留字串內換行 */
 /* -------------------------------------------------------------------------- */
 
 [data-result-summary][data-rs-content="textual"] {
@@ -341,7 +342,8 @@
 	line-height: 1.45;
 	color: rgb(148 163 184);
 	text-align: center;
-	white-space: normal;
+	/* pre-line：保留 support 字串內 \\n 為第二行同層級文字；單行 support 呈現不變 */
+	white-space: pre-line;
 	overflow: visible;
 	text-overflow: unset;
 }

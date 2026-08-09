@@ -753,9 +753,9 @@ assert(
 	"textual .rs-support has no ellipsis／line-clamp truncation",
 );
 assert(
-	/\.rs-support[\s\S]*?white-space:\s*normal/.test(textualCss) &&
+	/\.rs-support[\s\S]*?white-space:\s*pre-line/.test(textualCss) &&
 		/\.rs-support[\s\S]*?overflow:\s*visible/.test(textualCss),
-	"textual .rs-support uses natural wrap without clipping",
+	"textual .rs-support uses pre-line（equal-level multiline via \\\\n）without clipping",
 );
 assert(
 	/\[data-rs-layout="landscape"\][\s\S]*?grid-template-areas:[\s\S]*?primary weekday/.test(
