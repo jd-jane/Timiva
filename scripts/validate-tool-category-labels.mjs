@@ -61,7 +61,7 @@ const EXPECTED_RELATED_IDS = {
 	"business-days-calculator": [
 		"days-between-dates",
 		"date-range",
-		"date-calculator",
+		"hours-calculator",
 	],
 	"countdown-timer": ["event-countdown", "date-range", "year-progress"],
 	"year-progress": ["event-countdown", "date-range", "age-calculator"],
@@ -84,6 +84,7 @@ const DATES_EVENTS_ORDER = [
 	"days-between-dates",
 	"business-days-calculator",
 	"date-calculator",
+	"hours-calculator",
 	"age-calculator",
 ];
 
@@ -251,14 +252,18 @@ assert(
 );
 
 const availableCount = catalogTools.filter((tool) => tool.available).length;
-assert(availableCount === 8, "available production tool count remains 8");
+assert(availableCount === 9, "available production tool count is 9");
 assert(
 	catalogTools.find((tool) => tool.id === "date-calculator")?.available === true,
 	"date-calculator is available",
 );
 assert(
-	catalogTools.find((tool) => tool.id === "hours-calculator")?.available === false,
-	"hours-calculator remains unavailable in B0",
+	catalogTools.find((tool) => tool.id === "hours-calculator")?.available === true,
+	"hours-calculator is available",
+);
+assert(
+	catalogTools.find((tool) => tool.id === "hours-calculator")?.featured === false,
+	"hours-calculator remains non-featured",
 );
 
 /* --- built All Tools pages --- */

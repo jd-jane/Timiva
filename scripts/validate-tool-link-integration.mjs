@@ -18,6 +18,7 @@ const PRODUCTION_TOOL_IDS = [
 	"days-between-dates",
 	"business-days-calculator",
 	"date-calculator",
+	"hours-calculator",
 	"countdown-timer",
 	"year-progress",
 	"age-calculator",
@@ -30,12 +31,17 @@ const APPROVED_RELATED_IDS = {
 	"business-days-calculator": [
 		"days-between-dates",
 		"date-range",
-		"date-calculator",
+		"hours-calculator",
 	],
 	"date-calculator": [
 		"days-between-dates",
 		"business-days-calculator",
 		"date-range",
+	],
+	"hours-calculator": [
+		"days-between-dates",
+		"business-days-calculator",
+		"date-calculator",
 	],
 	"countdown-timer": ["event-countdown", "date-range", "year-progress"],
 	"year-progress": ["event-countdown", "date-range", "age-calculator"],
@@ -48,6 +54,7 @@ const DATES_EVENTS_ORDER = [
 	"days-between-dates",
 	"business-days-calculator",
 	"date-calculator",
+	"hours-calculator",
 	"age-calculator",
 ];
 
@@ -57,6 +64,7 @@ const PRODUCTION_RELATED_COMPONENTS = [
 	"src/components/tools/days-between-dates-v2/DaysBetweenDatesV2.astro",
 	"src/components/tools/business-days-calculator-v2/BusinessDaysCalculatorV2.astro",
 	"src/components/tools/date-calculator-v2/DateCalculatorV2.astro",
+	"src/components/tools/hours-calculator-v2/HoursCalculatorV2.astro",
 	"src/components/tools/countdown-timer-v2/CountdownTimerV2.astro",
 	"src/components/tools/year-progress-v2/YearProgressV2.astro",
 	"src/components/tools/age-calculator-v2/AgeCalculatorV2.astro",
@@ -99,7 +107,7 @@ function countHref(html, href) {
 
 function extractRelatedHrefs(html, localePrefix) {
 	const sectionPattern = new RegExp(
-		`<section[^>]*(?:data-preview-related-tools|data-drv2-related-tools|data-ctv2-related-tools|data-ypv2-related-tools|data-acv2-related-tools|data-dbdv2-related-tools|data-bdcv2-related-tools|data-dcv2-related-tools)[^>]*>([\\s\\S]*?)</section>`,
+		`<section[^>]*(?:data-preview-related-tools|data-drv2-related-tools|data-ctv2-related-tools|data-ypv2-related-tools|data-acv2-related-tools|data-dbdv2-related-tools|data-bdcv2-related-tools|data-dcv2-related-tools|data-hcv2-related-tools)[^>]*>([\\s\\S]*?)</section>`,
 		"g",
 	);
 	const hrefPattern = new RegExp(
@@ -255,6 +263,17 @@ assert(
 	"business-days-calculator slug is business-days-calculator",
 );
 
+const hoursEntries = catalogTools.filter((tool) => tool.id === "hours-calculator");
+assert(hoursEntries.length === 1, "exactly one hours-calculator catalog entry");
+
+const hoursCalculator = hoursEntries[0];
+assert(hoursCalculator?.available === true, "hours-calculator.available === true");
+assert(hoursCalculator?.featured === false, "hours-calculator.featured === false");
+assert(
+	hoursCalculator?.slug === "hours-calculator",
+	"hours-calculator slug is hours-calculator",
+);
+
 for (const id of PRODUCTION_TOOL_IDS) {
 	const tool = catalogTools.find((entry) => entry.id === id);
 	assert(tool?.available === true, `${id} is available`);
@@ -266,7 +285,7 @@ const datesEventsOrder = catalogTools
 	.filter((id) => DATES_EVENTS_ORDER.includes(id));
 assert(
 	JSON.stringify(datesEventsOrder) === JSON.stringify(DATES_EVENTS_ORDER),
-	"dates-events available order is event-countdown → date-range → days-between-dates → business-days-calculator → date-calculator → age-calculator",
+	"dates-events available order is event-countdown → date-range → days-between-dates → business-days-calculator → date-calculator → hours-calculator → age-calculator",
 );
 
 for (const [toolId, expectedIds] of Object.entries(APPROVED_RELATED_IDS)) {
@@ -367,8 +386,12 @@ assert(
 	"days-between-dates relatedIds no longer include age-calculator",
 );
 assert(
-	APPROVED_RELATED_IDS["business-days-calculator"].includes("date-calculator"),
-	"business-days-calculator relatedIds include date-calculator",
+	APPROVED_RELATED_IDS["business-days-calculator"].includes("hours-calculator"),
+	"business-days-calculator relatedIds include hours-calculator",
+);
+assert(
+	!APPROVED_RELATED_IDS["business-days-calculator"].includes("date-calculator"),
+	"business-days-calculator relatedIds no longer include date-calculator",
 );
 assert(
 	!APPROVED_RELATED_IDS["business-days-calculator"].includes("event-countdown"),
@@ -382,6 +405,23 @@ assert(
 			"date-range",
 		]),
 	"date-calculator outbound relatedIds are DBD → BDC → date-range",
+);
+assert(
+	JSON.stringify(APPROVED_RELATED_IDS["hours-calculator"]) ===
+		JSON.stringify([
+			"days-between-dates",
+			"business-days-calculator",
+			"date-calculator",
+		]),
+	"hours-calculator outbound relatedIds are DBD → BDC → date-calculator",
+);
+assert(
+	!APPROVED_RELATED_IDS["days-between-dates"].includes("hours-calculator"),
+	"days-between-dates relatedIds do not include hours-calculator",
+);
+assert(
+	!APPROVED_RELATED_IDS["date-calculator"].includes("hours-calculator"),
+	"date-calculator relatedIds do not include hours-calculator",
 );
 
 for (const toolId of PRODUCTION_TOOL_IDS) {
@@ -424,6 +464,10 @@ assert(
 	!featuredTools.some((tool) => tool.id === "date-calculator"),
 	"Home featured tools do not include Date Calculator",
 );
+assert(
+	!featuredTools.some((tool) => tool.id === "hours-calculator"),
+	"Home featured tools do not include Hours Calculator",
+);
 
 const homeAgeCalculator = featuredTools[1];
 assert(homeAgeCalculator?.id === "age-calculator", "Home second tool is age-calculator");
@@ -453,8 +497,14 @@ assert(
 	catalogIconMap["date-calculator"] === "calendar",
 	"catalog date-calculator uses calendar icon",
 );
+assert(
+	catalogIconMap["hours-calculator"] === "calendar",
+	"catalog hours-calculator uses calendar icon",
+);
 assert(en.tools.dateCalculator.title === "Date Calculator", "EN tools.dateCalculator exists");
 assert(zh.tools.dateCalculator.title === "日期加減計算", "ZH tools.dateCalculator exists");
+assert(en.tools.hoursCalculator.title === "Hours Calculator", "EN tools.hoursCalculator exists");
+assert(zh.tools.hoursCalculator.title === "時數計算", "ZH tools.hoursCalculator exists");
 
 assert(
 	en.home.featuredTools["age-calculator"]?.title === "Age Calculator",
@@ -517,6 +567,14 @@ assert(
 assert(
 	!zh.home.featuredTools["date-calculator"],
 	"ZH Home featuredTools has no date-calculator entry",
+);
+assert(
+	!en.home.featuredTools["hours-calculator"],
+	"EN Home featuredTools has no hours-calculator entry",
+);
+assert(
+	!zh.home.featuredTools["hours-calculator"],
+	"ZH Home featuredTools has no hours-calculator entry",
 );
 
 // --- Source: production Related Tools components ---
@@ -582,6 +640,10 @@ for (const relativePath of PRODUCTION_RELATED_COMPONENTS) {
 		source.includes('"date-calculator": messages.tools.dateCalculator'),
 		`${relativePath} maps date-calculator copy`,
 	);
+	assert(
+		source.includes('"hours-calculator": messages.tools.hoursCalculator'),
+		`${relativePath} maps hours-calculator copy`,
+	);
 }
 
 // --- Built output ---
@@ -593,6 +655,7 @@ const builtPages = [
 			"/en/days-between-dates/",
 			"/en/business-days-calculator/",
 			"/en/date-calculator/",
+			"/en/hours-calculator/",
 		],
 		datesEventsOrder: [
 			"/en/event-countdown/",
@@ -600,6 +663,7 @@ const builtPages = [
 			"/en/days-between-dates/",
 			"/en/business-days-calculator/",
 			"/en/date-calculator/",
+			"/en/hours-calculator/",
 			"/en/age-calculator/",
 		],
 	},
@@ -610,6 +674,7 @@ const builtPages = [
 			"/zh/days-between-dates/",
 			"/zh/business-days-calculator/",
 			"/zh/date-calculator/",
+			"/zh/hours-calculator/",
 		],
 		datesEventsOrder: [
 			"/zh/event-countdown/",
@@ -617,6 +682,7 @@ const builtPages = [
 			"/zh/days-between-dates/",
 			"/zh/business-days-calculator/",
 			"/zh/date-calculator/",
+			"/zh/hours-calculator/",
 			"/zh/age-calculator/",
 		],
 	},
@@ -664,14 +730,14 @@ const builtPages = [
 		path: "en/business-days-calculator/index.html",
 		locale: "en",
 		selfSlug: "business-days-calculator",
-		related: ["days-between-dates", "date-range-calculator", "date-calculator"],
+		related: ["days-between-dates", "date-range-calculator", "hours-calculator"],
 		relatedAttr: "data-bdcv2-related-tools",
 	},
 	{
 		path: "zh/business-days-calculator/index.html",
 		locale: "zh",
 		selfSlug: "business-days-calculator",
-		related: ["days-between-dates", "date-range-calculator", "date-calculator"],
+		related: ["days-between-dates", "date-range-calculator", "hours-calculator"],
 		relatedAttr: "data-bdcv2-related-tools",
 	},
 	{
@@ -687,6 +753,20 @@ const builtPages = [
 		selfSlug: "date-calculator",
 		related: ["days-between-dates", "business-days-calculator", "date-range-calculator"],
 		relatedAttr: "data-dcv2-related-tools",
+	},
+	{
+		path: "en/hours-calculator/index.html",
+		locale: "en",
+		selfSlug: "hours-calculator",
+		related: ["days-between-dates", "business-days-calculator", "date-calculator"],
+		relatedAttr: "data-hcv2-related-tools",
+	},
+	{
+		path: "zh/hours-calculator/index.html",
+		locale: "zh",
+		selfSlug: "hours-calculator",
+		related: ["days-between-dates", "business-days-calculator", "date-calculator"],
+		relatedAttr: "data-hcv2-related-tools",
 	},
 	{
 		path: "en/countdown-timer/index.html",
@@ -751,7 +831,7 @@ for (const page of builtPages) {
 				positions.every(
 					(position, index) => index === 0 || positions[index - 1] < position,
 				),
-				`${page.path} dates-events order is EC → DRC → DBD → BDC → DC → AC`,
+				`${page.path} dates-events order is EC → DRC → DBD → BDC → DC → Hours → AC`,
 			);
 		}
 		continue;
@@ -837,14 +917,22 @@ for (const page of builtPages) {
 			!relatedHrefs.some((href) => href.endsWith("/age-calculator/")),
 			`${page.path} related section no longer links to age-calculator`,
 		);
+		assert(
+			!relatedHrefs.some((href) => href.endsWith("/hours-calculator/")),
+			`${page.path} related section does not link to hours-calculator`,
+		);
 	}
 
 	if (page.selfSlug === "business-days-calculator") {
 		assert(
 			relatedHrefs.includes(`${localePrefix}/days-between-dates/`) &&
 				relatedHrefs.includes(`${localePrefix}/date-range-calculator/`) &&
-				relatedHrefs.includes(`${localePrefix}/date-calculator/`),
-			`${page.path} related section is Days Between Dates → Date Range → Date Calculator`,
+				relatedHrefs.includes(`${localePrefix}/hours-calculator/`),
+			`${page.path} related section is Days Between Dates → Date Range → Hours Calculator`,
+		);
+		assert(
+			!relatedHrefs.some((href) => href.endsWith("/date-calculator/")),
+			`${page.path} related section no longer links to date-calculator`,
 		);
 		assert(
 			!relatedHrefs.some((href) => href.endsWith("/event-countdown/")),
@@ -858,6 +946,19 @@ for (const page of builtPages) {
 				relatedHrefs.includes(`${localePrefix}/business-days-calculator/`) &&
 				relatedHrefs.includes(`${localePrefix}/date-range-calculator/`),
 			`${page.path} related section is Days Between Dates → Business Days Calculator → Date Range`,
+		);
+		assert(
+			!relatedHrefs.some((href) => href.endsWith("/hours-calculator/")),
+			`${page.path} related section does not link to hours-calculator`,
+		);
+	}
+
+	if (page.selfSlug === "hours-calculator") {
+		assert(
+			relatedHrefs.includes(`${localePrefix}/days-between-dates/`) &&
+				relatedHrefs.includes(`${localePrefix}/business-days-calculator/`) &&
+				relatedHrefs.includes(`${localePrefix}/date-calculator/`),
+			`${page.path} related section is Days Between Dates → Business Days Calculator → Date Calculator`,
 		);
 	}
 
@@ -880,6 +981,7 @@ for (const homePage of ["en/index.html", "zh/index.html"]) {
 	const dbdHref = `/${locale}/days-between-dates/`;
 	const bdcHref = `/${locale}/business-days-calculator/`;
 	const dcHref = `/${locale}/date-calculator/`;
+	const hoursHref = `/${locale}/hours-calculator/`;
 
 	assert(
 		countHref(html, acHref) >= 1,
@@ -896,6 +998,10 @@ for (const homePage of ["en/index.html", "zh/index.html"]) {
 	assert(
 		countHref(html, dcHref) === 0,
 		`${homePage} does not contain Date Calculator featured link`,
+	);
+	assert(
+		countHref(html, hoursHref) === 0,
+		`${homePage} does not contain Hours Calculator featured link`,
 	);
 	assert(!html.includes("life-progress"), `${homePage} does not link to life-progress slug`);
 	assert(

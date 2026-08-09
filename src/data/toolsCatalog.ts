@@ -66,7 +66,7 @@ export const catalogTools: CatalogTool[] = [
     available: true,
     featured: false,
     icon: "calendar",
-    relatedIds: ["days-between-dates", "date-range", "date-calculator"],
+    relatedIds: ["days-between-dates", "date-range", "hours-calculator"],
   },
   {
     id: "date-calculator",
@@ -85,7 +85,7 @@ export const catalogTools: CatalogTool[] = [
     id: "hours-calculator",
     slug: "hours-calculator",
     categoryId: "dates-events",
-    available: false,
+    available: true,
     featured: false,
     icon: "calendar",
     relatedIds: [

@@ -1,9 +1,10 @@
 # Hours Calculator / 時數計算 — README
 
 > 建立日期：2026-08-09
-> 更新日期：2026-08-09（B4 standalone checkpoint）
-> 狀態：**standalone complete（local）** · catalog `available:false` · **尚未做 Link Integration** · **尚未 push／deploy**
+> 更新日期：2026-08-09（B5 Link Integration local）
+> 狀態：**standalone＋site integration complete（local）** · catalog `available:true` · `featured:false` · icon `calendar` · **尚未 B5 commit／push／deploy**
 > Canonical product spec：`docs/tools/hours-calculator/product-spec.md`
+> Standalone commit：`c4636d5` feat: add Hours Calculator standalone tool
 
 ---
 
@@ -35,18 +36,26 @@ ZH：時數計算
 |---|---|
 | Category | Important Dates／重要日子（`dates-events`） |
 | Catalog ID | `hours-calculator` |
-| Catalog | `available:false` · `featured:false` |
+| Catalog | `available:true` · `featured:false` |
+| Catalog icon | `calendar` |
 | Home Featured | 不含 |
-| Inbound links | 尚未做（B5 Link Integration） |
+| All Tools 排序 | EC → DRC → DBD → BDC → DC → **Hours** → Age |
 | ToolAdSlot | disabled |
-| Catalog icon（暫用） | `calendar`（與 Date Calculator 相同；B5 `available:true` 前再定案） |
 
-Related Tools（頁內顯示，≤3；不代表已做 inbound Link Integration）：
+### Outbound Related Tools（Hours 頁）
 
 ```text
 Days Between Dates
 → Business Days Calculator
 → Date Calculator
+```
+
+### Inbound Related Tools（B5）
+
+```text
+Business Days Calculator：
+  Days Between Dates → Date Range → Hours Calculator
+（DBD／Date Calculator Related graph 不變）
 ```
 
 ---
@@ -110,10 +119,12 @@ scripts/validate-hours-calculator-adopter.mjs
 
 ```bash
 npm run build
+node scripts/validate-tool-link-integration.mjs
+node scripts/validate-tool-category-labels.mjs
 node scripts/validate-sitemap.mjs
+node scripts/validate-seo-head.mjs
 node scripts/validate-hours-calculator-math.mjs
 node scripts/validate-hours-calculator-adopter.mjs
-node scripts/validate-result-summary.mjs
 git diff --check
 ```
 
@@ -122,12 +133,9 @@ git diff --check
 ## 7. 下一步
 
 ```text
-B5 — Post-tool Link Integration Gate
-  · catalog available:true（Owner 核准後）
-  · inbound links／All Tools／Related 整合
-  · catalog icon 正式選擇
-  · current-status／decision-log／roadmap 更新
-B6 — Release／push／deploy（需 Owner 授權）
+Owner Browser QA（B5 Link Integration）
+→ B5 Link Integration commit（需 Owner 授權）
+→ B6 — Release／push／deploy（需 Owner 授權）
 ```
 
-本 README 描述 **standalone complete（local）** 狀態；**不代表已上線**。
+本 README 描述 **site integration complete（local）** 狀態；**不代表已上線**。

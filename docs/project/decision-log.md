@@ -5,6 +5,44 @@
 
 ---
 
+## 2026-08-09 — Hours Calculator B5 Link Integration（local）
+
+### 背景
+
+```text
+Hours Calculator standalone 已完成；Owner 核准 B5 Plan-first 決策後進入站內連結整合。
+B5 Owner Browser QA＝PASS；B5 commit 已建立（rebase 後 hash 見 Hours README／current-status）。
+尚未授權 push／deploy。
+```
+
+### 決策
+
+```text
+1. Hours catalog：available:true · featured:false · icon 維持 calendar。
+2. Home Featured 不加入 Hours；維持既有 4 張
+   （Date Range → Age → Event Countdown → Year Progress）。
+3. All Tools dates-events 排序沿用 catalog：
+   EC → DRC → DBD → BDC → DC → Hours → Age。
+4. Hours outbound Related 維持：
+   Days Between Dates → Business Days Calculator → Date Calculator。
+5. Inbound Related 只做一條：
+   Business Days Calculator：DBD → DRC → Hours
+   （第三槽由 Date Calculator 換成 Hours）。
+6. 不修改 Days Between Dates／Date Calculator 的 Related graph。
+7. 不擴充 shared icon set。
+8. ToolAdSlot 維持 is-disabled。
+9. 尚未 push／deploy；不得表述為已上線。
+```
+
+### 影響
+
+```text
+current-status／本 log／roadmap／Hours README 以
+standalone＋Link Integration local complete（awaiting B6 push／deploy）為準。
+```
+
+---
+
 ## 2026-08-05 — Date Calculator production deployment＋Desktop Hotfix
 
 ### 背景
