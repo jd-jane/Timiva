@@ -2,7 +2,7 @@
 
 > 建立日期：2026-08-04
 > 正式化：2026-08-05（Owner accepted · Plan-first）
-> 修訂：2026-08-09（Result hierarchy · ResultSummary Compatibility Gate＝support-region assessment；撤回 `detail`／weekday-level 假設）
+> 修訂：2026-08-09（Result support hierarchy＝1–2 行同層級輔助文字；撤回 lighter-note／第三層假設；Compatibility Gate＝support-region multiline assessment）
 > 狀態：**Owner accepted product spec · B0＋B1A complete · ResultSummary Compatibility Gate pending**
 > 適用工具：Hours Calculator／時數計算
 > 分類：Important Dates／重要日子
@@ -185,15 +185,19 @@ Apply 按鈕
 - 小於 1 小時：省略 `0 小時`。
 - 只有零時長保留完整 `0 小時 0 分鐘`。
 
-### 4.2 次要結果（support area 主要補充資訊）
+### 4.2 次要結果（support region · 1–2 行同層級輔助文字）
 
-次要結果位於 **ResultSummary support area 的主要補充行**，不是 weekday 層級。
+次要結果位於 **ResultSummary support region**，不是 weekday 層級。
 
-內容：
+support region 可有 **1–2 行同層級輔助文字**：
 
 ```text
-小數時數 · 總分鐘數 · 跨午夜狀態（如適用）
+line 1 → decimal hours · total minutes · next-day marker
+line 2 → break deduction（僅有效休息時間 > 0 時顯示）
 ```
+
+兩行都是輔助文字；**視覺層級相同**（相同字級／字重／顏色／行高語意）。差別只在內容與是否顯示。
+**沒有**第三層 hierarchy，**沒有** `lighter note` 語意。
 
 視覺 hierarchy（Owner 2026-08-09 確認）：
 
@@ -203,19 +207,19 @@ primary
 
 ────────  （沿用 ResultSummary 既有 divider／spacing 語意）
 
-support area · primary line
+support region · line 1
 → decimal hours · total minutes · next-day marker
 → 視覺語意對齊 Date Calculator 的
   「Add 22 days to Aug 3, 2026.」這一層
 → 不採 Date Calculator「Tuesday」那一層（weekday）
 
-support area · optional lighter note（如適用）
+support region · line 2（如適用）
 → break deduction
-→ 比 secondary result 再低一層、較輕量
+→ 與 line 1 同層級；非較淡／較輕量第三層
 ```
 
-`weekday` 維持真正的星期資訊語意；Hours **不使用** weekday，也**不得**把 secondary result 放在 weekday 視覺位置。
-不預設需要新的 shared `detail` API；是否需 support-region extension 由獨立 Compatibility Gate 評估（見 §15.1.2）。
+`weekday` 維持真正的星期資訊語意；Hours **不使用** weekday，也**不得**把 support 文字放在 weekday 視覺位置。
+不預設需要新的 shared `detail` API；是否需 support-region multiline extension 由獨立 Compatibility Gate 評估（見 §15.1.3）。
 
 範例：
 
@@ -252,9 +256,9 @@ support area · optional lighter note（如適用）
 - ZH：`隔天`
 - EN：`Next day`
 
-### 4.5 休息時間說明（support area optional lighter note）
+### 4.5 休息時間說明（support region · line 2）
 
-有效休息時間大於 0 時，在 **support area 次要結果下方**顯示一行更小、更淡的 optional note（資訊層低於 secondary result）：
+有效休息時間大於 0 時，在 support region 顯示 **line 2**（與 line 1 同層級輔助文字）：
 
 ```text
 已扣除 30 分鐘休息時間
@@ -270,7 +274,7 @@ support area · optional lighter note（如適用）
 1 hour 30 minutes of break time deducted
 ```
 
-休息時間空白、`00:00`、incomplete 或 invalid 時不顯示這一行。
+休息時間空白、`00:00`、incomplete 或 invalid 時不顯示 line 2。不另建 lighter／第三層視覺語意。
 
 ### 4.6 結果範例
 
@@ -295,7 +299,7 @@ support area · optional lighter note（如適用）
 已扣除 30 分鐘休息時間
 ```
 
-EN 同樣遵循此 hierarchy（primary → divider → support primary line → optional break note）。
+EN 同樣遵循此 hierarchy（primary → divider → support line 1 → support line 2 如適用；兩行同層級）。
 
 ---
 
@@ -315,7 +319,7 @@ EN 同樣遵循此 hierarchy（primary → divider → support primary line → 
 0 小時 · 0 分鐘
 
 跨午夜標記：不顯示
-休息說明：不顯示（無 break note）
+support line 2：不顯示
 錯誤 icon：不顯示
 weekday：不使用
 ```
@@ -803,7 +807,7 @@ Adaptive Mobile Editor（AME）— Mobile Sheet／Mobile full-screen Panel 外�
 共用 overlay／scroll lock／keyboard-open composition
 AME 共用 Numeric Keypad（禁止改走 native keyboard）
 Tool Utility Capsule Control V2 Baseline（.tool-utility-control）
-共用 ResultSummary（須先完成獨立 ResultSummary Compatibility Gate · support-region assessment）
+共用 ResultSummary（須先完成獨立 ResultSummary Compatibility Gate · support-region multiline assessment）
 Tool Drawer／Related Tools baseline
 ToolAdSlot disabled baseline
 ```
@@ -840,48 +844,56 @@ Mobile 三列 `HH：MM` 為產品已核准介面；數位輸入透過 AME shared
 Hours Calculator 必須沿用 shared ResultSummary。
 不得使用 tool-local result block。
 不得把 weekday slot 當成通用次要結果。
-不得把 secondary result 放在 weekday 視覺位置。
-不得使用 rs:update 後 DOM patch／CSS hack 模擬第二層。
+不得把 support 文字放在 weekday 視覺位置。
+不得使用 rs:update 後 DOM patch／CSS hack 假造第二層或 lighter-note 層。
 
 Hours 結果映射（產品語意 · 不預先指定新 shared API identifier）：
 primary
 → natural duration（自然時長）
 
-support area · primary line
+support region · line 1
 → decimal hours · total minutes · next-day marker
 → 視覺語意＝Date Calculator support 主文（「Add 22 days…」層）
 → 不是 weekday（「Tuesday」）層
 
-support area · optional lighter note
-→ break deduction（有效休息 > 0 時）
+support region · line 2
+→ break deduction（僅有效休息 > 0 時顯示）
+→ 與 line 1 同層級輔助文字；非 lighter note
 
 weekday
 → 維持真正的星期資訊語意；Hours 不使用
 ```
 
-### 15.1.3 ResultSummary Compatibility Gate（support-region assessment）
+### 15.1.3 ResultSummary Compatibility Gate（support-region multiline assessment）
 
 Hours Calculator **B1B／B2 前**必須先完成獨立 **ResultSummary Compatibility Gate**（L 層 shared task）。
-Gate **不是**「必須新增 neutral `detail` API」；改為 **support-region compatibility assessment**。
+Gate **不是**「必須新增 neutral `detail` API」；改為 **support-region multiline compatibility assessment**。
 
-Gate 必須先檢查目前 ResultSummary：
+Gate 必須先檢查目前 ResultSummary 是否能安全支援：
 
 ```text
-1. 現有 support API／DOM／CSS 是否已能安全承載：
-   - secondary result（decimal · minutes · next-day）
-   - optional break note（較輕量）
+1 行 support
+或
+2 行同層級 support
+```
+
+```text
+1. 現有 support API／DOM／CSS 是否已能乾淨承載：
+   - line 1：decimal · minutes · next-day
+   - line 2：break deduction（與 line 1 同層級；需要時才顯示）
 
 2. Outcome A — 現有能力已足夠：
-   - 不要修改 shared API
+   - shared code 不修改
+   - 不新增 API
    - 證明 Hours 可沿用 existing ResultSummary
    - 留下 assessment／validation 結論，交 Owner 確認
 
-3. Outcome B — 現有能力只能顯示一行 support：
-   - 才考慮最小 shared extension
-   - extension 必須發生在 support region
-   - 可支援第二個較輕量 note
-   - API 名稱在 Gate 依現有 conventions 決定
-   - 不得新增 weekday-level `detail`
+3. Outcome B — 現有能力只能安全處理單行 support：
+   - 才考慮最小 support-region extension
+   - 目的只為支援第二行同層級 support
+   - 不建立 lighter-note semantics
+   - 不建立 weekday-level `detail`
+   - API／DOM 形式由 Gate 依現有 conventions 決定
 
 4. 必須保持：
    - Date Calculator weekday semantics
@@ -891,8 +903,8 @@ Gate 必須先檢查目前 ResultSummary：
 5. 不得使用：
    - tool-local ResultSummary replacement
    - DOM patch
-   - CSS hack 模擬第二層
-   - 把 secondary result 塞入 weekday
+   - CSS hack 假造第二層／lighter note
+   - 把 support 文字塞入 weekday
 ```
 
 Gate 仍為獨立 shared task；完成並經 Owner 確認前：
@@ -1050,7 +1062,7 @@ Hours Calculator 為新工具 MVP，依 Owner Workflow 屬 L 層任務；先 Pla
 ```text
 B0：V2 工具頁 scaffold＋sitemap validator 同步更新
 B1A：Lower content／SEO／FAQ／Related Tools
-ResultSummary Compatibility Gate（獨立 L shared task · support-region assessment · B1B 前必過）
+ResultSummary Compatibility Gate（獨立 L shared task · support-region multiline assessment · B1B 前必過）
 B1B：上方工具靜態畫面（Desktop／Portrait／Landscape）
 B2A：Desktop 主時間與休息輸入解析
 B2B：Mobile segmented input＋AME Numeric Keypad＋Sheet／Panel
@@ -1085,10 +1097,11 @@ B6：Release／production verification
 ```text
 ResultSummary hierarchy：
   primary＝natural duration
-  support area primary line＝decimal · minutes · next-day（DC support 主文層，非 weekday）
-  support area optional lighter note＝break deduction
+  support region line 1＝decimal · minutes · next-day（DC support 主文層，非 weekday）
+  support region line 2＝break deduction（與 line 1 同層級；需要時顯示）
+  無 lighter note／無第三層 hierarchy
   Hours 不使用 weekday；不預設需要 detail API
-ResultSummary Compatibility Gate＝support-region assessment（Outcome A／B）；B1B／B2 前必過
+ResultSummary Compatibility Gate＝support-region multiline assessment（Outcome A／B）；B1B／B2 前必過
 Mobile paste：MVP 不做；僅 AME Numeric Keypad
 Sitemap validator：B0 建立 routes 時同步更新並 PASS
 ```
@@ -1106,8 +1119,9 @@ Hours Calculator／時數計算的 MVP 鎖定為：
 一段選填休息時間
 即時計算
 主結果使用自然時長
-次要（support area 主行）顯示小數時數、總分鐘與隔天
-休息扣除為 support area 下方較輕量 optional note
+support region 1–2 行同層級輔助文字：
+  line 1＝小數時數 · 總分鐘 · 隔天
+  line 2＝休息扣除（需要時）
 無效休息不破壞原始結果
 Desktop 快速單框輸入（含 parse／normalize／paste）
 Mobile 三列完整 segmented 輸入框＋AME Numeric Keypad（無 Mobile paste）
@@ -1116,4 +1130,4 @@ Mobile landscape 共用全頁覆蓋 Panel（AME）
 不保存、不分享、不做多日與工時系統
 ```
 
-B0＋B1A 已完成。下一步為獨立 ResultSummary Compatibility Gate（support-region assessment）；Owner 確認前不得開始 B1B／B2。
+B0＋B1A 已完成。下一步為獨立 ResultSummary Compatibility Gate（support-region multiline assessment）；Owner 確認前不得開始 B1B／B2。
