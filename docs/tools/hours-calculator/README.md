@@ -1,10 +1,12 @@
 # Hours Calculator / 時數計算 — README
 
 > 建立日期：2026-08-09
-> 更新日期：2026-08-09（B5 Link Integration local）
-> 狀態：**standalone＋site integration complete（local）** · catalog `available:true` · `featured:false` · icon `calendar` · **尚未 B5 commit／push／deploy**
+> 更新日期：2026-08-09（Post-deploy · production live）
+> 狀態：**production deployed** · Owner Production QA＝PASS · catalog `available:true` · `featured:false` · icon `calendar`
 > Canonical product spec：`docs/tools/hours-calculator/product-spec.md`
 > Standalone commit：`44289b7` feat: add Hours Calculator standalone tool
+> Link Integration commit：`67a2bb1` feat: integrate Hours Calculator across site links
+> Deployed／Production HEAD：`fd2ed68`
 
 ---
 
@@ -28,6 +30,8 @@ ZH：時數計算
 /zh/hours-calculator/
 ```
 
+Production live on `https://timiva.app`（Cloudflare Pages auto-deploy；未 manual deploy）。
+
 ---
 
 ## 3. 分類與站內連結
@@ -41,6 +45,7 @@ ZH：時數計算
 | Home Featured | 不含 |
 | All Tools 排序 | EC → DRC → DBD → BDC → DC → **Hours** → Age |
 | ToolAdSlot | disabled |
+| Deployment baseline | `fd2ed68` |
 
 ### Outbound Related Tools（Hours 頁）
 
@@ -50,7 +55,7 @@ Days Between Dates
 → Date Calculator
 ```
 
-### Inbound Related Tools（B5）
+### Inbound Related Tools
 
 ```text
 Business Days Calculator：
@@ -60,7 +65,7 @@ Business Days Calculator：
 
 ---
 
-## 4. 已驗收行為摘要（Owner B2C／B3）
+## 4. 已驗收行為摘要（Owner B2C／B3 · Production QA）
 
 ### Desktop
 
@@ -130,12 +135,13 @@ git diff --check
 
 ---
 
-## 7. 下一步
+## 7. Release state
 
 ```text
-Owner Browser QA（B5 Link Integration）
-→ B5 Link Integration commit（需 Owner 授權）
-→ B6 — Release／push／deploy（需 Owner 授權）
+Standalone：44289b7
+Link Integration：67a2bb1
+AME baseline sync：fd2ed68（production HEAD）
+Owner Production QA：PASS
+Cloudflare Pages：main push auto-deploy
+Manual deploy：No
 ```
-
-本 README 描述 **site integration complete（local）** 狀態；**不代表已上線**。

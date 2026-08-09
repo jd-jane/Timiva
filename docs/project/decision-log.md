@@ -5,14 +5,51 @@
 
 ---
 
+## 2026-08-09 — Hours Calculator production deployment
+
+### 背景
+
+```text
+Hours Calculator 完成 B4 standalone、B5 Link Integration、rebase onto origin/main、
+AME protected baseline sync，以及 B6 fast-forward push。
+Cloudflare Pages 由 main push 自動部署；Owner Production QA＝PASS。
+```
+
+### 決策（最終核准結果）
+
+```text
+1. Hours Calculator／時數計算正式上線（Timiva 第九個工具）。
+2. Owner Production QA＝PASS。
+3. EN／ZH production routes live：
+   /en/hours-calculator/ · /zh/hours-calculator/
+4. Catalog：available:true · featured:false · icon:calendar。
+5. Home Featured 不含 Hours；維持既有 4 張。
+6. All Tools dates-events：
+   EC → DRC → DBD → BDC → DC → Hours → Age。
+7. Outbound Related：DBD → BDC → Date Calculator。
+8. Inbound Related：僅 BDC（DBD → DRC → Hours）。
+9. Deployed／Production HEAD：fd2ed68。
+10. Cloudflare Pages auto-deploy；未 manual deploy。
+11. ToolAdSlot 維持 is-disabled。
+```
+
+### 影響
+
+```text
+current-status／本 log／roadmap／product-architecture／Hours README
+以 production deployed（HEAD fd2ed68）為準。
+```
+
+---
+
 ## 2026-08-09 — Hours Calculator B5 Link Integration（local）
 
 ### 背景
 
 ```text
 Hours Calculator standalone 已完成；Owner 核准 B5 Plan-first 決策後進入站內連結整合。
-B5 Owner Browser QA＝PASS；B5 commit 已建立（rebase 後 hash 見 Hours README／current-status）。
-尚未授權 push／deploy。
+B5 Owner Browser QA＝PASS；B5 commit 已建立。
+（後續已由同日 production deployment 取代「尚未上線」狀態。）
 ```
 
 ### 決策
@@ -31,14 +68,13 @@ B5 Owner Browser QA＝PASS；B5 commit 已建立（rebase 後 hash 見 Hours REA
 6. 不修改 Days Between Dates／Date Calculator 的 Related graph。
 7. 不擴充 shared icon set。
 8. ToolAdSlot 維持 is-disabled。
-9. 尚未 push／deploy；不得表述為已上線。
 ```
 
 ### 影響
 
 ```text
-current-status／本 log／roadmap／Hours README 以
-standalone＋Link Integration local complete（awaiting B6 push／deploy）為準。
+Link Integration 規則與 Related graph 決策仍有效；
+上線狀態以「Hours Calculator production deployment」為準。
 ```
 
 ---

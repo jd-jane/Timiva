@@ -2,7 +2,7 @@
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
 > 更新日期：2026-08-09
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + Business Days Calculator + **Date Calculator** production。**Date Calculator／日期加減計算（第八）：已正式上線。** Standalone `3d9600e`；Link Integration `ae1c751`；Initial release HEAD `4545121`；Desktop hotfix `adf34be`＋`df2d82b`；**Deployed／Production HEAD：`df2d82b`**。Owner Production QA＝PASS；Desktop Hotfix Verification＝PASS。catalog `available:true`；Home Featured 仍 4 張不含 DC。**Hours Calculator／時數計算（第九）：standalone＋B5 Link Integration local complete（尚未 push／deploy）；catalog `available:true` · `featured:false` · icon `calendar`；Home Featured 不含 Hours；All Tools dates-events＝EC→DRC→DBD→BDC→DC→Hours→Age；inbound Related＝BDC only（DBD→DRC→Hours）；Hours outbound＝DBD→BDC→DC。** Cloudflare Pages 由 main push 自動部署（未 manual deploy）。**Adaptive Mobile Editor**／Legacy MSB Archive-in-Place 已隨 DC release chain 上線；Option C／B9.3 未授權。獨立 dirty（非本 release）：`astro.config.mjs`、Phase C `tool-mobile-sheet-v2-baseline.css`。
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + Business Days Calculator + Date Calculator + **Hours Calculator** production。**Hours Calculator／時數計算（第九）：已正式上線。** Standalone `44289b7`；Link Integration `67a2bb1`；**Deployed／Production HEAD：`fd2ed68`**。Owner Production QA＝PASS。catalog `available:true` · `featured:false` · icon `calendar`；Home Featured 不含 Hours；All Tools dates-events＝EC→DRC→DBD→BDC→DC→Hours→Age；inbound Related＝BDC only（DBD→DRC→Hours）；Hours outbound＝DBD→BDC→DC。Cloudflare Pages 由 main push 自動部署（未 manual deploy）。**Date Calculator（第八）** 仍維持已上線（其當次 Production HEAD：`df2d82b`）。**Adaptive Mobile Editor**／Legacy MSB Archive-in-Place 已上線；Option C／B9.3 未授權。獨立 dirty（非本 release）：`astro.config.mjs`、Phase C `tool-mobile-sheet-v2-baseline.css`。
 ---
 
 ## 1. Project snapshot
@@ -20,7 +20,7 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具、**Age**、**DBD**、**BDC**、**Date Calculator（第八）** 皆已上線（Production HEAD：`df2d82b`）。**Hours Calculator（第九）：standalone＋B5 Link Integration local complete；尚未 push／deploy。** Home Featured 維持 4 張（不含 BDC／DC／Hours）。 |
+| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具、**Age**、**DBD**、**BDC**、**Date Calculator（第八）**、**Hours Calculator（第九）** 皆已上線。Production HEAD：`fd2ed68`。Home Featured 維持 4 張（不含 BDC／DC／Hours）。 |
 
 ### 1.1 Current work tracks（2026-08-05）
 
@@ -54,18 +54,27 @@ Docs：docs/tools/date-calculator/README.md · product-spec.md
 Independent dirty（not this release）：astro.config.mjs · Phase C tool-mobile-sheet-v2-baseline.css
 ```
 
-**Hours Calculator／時數計算（Timiva 第九 · V1.5 Search Foundation · B5 Link Integration local complete；尚未 push／deploy）：**
+**Hours Calculator／時數計算（Timiva 第九 · V1.5 Search Foundation · production deployed）：**
 
 ```text
-Status：standalone＋site integration COMPLETE（local · feat/hours-calculator；awaiting B6 push／deploy）
+Status：DEPLOYED · Owner Production QA＝PASS
+Routes：/en/hours-calculator/ · /zh/hours-calculator/
+Mobile：Adaptive Mobile Editor · Numeric Keypad · live evaluate
+Desktop：range／break text input · live evaluate
 Catalog：available:true · featured:false · icon:calendar
-Home Featured：維持 4 張 · 不含 Hours（亦不含 BDC／DC）
+Home Featured：維持 4 張 · 不含 Hours
 All Tools dates-events：EC → DRC → DBD → BDC → DC → Hours → Age
 Outbound Related：DBD → BDC → Date Calculator
-Inbound Related：僅 Business Days Calculator（DBD → DRC → Hours；替換原 DC）
+Inbound Related：僅 Business Days Calculator（DBD → DRC → Hours）
   DBD／Date Calculator Related graph 不變
 ToolAdSlot：is-disabled
-Release state：B5 complete · Pushed: No · Deployed: No
+Key commits：
+  44289b7 feat: add Hours Calculator standalone tool
+  67a2bb1 feat: integrate Hours Calculator across site links
+  6352702 docs: sync Hours Calculator commit references
+  fd2ed68 chore: sync AME protected baseline for Hours wiring
+Deployed／Production HEAD：fd2ed68
+Cloudflare Pages：main push auto-deploy（未 manual deploy）
 Docs：docs/tools/hours-calculator/README.md · product-spec.md
 ```
 
@@ -211,9 +220,8 @@ Age Calculator Desktop calendar：已由 Shared DesktopCalendar Phase D 取代�
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
 Date Calculator／日期加減計算：已正式上線（Production HEAD：df2d82b）；catalog available:true；Home Featured 不含 DC
   Desktop Calendar＝popover-compact
-Hours Calculator／時數計算：standalone＋B5 Link Integration local complete；catalog available:true；Home Featured 不含 Hours；尚未 push／deploy
+Hours Calculator／時數計算：已正式上線（Production HEAD：fd2ed68）；catalog available:true；Home Featured 不含 Hours；Owner Production QA＝PASS
 近期開發順序：
-  （Hours B6 push／deploy 後）optional converters
   Lunar Date Converter（optional）
   Pet Age Calculator（optional）
   Japanese Era Converter（optional）
@@ -1427,11 +1435,11 @@ BDC／Age：`popover-compact`；DRC Desktop：`inline-large`；DRC Mobile legacy
   Home ZH chip「重要日期」未改（marketing chip）
   Cloudflare Pages auto-deploy：成功；未 manual deploy
   當次 production checkpoint（0fe3e1f）：main＝origin/main；working tree clean
-目前 local／production：main＝origin/main＝df2d82b
-Date Calculator：已正式上線；Production HEAD：`df2d82b`；Owner Production QA＋Desktop Hotfix Verification＝PASS。
-Home Featured 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress；不含 DBD／BDC／DC）。
-Hours Calculator／時數計算：standalone＋B5 Link Integration local complete；尚未 push／deploy
-Date Calculator／日期加減計算：已部署（第八；Desktop Calendar＝`popover-compact`；hotfix `adf34be`＋`df2d82b`；Production HEAD：`df2d82b`）。
+目前 local／production：main＝origin/main＝fd2ed68
+Date Calculator：已正式上線；當次 Production HEAD：`df2d82b`；Owner Production QA＋Desktop Hotfix Verification＝PASS。
+Home Featured 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress；不含 DBD／BDC／DC／Hours）。
+Hours Calculator／時數計算：已正式上線；Production HEAD：`fd2ed68`；Owner Production QA＝PASS；Cloudflare Pages auto-deploy；未 manual deploy。
+Date Calculator／日期加減計算：已部署（第八；Desktop Calendar＝`popover-compact`；hotfix `adf34be`＋`df2d82b`）。
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期（高搜尋、低維護日期與時間工具；四大分類不變）。
 
 規格與流程：docs/tools/、docs/workflow/
