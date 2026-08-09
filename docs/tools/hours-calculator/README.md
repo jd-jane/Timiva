@@ -4,7 +4,7 @@
 > 更新日期：2026-08-09（B5 Link Integration local）
 > 狀態：**standalone＋site integration complete（local）** · catalog `available:true` · `featured:false` · icon `calendar` · **尚未 B5 commit／push／deploy**
 > Canonical product spec：`docs/tools/hours-calculator/product-spec.md`
-> Standalone commit：`c4636d5` feat: add Hours Calculator standalone tool
+> Standalone commit：`44289b7` feat: add Hours Calculator standalone tool
 
 ---
 
