@@ -3,7 +3,8 @@
 > 建立日期：2026-08-04
 > 正式化：2026-08-05（Owner accepted · Plan-first）
 > 修訂：2026-08-09（Result support hierarchy＝1–2 行同層級輔助文字；撤回 lighter-note／第三層假設；Compatibility Gate＝support-region multiline assessment）
-> 狀態：**Owner accepted product spec · B0＋B1A complete · ResultSummary Compatibility Gate pending**
+> 修訂：2026-08-09（B4 standalone · 同步 Mobile open／Start·End completion／Break duration 實際驗收行為）
+> 狀態：**Owner accepted product spec · standalone complete（local）· catalog `available:false` · 尚未 Link Integration／push／deploy**
 > 適用工具：Hours Calculator／時數計算
 > 分類：Important Dates／重要日子
 > 開發階段：V1.5 Search Foundation 低維護時間計算工具
@@ -525,6 +526,7 @@ Start time — End time
 - Mobile landscape：採用共用的全頁覆蓋式 Mobile Panel（AME landscape full-screen）。
 - Landscape 為本工具明確核准例外：內容仍維持三列上下排列，不改成左右兩欄。
 - 開啟、關閉、overlay、scroll lock、focus、keyboard-open composition 與轉向行為全部沿用現有共用 baseline。
+- **開啟 editor 時：no active segment、Numeric Keypad hidden**；使用者點任一 HH／MM 後才顯示 keypad。
 - 不新增 Hours Calculator 專屬關閉手勢或關閉按鈕。
 - 不設工具專屬 Apply／Cancel action。
 
@@ -546,13 +548,15 @@ Mobile portrait 與 landscape 使用相同內容順序：
 - 三列寬度、高度、左右對齊一致。
 - 開始時間一列、結束時間一列、休息時間一列。
 - Mobile 休息時間固定顯示，不做展開／收合。
-- 休息時間為選填；空白視為 0。
+- **休息時間為 duration（非 clock）**；空白 segment 視為 0（見 §9.5）。
+- 開始／結束為 clock；完成規則見 §9.5。
 
 ### 8.3 Mobile 即時更新
 
-- 開始與結束皆有效後，立即更新原始時長。
+- 開始與結束皆有效（含離開時間組後的 completion）後，立即更新原始時長。
 - 休息時間有效後，立即更新淨時長。
-- 休息時間 incomplete 或 invalid 時，結果維持原始時長，不要求使用者重新輸入開始／結束時間。
+- 休息時間 invalid（含 break > gross）時，結果維持原始時長，不要求使用者重新輸入開始／結束時間。
+- Break duration 允許 partial pair（如 `__:30`）即時進入計算；與 Start／End clock completion 為不同 contract。
 
 ---
 
@@ -560,7 +564,7 @@ Mobile portrait 與 landscape 使用相同內容順序：
 
 ### 9.1 基本範圍
 
-開始、結束、休息三列使用相同的 segment 規則：
+開始、結束、休息三列共用 digit gate：
 
 ```text
 HH：00–23
@@ -568,6 +572,11 @@ MM：00–59
 每段最多 2 位
 只接受數字
 ```
+
+**完成語意不同：**
+
+- Start／End＝clock completion（§9.5）
+- Break＝duration partial-pair（§9.5）
 
 ### 9.2 即時輸入限制
 
@@ -626,6 +635,41 @@ MVP 不支援 clipboard paste。
 ```
 
 Desktop 的自由文字輸入、parse、normalize 與 paste 能力維持 §6，不受本節影響。
+
+### 9.5 Start／End completion 與 Break duration（Owner 驗收）
+
+**Start／End（clock）**
+
+- HH 為必要資訊。
+- MM 可省略；離開該時間組後補成 `00`。
+- 單碼 HH／MM 在離開該時間組時前補 0（不在仍編輯同一 segment 時提前補值，以免阻礙 `18`／`15`）。
+- 只有 MM、無 HH（如 `__:30`）→ incomplete，不猜測 HH。
+- 兩欄皆空 → empty。
+- 「離開時間組」含：切到另一組（Start／End／Break）、按 Done。
+
+例：
+
+```text
+9:__ → 離開後 09:00
+9:5 → 離開後 09:05
+18:__ → 離開後 18:00
+__:30 → incomplete
+__:__ → empty
+```
+
+**Break（duration）**
+
+- 空白 HH 或 MM 在 evaluation 中視為 0。
+- 支援 partial pair 即時計算，例如：
+
+```text
+__:30 → 30 分鐘
+1:__ → 1 小時
+1:30 → 1 小時 30 分鐘
+00:00／皆空 → 0，不扣除
+```
+
+- digit gate／auto-advance 仍適用；與 Start／End clock completion 為不同 contract。
 
 ---
 
@@ -1130,4 +1174,5 @@ Mobile landscape 共用全頁覆蓋 Panel（AME）
 不保存、不分享、不做多日與工時系統
 ```
 
-B0＋B1A 已完成。下一步為獨立 ResultSummary Compatibility Gate（support-region multiline assessment）；Owner 確認前不得開始 B1B／B2。
+B0＋B1A＋ResultSummary Compatibility Gate＋B1B＋B2A＋B2B＋B2C＋B3 已完成並經 Owner 確認。
+B4＝standalone commit checkpoint（本狀態）。下一步為 **B5 Link Integration**（catalog `available:true`、inbound links）；Owner 核准前不得自行開始。

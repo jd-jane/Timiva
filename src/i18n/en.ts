@@ -45,6 +45,11 @@ export const en = {
       description:
         "Add or subtract years, months, weeks, and days from a start date to get a new target date instantly.",
     },
+    hoursCalculator: {
+      title: "Hours Calculator | Timiva",
+      description:
+        "Calculate hours and minutes between two times, with an optional break. Overnight spans like 22:00–06:00 are handled automatically.",
+    },
     privacy: {
       title: "Privacy Policy — Timiva",
       description: "How Timiva handles your data and privacy.",
@@ -251,6 +256,13 @@ export const en = {
         "Add or subtract years, months, weeks, and days from a start date to get a new target date instantly.",
       compactDescription: "Add or subtract time from a date.",
       relatedDescription: "Add or subtract years, months, weeks, and days.",
+    },
+    hoursCalculator: {
+      title: "Hours Calculator",
+      description:
+        "Calculate the hours and minutes between two times, with an optional break.",
+      compactDescription: "Calculate hours between two times.",
+      relatedDescription: "Find hours and minutes between two times.",
     },
     lifeProgress: {
       title: "Life Progress Bar",
@@ -956,6 +968,91 @@ export const en = {
           question: "Can I calculate a past date?",
           answer:
             "Yes. Choose subtract to move backward from the start date and get a past target date.",
+        },
+      ],
+    },
+  },
+  hoursCalculator: {
+    kicker: "Hours Calculator",
+    scaffoldLead: "Calculate the hours and minutes between two times.",
+    relatedToolsDrawerAriaLabel: "Related tools drawer",
+    toggleRelatedToolsDrawerAriaLabel: "Toggle related tools drawer",
+    upperControlsAriaLabel: "Time range controls",
+    resultsLabel: "Hours calculator result",
+    rangePlaceholder: "Enter time HH:MM–HH:MM",
+    rangeInputAriaLabel: "Start and end time",
+    breakPlaceholder: "Enter break HH:MM",
+    breakInputAriaLabel: "Break duration",
+    addBreakLabel: "＋ Add break time",
+    removeBreakAriaLabel: "Remove break time",
+    invalidTimeAriaLabel: "Invalid time",
+    invalidBreakAriaLabel: "Invalid break time",
+    startTimeLabel: "Start time",
+    endTimeLabel: "End time",
+    breakTimeLabel: "Break time",
+    capsuleEmptyLabel: "Start time — End time",
+    capsuleNextDayLabel: "next day",
+    openSheetAriaLabel: "Edit start, end, and break times",
+    sheetAriaLabel: "Hours calculator time editor",
+    sheetTitle: "Set times",
+    clearTimesLabel: "Clear",
+    segmentHoursAriaLabel: "Hours",
+    segmentMinutesAriaLabel: "Minutes",
+    segmentHoursPlaceholder: "HH",
+    segmentMinutesPlaceholder: "MM",
+    resultPrimaryZero: "0 hr 0 min",
+    resultSupportZero: "0 hours · 0 minutes",
+    /* B1B Owner review fixtures（static only） */
+    fixtureSameDayPrimary: "8 hr 20 min",
+    fixtureSameDaySupport: "8.33 hours · 500 minutes",
+    fixtureOvernightPrimary: "8 hr",
+    fixtureOvernightSupport: "8 hours · 480 minutes · Next day",
+    fixtureWithBreakPrimary: "8 hr 20 min",
+    fixtureWithBreakSupportLine1: "8.33 hours · 500 minutes · Next day",
+    fixtureWithBreakSupportLine2: "30 minutes of break time deducted",
+    about: {
+      heading: "About the Hours Calculator",
+      body: "Hours Calculator shows how much time falls between a start and end time. Overnight spans are supported—when the end time is earlier, it is treated as the next day. You can optionally enter a break to subtract from the total. Results include a readable duration, decimal hours, and total minutes. It is useful for work hours, shifts, events, and other single time blocks within 24 hours. It does not calculate multi-day ranges.",
+    },
+    howTo: {
+      heading: "How to use Hours Calculator",
+      steps: [
+        "Enter the start and end times.",
+        "Add a break duration if needed.",
+        "View the updated result instantly.",
+      ],
+    },
+    commonUses: {
+      heading: "Common uses",
+      items: ["Work hours", "Shifts", "Break deduction", "Overnight time"],
+    },
+    faq: {
+      heading: "Hours Calculator FAQ",
+      items: [
+        {
+          question: "How do I use the Hours Calculator?",
+          answer:
+            "Enter a start time and an end time, and the tool calculates the hours and minutes between them right away. If you need to exclude a break, add that duration as well.",
+        },
+        {
+          question: "What if the end time is earlier than the start time?",
+          answer:
+            "The end time is treated as the next day. For example, 22:00–06:00 counts as 8 hours, and the result shows that it crosses into the next day.",
+        },
+        {
+          question: "Can I subtract a break?",
+          answer:
+            "Yes. Break time is optional. A valid break is subtracted from the original duration; a blank break or 00:00 does not change the result.",
+        },
+        {
+          question: "Can I calculate more than 24 hours?",
+          answer:
+            "No. Hours Calculator only covers a single span within 24 hours. For multi-day ranges, use a date-based Timiva tool instead.",
+        },
+        {
+          question: "Does this tool save the times I enter?",
+          answer:
+            "No. It does not use LocalStorage. Refreshing the page returns you to a blank state.",
         },
       ],
     },

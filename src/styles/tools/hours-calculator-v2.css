@@ -1,0 +1,714 @@
+/* Hours Calculator V2 — B0 scaffold + B1A lower + B1B static upper */
+
+[data-hours-calculator-v2] {
+	position: relative;
+	background: transparent;
+}
+
+[data-hours-calculator-v2] > :not([data-hcv2-drawer]):not([data-ame-root]) {
+	position: relative;
+}
+
+[data-hours-calculator-v2] > [data-hcv2-drawer] {
+	position: fixed;
+	inset-block: 0;
+	inset-inline-end: 0;
+	z-index: 25;
+}
+
+body:has([data-hours-calculator-v2]) footer {
+	z-index: 2;
+}
+
+body:has([data-hours-calculator-v2]) header {
+	position: relative;
+	z-index: 30;
+}
+
+[data-hours-calculator-v2] .preview-tool-drawer-frosted {
+	background-color: rgb(5 8 31 / 0.6);
+	-webkit-backdrop-filter: blur(4px) saturate(150%);
+	backdrop-filter: blur(4px) saturate(150%);
+}
+
+/* 第一屏：沿用 V2 result-first baseline */
+[data-hours-calculator-v2] .preview-tool-main-section {
+	--preview-header-height: 3.75rem;
+	position: relative;
+	z-index: 10;
+	margin-top: calc(-1 * var(--preview-header-height));
+	min-height: 100dvh;
+	background: transparent;
+}
+
+[data-hours-calculator-v2] .preview-tool-first-screen {
+	box-sizing: border-box;
+	display: grid;
+	min-height: 100dvh;
+	place-items: center;
+	width: 100%;
+}
+
+[data-hours-calculator-v2] .tool-lower-content {
+	margin-top: var(--tool-stage-to-lower-content-spacing, 48px);
+}
+
+/* ResultSummary：Hours 不用 weekday；support 字級／divider 對齊 DC */
+[data-hours-calculator-v2]
+	[data-result-summary][data-rs-content="textual"],
+[data-hours-calculator-v2]
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+[data-hours-calculator-v2]
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"],
+[data-hours-calculator-v2]
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+	/* 對齊 DC Initial support 16px（避免 portrait layout clamp 壓到 ≤0.875rem） */
+	--rs-textual-support-size: 16px;
+}
+
+/*
+ * Primary base（對齊 DC）：一載入就壓過 shared portrait 小字（≤2.75rem），
+ * 避免 layout 切 portrait／CSS 後注入時先閃小字再放大。
+ * Desktop／Mobile MQ 再用 cqi clamp 微調；Landscape MQ 另縮。
+ */
+[data-hours-calculator-v2][data-hcv2-locale="en"]
+	[data-result-summary][data-rs-content="textual"],
+[data-hours-calculator-v2][data-hcv2-locale="en"]
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+[data-hours-calculator-v2][data-hcv2-locale="en"]
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"],
+[data-hours-calculator-v2][data-hcv2-locale="en"]
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+	--rs-textual-primary-size: 4.75rem;
+}
+
+[data-hours-calculator-v2][data-hcv2-locale="zh"]
+	[data-result-summary][data-rs-content="textual"],
+[data-hours-calculator-v2][data-hcv2-locale="zh"]
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+[data-hours-calculator-v2][data-hcv2-locale="zh"]
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"],
+[data-hours-calculator-v2][data-hcv2-locale="zh"]
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+	--rs-textual-primary-size: 4.25rem;
+}
+
+[data-hours-calculator-v2][data-hcv2-locale="en"]
+	[data-result-summary][data-rs-content="textual"]
+	[data-rs-value="primary"],
+[data-hours-calculator-v2][data-hcv2-locale="zh"]
+	[data-result-summary][data-rs-content="textual"]
+	[data-rs-value="primary"] {
+	white-space: nowrap;
+	max-width: 100%;
+	overflow-x: clip;
+	overflow-y: visible;
+	text-overflow: clip;
+	box-sizing: border-box;
+}
+
+[data-hours-calculator-v2]
+	[data-result-summary][data-rs-content="textual"]
+	[data-rs-support] {
+	margin-top: 0;
+}
+
+[data-hours-calculator-v2]
+	[data-result-summary][data-rs-content="textual"]
+	[data-rs-support]::before {
+	content: "";
+	display: block;
+	width: 48px;
+	height: 1px;
+	margin-inline: auto;
+	margin-block: 24px;
+	background: rgb(255 255 255 / 0.2);
+}
+
+/* Common uses：資訊型標籤，不可互動 */
+[data-hours-calculator-v2] .hcv2-keyword-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+[data-hours-calculator-v2] .hcv2-keyword-chip {
+	display: inline-flex;
+	align-items: center;
+	border-radius: 9999px;
+	border: 1px solid rgb(255 255 255 / 0.1);
+	background: rgb(255 255 255 / 0.04);
+	padding: 0.375rem 0.75rem;
+	font-size: 0.8125rem;
+	color: rgb(203 213 225);
+}
+
+/* Drawer 開合：對齊 Age／DC */
+[data-hours-calculator-v2] [data-hcv2-drawer-shell][data-open="true"] [data-drawer-arrow-closed] {
+	display: none;
+}
+
+[data-hours-calculator-v2] [data-hcv2-drawer-shell][data-open="false"] [data-drawer-arrow-open] {
+	display: none;
+}
+
+[data-hours-calculator-v2] [data-hcv2-drawer-shell][data-open="false"] [data-drawer-arrow-closed] {
+	display: block;
+}
+
+/* —— Desktop 輸入區（md+；Mobile 隱藏） —— */
+[data-hours-calculator-v2] .hcv2-input-cluster--desktop {
+	display: none;
+	width: 100%;
+	max-width: min(100%, 420px);
+	flex-direction: column;
+	align-items: stretch;
+	gap: 0.875rem;
+	margin-top: 2.5rem;
+	margin-inline: auto;
+}
+
+[data-hours-calculator-v2] .hcv2-field-shell {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+	height: 3.25rem;
+	min-height: 3.25rem;
+	padding: 0.75rem 1rem 0.75rem 1.25rem;
+	border-radius: 9999px;
+	background: rgb(255 255 255 / 0.06);
+	border: 1px solid rgb(255 255 255 / 0.12);
+	backdrop-filter: blur(10px);
+}
+
+[data-hours-calculator-v2] .hcv2-field-shell:focus-within {
+	border-color: rgb(255 255 255 / 0.22);
+	background: rgb(255 255 255 / 0.08);
+}
+
+[data-hours-calculator-v2] .hcv2-text-input {
+	flex: 1;
+	min-width: 0;
+	width: 100%;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: rgb(248 250 252 / 0.92);
+	font: inherit;
+	font-size: 0.9375rem;
+	font-weight: 500;
+	line-height: 1.35;
+	letter-spacing: 0.01em;
+	font-variant-numeric: tabular-nums;
+	text-align: start;
+	outline: none;
+}
+
+[data-hours-calculator-v2] .hcv2-text-input::placeholder {
+	color: rgb(244 243 248 / 0.48);
+	font-weight: 400;
+}
+
+[data-hours-calculator-v2] .hcv2-field-trailing {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+}
+
+/* Error icon：對齊 DC／BDC／DBD（灰階 0.875rem） */
+[data-hours-calculator-v2] .hcv2-invalid-icon {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	width: 0.875rem;
+	height: 0.875rem;
+	color: rgb(203 213 225 / 0.76);
+}
+
+[data-hours-calculator-v2] .hcv2-invalid-icon[hidden] {
+	display: none;
+}
+
+[data-hours-calculator-v2] .hcv2-invalid-icon svg {
+	width: 0.875rem;
+	height: 0.875rem;
+}
+
+[data-hours-calculator-v2] .hcv2-remove-break {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	padding: 0;
+	border: 0;
+	border-radius: 9999px;
+	background: transparent;
+	color: rgb(203 213 225 / 0.85);
+	font-size: 1.25rem;
+	line-height: 1;
+	cursor: pointer;
+}
+
+[data-hours-calculator-v2] .hcv2-remove-break[hidden] {
+	display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	[data-hours-calculator-v2] .hcv2-remove-break:hover {
+		background: rgb(255 255 255 / 0.08);
+		color: rgb(248 250 252);
+	}
+}
+
+[data-hours-calculator-v2] .hcv2-add-break {
+	display: inline-flex;
+	align-self: center;
+	align-items: center;
+	justify-content: center;
+	min-height: 2.5rem;
+	padding: 0.375rem 0.75rem;
+	border: 0;
+	background: transparent;
+	color: rgb(165 180 252 / 0.92);
+	font: inherit;
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.3;
+	cursor: pointer;
+}
+
+[data-hours-calculator-v2] .hcv2-add-break[hidden] {
+	display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	[data-hours-calculator-v2] .hcv2-add-break:hover {
+		color: rgb(199 210 254);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+}
+
+[data-hours-calculator-v2] .hcv2-break-field[hidden] {
+	display: none;
+}
+
+/* —— Mobile Utility Capsule —— */
+[data-hours-calculator-v2] .hcv2-mobile-controls {
+	display: flex;
+	width: 100%;
+	justify-content: center;
+	margin-top: 2rem;
+}
+
+/* 字級／顏色沿用 Tailwind text-sm text-slate-300（對齊 DC／BDC／DBD） */
+[data-hours-calculator-v2] .hcv2-mobile-capsule {
+	width: 100%;
+	max-width: min(100%, 20rem);
+	font-variant-numeric: tabular-nums;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+[data-hours-calculator-v2] .hcv2-capsule-range {
+	min-width: 0;
+	text-align: center;
+}
+
+/* OD-2：膠囊內 next-day 可較小較淡；ResultSummary support 內不加獨立 treatment */
+[data-hours-calculator-v2] .hcv2-capsule-nextday {
+	flex-shrink: 0;
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3;
+	color: rgb(148 163 184);
+	white-space: nowrap;
+}
+
+[data-hours-calculator-v2] .hcv2-capsule-nextday[hidden] {
+	display: none;
+}
+
+/* —— AME 三列 HH:MM：label column 共用（對齊 AME setting-stack subgrid） —— */
+[data-hours-calculator-v2] .hcv2-ame-form {
+	/* 外層定義單一 label 欄（max-content＝最長 label）＋ value 欄 */
+	display: grid;
+	grid-template-columns: max-content minmax(0, 1fr);
+	row-gap: 0.625rem;
+	column-gap: 0.75rem;
+	width: 100%;
+	min-width: 0;
+}
+
+/*
+ * Portrait：隱藏可見標題（對齊 DC portrait header hide；用 data-ame-root 非 id）。
+ * Landscape topbar 標題仍顯示 Set times／設定時間。
+ */
+[data-hours-calculator-v2] [data-ame-root] .ame-portrait-header {
+	display: none;
+}
+
+[data-hours-calculator-v2] .hcv2-ame-time-row {
+	/* 每列吃外層兩欄；三列 HH:MM 起點一致；Portrait／Landscape 同一 contract */
+	display: grid;
+	grid-template-columns: subgrid;
+	grid-column: 1 / -1;
+	align-items: center;
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	min-height: 3.25rem;
+	padding: 0.625rem 0.875rem 0.625rem 1rem;
+	border-radius: 0.875rem;
+	border: 1px solid rgb(255 255 255 / 0.12);
+	background: rgb(255 255 255 / 0.05);
+}
+
+[data-hours-calculator-v2] .hcv2-ame-row-label {
+	grid-column: 1;
+	color: rgb(226 232 240 / 0.92);
+	font-size: 0.9375rem;
+	font-weight: 500;
+	line-height: 1.3;
+	white-space: nowrap;
+}
+
+/* HH:MM ＋ ! 同組；左對齊於 value 欄起點 */
+[data-hours-calculator-v2] .hcv2-ame-control {
+	grid-column: 2;
+	display: flex;
+	min-width: 0;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 0.25rem;
+}
+
+[data-hours-calculator-v2] .hcv2-ame-segments {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	min-width: 0;
+}
+
+[data-hours-calculator-v2] .hcv2-ame-segment {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 2.875rem;
+	min-height: 2.25rem;
+	padding: 0.25rem 0.35rem;
+	border: 0;
+	border-radius: 0.5rem;
+	background: transparent;
+	color: rgb(248 250 252);
+	font: inherit;
+	font-size: 1.0625rem;
+	font-weight: 500;
+	font-variant-numeric: tabular-nums;
+	line-height: 1.2;
+	cursor: pointer;
+}
+
+[data-hours-calculator-v2] .hcv2-ame-segment[data-ame-active="true"] {
+	background: rgb(255 255 255 / 0.07);
+	box-shadow: inset 0 0 0 1px rgb(165 180 252 / 0.55);
+}
+
+[data-hours-calculator-v2] .hcv2-ame-segment [data-hcv2-segment-value].is-placeholder {
+	color: rgb(148 163 184 / 0.72);
+	font-weight: 400;
+}
+
+[data-hours-calculator-v2] .hcv2-ame-colon {
+	color: rgb(148 163 184);
+	font-size: 1rem;
+	font-weight: 500;
+	line-height: 1;
+}
+
+/* ! 在 HH:MM group 右側；固定槽寬，hidden 仍佔位；樣式對齊共用 invalid icon */
+[data-hours-calculator-v2] .hcv2-ame-row-icon {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	width: 0.875rem;
+	height: 0.875rem;
+	color: rgb(203 213 225 / 0.76);
+}
+
+[data-hours-calculator-v2] .hcv2-ame-row-icon[hidden] {
+	display: inline-flex;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+[data-hours-calculator-v2] .hcv2-ame-row-icon svg {
+	width: 0.875rem;
+	height: 0.875rem;
+}
+
+/* md+：Desktop 輸入；Mobile capsule 隱藏 */
+@media (min-width: 768px) {
+	[data-hours-calculator-v2] .hcv2-input-cluster--desktop {
+		display: flex;
+	}
+
+	[data-hours-calculator-v2] .hcv2-mobile-controls {
+		display: none;
+	}
+}
+
+/*
+ * 大型桌機（對齊 DC／Timiva desktop layout gate）：
+ * stage 640px。不改共用 .preview-tool-stage 定義。
+ */
+@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
+	[data-hours-calculator-v2] .hcv2-tool-stage.preview-tool-stage {
+		max-width: 640px;
+	}
+}
+
+/*
+ * Desktop／中等桌機：主結果強制單行；僅當超出結果容器寬度時以 cqi 等比微縮（對齊 DC）。
+ * - EN 最大 7rem；ZH 最大 5.5rem
+ * - 公開 token＋data-rs-value；不改 shared ResultSummary
+ * - MQ ≥768：涵蓋 layout=desktop 與 768–899 仍為 layout=portrait 的中等桌機
+ * - 不改 Mobile ≤767／layout=landscape
+ */
+@media (min-width: 768px) {
+	[data-hours-calculator-v2] .preview-tool-result-group {
+		container-type: inline-size;
+		container-name: hcv2-result;
+		width: 100%;
+		max-width: 100%;
+		min-width: 0;
+	}
+
+	[data-hours-calculator-v2][data-hcv2-locale="en"]
+		[data-result-summary][data-rs-content="textual"]:is(
+			[data-rs-layout="desktop"],
+			[data-rs-layout="portrait"]
+		) {
+		width: 100%;
+		max-width: 100%;
+		min-width: 0;
+		/* 17.5cqi＠640px = 7rem；夠寬維持 7rem，變窄才微縮 */
+		--rs-textual-primary-size: clamp(2.75rem, 17.5cqi, 7rem);
+	}
+
+	[data-hours-calculator-v2][data-hcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"]:is(
+			[data-rs-layout="desktop"],
+			[data-rs-layout="portrait"]
+		) {
+		width: 100%;
+		max-width: 100%;
+		min-width: 0;
+		/* 13.75cqi＠640px = 5.5rem；夠寬維持 5.5rem，變窄才微縮 */
+		--rs-textual-primary-size: clamp(2.75rem, 13.75cqi, 5.5rem);
+	}
+
+	[data-hours-calculator-v2][data-hcv2-locale="en"]
+		[data-result-summary][data-rs-content="textual"]:is(
+			[data-rs-layout="desktop"],
+			[data-rs-layout="portrait"]
+		)
+		[data-rs-value="primary"],
+	[data-hours-calculator-v2][data-hcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"]:is(
+			[data-rs-layout="desktop"],
+			[data-rs-layout="portrait"]
+		)
+		[data-rs-value="primary"] {
+		/* 單行；容器變窄時由上方 cqi clamp 微縮（對齊 DC，無 JS fit） */
+		white-space: nowrap;
+		width: 100%;
+		max-width: 100%;
+		overflow-x: clip;
+		overflow-y: visible;
+		text-overflow: clip;
+		box-sizing: border-box;
+	}
+}
+
+/* Primary 列滿寬，供 cqi／單行截斷以結果區為準 */
+[data-hours-calculator-v2]
+	[data-result-summary][data-rs-content="textual"]
+	.rs-primary {
+	width: 100%;
+}
+
+/* 手機直式：結果置中、底部膠囊固定（對齊 DC；必須含 orientation:portrait，勿洩漏到橫式） */
+@media (max-width: 767px) and (orientation: portrait) {
+	[data-hours-calculator-v2] .preview-tool-first-screen {
+		place-items: stretch;
+		min-height: 100dvh;
+		box-sizing: border-box;
+	}
+
+	[data-hours-calculator-v2] .preview-tool-stage {
+		display: grid;
+		grid-template-rows: minmax(0, 1fr) auto;
+		min-height: 100dvh;
+		width: 100%;
+		box-sizing: border-box;
+		padding-block: 1.5rem 1.25rem;
+	}
+
+	[data-hours-calculator-v2] .preview-tool-result-group {
+		align-self: center;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		width: 100%;
+		min-height: 0;
+		pointer-events: none;
+		container-type: inline-size;
+		container-name: hcv2-result-portrait;
+	}
+
+	/* EN／ZH 手機直式主結果放大；單行；隨容器寬 cqi 微縮（勿沿用 shared ≤2.75rem；無 JS fit） */
+	[data-hours-calculator-v2][data-hcv2-locale="en"]
+		[data-result-summary][data-rs-content="textual"],
+	[data-hours-calculator-v2][data-hcv2-locale="en"]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+		/* 約 4.5rem＠390px 寬；夠寬維持，變窄微縮 */
+		--rs-textual-primary-size: clamp(3.5rem, 18cqi, 4.75rem);
+	}
+
+	[data-hours-calculator-v2][data-hcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"],
+	[data-hours-calculator-v2][data-hcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+		/* 中文較長，略小於 EN；約 4rem＠390px */
+		--rs-textual-primary-size: clamp(3.25rem, 16cqi, 4.25rem);
+	}
+
+	[data-hours-calculator-v2][data-hcv2-locale="en"]
+		[data-result-summary][data-rs-content="textual"]
+		[data-rs-value="primary"],
+	[data-hours-calculator-v2][data-hcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"]
+		[data-rs-value="primary"] {
+		/* 單行；容器變窄時由上方 cqi clamp 微縮 */
+		white-space: nowrap;
+		width: 100%;
+		max-width: 100%;
+		overflow-x: clip;
+		overflow-y: visible;
+		text-overflow: clip;
+		box-sizing: border-box;
+	}
+
+	[data-hours-calculator-v2] .hcv2-input-cluster--desktop {
+		display: none;
+	}
+
+	[data-hours-calculator-v2] .hcv2-mobile-controls {
+		position: relative;
+		align-self: center;
+		z-index: 25;
+		isolation: isolate;
+		width: 100%;
+		max-width: 100%;
+		margin-top: 0;
+		padding-bottom: 1rem;
+		pointer-events: auto;
+	}
+
+	[data-hours-calculator-v2] .hcv2-mobile-capsule {
+		position: relative;
+		pointer-events: auto;
+		min-height: var(--tool-mobile-portrait-control-min-height, 3.5rem);
+		padding: var(--tool-mobile-portrait-control-padding-y, 0.75rem)
+			var(--tool-mobile-portrait-control-padding-x, 1rem);
+	}
+}
+
+/*
+ * Landscape：對齊 DC Date Calculator。
+ * - 沿用 base min-height:100dvh + place-items:center → 完整 hero、整組置中
+ * - 不套 portrait 的 1fr／沉底（已用 orientation:portrait 隔離）
+ * - 固定 margin-top 間距；不灌剩餘高度進 result ↔ capsule
+ */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+	[data-hours-calculator-v2] .hcv2-input-cluster--desktop {
+		display: none;
+	}
+
+	[data-hours-calculator-v2] .hcv2-mobile-controls {
+		display: flex;
+		margin-top: 1rem;
+	}
+
+	/* 橫式：主按鈕改回依文字寬度（直式仍維持 100%／max 20rem） */
+	[data-hours-calculator-v2] .hcv2-mobile-capsule {
+		width: auto;
+		max-width: none;
+		margin-inline: auto;
+		min-height: 2rem;
+		padding: 0.375rem 0.75rem;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	/*
+	 * Landscape 結果區壓縮：縮短 title／列間／separator 垂直距離。
+	 * 不使用 .rs-*；僅覆寫公開 token 與 host／tool 外層 spacing。
+	 */
+	[data-hours-calculator-v2] .preview-tool-first-screen {
+		padding-block: 1.25rem 1.5rem;
+	}
+
+	[data-hours-calculator-v2] .hcv2-result-summary {
+		margin-top: 0.75rem;
+	}
+
+	[data-hours-calculator-v2]
+		[data-result-summary][data-rs-content="textual"]
+		[data-rs-support]::before {
+		margin-block: 0.625rem;
+	}
+
+	[data-hours-calculator-v2] .preview-tool-result-group {
+		padding-inline: 1rem;
+		box-sizing: border-box;
+	}
+
+	/* Landscape primary 再縮（base 為手機大字；對齊 DC landscape 收斂） */
+	[data-hours-calculator-v2][data-hcv2-locale="en"]
+		[data-result-summary][data-rs-content="textual"],
+	[data-hours-calculator-v2][data-hcv2-locale="en"]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+		--rs-textual-primary-size: 3.75rem;
+	}
+
+	[data-hours-calculator-v2][data-hcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"],
+	[data-hours-calculator-v2][data-hcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+		--rs-textual-primary-size: 3.375rem;
+	}
+
+	[data-hours-calculator-v2]:has([data-ame-root][data-ame-open="true"]) .hcv2-mobile-controls {
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	/* Hours live：Landscape top bar 不顯示 Cancel（Clear｜Title｜Done） */
+	[data-hours-calculator-v2] [data-ame-cancel] {
+		display: none;
+	}
+}

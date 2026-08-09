@@ -18,6 +18,7 @@ export type CatalogToolId =
   | "year-progress"
   | "age-calculator"
   | "date-calculator"
+  | "hours-calculator"
   | "life-progress";
 
 export interface CatalogTool {
@@ -78,6 +79,19 @@ export const catalogTools: CatalogTool[] = [
       "days-between-dates",
       "business-days-calculator",
       "date-range",
+    ],
+  },
+  {
+    id: "hours-calculator",
+    slug: "hours-calculator",
+    categoryId: "dates-events",
+    available: false,
+    featured: false,
+    icon: "calendar",
+    relatedIds: [
+      "days-between-dates",
+      "business-days-calculator",
+      "date-calculator",
     ],
   },
   {

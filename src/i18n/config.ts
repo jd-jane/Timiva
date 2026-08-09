@@ -19,6 +19,7 @@ export const routePaths = {
   daysBetweenDates: "/days-between-dates/",
   businessDaysCalculator: "/business-days-calculator/",
   dateCalculator: "/date-calculator/",
+  hoursCalculator: "/hours-calculator/",
   allTools: "/tools/",
   privacy: "/privacy/",
   terms: "/terms/",

@@ -50,6 +50,7 @@ const EXPECTED_CATEGORY_ASSIGNMENTS = {
 	"countdown-timer": "productivity",
 	"year-progress": "momentum",
 	"date-calculator": "dates-events",
+	"hours-calculator": "dates-events",
 	"life-progress": "momentum",
 };
 
@@ -69,6 +70,11 @@ const EXPECTED_RELATED_IDS = {
 		"days-between-dates",
 		"business-days-calculator",
 		"date-range",
+	],
+	"hours-calculator": [
+		"days-between-dates",
+		"business-days-calculator",
+		"date-calculator",
 	],
 };
 
@@ -200,7 +206,7 @@ assert(
 	JSON.stringify(categoryIds) === JSON.stringify(STABLE_CATEGORY_IDS),
 	"toolCategories ids remain dates-events → productivity → body-flow → momentum",
 );
-assert(catalogTools.length === 9, "catalogTools still has 9 entries");
+assert(catalogTools.length === 10, "catalogTools has 10 entries");
 
 for (const [toolId, categoryId] of Object.entries(EXPECTED_CATEGORY_ASSIGNMENTS)) {
 	const tool = catalogTools.find((entry) => entry.id === toolId);
@@ -249,6 +255,10 @@ assert(availableCount === 8, "available production tool count remains 8");
 assert(
 	catalogTools.find((tool) => tool.id === "date-calculator")?.available === true,
 	"date-calculator is available",
+);
+assert(
+	catalogTools.find((tool) => tool.id === "hours-calculator")?.available === false,
+	"hours-calculator remains unavailable in B0",
 );
 
 /* --- built All Tools pages --- */

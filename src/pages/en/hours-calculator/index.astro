@@ -1,0 +1,25 @@
+---
+import "../../../styles/tools/timiva-tokens.css";
+import "../../../styles/tools/tool-design-system.css";
+import "../../../styles/tools/tool-result-v2-baseline.css";
+import "../../../styles/tools/tool-overlay-v2-baseline.css";
+import "../../../styles/tools/tool-drawer-v2-baseline.css";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import HoursCalculatorV2 from "../../../components/tools/hours-calculator-v2/HoursCalculatorV2.astro";
+import { getHoursCalculatorRouteMeta } from "../../../lib/hoursCalculatorRouteMeta";
+import { type Locale } from "../../../i18n/config";
+
+const locale: Locale = "en";
+const routeMeta = getHoursCalculatorRouteMeta(locale);
+---
+
+<BaseLayout
+	title={routeMeta.title}
+	description={routeMeta.description}
+	canonicalUrl={routeMeta.canonicalUrl}
+	alternateUrls={routeMeta.alternateUrls}
+	headerVariant="inner"
+	locale={locale}
+>
+	<HoursCalculatorV2 locale={locale} />
+</BaseLayout>

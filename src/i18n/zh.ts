@@ -47,6 +47,11 @@ export const zh: Messages = {
       description:
         "從起始日期加上或減去年、月、週、日，立即得到新的目標日期。",
     },
+    hoursCalculator: {
+      title: "時數計算｜Timiva",
+      description:
+        "計算兩個時間之間相隔的時數與分鐘，並可選填休息時間。跨午夜時段會自動視為隔天。",
+    },
     privacy: {
       title: "隱私權政策 — Timiva",
       description: "Timiva 如何處理您的資料與隱私。",
@@ -235,6 +240,12 @@ export const zh: Messages = {
       description: "從起始日期加上或減去年、月、週、日，立即得到新的目標日期。",
       compactDescription: "對日期加減一段時間。",
       relatedDescription: "對日期加上或減去年、月、週、日。",
+    },
+    hoursCalculator: {
+      title: "時數計算",
+      description: "計算兩個時間之間相隔的時數與分鐘，並可選填休息時間。",
+      compactDescription: "計算兩個時間之間的時數。",
+      relatedDescription: "查看兩個時間之間相隔的時數與分鐘。",
     },
     lifeProgress: {
       title: "人生進度條",
@@ -911,6 +922,91 @@ export const zh: Messages = {
         {
           question: "可以計算過去的日期嗎？",
           answer: "可以。選擇減去，即可從起始日期往回計算過去的目標日期。",
+        },
+      ],
+    },
+  },
+  hoursCalculator: {
+    kicker: "時數計算",
+    scaffoldLead: "計算兩個時間之間相隔的時數與分鐘。",
+    relatedToolsDrawerAriaLabel: "相關工具側欄",
+    toggleRelatedToolsDrawerAriaLabel: "開啟或關閉相關工具側欄",
+    upperControlsAriaLabel: "時間區間操作",
+    resultsLabel: "時數計算結果",
+    rangePlaceholder: "輸入時間 HH:MM–HH:MM",
+    rangeInputAriaLabel: "開始與結束時間",
+    breakPlaceholder: "輸入休息時間 HH:MM",
+    breakInputAriaLabel: "休息時間",
+    addBreakLabel: "＋ 加入休息時間",
+    removeBreakAriaLabel: "移除休息時間",
+    invalidTimeAriaLabel: "時間格式不正確",
+    invalidBreakAriaLabel: "休息時間不正確",
+    startTimeLabel: "開始時間",
+    endTimeLabel: "結束時間",
+    breakTimeLabel: "休息時間",
+    capsuleEmptyLabel: "開始時間 — 結束時間",
+    capsuleNextDayLabel: "隔天",
+    openSheetAriaLabel: "編輯開始、結束與休息時間",
+    sheetAriaLabel: "時數計算時間編輯",
+    sheetTitle: "設定時間",
+    clearTimesLabel: "清除",
+    segmentHoursAriaLabel: "小時",
+    segmentMinutesAriaLabel: "分鐘",
+    segmentHoursPlaceholder: "HH",
+    segmentMinutesPlaceholder: "MM",
+    resultPrimaryZero: "0 小時 0 分鐘",
+    resultSupportZero: "0 小時 · 0 分鐘",
+    /* B1B Owner review fixtures（static only） */
+    fixtureSameDayPrimary: "8 小時 20 分鐘",
+    fixtureSameDaySupport: "8.33 小時 · 500 分鐘",
+    fixtureOvernightPrimary: "8 小時",
+    fixtureOvernightSupport: "8 小時 · 480 分鐘 · 隔天",
+    fixtureWithBreakPrimary: "8 小時 20 分鐘",
+    fixtureWithBreakSupportLine1: "8.33 小時 · 500 分鐘 · 隔天",
+    fixtureWithBreakSupportLine2: "已扣除 30 分鐘休息時間",
+    about: {
+      heading: "關於時數計算",
+      body: "時數計算用來查看開始時間與結束時間之間相隔多久。支援跨午夜：當結束時間較早時，會自動視為隔天。你也可以選填休息時間，從結果中扣除。結果會顯示一般時長、小數時數與總分鐘數，適合工時、班次、活動或其他單一時段。本工具只處理 24 小時內的一段時間，不處理跨多日區間。",
+    },
+    howTo: {
+      heading: "如何使用時數計算",
+      steps: [
+        "輸入開始時間與結束時間。",
+        "視需要輸入休息時間。",
+        "直接查看即時更新的結果。",
+      ],
+    },
+    commonUses: {
+      heading: "常見用途",
+      items: ["工時", "班次", "休息扣除", "跨午夜時段"],
+    },
+    faq: {
+      heading: "時數計算 FAQ",
+      items: [
+        {
+          question: "時數計算怎麼使用？",
+          answer:
+            "輸入開始時間與結束時間後，工具會立即計算兩者相隔的時數與分鐘。需要扣除休息時，可再輸入一段休息時間。",
+        },
+        {
+          question: "結束時間比開始時間早，會怎麼計算？",
+          answer:
+            "工具會自動將結束時間視為隔天。例如 22:00–06:00 會計算為 8 小時，並在結果中顯示「隔天」。",
+        },
+        {
+          question: "可以扣除休息時間嗎？",
+          answer:
+            "可以。休息時間為選填，輸入有效時會從原始時長中扣除；空白或 00:00 不會扣除。",
+        },
+        {
+          question: "可以計算超過 24 小時的時間嗎？",
+          answer:
+            "不可以。時數計算只處理 24 小時內的一段時間。跨多日的區間需要搭配日期類工具計算。",
+        },
+        {
+          question: "這個工具會儲存我輸入的時間嗎？",
+          answer:
+            "不會。本工具不使用 LocalStorage；重新整理頁面後會回到空白狀態。",
         },
       ],
     },

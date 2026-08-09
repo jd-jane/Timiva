@@ -1,0 +1,562 @@
+---
+import RelatedToolRow from "../../RelatedToolRow.astro";
+import ToolAdSlot from "../../ToolAdSlot.astro";
+import ToolCard from "../../ToolCard.astro";
+import AdaptiveMobileEditor from "../shared/AdaptiveMobileEditor.astro";
+import ResultSummary from "../shared/ResultSummary.astro";
+import { catalogIconMap } from "../../../lib/catalogIcons";
+import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
+import { getRelatedTools, type CatalogToolId } from "../../../data/toolsCatalog";
+import { getLocalizedPath, type Locale } from "../../../i18n/config";
+import { getMessages } from "../../../i18n/messages";
+import "../../../styles/tools/adaptive-mobile-editor.css";
+import "../../../styles/tools/hours-calculator-v2.css";
+
+interface Props {
+	locale?: Locale;
+}
+
+const { locale = "en" } = Astro.props;
+const messages = getMessages(locale);
+const m = messages.hoursCalculator;
+const relatedTools = getRelatedTools("hours-calculator");
+const faqSchema = buildFaqPageJsonLd(m.faq.items);
+
+const toolCopy: Record<
+	CatalogToolId,
+	{ title: string; relatedDescription: string }
+> = {
+	"event-countdown": messages.tools.eventCountdown,
+	"date-range": messages.tools.dateRange,
+	"countdown-timer": messages.tools.countdownTimer,
+	"year-progress": messages.tools.yearProgress,
+	"age-calculator": messages.tools.ageCalculator,
+	"days-between-dates": messages.tools.daysBetweenDates,
+	"business-days-calculator": messages.tools.businessDaysCalculator,
+	"life-progress": messages.tools.lifeProgress,
+	"date-calculator": messages.tools.dateCalculator,
+	"hours-calculator": messages.tools.hoursCalculator,
+};
+
+const relatedToolItems = relatedTools.map((tool) => ({
+	href: getLocalizedPath(locale, `/${tool.slug}/`),
+	name: toolCopy[tool.id].title,
+	description: toolCopy[tool.id].relatedDescription,
+	icon: catalogIconMap[tool.id],
+}));
+
+/* B1B SSR：Initial static；Owner review 以 ?hcv2Fixture= 切六態 */
+const rsPrimary = { text: m.resultPrimaryZero };
+const rsSupport = m.resultSupportZero;
+
+const ameRows = [
+	{ key: "start", label: m.startTimeLabel },
+	{ key: "end", label: m.endTimeLabel },
+	{ key: "break", label: m.breakTimeLabel },
+] as const;
+---
+
+{
+	/*
+	  B1B：上方靜態畫面（ResultSummary + Desktop／capsule／AME）。
+	  無 parse／計算／AME adapter／keypad／Clear 行為。
+	*/
+}
+<div
+	data-hours-calculator-v2
+	data-hcv2-locale={locale === "zh" ? "zh" : "en"}
+	data-hcv2-fixture="initial"
+	data-hcv2-break-open="false"
+	data-hcv2-clear-times-label={m.clearTimesLabel}
+	data-hcv2-capsule-empty={m.capsuleEmptyLabel}
+	data-hcv2-capsule-nextday-label={m.capsuleNextDayLabel}
+	data-hcv2-seg-hh-ph={m.segmentHoursPlaceholder}
+	data-hcv2-seg-mm-ph={m.segmentMinutesPlaceholder}
+	data-hcv2-fx-initial-primary={m.resultPrimaryZero}
+	data-hcv2-fx-initial-support={m.resultSupportZero}
+	data-hcv2-fx-same-day-primary={m.fixtureSameDayPrimary}
+	data-hcv2-fx-same-day-support={m.fixtureSameDaySupport}
+	data-hcv2-fx-overnight-primary={m.fixtureOvernightPrimary}
+	data-hcv2-fx-overnight-support={m.fixtureOvernightSupport}
+	data-hcv2-fx-with-break-primary={m.fixtureWithBreakPrimary}
+	data-hcv2-fx-with-break-support-line1={m.fixtureWithBreakSupportLine1}
+	data-hcv2-fx-with-break-support-line2={m.fixtureWithBreakSupportLine2}
+	data-hcv2-fx-break-error-primary={m.resultPrimaryZero}
+	data-hcv2-fx-break-error-support={m.resultSupportZero}
+	data-hcv2-fx-range-error-primary={m.resultPrimaryZero}
+	data-hcv2-fx-range-error-support={m.resultSupportZero}
+>
+	<div data-ame-page-content>
+		{/* Layout contract：blocking sync load，須在 ResultSummary 首次 paint 前可用 */}
+		<script is:inline src="/scripts/hours-calculator-layout-contract.js?v=hc1"></script>
+
+		<section data-hcv2-main-tool class="preview-tool-main-section px-6">
+			<div class="preview-tool-first-screen">
+				<div class="preview-tool-stage tool-stage hcv2-tool-stage mx-auto w-full max-w-md md:max-w-lg">
+					<div
+						class="preview-tool-result-group text-center"
+						data-ame-background-scale-target
+					>
+					<h1
+						class="hcv2-tool-name preview-tool-landscape-compact-title text-sm font-medium tracking-normal text-slate-300 md:text-base"
+					>
+						{m.kicker}
+					</h1>
+
+					{/*
+						Critical primary 字級：blocking inline，與 ResultSummary 同帧。
+						避免 shared result-summary.css 先 paint 小字、Hours CSS 後注入才放大（dev／reload 閃爍）。
+					*/}
+					<style is:inline>
+						[data-hours-calculator-v2][data-hcv2-locale="en"]
+							[data-result-summary][data-rs-content="textual"],
+						[data-hours-calculator-v2][data-hcv2-locale="en"]
+							[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+						[data-hours-calculator-v2][data-hcv2-locale="en"]
+							[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+							--rs-textual-primary-size: 4.75rem;
+						}
+						[data-hours-calculator-v2][data-hcv2-locale="zh"]
+							[data-result-summary][data-rs-content="textual"],
+						[data-hours-calculator-v2][data-hcv2-locale="zh"]
+							[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+						[data-hours-calculator-v2][data-hcv2-locale="zh"]
+							[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+							--rs-textual-primary-size: 4.25rem;
+						}
+						@media (max-width: 767px) and (orientation: portrait) {
+							[data-hours-calculator-v2] .preview-tool-result-group {
+								container-type: inline-size;
+							}
+							[data-hours-calculator-v2][data-hcv2-locale="en"]
+								[data-result-summary][data-rs-content="textual"],
+							[data-hours-calculator-v2][data-hcv2-locale="en"]
+								[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+								--rs-textual-primary-size: clamp(3.5rem, 18cqi, 4.75rem);
+							}
+							[data-hours-calculator-v2][data-hcv2-locale="zh"]
+								[data-result-summary][data-rs-content="textual"],
+							[data-hours-calculator-v2][data-hcv2-locale="zh"]
+								[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+								--rs-textual-primary-size: clamp(3.25rem, 16cqi, 4.25rem);
+							}
+						}
+						@media (min-width: 768px) {
+							[data-hours-calculator-v2] .preview-tool-result-group {
+								container-type: inline-size;
+							}
+							[data-hours-calculator-v2][data-hcv2-locale="en"]
+								[data-result-summary][data-rs-content="textual"]:is(
+									[data-rs-layout="desktop"],
+									[data-rs-layout="portrait"]
+								) {
+								--rs-textual-primary-size: clamp(2.75rem, 17.5cqi, 7rem);
+							}
+							[data-hours-calculator-v2][data-hcv2-locale="zh"]
+								[data-result-summary][data-rs-content="textual"]:is(
+									[data-rs-layout="desktop"],
+									[data-rs-layout="portrait"]
+								) {
+								--rs-textual-primary-size: clamp(2.75rem, 13.75cqi, 5.5rem);
+							}
+						}
+					</style>
+
+					{/*
+						textual ResultSummary：weekday 不用（null → hidden）。
+						support 可含 \\n 第二行同層級（shared pre-line）。
+					*/}
+					<ResultSummary
+						content="textual"
+						layout="desktop"
+						variant="spacious"
+						ariaLabel={m.resultsLabel}
+						primary={rsPrimary}
+						weekday={null}
+						support={rsSupport}
+						class="preview-tool-result-block mt-6 md:mt-8 hcv2-result-summary"
+					/>
+					<script is:inline>
+						/* Layout bootstrap — sync before first paint */
+						(function () {
+							window.TimivaHoursCalculatorLayout?.applyLayoutAttrs(document);
+						})();
+					</script>
+					</div>
+
+					{/* Desktop：單一時間區間 + 選填休息（靜態外觀） */}
+					<div
+						class="hcv2-input-cluster hcv2-input-cluster--desktop"
+						aria-label={m.upperControlsAriaLabel}
+					>
+						<div class="hcv2-field-shell hcv2-range-field" data-hcv2-range-field>
+							<input
+								type="text"
+								class="hcv2-text-input"
+								data-hcv2-desktop-range
+								inputmode="text"
+								autocomplete="off"
+								spellcheck="false"
+								aria-label={m.rangeInputAriaLabel}
+								placeholder={m.rangePlaceholder}
+								value=""
+							/>
+							<span class="hcv2-field-trailing">
+								<span
+									class="hcv2-invalid-icon"
+									data-hcv2-range-invalid
+									hidden
+									aria-hidden="true"
+									aria-label={m.invalidTimeAriaLabel}
+								>
+									<svg viewBox="0 0 16 16" aria-hidden="true">
+										<path fill="currentColor" d="M8 1.75 14.25 14.25H1.75L8 1.75z"
+										></path>
+										<path
+											fill="#0f172a"
+											d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+										></path>
+									</svg>
+								</span>
+							</span>
+						</div>
+
+						<button
+							type="button"
+							class="hcv2-add-break"
+							data-hcv2-add-break
+						>
+							{m.addBreakLabel}
+						</button>
+
+						<div class="hcv2-break-field" data-hcv2-break-field hidden>
+							<div class="hcv2-field-shell">
+								<input
+									type="text"
+									class="hcv2-text-input"
+									data-hcv2-desktop-break
+									inputmode="text"
+									autocomplete="off"
+									spellcheck="false"
+									maxlength="5"
+									aria-label={m.breakInputAriaLabel}
+									placeholder={m.breakPlaceholder}
+									value=""
+								/>
+								<span class="hcv2-field-trailing">
+									<span
+										class="hcv2-invalid-icon"
+										data-hcv2-break-invalid
+										hidden
+										aria-hidden="true"
+										aria-label={m.invalidBreakAriaLabel}
+									>
+										<svg viewBox="0 0 16 16" aria-hidden="true">
+											<path
+												fill="currentColor"
+												d="M8 1.75 14.25 14.25H1.75L8 1.75z"></path>
+											<path
+												fill="#0f172a"
+												d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+											></path>
+										</svg>
+									</span>
+									<button
+										type="button"
+										class="hcv2-remove-break"
+										data-hcv2-remove-break
+										aria-label={m.removeBreakAriaLabel}
+									>
+										×
+									</button>
+								</span>
+							</div>
+						</div>
+					</div>
+
+					{/* Mobile：Utility Capsule 入口 */}
+					<div
+						class="preview-tool-controls hcv2-mobile-controls flex flex-wrap justify-center gap-3"
+						aria-label={m.upperControlsAriaLabel}
+					>
+						<button
+							type="button"
+							class="preview-tool-control-btn tool-utility-control hcv2-mobile-capsule inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm"
+							data-hcv2-sheet-trigger
+							aria-label={m.openSheetAriaLabel}
+						>
+							<span class="hcv2-capsule-range" data-hcv2-capsule-range>
+								{m.capsuleEmptyLabel}
+							</span>
+							<span
+								class="hcv2-capsule-nextday"
+								data-hcv2-capsule-nextday
+								hidden
+							>
+								{m.capsuleNextDayLabel}
+							</span>
+						</button>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		{/* Desktop Related Tools drawer */}
+		<aside
+			data-hcv2-drawer
+			data-open="true"
+			aria-label={m.relatedToolsDrawerAriaLabel}
+			class="pointer-events-none fixed inset-y-0 right-0 z-20 hidden xl:block"
+		>
+			<span class="hidden translate-x-[300px]" aria-hidden="true"></span>
+			<div
+				data-hcv2-drawer-shell
+				data-open="true"
+				class="preview-tool-drawer-frosted pointer-events-auto relative flex h-dvh rounded-tl-3xl rounded-bl-3xl border-l border-white/10 shadow-2xl shadow-black/25 ring-1 ring-inset ring-white/[0.04] transition-transform duration-200 ease-out"
+			>
+				<button
+					type="button"
+					data-hcv2-drawer-toggle
+					aria-expanded="true"
+					class="relative z-10 flex w-14 shrink-0 items-center justify-center self-stretch text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+					aria-label={m.toggleRelatedToolsDrawerAriaLabel}
+				>
+					<svg
+						data-drawer-arrow-open
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="none"
+						class="h-7 w-7"
+						aria-hidden="true"
+					>
+						<path
+							d="M10 3L5 8l5 5"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+					<svg
+						data-drawer-arrow-closed
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="none"
+						class="hidden h-7 w-7"
+						aria-hidden="true"
+					>
+						<path
+							d="M6 3l5 5-5 5"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+				</button>
+
+				<div
+					data-hcv2-drawer-panel
+					class="relative z-10 flex h-full w-[300px] shrink-0 flex-col"
+				>
+					<div class="px-5 pb-3 pt-5">
+						<h2 class="text-lg font-semibold text-white">{messages.relatedTools.heading}</h2>
+					</div>
+					<ToolAdSlot variant="sidebar" locale={locale} state="is-disabled" />
+					<div class="flex-1 space-y-3 overflow-y-auto px-5 pb-5" data-hcv2-drawer-related-tools>
+						{
+							relatedToolItems.map((tool) => (
+								<div>
+									<ToolCard
+										href={tool.href}
+										name={tool.name}
+										description={tool.description}
+										icon={tool.icon}
+									/>
+								</div>
+							))
+						}
+					</div>
+				</div>
+			</div>
+		</aside>
+
+		{/* 下方內容：Mobile Related → About → How to → Common uses → FAQ */}
+		<div class="tool-lower-content mx-auto max-w-3xl px-6 pb-20 text-left" data-hcv2-lower-content>
+			<ToolAdSlot variant="main" locale={locale} state="is-disabled" />
+
+			<section
+				data-hcv2-related-tools
+				class="pb-12 xl:hidden"
+				aria-labelledby="hcv2-related-heading"
+			>
+				<h2 id="hcv2-related-heading" class="mb-4 text-lg font-semibold text-white">
+					{messages.relatedTools.heading}
+				</h2>
+				<div class="space-y-3" data-hcv2-mobile-related-tools>
+					{
+						relatedToolItems.map((tool) => (
+							<RelatedToolRow
+								href={tool.href}
+								name={tool.name}
+								description={tool.description}
+								icon={tool.icon}
+							/>
+						))
+					}
+				</div>
+			</section>
+
+			<section class="pb-12" aria-labelledby="hcv2-about-heading">
+				<h2 id="hcv2-about-heading" class="mb-2 text-lg font-semibold text-white">
+					{m.about.heading}
+				</h2>
+				<p class="text-sm leading-relaxed text-slate-400">{m.about.body}</p>
+			</section>
+
+			<section class="pb-12" aria-labelledby="hcv2-howto-heading">
+				<h2 id="hcv2-howto-heading" class="mb-2 text-lg font-semibold text-white">
+					{m.howTo.heading}
+				</h2>
+				<ol class="list-decimal space-y-2 pl-5 text-sm leading-relaxed text-slate-400">
+					{m.howTo.steps.map((step) => <li>{step}</li>)}
+				</ol>
+			</section>
+
+			<section class="pb-12" aria-labelledby="hcv2-tags-heading">
+				<h2 id="hcv2-tags-heading" class="mb-4 text-lg font-semibold text-white">
+					{m.commonUses.heading}
+				</h2>
+				<ul class="hcv2-keyword-list" role="list">
+					{m.commonUses.items.map((item) => <li class="hcv2-keyword-chip">{item}</li>)}
+				</ul>
+			</section>
+
+			<section aria-labelledby="hcv2-faq-heading">
+				<h2 id="hcv2-faq-heading" class="mb-4 text-lg font-semibold text-white">
+					{m.faq.heading}
+				</h2>
+				<div class="border-t border-white/20">
+					{
+						m.faq.items.map((item) => (
+							<details class="group border-b border-white/20 py-4">
+								<summary class="flex list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden">
+									<span>{item.question}</span>
+									<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 16 16"
+											fill="none"
+											class="h-4 w-4 group-open:hidden"
+											aria-hidden="true"
+										>
+											<path
+												d="M8 3.5v9M3.5 8h9"
+												stroke="currentColor"
+												stroke-width="1.5"
+												stroke-linecap="round"></path>
+										</svg>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 16 16"
+											fill="none"
+											class="hidden h-4 w-4 group-open:block"
+											aria-hidden="true"
+										>
+											<path
+												d="M3.5 8h9"
+												stroke="currentColor"
+												stroke-width="1.5"
+												stroke-linecap="round"></path>
+										</svg>
+									</span>
+								</summary>
+								<p class="mt-3 text-sm leading-relaxed text-slate-300">{item.answer}</p>
+							</details>
+						))
+					}
+				</div>
+			</section>
+		</div>
+	</div>
+	{/* /data-ame-page-content */}
+
+	{/* AME sibling：Portrait sheet／Landscape panel；B2B 6 numeric segments＋keypad */}
+	<AdaptiveMobileEditor
+		id="hcv2-ame"
+		ariaLabel={m.sheetAriaLabel}
+		title={m.sheetTitle}
+	>
+		<div slot="content" class="hcv2-ame-form" data-hcv2-ame-form>
+			{
+				ameRows.map((row) => (
+					<div class="hcv2-ame-time-row" data-hcv2-ame-row={row.key}>
+						<span class="hcv2-ame-row-label">{row.label}</span>
+						{/* Control group：對齊 AME／DC setting-control（flex-start，非整列貼右） */}
+						<div class="hcv2-ame-control">
+							<div
+								class="hcv2-ame-segments"
+								role="group"
+								aria-label={`${row.label} ${m.segmentHoursPlaceholder}:${m.segmentMinutesPlaceholder}`}
+							>
+								<button
+									type="button"
+									class="hcv2-ame-segment"
+									data-ame-numeric-field={`${row.key}-hh`}
+									data-hcv2-segment={`${row.key}-hh`}
+									data-ame-active="false"
+									aria-label={`${row.label} ${m.segmentHoursAriaLabel}`}
+								>
+									<span class="is-placeholder" data-hcv2-segment-value>
+										{m.segmentHoursPlaceholder}
+									</span>
+								</button>
+								<span class="hcv2-ame-colon" aria-hidden="true">
+									：
+								</span>
+								<button
+									type="button"
+									class="hcv2-ame-segment"
+									data-ame-numeric-field={`${row.key}-mm`}
+									data-hcv2-segment={`${row.key}-mm`}
+									data-ame-active="false"
+									aria-label={`${row.label} ${m.segmentMinutesAriaLabel}`}
+								>
+									<span class="is-placeholder" data-hcv2-segment-value>
+										{m.segmentMinutesPlaceholder}
+									</span>
+								</button>
+							</div>
+							{/* ! 預留固定槽：在 HH:MM group 右側；hidden 仍佔位，避免跳動 */}
+							<span
+								class="hcv2-ame-row-icon"
+								data-hcv2-ame-invalid={row.key}
+								hidden
+								aria-hidden="true"
+								aria-label={m.invalidTimeAriaLabel}
+							>
+								<svg viewBox="0 0 16 16" aria-hidden="true">
+									<path fill="currentColor" d="M8 1.75 14.25 14.25H1.75L8 1.75z"
+									></path>
+									<path
+										fill="#0f172a"
+										d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+									></path>
+								</svg>
+							</span>
+						</div>
+					</div>
+				))
+			}
+		</div>
+	</AdaptiveMobileEditor>
+</div>
+
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+<script>
+	import { init as initResultSummary } from "../../../scripts/result-summary-controller.ts";
+
+	initResultSummary();
+</script>
+<script>
+	import "../../../scripts/hours-calculator";
+</script>
