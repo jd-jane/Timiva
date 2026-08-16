@@ -2,7 +2,7 @@
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
 > 更新日期：2026-08-16
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + Business Days Calculator + Date Calculator + Hours Calculator + **Japanese Era Converter** production。**Japanese Era Converter／日本年號換算（第十）：已正式上線。** Standalone `78903bc`；AME baseline `c47bab0`；Link Integration `43796cb`；**Deployed／Production HEAD：`43796cb`**。Owner Production QA＝PASS。catalog `available:true` · `featured:false` · icon `calendar`；Home Featured 不含 JEC。All Tools dates-events＝EC→DRC→DBD→BDC→DC→Hours→JEC→Age；inbound Related＝Age only（DRC→DBD→JEC）；JEC outbound＝DC→Age（2 個）；Related Tools 最多 3 個、不要求滿 3。Cloudflare Pages 由 main push 自動部署（未 manual deploy）。**Hours Calculator（第九）** 仍維持已上線（其當次 Production HEAD：`fd2ed68`）。**Date Calculator（第八）** 仍維持已上線（其當次 Production HEAD：`df2d82b`）。**Adaptive Mobile Editor**／Legacy MSB Archive-in-Place 已上線；Option C／B9.3 未授權。獨立 dirty（非本 release）：`astro.config.mjs`、Phase C `tool-mobile-sheet-v2-baseline.css`。
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + Business Days Calculator + Date Calculator + Hours Calculator + **Japanese Era Converter** production。**Japanese Era Converter／日本年號換算（第十）：已正式上線。** Standalone `78903bc`；AME baseline `c47bab0`；Link Integration `43796cb`；**JEC Deployed HEAD：`43796cb`**。Owner Production QA＝PASS。catalog `available:true` · `featured:false` · icon `calendar`；Home Featured 不含 JEC。All Tools dates-events＝EC→DRC→DBD→BDC→DC→Hours→JEC→Age；inbound Related＝Age only（DRC→DBD→JEC）；JEC outbound＝DC→Age（2 個）；Related Tools 最多 3 個、不要求滿 3。Cloudflare Pages 由 main push 自動部署（未 manual deploy）。**Hours Calculator（第九）** 仍維持已上線（其當次 Production HEAD：`fd2ed68`）。**Date Calculator（第八）** 仍維持已上線（其當次 Production HEAD：`df2d82b`）。**Adaptive Mobile Editor**／Legacy MSB Archive-in-Place 已上線；Option C／B9.3 未授權。獨立 dirty（非本 release）：`astro.config.mjs`、Phase C `tool-mobile-sheet-v2-baseline.css`。
 ---
 
 ## 1. Project snapshot
@@ -20,7 +20,7 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具、**Age**、**DBD**、**BDC**、**Date Calculator（第八）**、**Hours Calculator（第九）**、**Japanese Era Converter（第十）** 皆已上線。Production HEAD：`43796cb`。Home Featured 維持 4 張（不含 BDC／DC／Hours／JEC）。 |
+| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具、**Age**、**DBD**、**BDC**、**Date Calculator（第八）**、**Hours Calculator（第九）**、**Japanese Era Converter（第十）** 皆已上線。目前 main／origin/main HEAD 以 Git 即時查詢為準。Home Featured 維持 4 張（不含 BDC／DC／Hours／JEC）。 |
 
 ### 1.1 Current work tracks（2026-08-05）
 
@@ -211,7 +211,7 @@ Shared Desktop Calendar Phase A–E：已正式部署（Deployed HEAD：`5c55672
   BDC／DRC／Age EN／ZH production signature／Owner QA：PASS
   Canonical validator：scripts/validate-desktop-calendar.mjs（63／0）
 Cloudflare Pages 自動部署成功（未 manual deploy）
-目前 production baseline（timiva.app）：origin/main＝43796cb
+目前 main／origin/main HEAD：以 Git 即時查詢為準（`git rev-parse --short HEAD`／`git rev-parse --short origin/main`）
 Date Calculator 當次 deployed HEAD：df2d82b；Owner Production QA＋Desktop Hotfix Verification＝PASS
 V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22`）
 可選：Year Progress HTTPS Share verification（non-blocking）
@@ -1308,9 +1308,8 @@ Shared Desktop Calendar Phase A–E 已正式部署（Deployed HEAD：5c55672）
   正式 All Tools 顯示三類；Daily Rhythm 空分類隱藏；internal IDs 保留
   Cloudflare Pages auto-deploy：成功；未 manual deploy
   當次 production checkpoint（0fe3e1f）：main＝origin/main；working tree clean
-目前 production baseline：origin/main＝43796cb
+目前 main／origin/main HEAD：以 Git 即時查詢為準
 Date Calculator：已正式上線；當次 deployed HEAD：df2d82b；Owner Production QA＋Desktop Hotfix Verification＝PASS
-Production baseline：origin/main＝43796cb
 Home Featured 維持 4 張（不含 BDC／DC／Hours／JEC）
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
 Japanese Era Converter：已正式上線；Production HEAD：43796cb；Owner Production QA＝PASS
@@ -1465,7 +1464,7 @@ BDC／Age：`popover-compact`；DRC Desktop：`inline-large`；DRC Mobile legacy
   Home ZH chip「重要日期」未改（marketing chip）
   Cloudflare Pages auto-deploy：成功；未 manual deploy
   當次 production checkpoint（0fe3e1f）：main＝origin/main；working tree clean
-目前 production baseline：origin/main＝43796cb
+目前 main／origin/main HEAD：以 Git 即時查詢為準。
 Date Calculator：已正式上線；當次 Production HEAD：`df2d82b`；Owner Production QA＋Desktop Hotfix Verification＝PASS。
 Home Featured 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress；不含 DBD／BDC／DC／Hours／JEC）。
 Hours Calculator／時數計算：已正式上線；當次 Production HEAD：`fd2ed68`；Owner Production QA＝PASS；Cloudflare Pages auto-deploy；未 manual deploy。
