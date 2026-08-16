@@ -1,11 +1,13 @@
 # Japanese Era Converter / 日本年號換算 — README
 
 > 建立日期：2026-08-16
-> 更新日期：2026-08-16（Link Integration local complete）
-> 狀態：**Link Integration local complete** · catalog `available:true` · `featured:false` · **尚未 push／deploy** · **尚未 Owner Browser Review／commit**
+> 更新日期：2026-08-16（Post-deploy · production live）
+> 狀態：**production deployed** · Owner Production QA＝PASS · catalog `available:true` · `featured:false` · icon `calendar`
 > Canonical product spec：`docs/tools/japanese-era-converter/product-spec.md`
 > Standalone commit：`78903bc` feat: add Japanese Era Converter
 > AME baseline：`c47bab0` chore: sync AME protected baseline
+> Link Integration commit：`43796cb` feat: integrate Japanese Era Converter across site links
+> Deployed／Production HEAD：`43796cb`
 
 ---
 
@@ -19,6 +21,7 @@ ZH：日本年號換算
 在西元年份與日本近現代年號（明治、大正、昭和、平成、令和）之間做年份級雙向換算。
 屬於 Important Dates／重要日子；純前端、即時計算。
 不是歷史年號資料庫，也不處理舊曆／太陰太陽曆。
+Timiva **第十個正式工具**。
 
 ---
 
@@ -29,6 +32,8 @@ ZH：日本年號換算
 /zh/japanese-era-converter/
 ```
 
+Production live on `https://timiva.app`（Cloudflare Pages auto-deploy；未 manual deploy）。
+
 ---
 
 ## 3. 分類與站內連結
@@ -38,22 +43,34 @@ ZH：日本年號換算
 | Category | Important Dates／重要日子（`dates-events`） |
 | Catalog ID | `japanese-era-converter` |
 | Catalog | `available:true` · `featured:false` |
+| Catalog icon | `calendar` |
 | Home Featured | 不含 |
 | All Tools 排序 | EC → DRC → DBD → BDC → DC → Hours → **JEC** → Age |
-| Inbound links | 僅 Age Calculator（Date Range → Days Between Dates → Japanese Era Converter） |
 | ToolAdSlot | disabled |
-| Catalog icon | `calendar` |
+| Deployment baseline | `43796cb` |
 
-Related Tools（頁內 outbound 顯示，2 個；不要求滿 3 個）：
+Related Tools 原則：最多 3 個，不要求一定滿 3 個。
+
+### Outbound Related Tools（JEC 頁）
 
 ```text
 Date Calculator
 → Age Calculator
 ```
 
+（2 個；不為湊數補滿 3 個。）
+
+### Inbound Related Tools
+
+```text
+Age Calculator：
+  Date Range → Days Between Dates → Japanese Era Converter
+（Date Calculator／Hours／DBD／BDC／DRC Related graph 不變）
+```
+
 ---
 
-## 4. 已驗收行為摘要（Owner B2B／B2C／B3）
+## 4. 已驗收行為摘要（Owner B2B／B2C／B3 · Production QA）
 
 ### Desktop
 
@@ -114,6 +131,7 @@ node scripts/validate-japanese-era-converter-math.mjs
 node scripts/validate-japanese-era-converter-desktop.mjs
 node scripts/validate-japanese-era-converter-adopter.mjs
 node scripts/validate-adaptive-mobile-editor-contract.mjs
+node scripts/validate-tool-link-integration.mjs
 node scripts/validate-sitemap.mjs
 node scripts/validate-seo-head.mjs
 node scripts/validate-tool-category-labels.mjs
@@ -125,9 +143,12 @@ git diff --check
 ## 7. Release state
 
 ```text
-Standalone：`78903bc` feat: add Japanese Era Converter
-AME baseline：`c47bab0` chore: sync AME protected baseline
-Link Integration：local complete（尚未 Owner Browser Review／commit）
-Push／deploy：尚未
+Standalone：78903bc
+AME baseline：c47bab0
+Link Integration：43796cb（production HEAD）
+Owner Production QA：PASS
+Cloudflare Pages：main push auto-deploy
+Manual deploy：No
 catalog available:true · featured:false
+Home Featured：不含 JEC
 ```

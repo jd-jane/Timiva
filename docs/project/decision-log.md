@@ -5,6 +5,46 @@
 
 ---
 
+## 2026-08-16 — Japanese Era Converter production deployment
+
+### 背景
+
+```text
+Japanese Era Converter 完成 standalone（78903bc）、AME protected baseline（c47bab0）、
+Link Integration（43796cb），以及 main fast-forward push。
+Cloudflare Pages 由 main push 自動部署；Owner Production QA＝PASS。
+```
+
+### 決策（最終結果）
+
+```text
+1. Japanese Era Converter／日本年號換算正式上線（Timiva 第十個正式工具）。
+2. Owner Production QA＝PASS。
+3. EN／ZH production routes live：
+   /en/japanese-era-converter/ · /zh/japanese-era-converter/
+4. Catalog：available:true · featured:false · icon:calendar。
+5. Home Featured 不含 JEC；維持既有 4 張
+   （Date Range → Age → Event Countdown → Year Progress）。
+6. All Tools dates-events：
+   EC → DRC → DBD → BDC → DC → Hours → JEC → Age。
+7. Outbound Related：Date Calculator → Age Calculator（2 個）。
+8. Related Tools 原則：最多 3 個，不要求一定滿 3 個。
+9. Inbound Related：僅 Age Calculator
+   （Date Range → Days Between Dates → Japanese Era Converter）。
+10. Deployed／Production HEAD：43796cb。
+11. Cloudflare Pages auto-deploy；未 manual deploy。
+12. ToolAdSlot 維持 is-disabled。
+```
+
+### 影響
+
+```text
+current-status／本 log／roadmap／product-architecture／JEC README
+以 production deployed（HEAD 43796cb）為準。
+```
+
+---
+
 ## 2026-08-16 — Japanese Era Converter Link Integration（local）
 
 ### 背景
@@ -12,7 +52,7 @@
 ```text
 Japanese Era Converter standalone 已完成（78903bc）＋ AME protected baseline（c47bab0）。
 Owner 確認 Plan-first Audit 後進入站內連結整合。
-本輪實作完成後停在 Owner Browser Review；尚未 commit／push／deploy。
+本輪實作完成後停在 Owner Browser Review；當時尚未 commit／push／deploy。
 ```
 
 ### 決策
@@ -33,14 +73,13 @@ Owner 確認 Plan-first Audit 後進入站內連結整合。
 7. 不修改 Date Calculator／Hours／DBD／BDC／DRC 的 Related graph。
 8. 不修改 shared getRelatedTools()；JEC 頁維持 tool-local 2-tool filter。
 9. ToolAdSlot 維持 is-disabled。
-10. 尚未 commit／push／deploy；不得表述為已上線。
+10. 當時尚未 commit／push／deploy；上線狀態以 production deployment 為準。
 ```
 
 ### 影響
 
 ```text
-current-status／本 log／roadmap／product-architecture／JEC README 以
-standalone＋Link Integration local complete（awaiting Owner Browser Review／commit）為準。
+上線狀態以「Japanese Era Converter production deployment」為準。
 ```
 
 ---

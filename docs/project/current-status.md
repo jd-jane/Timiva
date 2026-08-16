@@ -2,7 +2,7 @@
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
 > 更新日期：2026-08-16
-> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + Business Days Calculator + Date Calculator + **Hours Calculator** production。**Hours Calculator／時數計算（第九）：已正式上線。** Standalone `44289b7`；Link Integration `67a2bb1`；**Deployed／Production HEAD：`fd2ed68`**。Owner Production QA＝PASS。catalog `available:true` · `featured:false` · icon `calendar`；Home Featured 不含 Hours。**Japanese Era Converter／日本年號換算：Link Integration local complete（尚未 Owner Browser Review／commit／push／deploy）；catalog `available:true` · `featured:false`；Home Featured 不含 JEC；All Tools dates-events＝EC→DRC→DBD→BDC→DC→Hours→JEC→Age；inbound Related＝Age only（DRC→DBD→JEC）；JEC outbound＝DC→Age（2 個）。** Cloudflare Pages 由 main push 自動部署（未 manual deploy）。**Date Calculator（第八）** 仍維持已上線（其當次 Production HEAD：`df2d82b`）。**Adaptive Mobile Editor**／Legacy MSB Archive-in-Place 已上線；Option C／B9.3 未授權。獨立 dirty（非本 release）：`astro.config.mjs`、Phase C `tool-mobile-sheet-v2-baseline.css`。
+> 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + Business Days Calculator + Date Calculator + Hours Calculator + **Japanese Era Converter** production。**Japanese Era Converter／日本年號換算（第十）：已正式上線。** Standalone `78903bc`；AME baseline `c47bab0`；Link Integration `43796cb`；**Deployed／Production HEAD：`43796cb`**。Owner Production QA＝PASS。catalog `available:true` · `featured:false` · icon `calendar`；Home Featured 不含 JEC。All Tools dates-events＝EC→DRC→DBD→BDC→DC→Hours→JEC→Age；inbound Related＝Age only（DRC→DBD→JEC）；JEC outbound＝DC→Age（2 個）；Related Tools 最多 3 個、不要求滿 3。Cloudflare Pages 由 main push 自動部署（未 manual deploy）。**Hours Calculator（第九）** 仍維持已上線（其當次 Production HEAD：`fd2ed68`）。**Date Calculator（第八）** 仍維持已上線（其當次 Production HEAD：`df2d82b`）。**Adaptive Mobile Editor**／Legacy MSB Archive-in-Place 已上線；Option C／B9.3 未授權。獨立 dirty（非本 release）：`astro.config.mjs`、Phase C `tool-mobile-sheet-v2-baseline.css`。
 ---
 
 ## 1. Project snapshot
@@ -20,7 +20,7 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具、**Age**、**DBD**、**BDC**、**Date Calculator（第八）**、**Hours Calculator（第九）** 皆已上線。Production HEAD：`fd2ed68`。Home Featured 維持 4 張（不含 BDC／DC／Hours／JEC）。**Japanese Era Converter：Link Integration local complete；尚未 commit／push／deploy。** |
+| Current session status | **Timiva 已在正式網域 [https://timiva.app](https://timiva.app) 提供服務。** V1 四工具、**Age**、**DBD**、**BDC**、**Date Calculator（第八）**、**Hours Calculator（第九）**、**Japanese Era Converter（第十）** 皆已上線。Production HEAD：`43796cb`。Home Featured 維持 4 張（不含 BDC／DC／Hours／JEC）。 |
 
 ### 1.1 Current work tracks（2026-08-05）
 
@@ -33,7 +33,7 @@ Mobile：Adaptive Mobile Editor · lifecycle＝live · sibling mount
 Desktop：Smart Date Input＋DesktopCalendar popover-compact＋live result
 Catalog：available:true · featured:false
 Home Featured：維持 4 張 · 不含 DC
-All Tools dates-events：EC → DRC → DBD → BDC → DC → Hours → Age
+All Tools dates-events：EC → DRC → DBD → BDC → DC → Hours → JEC → Age
 Outbound Related：DBD → BDC → Date Range
 Inbound：DRC／DBD 各含 DC；BDC inbound 已改為 Hours（見 Hours B5）
 Key commits：
@@ -63,7 +63,7 @@ Mobile：Adaptive Mobile Editor · Numeric Keypad · live evaluate
 Desktop：range／break text input · live evaluate
 Catalog：available:true · featured:false · icon:calendar
 Home Featured：維持 4 張 · 不含 Hours
-All Tools dates-events：EC → DRC → DBD → BDC → DC → Hours → Age
+All Tools dates-events：EC → DRC → DBD → BDC → DC → Hours → JEC → Age
 Outbound Related：DBD → BDC → Date Calculator
 Inbound Related：僅 Business Days Calculator（DBD → DRC → Hours）
   DBD／Date Calculator Related graph 不變
@@ -78,19 +78,27 @@ Cloudflare Pages：main push auto-deploy（未 manual deploy）
 Docs：docs/tools/hours-calculator/README.md · product-spec.md
 ```
 
-**Japanese Era Converter／日本年號換算（Link Integration local complete；尚未 commit／push／deploy）：**
+**Japanese Era Converter／日本年號換算（Timiva 第十 · production deployed）：**
 
 ```text
-Status：standalone＋site integration COMPLETE（local · feat/japanese-era-converter；awaiting Owner Browser Review／commit）
+Status：DEPLOYED · Owner Production QA＝PASS
 Routes：/en/japanese-era-converter/ · /zh/japanese-era-converter/
+Mobile：Adaptive Mobile Editor · Numeric Keypad · live evaluate
+Desktop：Gregorian／Era 複合輸入 · live evaluate
 Catalog：available:true · featured:false · icon:calendar
-Home Featured：維持 4 張 · 不含 JEC（亦不含 BDC／DC／Hours）
+Home Featured：維持 4 張 · 不含 JEC
 All Tools dates-events：EC → DRC → DBD → BDC → DC → Hours → JEC → Age
 Outbound Related：Date Calculator → Age Calculator（2 個；不要求滿 3）
 Inbound Related：僅 Age Calculator（Date Range → Days Between Dates → Japanese Era Converter）
   Date Calculator／Hours／DBD／BDC／DRC Related graph 不變
+Related Tools 原則：最多 3 個，不要求一定滿 3 個
 ToolAdSlot：is-disabled
-Release state：Link Integration implemented · Committed: No · Pushed: No · Deployed: No
+Key commits：
+  78903bc feat: add Japanese Era Converter
+  c47bab0 chore: sync AME protected baseline
+  43796cb feat: integrate Japanese Era Converter across site links
+Deployed／Production HEAD：43796cb
+Cloudflare Pages：main push auto-deploy（未 manual deploy）
 Docs：docs/tools/japanese-era-converter/README.md · product-spec.md
 ```
 
@@ -232,14 +240,15 @@ Inbound Related（JEC Link Integration）：
   Business Days：Days Between Dates → Date Range → Hours Calculator（Hours inbound 不變）
   Date Range／Days Between Dates／Date Calculator／Hours：Related graph 不變
 Hours outbound Related：Days Between Dates → Business Days Calculator → Date Calculator
-JEC outbound Related：Date Calculator → Age Calculator（2 個）
+JEC outbound Related：Date Calculator → Age Calculator（2 個；不要求滿 3）
+Related Tools 原則：最多 3 個，不要求一定滿 3 個
 Age Calculator Desktop calendar：已由 Shared DesktopCalendar Phase D 取代（production；Birth／As-of 各一 popover-compact）
 四大分類顯示名稱：已上線（Production HEAD：0fe3e1f；Owner Production Verification PASS）
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
 Date Calculator／日期加減計算：已正式上線（Production HEAD：df2d82b）；catalog available:true；Home Featured 不含 DC
   Desktop Calendar＝popover-compact
 Hours Calculator／時數計算：已正式上線（Production HEAD：fd2ed68）；catalog available:true；Home Featured 不含 Hours；Owner Production QA＝PASS
-Japanese Era Converter／日本年號換算：Link Integration local complete；catalog available:true；Home Featured 不含 JEC；尚未 commit／push／deploy
+Japanese Era Converter／日本年號換算：已正式上線（Production HEAD：43796cb）；catalog available:true；Home Featured 不含 JEC；Owner Production QA＝PASS；Timiva 第十個正式工具
 近期開發順序：
   Lunar Date Converter（optional）
   Pet Age Calculator（optional）
@@ -249,6 +258,7 @@ Business Days Calculator 已上線邊界（維持）：
   統一「○○計算」（不加「器」、不用「計算機」）
   Date Range → 日期區間計算；Age → 年齡計算；DBD → 日期差計算
   Business Days → 工作日計算；Date Calculator → 日期加減計算；Hours → 時數計算
+  Japanese Era Converter → 日本年號換算
   Event Countdown 命名現況本輪不統一
 ```
 
@@ -827,7 +837,9 @@ Next step:
 ```text
 Business Days Calculator 上線阻塞項已關閉
 Date Calculator：已正式上線（Production HEAD：df2d82b）
-下一支開發工具：Hours Calculator
+Hours Calculator：已正式上線（Production HEAD：fd2ed68）
+Japanese Era Converter：已正式上線（Production HEAD：43796cb）
+下一優先 optional：Lunar / Pet Age converters
 ```
 
 ---
@@ -1298,12 +1310,12 @@ Shared Desktop Calendar Phase A–E 已正式部署（Deployed HEAD：5c55672）
   正式 All Tools 顯示三類；Daily Rhythm 空分類隱藏；internal IDs 保留
   Cloudflare Pages auto-deploy：成功；未 manual deploy
   當次 production checkpoint（0fe3e1f）：main＝origin/main；working tree clean
-目前 local／production：main＝origin/main＝df2d82b
+目前 local／production：main＝origin/main＝43796cb
 Date Calculator：已正式上線；Production HEAD：df2d82b；Owner Production QA＋Desktop Hotfix Verification＝PASS
-Production baseline：origin/main＝df2d82b
+Production baseline：origin/main＝43796cb
 Home Featured 維持 4 張（不含 BDC／DC／Hours／JEC）
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
-Japanese Era Converter：Link Integration local complete；尚未 commit／push／deploy
+Japanese Era Converter：已正式上線；Production HEAD：43796cb；Owner Production QA＝PASS
 （Lunar / Pet Age 為 optional）
 ```
 
@@ -1331,7 +1343,9 @@ Phase A：重大變更、deploy 或 locked components 修改仍需 Owner 明確�
 Recommended order:
 
 ```text
-1. Product development：Hours Calculator（下一支）
+1. Product development：Lunar / Pet Age converters（optional）
+   （Japanese Era Converter：已正式上線 · Production HEAD：43796cb）
+   （Hours Calculator：已正式上線 · Production HEAD：fd2ed68）
    （Date Calculator：已正式上線 · Production HEAD：df2d82b）
 2. Open Graph / Twitter Card（deferred SEO growth）
 3. WebApplication schema（deferred）
@@ -1435,7 +1449,7 @@ Create an implementation plan only. Do not edit files yet.
 
 Timiva V1 已在正式網域 https://timiva.app 提供服務。
 
-已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2、Year Progress V2、Age Calculator V2（V1.5 standalone + link integration）、Days Between Dates V2（V1.5 Search Foundation 第二個工具 · Timiva 第六個工具）、Business Days Calculator V2（V1.5 Search Foundation 第三個工具 · Timiva 第七個工具）、Date Calculator V2（V1.5 Search Foundation 第四個工具 · Timiva 第八個工具 · Production HEAD：`df2d82b`）。
+已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2、Year Progress V2、Age Calculator V2（V1.5 standalone + link integration）、Days Between Dates V2（V1.5 Search Foundation 第二個工具 · Timiva 第六個工具）、Business Days Calculator V2（V1.5 Search Foundation 第三個工具 · Timiva 第七個工具）、Date Calculator V2（V1.5 Search Foundation 第四個工具 · Timiva 第八個工具 · 當次 Production HEAD：`df2d82b`）、Hours Calculator V2（Timiva 第九個工具 · 當次 Production HEAD：`fd2ed68`）、Japanese Era Converter V2（Timiva 第十個正式工具 · Production HEAD：`43796cb`）。
 GA4 privacy-first Basic Consent 已在 timiva.app 驗證通過。
 V1 SEO technical closeout 已完成（Batch 1–3 production PASS；docs `c5c0a22`）。
 Age Calculator 已正式上線；deployed HEAD（AC）：`f48df91`。
@@ -1453,11 +1467,11 @@ BDC／Age：`popover-compact`；DRC Desktop：`inline-large`；DRC Mobile legacy
   Home ZH chip「重要日期」未改（marketing chip）
   Cloudflare Pages auto-deploy：成功；未 manual deploy
   當次 production checkpoint（0fe3e1f）：main＝origin/main；working tree clean
-目前 local／production：main＝origin/main＝fd2ed68
+目前 local／production：main＝origin/main＝43796cb
 Date Calculator：已正式上線；當次 Production HEAD：`df2d82b`；Owner Production QA＋Desktop Hotfix Verification＝PASS。
 Home Featured 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress；不含 DBD／BDC／DC／Hours／JEC）。
-Hours Calculator／時數計算：已正式上線；Production HEAD：`fd2ed68`；Owner Production QA＝PASS；Cloudflare Pages auto-deploy；未 manual deploy。
-Japanese Era Converter／日本年號換算：Link Integration local complete；catalog `available:true` · `featured:false`；Home 不含 JEC；尚未 commit／push／deploy。
+Hours Calculator／時數計算：已正式上線；當次 Production HEAD：`fd2ed68`；Owner Production QA＝PASS；Cloudflare Pages auto-deploy；未 manual deploy。
+Japanese Era Converter／日本年號換算：已正式上線（第十個正式工具）；Production HEAD：`43796cb`；Owner Production QA＝PASS；Cloudflare Pages auto-deploy；未 manual deploy；catalog `available:true` · `featured:false`；Home 不含 JEC；All Tools Hours → JEC → Age；Related outbound DC → Age（2）；Age inbound DRC → DBD → JEC。
 Date Calculator／日期加減計算：已部署（第八；Desktop Calendar＝`popover-compact`；hotfix `adf34be`＋`df2d82b`）。
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期（高搜尋、低維護日期與時間工具；四大分類不變）。
 
