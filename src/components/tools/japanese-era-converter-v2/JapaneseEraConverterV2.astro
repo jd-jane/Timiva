@@ -1,0 +1,716 @@
+---
+import RelatedToolRow from "../../RelatedToolRow.astro";
+import ToolAdSlot from "../../ToolAdSlot.astro";
+import ToolCard from "../../ToolCard.astro";
+import AdaptiveMobileEditor from "../shared/AdaptiveMobileEditor.astro";
+import AmeFieldError from "../shared/AmeFieldError.astro";
+import ResultSummary from "../shared/ResultSummary.astro";
+import { catalogIconMap } from "../../../lib/catalogIcons";
+import { getRelatedTools, type CatalogToolId } from "../../../data/toolsCatalog";
+import { getLocalizedPath, type Locale } from "../../../i18n/config";
+import { getMessages } from "../../../i18n/messages";
+import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
+import { getEra } from "../../../lib/japaneseEraConverterData";
+import "../../../styles/tools/adaptive-mobile-editor.css";
+import "../../../styles/tools/japanese-era-converter-v2.css";
+
+interface Props {
+	locale?: Locale;
+}
+
+const { locale = "en" } = Astro.props;
+const messages = getMessages(locale);
+const m = messages.japaneseEraConverter;
+const faqSchema = buildFaqPageJsonLd(m.faq.items);
+const relatedTools = getRelatedTools("japanese-era-converter");
+
+const toolCopy: Record<
+	CatalogToolId,
+	{ title: string; relatedDescription: string }
+> = {
+	"event-countdown": messages.tools.eventCountdown,
+	"date-range": messages.tools.dateRange,
+	"countdown-timer": messages.tools.countdownTimer,
+	"year-progress": messages.tools.yearProgress,
+	"age-calculator": messages.tools.ageCalculator,
+	"days-between-dates": messages.tools.daysBetweenDates,
+	"business-days-calculator": messages.tools.businessDaysCalculator,
+	"life-progress": messages.tools.lifeProgress,
+	"date-calculator": messages.tools.dateCalculator,
+	"hours-calculator": messages.tools.hoursCalculator,
+	"japanese-era-converter": messages.tools.japaneseEraConverter,
+};
+
+const relatedToolItems = relatedTools
+	.filter((tool) => tool.id === "date-calculator" || tool.id === "age-calculator")
+	.map((tool) => ({
+	href: getLocalizedPath(locale, `/${tool.slug}/`),
+	name: toolCopy[tool.id].title,
+	description: toolCopy[tool.id].relatedDescription,
+	icon: catalogIconMap[tool.id],
+}));
+
+const currentYear = new Date().getFullYear();
+const reiwaExampleYear = Math.max(1, currentYear - getEra("reiwa").offset);
+const gregorianPlaceholder = `${m.gregorianPlaceholderPrefix}${currentYear}`;
+const eraYearPlaceholder = `${m.eraYearPlaceholderPrefix}${reiwaExampleYear}`;
+const eraEntries = [
+	{ id: "meiji", label: m.eraNames.meiji },
+	{ id: "taisho", label: m.eraNames.taisho },
+	{ id: "showa", label: m.eraNames.showa },
+	{ id: "heisei", label: m.eraNames.heisei },
+	{ id: "reiwa", label: m.eraNames.reiwa },
+] as const;
+
+const modeSwitchIconHtml =
+	'<svg class="jecv2-mode-switch-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M5 2.75v10.5M5 13.25 2.6 10.85M5 13.25l2.4-2.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path><path d="M11 13.25V2.75M11 2.75 8.6 5.15M11 2.75l2.4 2.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+---
+
+{
+	/*
+	  B2B：Desktop 正式互動（evaluate／format SSOT）。
+	  B2C：AME live adapter；Mobile invalid 用 shared AmeFieldError（provisional）。
+	*/
+}
+<div
+	data-japanese-era-converter-v2
+	data-jecv2-locale={locale === "zh" ? "zh" : "en"}
+	data-jecv2-fixture="initial"
+	data-jecv2-result-kind="single"
+	data-jecv2-input-mode="gregorian"
+	data-jecv2-ame="gregorian"
+	data-jecv2-fx-normal-primary={m.fixtureNormalPrimary}
+	data-jecv2-fx-gregorian-primary={m.fixtureGregorianPrimary}
+	data-jecv2-fx-transition-primary={m.fixtureTransitionPrimary}
+	data-jecv2-fx-transition-support={m.fixtureTransitionSupport}
+	data-jecv2-fx-transition-heisei-primary={m.fixtureTransitionHeiseiPrimary}
+	data-jecv2-fx-transition-heisei-support={m.fixtureTransitionHeiseiSupport}
+	data-jecv2-fx-partial-primary={m.fixturePartialPrimary}
+	data-jecv2-fx-partial-support={m.fixturePartialSupport}
+	data-jecv2-fx-future-primary={m.fixtureFuturePrimary}
+>
+	<div data-ame-page-content>
+		{/* Layout contract：blocking sync load，須在 ResultSummary 首次 paint 前可用 */}
+		<script is:inline src="/scripts/japanese-era-converter-layout-contract.js?v=jec1"></script>
+
+		<section data-jecv2-main-tool class="preview-tool-main-section px-6">
+			<div class="preview-tool-first-screen">
+				<div
+					class="preview-tool-stage tool-stage jecv2-tool-stage mx-auto w-full max-w-md md:max-w-lg"
+				>
+					<div
+						class="preview-tool-result-group text-center"
+						data-ame-background-scale-target
+					>
+						<h1
+							class="jecv2-tool-name preview-tool-landscape-compact-title text-sm font-medium tracking-normal text-slate-300 md:text-base"
+						>
+							{m.kicker}
+						</h1>
+
+						{/*
+							Critical primary 字級：blocking inline，與 ResultSummary 同帧。
+							避免 shared result-summary.css 先 paint 小字。
+						*/}
+						<style is:inline>
+							[data-japanese-era-converter-v2][data-jecv2-locale="en"]
+								[data-result-summary][data-rs-content="textual"],
+							[data-japanese-era-converter-v2][data-jecv2-locale="en"]
+								[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+								--rs-textual-primary-size: 4.75rem;
+							}
+							[data-japanese-era-converter-v2][data-jecv2-locale="en"]
+								[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"] {
+								--rs-textual-primary-size: 8.5rem;
+							}
+							[data-japanese-era-converter-v2][data-jecv2-locale="en"]
+								[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+								--rs-textual-primary-size: 3.75rem;
+							}
+							[data-japanese-era-converter-v2][data-jecv2-locale="zh"]
+								[data-result-summary][data-rs-content="textual"],
+							[data-japanese-era-converter-v2][data-jecv2-locale="zh"]
+								[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+								--rs-textual-primary-size: 4.75rem;
+							}
+							[data-japanese-era-converter-v2][data-jecv2-locale="zh"]
+								[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"] {
+								--rs-textual-primary-size: 8.5rem;
+							}
+							[data-japanese-era-converter-v2][data-jecv2-locale="zh"]
+								[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+								--rs-textual-primary-size: 3.375rem;
+							}
+							@media (max-width: 767px) and (orientation: portrait) {
+								[data-japanese-era-converter-v2] .preview-tool-result-group {
+									container-type: inline-size;
+								}
+								[data-japanese-era-converter-v2][data-jecv2-locale="en"]
+									[data-result-summary][data-rs-content="textual"],
+								[data-japanese-era-converter-v2][data-jecv2-locale="en"]
+									[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"],
+								[data-japanese-era-converter-v2][data-jecv2-locale="en"]
+									[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+								[data-japanese-era-converter-v2][data-jecv2-locale="zh"]
+									[data-result-summary][data-rs-content="textual"],
+								[data-japanese-era-converter-v2][data-jecv2-locale="zh"]
+									[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"],
+								[data-japanese-era-converter-v2][data-jecv2-locale="zh"]
+									[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"] {
+									--rs-textual-primary-size: clamp(3.75rem, 21cqi, 5.25rem);
+								}
+								[data-japanese-era-converter-v2][data-jecv2-fixture="initial"]
+									[data-result-summary][data-rs-content="textual"],
+								[data-japanese-era-converter-v2][data-jecv2-fixture="initial"]
+									[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"],
+								[data-japanese-era-converter-v2][data-jecv2-fixture="initial"]
+									[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"] {
+									--rs-textual-primary-size: 10.5rem;
+								}
+							}
+							@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+								[data-japanese-era-converter-v2][data-jecv2-locale="en"]
+									[data-result-summary][data-rs-content="textual"],
+								[data-japanese-era-converter-v2][data-jecv2-locale="en"]
+									[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"],
+								[data-japanese-era-converter-v2][data-jecv2-locale="en"]
+									[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"] {
+									--rs-textual-primary-size: 3.75rem;
+								}
+								[data-japanese-era-converter-v2][data-jecv2-locale="zh"]
+									[data-result-summary][data-rs-content="textual"],
+								[data-japanese-era-converter-v2][data-jecv2-locale="zh"]
+									[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"],
+								[data-japanese-era-converter-v2][data-jecv2-locale="zh"]
+									[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"] {
+									--rs-textual-primary-size: 3.375rem;
+								}
+							}
+							@media (min-width: 768px) {
+								[data-japanese-era-converter-v2] .preview-tool-result-group {
+									container-type: inline-size;
+								}
+								[data-japanese-era-converter-v2][data-jecv2-locale="en"]
+									[data-result-summary][data-rs-content="textual"]:is(
+										[data-rs-layout="desktop"],
+										[data-rs-layout="portrait"]
+									) {
+									--rs-textual-primary-size: clamp(4.5rem, 21.25cqi, 8.5rem);
+								}
+								[data-japanese-era-converter-v2][data-jecv2-locale="zh"]
+									[data-result-summary][data-rs-content="textual"]:is(
+										[data-rs-layout="desktop"],
+										[data-rs-layout="portrait"]
+									) {
+									--rs-textual-primary-size: clamp(4.5rem, 21.25cqi, 8.5rem);
+								}
+								[data-japanese-era-converter-v2][data-jecv2-result-kind="transition"]
+									[data-result-summary][data-rs-content="textual"]:is(
+										[data-rs-layout="desktop"],
+										[data-rs-layout="portrait"]
+									) {
+									--rs-textual-primary-size: 4.5rem;
+								}
+							}
+						</style>
+
+						<ResultSummary
+							content="textual"
+							layout="desktop"
+							variant="spacious"
+							ariaLabel={m.resultsLabel}
+							primary={{ text: "?" }}
+							weekday={null}
+							support={null}
+							class="preview-tool-result-block mt-6 md:mt-8 jecv2-result-summary"
+						/>
+						<script is:inline>
+							/* Layout bootstrap — sync before first paint */
+							(function () {
+								window.TimivaJapaneseEraConverterLayout?.applyLayoutAttrs(document);
+							})();
+						</script>
+
+						<p class="jecv2-assumption" data-jecv2-assumption hidden>
+							<span class="jecv2-assumption-icon" aria-hidden="true">
+								<svg viewBox="0 0 16 16" fill="none">
+									<circle cx="8" cy="8" r="6.25" stroke="currentColor" stroke-width="1.25"></circle>
+									<circle cx="8" cy="5.35" r="0.7" fill="currentColor"></circle>
+									<path
+										d="M8 7.15v4.1"
+										stroke="currentColor"
+										stroke-width="1.25"
+										stroke-linecap="round"></path>
+								</svg>
+							</span>
+							<span data-jecv2-assumption-text>{m.assumptionNote}</span>
+						</p>
+					</div>
+
+					{/* Desktop：mode switch 膠囊 + 複合輸入 + 文字型 Reset */}
+					<div
+						class="jecv2-input-cluster jecv2-input-cluster--desktop"
+						aria-label={m.upperControlsAriaLabel}
+					>
+						<button
+							type="button"
+							class="jecv2-mode-switch"
+							data-jecv2-desktop-switch="era"
+						>
+							<Fragment set:html={modeSwitchIconHtml} />
+							<span>{m.ameSwitchToEra}</span>
+						</button>
+						<button
+							type="button"
+							class="jecv2-mode-switch"
+							data-jecv2-desktop-switch="gregorian"
+							hidden
+						>
+							<Fragment set:html={modeSwitchIconHtml} />
+							<span>{m.ameSwitchToGregorian}</span>
+						</button>
+
+						<div class="jecv2-field-wrap" data-jecv2-desktop-gregorian>
+							<div class="jecv2-field-shell">
+								<span class="jecv2-field-prefix">{m.gregorianPrefix}</span>
+								<span class="jecv2-field-divider" aria-hidden="true"></span>
+								<input
+									type="text"
+									class="jecv2-year-input"
+									data-jecv2-desktop-gregorian-year
+									inputmode="numeric"
+									autocomplete="off"
+									spellcheck="false"
+									maxlength="4"
+									size="4"
+									aria-label={m.gregorianInputAriaLabel}
+									placeholder={gregorianPlaceholder}
+								/>
+								<span
+									class="jecv2-inline-error"
+									id="jecv2-gregorian-inline-error"
+									data-jecv2-desktop-gregorian-error
+									hidden
+									role="status"
+								>
+									<span data-jecv2-desktop-gregorian-error-text></span>
+									<span class="jecv2-inline-error-mark" aria-hidden="true">
+										<svg viewBox="0 0 16 16">
+											<path
+												fill="currentColor"
+												d="M8 1.75 14.25 14.25H1.75L8 1.75z"></path>
+											<path
+												fill="#0f172a"
+												d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+											></path>
+										</svg>
+									</span>
+								</span>
+							</div>
+						</div>
+
+						<div class="jecv2-field-wrap" data-jecv2-desktop-era hidden>
+							<div class="jecv2-field-shell">
+								<button
+									type="button"
+									class="jecv2-era-prefix"
+									data-jecv2-era-prefix
+									aria-haspopup="listbox"
+									aria-expanded="false"
+									aria-controls="jecv2-era-listbox"
+									aria-label={m.eraSelectorAriaLabel}
+								>
+									<span data-jecv2-era-prefix-label>{m.eraNames.reiwa}</span>
+									<svg class="jecv2-era-caret" viewBox="0 0 12 12" aria-hidden="true">
+										<path
+											d="M2.5 4.25 6 7.75l3.5-3.5"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="1.4"
+											stroke-linecap="round"
+											stroke-linejoin="round"></path>
+									</svg>
+								</button>
+								<span class="jecv2-field-divider" aria-hidden="true"></span>
+								<input
+									type="text"
+									class="jecv2-year-input"
+									data-jecv2-desktop-era-year
+									inputmode="numeric"
+									autocomplete="off"
+									spellcheck="false"
+									maxlength="2"
+									size="2"
+									aria-label={m.eraYearInputAriaLabel}
+									placeholder={eraYearPlaceholder}
+								/>
+								<span
+									class="jecv2-inline-error"
+									id="jecv2-era-inline-error"
+									data-jecv2-desktop-era-error
+									hidden
+									role="status"
+								>
+									<span data-jecv2-desktop-era-error-text></span>
+									<span class="jecv2-inline-error-mark" aria-hidden="true">
+										<svg viewBox="0 0 16 16">
+											<path
+												fill="currentColor"
+												d="M8 1.75 14.25 14.25H1.75L8 1.75z"></path>
+											<path
+												fill="#0f172a"
+												d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+											></path>
+										</svg>
+									</span>
+								</span>
+							</div>
+							<div
+								class="jecv2-era-popover"
+								id="jecv2-era-listbox"
+								data-jecv2-era-popover
+								role="listbox"
+								hidden
+								aria-label={m.eraSelectorAriaLabel}
+							>
+								{
+									eraEntries.map((era) => (
+										<button
+											type="button"
+											class="jecv2-era-option"
+											role="option"
+											data-jecv2-era-option={era.id}
+											aria-selected={era.id === "reiwa" ? "true" : "false"}
+											tabindex="-1"
+										>
+											<span>{era.label}</span>
+											<svg
+												class="jecv2-era-option-check"
+												viewBox="0 0 16 16"
+												aria-hidden="true"
+											>
+												<path
+													d="M3.5 8.25 6.4 11.1 12.5 4.75"
+													fill="none"
+													stroke="currentColor"
+													stroke-width="1.6"
+													stroke-linecap="round"
+													stroke-linejoin="round"></path>
+											</svg>
+										</button>
+									))
+								}
+							</div>
+						</div>
+
+						<button type="button" class="jecv2-reset" data-jecv2-reset>{m.resetLabel}</button>
+					</div>
+
+					<div
+						class="preview-tool-controls jecv2-mobile-controls flex flex-wrap justify-center gap-3"
+						aria-label={m.upperControlsAriaLabel}
+					>
+						<button
+							type="button"
+							class="preview-tool-control-btn tool-utility-control jecv2-mobile-capsule inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-slate-300 backdrop-blur-sm"
+							data-jecv2-sheet-trigger
+						>
+							{m.primaryActionLabel}
+						</button>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<aside
+			data-jecv2-drawer
+			data-open="true"
+			aria-label={m.relatedToolsDrawerAriaLabel}
+			class="pointer-events-none fixed inset-y-0 right-0 z-20 hidden xl:block"
+		>
+			<span class="hidden translate-x-[300px]" aria-hidden="true"></span>
+			<div
+				data-jecv2-drawer-shell
+				data-open="true"
+				class="preview-tool-drawer-frosted pointer-events-auto relative flex h-dvh rounded-tl-3xl rounded-bl-3xl border-l border-white/10 shadow-2xl shadow-black/25 ring-1 ring-inset ring-white/[0.04] transition-transform duration-200 ease-out"
+			>
+				<button
+					type="button"
+					data-jecv2-drawer-toggle
+					aria-expanded="true"
+					class="relative z-10 flex w-14 shrink-0 items-center justify-center self-stretch text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+					aria-label={m.toggleRelatedToolsDrawerAriaLabel}
+				>
+					<svg
+						data-drawer-arrow-open
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="none"
+						class="h-7 w-7"
+						aria-hidden="true"
+					>
+						<path
+							d="M10 3L5 8l5 5"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+					<svg
+						data-drawer-arrow-closed
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="none"
+						class="hidden h-7 w-7"
+						aria-hidden="true"
+					>
+						<path
+							d="M6 3l5 5-5 5"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+				</button>
+
+				<div
+					data-jecv2-drawer-panel
+					class="relative z-10 flex h-full w-[300px] shrink-0 flex-col"
+				>
+					<div class="px-5 pb-3 pt-5">
+						<h2 class="text-lg font-semibold text-white">
+							{messages.relatedTools.heading}
+						</h2>
+					</div>
+					<ToolAdSlot variant="sidebar" locale={locale} state="is-disabled" />
+					<div
+						class="flex-1 space-y-3 overflow-y-auto px-5 pb-5"
+						data-jecv2-drawer-related-tools
+					>
+						{
+							relatedToolItems.map((tool) => (
+								<div>
+									<ToolCard
+										href={tool.href}
+										name={tool.name}
+										description={tool.description}
+										icon={tool.icon}
+									/>
+								</div>
+							))
+						}
+					</div>
+				</div>
+			</div>
+		</aside>
+
+		<div class="tool-lower-content mx-auto max-w-3xl px-6 pb-20 text-left" data-jecv2-lower-content>
+			<ToolAdSlot variant="main" locale={locale} state="is-disabled" />
+
+			<section
+				data-jecv2-related-tools
+				class="pb-12 xl:hidden"
+				aria-labelledby="jecv2-related-mobile-heading"
+			>
+				<h2
+					id="jecv2-related-mobile-heading"
+					class="mb-4 text-lg font-semibold text-white"
+				>
+					{messages.relatedTools.heading}
+				</h2>
+				<div class="space-y-3" data-jecv2-mobile-related-tools>
+					{
+						relatedToolItems.map((tool) => (
+							<RelatedToolRow
+								href={tool.href}
+								name={tool.name}
+								description={tool.description}
+								icon={tool.icon}
+							/>
+						))
+					}
+				</div>
+			</section>
+
+			<section class="pb-12" aria-labelledby="jecv2-about-heading">
+				<h2 id="jecv2-about-heading" class="mb-2 text-lg font-semibold text-white">
+					{m.about.heading}
+				</h2>
+				<p class="text-sm leading-relaxed text-slate-400">{m.about.body}</p>
+			</section>
+
+			<section class="pb-12" aria-labelledby="jecv2-howto-heading">
+				<h2 id="jecv2-howto-heading" class="mb-2 text-lg font-semibold text-white">
+					{m.howTo.heading}
+				</h2>
+				<ol class="list-decimal space-y-2 pl-5 text-sm leading-relaxed text-slate-400">
+					{m.howTo.steps.map((step) => <li>{step}</li>)}
+				</ol>
+			</section>
+
+			<section class="pb-12" aria-labelledby="jecv2-tags-heading">
+				<h2 id="jecv2-tags-heading" class="mb-4 text-lg font-semibold text-white">
+					{m.commonUses.heading}
+				</h2>
+				<ul class="jecv2-keyword-list" role="list">
+					{m.commonUses.items.map((item) => <li class="jecv2-keyword-chip">{item}</li>)}
+				</ul>
+			</section>
+
+			<section aria-labelledby="jecv2-faq-heading">
+				<h2 id="jecv2-faq-heading" class="mb-4 text-lg font-semibold text-white">
+					{m.faq.heading}
+				</h2>
+				<div class="border-t border-white/20">
+					{
+						m.faq.items.map((item) => (
+							<details class="group border-b border-white/20 py-4">
+								<summary class="flex list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden">
+									<span>{item.question}</span>
+									<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 16 16"
+											fill="none"
+											class="h-4 w-4 group-open:hidden"
+											aria-hidden="true"
+										>
+											<path
+												d="M8 3.5v9M3.5 8h9"
+												stroke="currentColor"
+												stroke-width="1.5"
+												stroke-linecap="round"></path>
+										</svg>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 16 16"
+											fill="none"
+											class="hidden h-4 w-4 group-open:block"
+											aria-hidden="true"
+										>
+											<path
+												d="M3.5 8h9"
+												stroke="currentColor"
+												stroke-width="1.5"
+												stroke-linecap="round"></path>
+										</svg>
+									</span>
+								</summary>
+								<p class="mt-3 text-sm leading-relaxed text-slate-300">{item.answer}</p>
+							</details>
+						))
+					}
+				</div>
+			</section>
+		</div>
+	</div>
+	{/* /data-ame-page-content */}
+
+	<AdaptiveMobileEditor
+		id="jecv2-ame"
+		ariaLabel={m.sheetAriaLabel}
+		title={m.sheetTitle}
+	>
+		<div slot="content" class="jecv2-ame-form" data-jecv2-ame-form>
+			<div class="jecv2-ame-panel" data-jecv2-ame-gregorian>
+				<div class="jecv2-ame-field-block">
+					<button
+						type="button"
+						class="ame-setting-row ame-numeric-field jecv2-ame-year-row"
+						data-ame-numeric-field="gregorianYear"
+						data-ame-active="false"
+						aria-label={m.gregorianInputAriaLabel}
+						aria-invalid="false"
+						aria-describedby="ame-field-error-gregorianYear"
+					>
+						<span class="ame-setting-label ame-numeric-label">{m.ameGregorianLabel}</span>
+						<span class="ame-setting-control">
+							<span
+								class="ame-numeric-value ame-numeric-value--placeholder"
+								data-ame-numeric-value
+								data-jecv2-ame-gregorian-value></span>
+							<AmeFieldError fieldId="gregorianYear" />
+						</span>
+					</button>
+					<p
+						class="jecv2-ame-error-message"
+						data-jecv2-ame-error="gregorianYear"
+						hidden
+						aria-hidden="true"></p>
+				</div>
+				<button
+					type="button"
+					class="jecv2-mode-switch"
+					data-jecv2-ame-switch="era"
+					tabindex="-1"
+				>
+					<Fragment set:html={modeSwitchIconHtml} />
+					<span>{m.ameSwitchToEra}</span>
+				</button>
+			</div>
+
+			<div class="jecv2-ame-panel" data-jecv2-ame-era hidden>
+				<label class="ame-setting-row ame-setting-row--select jecv2-ame-era-row">
+					<span class="ame-setting-label">{m.ameEraLabel}</span>
+					<span class="ame-setting-control">
+						<select
+							class="ame-native-control"
+							data-jecv2-ame-era-select
+							aria-label={m.eraSelectorAriaLabel}
+						>
+							{eraEntries.map((era) =>
+								era.id === "reiwa" ? (
+									<option value={era.id} selected>
+										{era.label}
+									</option>
+								) : (
+									<option value={era.id}>{era.label}</option>
+								),
+							)}
+						</select>
+					</span>
+				</label>
+				<div class="jecv2-ame-field-block">
+					<button
+						type="button"
+						class="ame-setting-row ame-numeric-field jecv2-ame-year-row"
+						data-ame-numeric-field="eraYear"
+						data-ame-active="false"
+						aria-label={m.eraYearInputAriaLabel}
+						aria-invalid="false"
+						aria-describedby="ame-field-error-eraYear"
+					>
+						<span class="ame-setting-label ame-numeric-label">{m.ameEraYearLabel}</span>
+						<span class="ame-setting-control">
+							<span
+								class="ame-numeric-value ame-numeric-value--placeholder"
+								data-ame-numeric-value
+								data-jecv2-ame-era-year-value></span>
+							<AmeFieldError fieldId="eraYear" />
+						</span>
+					</button>
+					<p
+						class="jecv2-ame-error-message"
+						data-jecv2-ame-error="eraYear"
+						hidden
+						aria-hidden="true"></p>
+				</div>
+				<button
+					type="button"
+					class="jecv2-mode-switch"
+					data-jecv2-ame-switch="gregorian"
+					tabindex="-1"
+				>
+					<Fragment set:html={modeSwitchIconHtml} />
+					<span>{m.ameSwitchToGregorian}</span>
+				</button>
+			</div>
+		</div>
+	</AdaptiveMobileEditor>
+</div>
+
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+
+<script>
+	import "../../../scripts/japanese-era-converter";
+</script>

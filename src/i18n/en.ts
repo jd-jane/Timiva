@@ -50,6 +50,11 @@ export const en = {
       description:
         "Calculate hours and minutes between two times, with an optional break. Overnight spans like 22:00–06:00 are handled automatically.",
     },
+    japaneseEraConverter: {
+      title: "Japanese Era Converter | Timiva",
+      description:
+        "Convert between Gregorian years and Japanese eras—Meiji, Taisho, Showa, Heisei, and Reiwa—from 1873 through 2100. Handles era transition years.",
+    },
     privacy: {
       title: "Privacy Policy — Timiva",
       description: "How Timiva handles your data and privacy.",
@@ -263,6 +268,13 @@ export const en = {
         "Calculate the hours and minutes between two times, with an optional break.",
       compactDescription: "Calculate hours between two times.",
       relatedDescription: "Find hours and minutes between two times.",
+    },
+    japaneseEraConverter: {
+      title: "Japanese Era Converter",
+      description:
+        "Convert between Gregorian years and modern Japanese eras from Meiji 6 (1873) through 2100.",
+      compactDescription: "Convert Japanese era years and Gregorian years.",
+      relatedDescription: "Convert Japanese era and Gregorian years.",
     },
     lifeProgress: {
       title: "Life Progress Bar",
@@ -1053,6 +1065,103 @@ export const en = {
           question: "Does this tool save the times I enter?",
           answer:
             "No. It does not use LocalStorage. Refreshing the page returns you to a blank state.",
+        },
+      ],
+    },
+  },
+  japaneseEraConverter: {
+    kicker: "Japanese Era Converter",
+    shortDescription:
+      "Convert between Gregorian years and modern Japanese eras from Meiji 6 (1873) through 2100.",
+    primaryActionLabel: "Enter year to convert",
+    relatedToolsDrawerAriaLabel: "Related tools drawer",
+    toggleRelatedToolsDrawerAriaLabel: "Toggle related tools drawer",
+    upperControlsAriaLabel: "Japanese era converter controls",
+    resultsLabel: "Japanese era converter result",
+    resetLabel: "Reset",
+    switchAriaLabel: "Switch input calendar",
+    gregorianPrefix: "Gregorian",
+    gregorianPlaceholderPrefix: "Enter a year, e.g. ",
+    gregorianInputAriaLabel: "Gregorian year",
+    eraYearPlaceholderPrefix: "Enter an era year, e.g. ",
+    eraYearInputAriaLabel: "Japanese era year",
+    eraSelectorAriaLabel: "Japanese era",
+    assumptionNote: "Assuming the Reiwa era remains in use.",
+    sheetAriaLabel: "Enter a year to convert",
+    sheetTitle: "Enter year to convert",
+    ameGregorianLabel: "Gregorian year",
+    ameEraLabel: "Era",
+    ameEraYearLabel: "Year",
+    ameSwitchToEra: "Switch to Japanese era input",
+    ameSwitchToGregorian: "Switch to Gregorian year input",
+    eraNames: {
+      meiji: "Meiji",
+      taisho: "Taisho",
+      showa: "Showa",
+      heisei: "Heisei",
+      reiwa: "Reiwa",
+    },
+    fixtureNormalPrimary: "Reiwa 8",
+    fixtureGregorianPrimary: "2026",
+    fixtureTransitionPrimary: "Taisho 15 | Showa 1",
+    fixtureTransitionSupport:
+      "Taisho 15: Jan 1–Dec 24 / Showa 1: Dec 25–Dec 31",
+    fixtureTransitionHeiseiPrimary: "Heisei 31 | Reiwa 1",
+    fixtureTransitionHeiseiSupport:
+      "Heisei 31: Jan 1–Apr 30 / Reiwa 1: May 1–Dec 31",
+    fixturePartialPrimary: "2019",
+    fixturePartialSupport: "Jan 1–Apr 30",
+    fixtureFuturePrimary: "Reiwa 82",
+    about: {
+      heading: "About the Japanese Era Converter",
+      body: "Japanese Era Converter lets you move quickly between Gregorian years and modern Japanese era names. It covers Meiji, Taisho, Showa, Heisei, and Reiwa from Meiji 6 (1873) through 2100. When a year spans an era change, both possible eras and their date ranges are shown.",
+    },
+    howTo: {
+      heading: "How to use the Japanese Era Converter",
+      steps: [
+        "Enter a Gregorian year to see the matching Japanese era.",
+        "Or switch input mode, choose an era, and enter the year to get the Gregorian equivalent.",
+        "For example: 2026 → Reiwa 8; Reiwa 8 → 2026; 2019 → Heisei 31 | Reiwa 1.",
+        "Future Reiwa years are calculated on the assumption that Reiwa continues, with a note when that applies.",
+      ],
+    },
+    commonUses: {
+      heading: "Common uses",
+      items: [
+        "Reading Japanese documents",
+        "Historical event lookup",
+        "Story and media timelines",
+        "Showa / Heisei / Reiwa reference",
+        "Quick Gregorian cross-check",
+      ],
+    },
+    faq: {
+      heading: "Japanese Era Converter FAQ",
+      items: [
+        {
+          question: "Why does conversion start at Meiji 6 (1873)?",
+          answer:
+            "Japan adopted the Gregorian calendar in Meiji 6 (1873). Before that, the traditional lunisolar calendar was in use, so earlier dates involve a different calendar system. Timiva starts at Meiji 6 to keep the tool focused on straightforward modern era conversion.",
+        },
+        {
+          question: "Why can one Gregorian year have two Japanese eras?",
+          answer:
+            "Era names can change partway through a year. For example, 2019 was Heisei 31 from January 1 through April 30, then Reiwa 1 from May 1 onward. Because this tool takes a year only—not month and day—it shows both possible eras and their date ranges for transition years.",
+        },
+        {
+          question: "What does Year 1 mean in a Japanese era?",
+          answer:
+            "Year 1 is the first year of a new era. Reiwa began in 2019, so the Reiwa portion of 2019 is Reiwa 1; 2020 is Reiwa 2.",
+        },
+        {
+          question: "Can future Reiwa years be converted?",
+          answer:
+            "Yes, up to the year 2100. For Reiwa years beyond the current calendar year, the result assumes Reiwa continues and includes a note. If Japan adopts a new era later, the actual name may differ.",
+        },
+        {
+          question: "Are earlier Japanese eras supported?",
+          answer:
+            "Not in this tool. Conversion starts at Meiji 6 (1873) and covers Meiji, Taisho, Showa, Heisei, and Reiwa only—keeping the scope simple for everyday modern use.",
         },
       ],
     },

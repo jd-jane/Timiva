@@ -13,5 +13,6 @@ export const catalogIconMap: Record<
 	"age-calculator": "person",
 	"date-calculator": "calendar",
 	"hours-calculator": "calendar",
+	"japanese-era-converter": "calendar",
 	"life-progress": "progress",
 };

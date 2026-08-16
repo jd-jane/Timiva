@@ -52,6 +52,11 @@ export const zh: Messages = {
       description:
         "計算兩個時間之間相隔的時數與分鐘，並可選填休息時間。跨午夜時段會自動視為隔天。",
     },
+    japaneseEraConverter: {
+      title: "日本年號換算｜Timiva",
+      description:
+        "在西元與日本近現代年號（明治、大正、昭和、平成、令和）之間雙向換算，範圍為明治6年（1873年）至西元2100年；改元年份會同時顯示兩個年號。",
+    },
     privacy: {
       title: "隱私權政策 — Timiva",
       description: "Timiva 如何處理您的資料與隱私。",
@@ -246,6 +251,13 @@ export const zh: Messages = {
       description: "計算兩個時間之間相隔的時數與分鐘，並可選填休息時間。",
       compactDescription: "計算兩個時間之間的時數。",
       relatedDescription: "查看兩個時間之間相隔的時數與分鐘。",
+    },
+    japaneseEraConverter: {
+      title: "日本年號換算",
+      description:
+        "在西元與日本近現代年號之間進行雙向換算，範圍為明治6年（1873年）至西元2100年。",
+      compactDescription: "和曆與西元年份換算。",
+      relatedDescription: "和曆與西元年份換算。",
     },
     lifeProgress: {
       title: "人生進度條",
@@ -1007,6 +1019,103 @@ export const zh: Messages = {
           question: "這個工具會儲存我輸入的時間嗎？",
           answer:
             "不會。本工具不使用 LocalStorage；重新整理頁面後會回到空白狀態。",
+        },
+      ],
+    },
+  },
+  japaneseEraConverter: {
+    kicker: "日本年號換算",
+    shortDescription:
+      "在西元與日本近現代年號（明治、大正、昭和、平成、令和）之間換算，範圍為明治6年（1873年）至西元2100年。",
+    primaryActionLabel: "輸入換算年份",
+    relatedToolsDrawerAriaLabel: "相關工具側欄",
+    toggleRelatedToolsDrawerAriaLabel: "開啟或關閉相關工具側欄",
+    upperControlsAriaLabel: "日本年號換算操作",
+    resultsLabel: "日本年號換算結果",
+    resetLabel: "重設",
+    switchAriaLabel: "切換輸入曆法",
+    gregorianPrefix: "西元",
+    gregorianPlaceholderPrefix: "這裡填寫西元年份，例如 ",
+    gregorianInputAriaLabel: "西元年份",
+    eraYearPlaceholderPrefix: "這裡填寫和曆年份，例如 ",
+    eraYearInputAriaLabel: "和曆年份",
+    eraSelectorAriaLabel: "日本年號",
+    assumptionNote: "此結果假設令和年號持續使用",
+    sheetAriaLabel: "輸入要換算的年份",
+    sheetTitle: "輸入換算年份",
+    ameGregorianLabel: "西元",
+    ameEraLabel: "年號",
+    ameEraYearLabel: "年",
+    ameSwitchToEra: "改用和曆輸入",
+    ameSwitchToGregorian: "改用西元輸入",
+    eraNames: {
+      meiji: "明治",
+      taisho: "大正",
+      showa: "昭和",
+      heisei: "平成",
+      reiwa: "令和",
+    },
+    fixtureNormalPrimary: "令和8年",
+    fixtureGregorianPrimary: "2026年",
+    fixtureTransitionPrimary: "大正15年｜昭和元年",
+    fixtureTransitionSupport:
+      "大正15年 1月1日－12月24日 / 昭和元年 12月25日－12月31日",
+    fixtureTransitionHeiseiPrimary: "平成31年｜令和元年",
+    fixtureTransitionHeiseiSupport:
+      "平成31年 1月1日－4月30日 / 令和元年 5月1日－12月31日",
+    fixturePartialPrimary: "2019年",
+    fixturePartialSupport: "1月1日－4月30日",
+    fixtureFuturePrimary: "令和82年",
+    about: {
+      heading: "關於日本年號換算",
+      body: "日本年號換算可以快速在西元與日本近現代年號之間進行雙向換算。工具支援明治、大正、昭和、平成與令和，換算範圍從明治6年（1873年）至西元2100年。遇到年號交替的年份時，會同時顯示該年可能對應的兩個年號與日期範圍。",
+    },
+    howTo: {
+      heading: "如何使用日本年號換算",
+      steps: [
+        "輸入西元年份，即可查看對應的日本年號。",
+        "也可以切換輸入方式，選擇日本年號並輸入年份，換算成對應的西元年份。",
+        "例如：西元 2026 年 → 令和8年；令和8年 → 西元 2026 年；西元 2019 年 → 平成31年／令和元年。",
+        "若輸入的是未來的令和年份，工具會以令和持續使用為前提進行換算，並顯示提示說明。",
+      ],
+    },
+    commonUses: {
+      heading: "常見使用情境",
+      items: [
+        "閱讀日本文件或資料時換算年號",
+        "查找日本歷史事件的西元年份",
+        "閱讀小說、漫畫或觀看影劇時理解故事年代",
+        "查看昭和、平成、令和等年份與西元的對照",
+        "在填寫或閱讀日本年份資料時快速確認西元年份",
+      ],
+    },
+    faq: {
+      heading: "日本年號換算 FAQ",
+      items: [
+        {
+          question: "為什麼日本年號換算從明治6年開始？",
+          answer:
+            "日本在明治6年（1873年）開始採用現在使用的太陽曆（Gregorian calendar）。在此之前，日本使用的是太陰太陽曆，因此若要精確處理更早的日期，會涉及舊曆與新曆的轉換。Timiva 將換算範圍從明治6年開始，專注於近現代日本年號與西元之間的簡單換算。",
+        },
+        {
+          question: "為什麼同一個西元年份會出現兩個日本年號？",
+          answer:
+            "日本年號可能在一年中的某一天更換，因此同一個西元年份可能跨越兩個年號。例如 2019 年的 1 月 1 日至 4 月 30 日屬於平成31年，5 月 1 日起則為令和元年。因為這個工具只輸入年份、沒有輸入月日，所以遇到年號交替年份時，會同時顯示該年可能對應的兩個年號與日期範圍。",
+        },
+        {
+          question: "日本年號中的「元年」是什麼意思？",
+          answer:
+            "「元年」就是一個新年號開始後的第一年。例如令和自 2019 年開始，因此 2019 年對應令和的部分稱為「令和元年」，下一年才是「令和2年」。",
+        },
+        {
+          question: "可以換算未來的令和年份嗎？",
+          answer:
+            "可以。Timiva 支援換算至西元 2100 年。若換算超過目前年份的令和年份，結果會以「令和持續使用」為前提計算，並顯示提示說明。未來若日本啟用新的年號，實際年號可能與換算結果不同。",
+        },
+        {
+          question: "這個工具支援更早的日本年號嗎？",
+          answer:
+            "目前不支援。Timiva 的日本年號換算從明治6年（1873年）開始，支援明治、大正、昭和、平成與令和。更早的日本年號不在這個工具的換算範圍內，讓工具保持簡單，專注於近現代年號與西元之間的快速換算。",
         },
       ],
     },

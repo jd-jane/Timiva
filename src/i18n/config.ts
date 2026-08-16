@@ -20,6 +20,7 @@ export const routePaths = {
   businessDaysCalculator: "/business-days-calculator/",
   dateCalculator: "/date-calculator/",
   hoursCalculator: "/hours-calculator/",
+  japaneseEraConverter: "/japanese-era-converter/",
   allTools: "/tools/",
   privacy: "/privacy/",
   terms: "/terms/",

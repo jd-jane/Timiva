@@ -51,6 +51,7 @@ const EXPECTED_CATEGORY_ASSIGNMENTS = {
 	"year-progress": "momentum",
 	"date-calculator": "dates-events",
 	"hours-calculator": "dates-events",
+	"japanese-era-converter": "dates-events",
 	"life-progress": "momentum",
 };
 
@@ -76,6 +77,7 @@ const EXPECTED_RELATED_IDS = {
 		"business-days-calculator",
 		"date-calculator",
 	],
+	"japanese-era-converter": ["date-calculator", "age-calculator"],
 };
 
 const DATES_EVENTS_ORDER = [
@@ -207,7 +209,7 @@ assert(
 	JSON.stringify(categoryIds) === JSON.stringify(STABLE_CATEGORY_IDS),
 	"toolCategories ids remain dates-events → productivity → body-flow → momentum",
 );
-assert(catalogTools.length === 10, "catalogTools has 10 entries");
+assert(catalogTools.length === 11, "catalogTools has 11 entries");
 
 for (const [toolId, categoryId] of Object.entries(EXPECTED_CATEGORY_ASSIGNMENTS)) {
 	const tool = catalogTools.find((entry) => entry.id === toolId);
