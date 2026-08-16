@@ -1,9 +1,11 @@
 # Japanese Era Converter / 日本年號換算 — README
 
 > 建立日期：2026-08-16
-> 更新日期：2026-08-16（B4 standalone checkpoint）
-> 狀態：**standalone complete（local）** · catalog `available:false` · **尚未做 Link Integration** · **尚未 push／deploy**
+> 更新日期：2026-08-16（Link Integration local complete）
+> 狀態：**Link Integration local complete** · catalog `available:true` · `featured:false` · **尚未 push／deploy** · **尚未 Owner Browser Review／commit**
 > Canonical product spec：`docs/tools/japanese-era-converter/product-spec.md`
+> Standalone commit：`78903bc` feat: add Japanese Era Converter
+> AME baseline：`c47bab0` chore: sync AME protected baseline
 
 ---
 
@@ -35,13 +37,14 @@ ZH：日本年號換算
 |---|---|
 | Category | Important Dates／重要日子（`dates-events`） |
 | Catalog ID | `japanese-era-converter` |
-| Catalog | `available:false` · `featured:false` |
+| Catalog | `available:true` · `featured:false` |
 | Home Featured | 不含 |
-| Inbound links | 尚未做（Link Integration） |
+| All Tools 排序 | EC → DRC → DBD → BDC → DC → Hours → **JEC** → Age |
+| Inbound links | 僅 Age Calculator（Date Range → Days Between Dates → Japanese Era Converter） |
 | ToolAdSlot | disabled |
 | Catalog icon | `calendar` |
 
-Related Tools（頁內 outbound 顯示，2 個；不代表已做 inbound Link Integration）：
+Related Tools（頁內 outbound 顯示，2 個；不要求滿 3 個）：
 
 ```text
 Date Calculator
@@ -122,8 +125,9 @@ git diff --check
 ## 7. Release state
 
 ```text
-Standalone：本 README 對應 B4 local commit（hash 見 git）
-Link Integration：尚未
+Standalone：`78903bc` feat: add Japanese Era Converter
+AME baseline：`c47bab0` chore: sync AME protected baseline
+Link Integration：local complete（尚未 Owner Browser Review／commit）
 Push／deploy：尚未
-catalog available:false
+catalog available:true · featured:false
 ```

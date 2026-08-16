@@ -66,7 +66,7 @@ const EXPECTED_RELATED_IDS = {
 	],
 	"countdown-timer": ["event-countdown", "date-range", "year-progress"],
 	"year-progress": ["event-countdown", "date-range", "age-calculator"],
-	"age-calculator": ["date-range", "days-between-dates", "event-countdown"],
+	"age-calculator": ["date-range", "days-between-dates", "japanese-era-converter"],
 	"date-calculator": [
 		"days-between-dates",
 		"business-days-calculator",
@@ -87,6 +87,7 @@ const DATES_EVENTS_ORDER = [
 	"business-days-calculator",
 	"date-calculator",
 	"hours-calculator",
+	"japanese-era-converter",
 	"age-calculator",
 ];
 
@@ -254,7 +255,7 @@ assert(
 );
 
 const availableCount = catalogTools.filter((tool) => tool.available).length;
-assert(availableCount === 9, "available production tool count is 9");
+assert(availableCount === 10, "available production tool count is 10");
 assert(
 	catalogTools.find((tool) => tool.id === "date-calculator")?.available === true,
 	"date-calculator is available",
@@ -266,6 +267,21 @@ assert(
 assert(
 	catalogTools.find((tool) => tool.id === "hours-calculator")?.featured === false,
 	"hours-calculator remains non-featured",
+);
+assert(
+	catalogTools.find((tool) => tool.id === "japanese-era-converter")?.available ===
+		true,
+	"japanese-era-converter is available",
+);
+assert(
+	catalogTools.find((tool) => tool.id === "japanese-era-converter")?.featured ===
+		false,
+	"japanese-era-converter remains non-featured",
+);
+assert(
+	catalogTools.find((tool) => tool.id === "japanese-era-converter")?.categoryId ===
+		"dates-events",
+	"japanese-era-converter category remains dates-events",
 );
 
 /* --- built All Tools pages --- */

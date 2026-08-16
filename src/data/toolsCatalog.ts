@@ -99,7 +99,7 @@ export const catalogTools: CatalogTool[] = [
     id: "japanese-era-converter",
     slug: "japanese-era-converter",
     categoryId: "dates-events",
-    available: false,
+    available: true,
     featured: false,
     icon: "calendar",
     relatedIds: ["date-calculator", "age-calculator"],
@@ -129,7 +129,7 @@ export const catalogTools: CatalogTool[] = [
     available: true,
     featured: true,
     icon: "age-calculator",
-    relatedIds: ["date-range", "days-between-dates", "event-countdown"],
+    relatedIds: ["date-range", "days-between-dates", "japanese-era-converter"],
   },
   {
     id: "life-progress",

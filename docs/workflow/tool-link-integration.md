@@ -292,10 +292,10 @@ All Tools 是正式工具總覽。每個已發布工具都必須出現。
 ### 8.2 建議原則
 
 ```text
-Related Tools 每個工具頁上限為 3 個，除非 Owner 明確核准更多
+Related Tools 最多 3 個，不要求一定滿 3 個；優先相關性，不為湊數加入低相關工具。
+除非 Owner 明確允許更多，不得超過 3 個。
 優先同分類工具與最接近的使用者意圖
 其次是互補使用情境
-不要為了湊數加入低相關工具
 新工具上線不代表既有工具都必須 inbound 連回新工具
 Post-tool Link Integration 不得把所有工具互連（all-to-all）
 ```
@@ -304,6 +304,7 @@ Post-tool Link Integration 不得把所有工具互連（all-to-all）
 
 ```text
 每個工具頁最多 3 個 Related Tools（sidebar 與 lower related 區皆適用）
+不要求每個工具一定有 3 個
 若某工具已有 3 個 related tools，要加入新工具時必須替換較弱關聯，不得直接變成第 4 個
 選擇依據：使用者意圖 > 新工具順序 > 站內工具總數
 不因站內工具變多就自動擴充 Related Tools
@@ -327,7 +328,7 @@ Standalone 階段：新工具可在 **自己頁面** 實作 outbound Related Too
 ### 8.4 Related Tools 驗收
 
 ```text
-[ ] 卡片數量符合預期（最多 3 個，除非 Owner 核准更多）
+[ ] 卡片數量符合預期（最多 3 個，不要求滿 3 個；除非 Owner 明確允許更多）
 [ ] 新卡片標題 / 描述正確
 [ ] Hover 不上移（sidebar 須符合 layout-system §6.6）
 [ ] Drawer open / close 正常
@@ -343,7 +344,7 @@ Standalone 階段：新工具可在 **自己頁面** 實作 outbound Related Too
 新工具頁也必須確認：
 
 ```text
-[ ] Related Tools 最多 3 個（除非 Owner 明確核准更多）
+[ ] Related Tools 最多 3 個，不要求一定滿 3 個（除非 Owner 明確允許更多）
 [ ] Related IDs 指向 available 工具，不產生 broken link
 [ ] 排序依最接近使用者意圖，非單純新工具優先
 [ ] 尚未發布工具不會產生 broken link

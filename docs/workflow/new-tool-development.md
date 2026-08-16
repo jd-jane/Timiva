@@ -370,7 +370,7 @@ How to use
 Common uses / tags
 Tool-specific FAQ（標題為 {Tool Name} FAQ）
 FAQ JSON-LD
-Related Tools（最多 3）
+Related Tools（最多 3，不要求滿 3）
 Mobile lower related rows
 Desktop drawer collapse / expand 行為（沿用既有 production drawer pattern）
 Drawer aria-expanded 與 accessible label
@@ -576,14 +576,15 @@ URL sharing 適合保存：
 
 ## 12. Related Tools 規則
 
-每個工具頁建議推薦 2 到 4 個相關工具。
+Related Tools 最多 3 個，不要求一定滿 3 個；優先相關性，不為湊數加入低相關工具。
 
 原則：
 
 ```text
 優先推薦同分類工具
 再推薦互補使用情境
-不要推薦太多
+最多 3 個，不要求滿 3 個
+不要為湊數加入低相關工具
 不要放在主工具上方
 手機版避免密集列表
 ```

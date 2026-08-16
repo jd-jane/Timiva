@@ -5,6 +5,46 @@
 
 ---
 
+## 2026-08-16 — Japanese Era Converter Link Integration（local）
+
+### 背景
+
+```text
+Japanese Era Converter standalone 已完成（78903bc）＋ AME protected baseline（c47bab0）。
+Owner 確認 Plan-first Audit 後進入站內連結整合。
+本輪實作完成後停在 Owner Browser Review；尚未 commit／push／deploy。
+```
+
+### 決策
+
+```text
+1. JEC catalog：available:true · featured:false · icon 維持 calendar。
+2. Home Featured 不加入 JEC；維持既有 4 張
+   （Date Range → Age → Event Countdown → Year Progress）。
+3. All Tools dates-events 排序沿用 catalog：
+   EC → DRC → DBD → BDC → DC → Hours → JEC → Age。
+4. JEC outbound Related 維持 2 個：
+   Date Calculator → Age Calculator。
+5. Related Tools 正式規則：
+   最多 3 個，不要求一定滿 3 個；優先相關性，不為湊數加入低相關工具。
+6. Inbound Related 只做一條：
+   Age Calculator：Date Range → Days Between Dates → Japanese Era Converter
+   （第三槽由 Event Countdown 換成 JEC）。
+7. 不修改 Date Calculator／Hours／DBD／BDC／DRC 的 Related graph。
+8. 不修改 shared getRelatedTools()；JEC 頁維持 tool-local 2-tool filter。
+9. ToolAdSlot 維持 is-disabled。
+10. 尚未 commit／push／deploy；不得表述為已上線。
+```
+
+### 影響
+
+```text
+current-status／本 log／roadmap／product-architecture／JEC README 以
+standalone＋Link Integration local complete（awaiting Owner Browser Review／commit）為準。
+```
+
+---
+
 ## 2026-08-09 — Hours Calculator production deployment
 
 ### 背景

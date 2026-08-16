@@ -1,7 +1,7 @@
 # Timiva V1 Roadmap
 
-> Updated: 2026-08-09
-> Main changes: Hours Calculator production deployed（HEAD `fd2ed68`；Owner Production QA PASS）；Date Calculator remains production deployed；V1.5 remains Search Foundation／搜尋鋪路期。
+> Updated: 2026-08-16
+> Main changes: Hours Calculator remains production deployed（HEAD `fd2ed68`）；Japanese Era Converter standalone＋Link Integration local complete（尚未 commit／push／deploy）；V1.5 remains Search Foundation／搜尋鋪路期。
 
 ---
 
@@ -50,7 +50,7 @@ flowchart TD
     D --> D3[Business Days Calculator<br/>Deployed · third SF tool]
     D --> D4[Date Calculator<br/>Deployed]
     D --> D5[Hours Calculator<br/>Deployed]
-    D --> D6[Optional SF tools]
+    D --> D6[Japanese Era Converter<br/>Local complete · not committed]
 
     E --> E1[Breathing Timer]
     E --> E2[Fasting / Recovery Timer]
@@ -178,7 +178,7 @@ V1.5 重新定義為 **Search Foundation**：優先開發高搜尋意圖、低�
 | 9 | Hours Calculator | Important Dates / time utility | **已部署（Production HEAD：fd2ed68）** · 高搜尋時數計算 |
 | 10 | Lunar Date Converter | Important Dates | Optional · zh-Hant opportunity；不做農民曆／宜忌／吉日 |
 | 11 | Pet Age Calculator | Important Dates | Optional · emotional age-conversion；不做健康／醫療建議 |
-| 12 | Japanese Era Converter | Important Dates | Optional · 現代年號換算；不做大型歷史年號資料庫 |
+| 12 | Japanese Era Converter | Important Dates | **local complete（standalone＋Link Integration；尚未 commit／push／deploy）** · 現代年號換算；不做大型歷史年號資料庫 |
 
 V1.5 發布節奏：
 
@@ -303,5 +303,6 @@ PWA until core tool release timing is confirmed
 ```text
 Hours Calculator／時數計算：已正式上線（Production HEAD：fd2ed68；Owner Production QA＝PASS）。
 Date Calculator／日期加減計算：已正式上線（Production HEAD：df2d82b；Desktop hotfix `adf34be`＋`df2d82b`）。
-下一優先 optional：Lunar / Pet Age / Japanese Era converters。
+Japanese Era Converter／日本年號換算：Link Integration local complete；尚未 commit／push／deploy。
+下一優先 optional：Lunar / Pet Age converters。
 ```

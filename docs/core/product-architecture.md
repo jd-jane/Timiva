@@ -74,7 +74,7 @@ flowchart TD
     C --> C5[Business Days Calculator<br/>Deployed]
     C --> C6[Date Calculator<br/>Deployed]
     C --> C7[Hours Calculator<br/>Deployed]
-    C --> C8[Optional converters]
+    C --> C8[Japanese Era Converter<br/>Local complete]
 
     D --> D1[Countdown Timer]
     D --> D2[Stopwatch]
@@ -159,7 +159,7 @@ Days Between Dates 為 Timiva **第六個工具**，已正式上線於 `https://
 | P1 | Hours Calculator | 時數計算 | 時數／時間差計算 | Low — **已部署 · V1.5 Search Foundation** · Production HEAD：`fd2ed68` |
 | P2 | Lunar Date Converter | 農曆日期轉換 | 公曆／農曆日期轉換 | Low — optional；不做農民曆／宜忌／吉日 |
 | P2 | Pet Age Calculator | 寵物年齡換算 | 年齡換算參考 | Low — optional；不做健康／醫療建議 |
-| P2 | Japanese Era Converter | 日本年號換算 | 明治／大正／昭和／平成／令和等現代年號 | Low — optional；不做大型歷史年號資料庫 |
+| P2 | Japanese Era Converter | 日本年號換算 | 明治／大正／昭和／平成／令和等現代年號 | Low — **local complete（standalone＋Link Integration；尚未 commit／push／deploy）**；不做大型歷史年號資料庫 |
 | P2 | Birthday Countdown | 生日倒數 | 生日情境倒數 | Low |
 | P3 | Holiday Countdown | 節日倒數 | 長尾節日情境 | Medium |
 | P3 | Anniversary Countdown | 週年倒數 | 紀念日情境 | Low |
@@ -299,7 +299,7 @@ Backend / account / sync
 9. Hours Calculator — deployed · Production HEAD：fd2ed68
 10. Lunar Date Converter — optional
 11. Pet Age Calculator — optional
-12. Japanese Era Converter — optional
+12. Japanese Era Converter — local complete（standalone＋Link Integration；尚未 commit／push／deploy）
 ```
 
 V1.5 是優先順序策略，不是分類變更。Daily Rhythm 不在此階段前段優先開發。
