@@ -46,7 +46,7 @@ Key commits：
   df2d82b fix: polish Date Calculator result layout
 Initial release HEAD：4545121
 Desktop hotfix：adf34be＋df2d82b
-Deployed／Production HEAD：df2d82b
+Deployed／當次 Production HEAD：df2d82b
 Push range（hotfix）：4545121..df2d82b
 Cloudflare Pages：main push auto-deploy（未 manual deploy）
 Hotfix verified：duration guard／paste／Add／Subtract／Clear／?＋!／ZH result layout；EN／ZH · Desktop／Mobile 無回歸
@@ -73,7 +73,7 @@ Key commits：
   67a2bb1 feat: integrate Hours Calculator across site links
   6352702 docs: sync Hours Calculator commit references
   fd2ed68 chore: sync AME protected baseline for Hours wiring
-Deployed／Production HEAD：fd2ed68
+Deployed／當次 Production HEAD：fd2ed68
 Cloudflare Pages：main push auto-deploy（未 manual deploy）
 Docs：docs/tools/hours-calculator/README.md · product-spec.md
 ```
@@ -115,7 +115,7 @@ Gates：
   B9.2A Legacy MSB Archive-in-Place＝COMPLETE（commit 5f244af）
   Option C（刪除 MSB Lab sources）＝NOT AUTHORIZED
   B9.3 next adopter＝NOT AUTHORIZED
-Key commits（included in production HEAD df2d82b）：
+Key commits（included in 當時 production HEAD df2d82b）：
   5f244af chore: archive legacy mobile sheet lab
   2e096e0 feat: add Adaptive Mobile Editor foundation
   d1e3ebd test: normalize Adaptive Mobile Editor validators
@@ -127,15 +127,14 @@ Docs：docs/workflow/shared-component-reuse-gate.md §8 · docs/standards/mobile
 **Tool category display labels（label-only · production deployed）：**
 
 ```text
-Production HEAD：0fe3e1f docs: record tool category label alignment
+當次 Production HEAD：0fe3e1f docs: record tool category label alignment
 Pushed range：5c55672..0fe3e1f
   cdde8e2 docs: record DesktopCalendar deployment
   e02e48f fix: align tool category display labels
   0fe3e1f docs: record tool category label alignment
 當次 production checkpoint（0fe3e1f）：main＝origin/main；working tree clean
-目前 local／production：main＝origin/main＝df2d82b（Date Calculator deployed）
-Date Calculator：已正式上線；Production HEAD：df2d82b；Owner Production QA＋Desktop Hotfix Verification＝PASS
-Production baseline：origin/main＝df2d82b
+當時 production baseline（Date Calculator deployed）：origin/main＝df2d82b
+Date Calculator 當次 deployed HEAD：df2d82b；Owner Production QA＋Desktop Hotfix Verification＝PASS
 Cloudflare Pages auto-deploy：成功（未 manual deploy）
 Owner Production Verification：PASS
   /en/tools/、/zh/tools/ 顯示正常
@@ -180,7 +179,7 @@ Canonical validator：scripts/validate-desktop-calendar.mjs（63 passed／0 fail
 Reuse Gate／date-input：正式啟用
 Shared Desktop Calendar：正式視為 production baseline
 DRC Mobile legacy calendar：核准 transitional exception（仍保留 data-drv2-*；不得擴大為第二套 Desktop Calendar）
-Date Calculator：B8 COMPLETE · Desktop Calendar＝popover-compact · production deployed（HEAD：df2d82b）
+Date Calculator：B8 COMPLETE · Desktop Calendar＝popover-compact · production deployed（當次 HEAD：df2d82b）
 ```
 
 **Shared ResultSummary track（Phase A–I 完成 · 已 push／deploy）：**
@@ -212,9 +211,8 @@ Shared Desktop Calendar Phase A–E：已正式部署（Deployed HEAD：`5c55672
   BDC／DRC／Age EN／ZH production signature／Owner QA：PASS
   Canonical validator：scripts/validate-desktop-calendar.mjs（63／0）
 Cloudflare Pages 自動部署成功（未 manual deploy）
-Production deployed baseline（timiva.app）：origin/main＝df2d82b
-目前 local／production：main＝origin/main＝df2d82b
-Date Calculator：已正式上線；Production HEAD：df2d82b；Owner Production QA＋Desktop Hotfix Verification＝PASS
+目前 production baseline（timiva.app）：origin/main＝43796cb
+Date Calculator 當次 deployed HEAD：df2d82b；Owner Production QA＋Desktop Hotfix Verification＝PASS
 V1 SEO technical closeout：完成（Batch 1–3 production PASS；docs `c5c0a22`）
 可選：Year Progress HTTPS Share verification（non-blocking）
 ```
@@ -245,9 +243,9 @@ Related Tools 原則：最多 3 個，不要求一定滿 3 個
 Age Calculator Desktop calendar：已由 Shared DesktopCalendar Phase D 取代（production；Birth／As-of 各一 popover-compact）
 四大分類顯示名稱：已上線（Production HEAD：0fe3e1f；Owner Production Verification PASS）
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
-Date Calculator／日期加減計算：已正式上線（Production HEAD：df2d82b）；catalog available:true；Home Featured 不含 DC
+Date Calculator／日期加減計算：已正式上線（當次 Production HEAD：df2d82b）；catalog available:true；Home Featured 不含 DC
   Desktop Calendar＝popover-compact
-Hours Calculator／時數計算：已正式上線（Production HEAD：fd2ed68）；catalog available:true；Home Featured 不含 Hours；Owner Production QA＝PASS
+Hours Calculator／時數計算：已正式上線（當次 Production HEAD：fd2ed68）；catalog available:true；Home Featured 不含 Hours；Owner Production QA＝PASS
 Japanese Era Converter／日本年號換算：已正式上線（Production HEAD：43796cb）；catalog available:true；Home Featured 不含 JEC；Owner Production QA＝PASS；Timiva 第十個正式工具
 近期開發順序：
   Lunar Date Converter（optional）
@@ -836,8 +834,8 @@ Next step:
 
 ```text
 Business Days Calculator 上線阻塞項已關閉
-Date Calculator：已正式上線（Production HEAD：df2d82b）
-Hours Calculator：已正式上線（Production HEAD：fd2ed68）
+Date Calculator：已正式上線（當次 Production HEAD：df2d82b）
+Hours Calculator：已正式上線（當次 Production HEAD：fd2ed68）
 Japanese Era Converter：已正式上線（Production HEAD：43796cb）
 下一優先 optional：Lunar / Pet Age converters
 ```
@@ -1310,8 +1308,8 @@ Shared Desktop Calendar Phase A–E 已正式部署（Deployed HEAD：5c55672）
   正式 All Tools 顯示三類；Daily Rhythm 空分類隱藏；internal IDs 保留
   Cloudflare Pages auto-deploy：成功；未 manual deploy
   當次 production checkpoint（0fe3e1f）：main＝origin/main；working tree clean
-目前 local／production：main＝origin/main＝43796cb
-Date Calculator：已正式上線；Production HEAD：df2d82b；Owner Production QA＋Desktop Hotfix Verification＝PASS
+目前 production baseline：origin/main＝43796cb
+Date Calculator：已正式上線；當次 deployed HEAD：df2d82b；Owner Production QA＋Desktop Hotfix Verification＝PASS
 Production baseline：origin/main＝43796cb
 Home Featured 維持 4 張（不含 BDC／DC／Hours／JEC）
 下一個產品方向：V1.5 Search Foundation／搜尋鋪路期
@@ -1345,8 +1343,8 @@ Recommended order:
 ```text
 1. Product development：Lunar / Pet Age converters（optional）
    （Japanese Era Converter：已正式上線 · Production HEAD：43796cb）
-   （Hours Calculator：已正式上線 · Production HEAD：fd2ed68）
-   （Date Calculator：已正式上線 · Production HEAD：df2d82b）
+   （Hours Calculator：已正式上線 · 當次 Production HEAD：fd2ed68）
+   （Date Calculator：已正式上線 · 當次 Production HEAD：df2d82b）
 2. Open Graph / Twitter Card（deferred SEO growth）
 3. WebApplication schema（deferred）
 4. Root HTTP 301 decision（deferred）
@@ -1467,7 +1465,7 @@ BDC／Age：`popover-compact`；DRC Desktop：`inline-large`；DRC Mobile legacy
   Home ZH chip「重要日期」未改（marketing chip）
   Cloudflare Pages auto-deploy：成功；未 manual deploy
   當次 production checkpoint（0fe3e1f）：main＝origin/main；working tree clean
-目前 local／production：main＝origin/main＝43796cb
+目前 production baseline：origin/main＝43796cb
 Date Calculator：已正式上線；當次 Production HEAD：`df2d82b`；Owner Production QA＋Desktop Hotfix Verification＝PASS。
 Home Featured 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress；不含 DBD／BDC／DC／Hours／JEC）。
 Hours Calculator／時數計算：已正式上線；當次 Production HEAD：`fd2ed68`；Owner Production QA＝PASS；Cloudflare Pages auto-deploy；未 manual deploy。
