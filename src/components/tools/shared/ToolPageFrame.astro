@@ -1,0 +1,214 @@
+---
+/**
+ * Shared Tool Page Frame — production page-type chrome。
+ * 將已驗證的 Tool Page baseline productionize；不是重新設計。
+ * Frame 擁有骨架／geometry；tool 擁有 result／desktop 輸入／capsule 內容／AME／FAQ。
+ * 不擁有 Header／Footer；不提供 exceptionFirstScreen。
+ */
+import ToolAdSlot from "../../ToolAdSlot.astro";
+import type { Locale } from "../../../i18n/config";
+import "../../../styles/tools/tool-page-frame.css";
+
+interface Props {
+	locale: Locale;
+	relatedDrawerAriaLabel: string;
+	toggleRelatedDrawerAriaLabel: string;
+	relatedHeading: string;
+	mobileControlsAriaLabel: string;
+}
+
+const {
+	locale,
+	relatedDrawerAriaLabel,
+	toggleRelatedDrawerAriaLabel,
+	relatedHeading,
+	mobileControlsAriaLabel,
+} = Astro.props;
+
+const hasDesktopControls = Astro.slots.has("desktopControls");
+const hasLowerRelated = Astro.slots.has("lowerRelated");
+const hasAme = Astro.slots.has("ame");
+---
+
+<div data-tool-page-frame>
+	<div data-ame-page-content>
+		{/* 第一屏：overlay Header 高度後置中；stage 寬度由 Frame 保證 */}
+		<section class="tpf-main-section preview-tool-main-section px-6">
+			<div class="tpf-first-screen preview-tool-first-screen">
+				<div
+					class="tpf-stage preview-tool-stage tool-stage mx-auto w-full max-w-md md:max-w-lg"
+				>
+					<div
+						class="tpf-result-group preview-tool-result-group text-center"
+						data-ame-background-scale-target
+					>
+						<h1
+							class="tpf-title preview-tool-landscape-compact-title text-sm font-medium tracking-normal text-slate-300 md:text-base"
+						>
+							<slot name="title" />
+						</h1>
+						<div class="tpf-result-block preview-tool-result-block mt-6 md:mt-8">
+							<slot name="result" />
+						</div>
+					</div>
+
+					{
+						hasDesktopControls && (
+							<div class="tpf-desktop-controls">
+								<slot name="desktopControls" />
+							</div>
+						)
+					}
+
+					{/* 手機主控 placement／capsule geometry 由 Frame 包一層保證 */}
+					<div
+						class="tpf-mobile-controls preview-tool-controls flex flex-wrap justify-center gap-3"
+						aria-label={mobileControlsAriaLabel}
+					>
+						<div class="tpf-mobile-capsule">
+							<slot name="mobilePrimaryControl" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		{/* Desktop Related Tools drawer：chrome／placement 由 Frame 擁有 */}
+		<aside
+			data-tpf-drawer
+			data-open="true"
+			aria-label={relatedDrawerAriaLabel}
+			class="pointer-events-none fixed inset-y-0 right-0 z-20 hidden xl:block"
+		>
+			<span class="hidden translate-x-[300px]" aria-hidden="true"></span>
+			<div
+				data-tpf-drawer-shell
+				data-open="true"
+				class="preview-tool-drawer-frosted pointer-events-auto relative flex h-dvh rounded-tl-3xl rounded-bl-3xl border-l border-white/10 shadow-2xl shadow-black/25 ring-1 ring-inset ring-white/[0.04] transition-transform duration-200 ease-out"
+			>
+				<button
+					type="button"
+					data-tpf-drawer-toggle
+					aria-expanded="true"
+					class="relative z-10 flex w-14 shrink-0 items-center justify-center self-stretch text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
+					aria-label={toggleRelatedDrawerAriaLabel}
+				>
+					<svg
+						data-drawer-arrow-open
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="none"
+						class="h-7 w-7"
+						aria-hidden="true"
+					>
+						<path
+							d="M10 3L5 8l5 5"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+					<svg
+						data-drawer-arrow-closed
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="none"
+						class="hidden h-7 w-7"
+						aria-hidden="true"
+					>
+						<path
+							d="M6 3l5 5-5 5"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+				</button>
+
+				<div
+					data-tpf-drawer-panel
+					class="relative z-10 flex h-full w-[300px] shrink-0 flex-col"
+				>
+					<div class="px-5 pb-3 pt-5">
+						<h2 class="text-lg font-semibold text-white">{relatedHeading}</h2>
+					</div>
+					<ToolAdSlot variant="sidebar" locale={locale} state="is-disabled" />
+					<div class="flex-1 space-y-3 overflow-y-auto px-5 pb-5" data-tpf-drawer-related>
+						<slot name="drawerRelated" />
+					</div>
+				</div>
+			</div>
+		</aside>
+
+		{/* 下方內容：閱讀寬度 max-w-3xl；與 stage 640px gate 分開 */}
+		<div class="tpf-lower-content tool-lower-content mx-auto max-w-3xl px-6 pb-20 text-left">
+			<ToolAdSlot variant="main" locale={locale} state="is-disabled" />
+
+			{
+				hasLowerRelated && (
+					<section
+						data-tpf-lower-related
+						class="pb-12 xl:hidden"
+						aria-labelledby="tpf-related-heading"
+					>
+						<h2 id="tpf-related-heading" class="mb-4 text-lg font-semibold text-white">
+							{relatedHeading}
+						</h2>
+						<div class="space-y-3">
+							<slot name="lowerRelated" />
+						</div>
+					</section>
+				)
+			}
+
+			<slot name="lowerContent" />
+		</div>
+	</div>
+
+	{hasAme && <slot name="ame" />}
+</div>
+
+<script is:inline>
+	(function () {
+		const roots = document.querySelectorAll("[data-tool-page-frame]");
+
+		roots.forEach((root) => {
+			if (!(root instanceof HTMLElement) || root.dataset.tpfDrawerBound === "true") {
+				return;
+			}
+
+			const drawer = root.querySelector("[data-tpf-drawer]");
+			const shell = root.querySelector("[data-tpf-drawer-shell]");
+			const toggle = root.querySelector("[data-tpf-drawer-toggle]");
+			const related = root.querySelector("[data-tpf-lower-related]");
+
+			if (
+				!(drawer instanceof HTMLElement) ||
+				!(shell instanceof HTMLElement) ||
+				!(toggle instanceof HTMLButtonElement)
+			) {
+				return;
+			}
+
+			root.dataset.tpfDrawerBound = "true";
+
+			let isOpen = drawer.dataset.open !== "false";
+
+			const sync = () => {
+				drawer.dataset.open = isOpen ? "true" : "false";
+				shell.dataset.open = isOpen ? "true" : "false";
+				shell.classList.toggle("translate-x-[300px]", !isOpen);
+				related?.classList.toggle("xl:hidden", isOpen);
+				toggle.setAttribute("aria-expanded", String(isOpen));
+			};
+
+			sync();
+
+			toggle.addEventListener("click", (event) => {
+				event.preventDefault();
+				isOpen = !isOpen;
+				sync();
+			});
+		});
+	})();
+</script>

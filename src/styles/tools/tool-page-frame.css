@@ -1,0 +1,254 @@
+/**
+ * ToolPageFrame — production Tool Page page-type chrome。
+ * 範圍只限 [data-tool-page-frame]（stacking 用 body:has）。
+ * 不 import preview CSS；不擁有 result UI／desktop 輸入／capsule 內容。
+ */
+
+/* Header／Footer stacking：Frame 不擁有這兩個元件，只遵守既有契約 */
+body:has([data-tool-page-frame]) header {
+	position: relative;
+	z-index: 30;
+}
+
+body:has([data-tool-page-frame]) footer {
+	z-index: 2;
+}
+
+[data-tool-page-frame] {
+	position: relative;
+	background: transparent;
+}
+
+[data-tool-page-frame] [data-ame-page-content] {
+	position: relative;
+}
+
+/* Drawer chrome：placement 由 markup 的 fixed 負責；此處補 stacking */
+[data-tool-page-frame] [data-tpf-drawer] {
+	z-index: 20;
+}
+
+[data-tool-page-frame] .preview-tool-drawer-frosted {
+	background-color: rgb(5 8 31 / 0.6);
+	-webkit-backdrop-filter: blur(4px) saturate(150%);
+	backdrop-filter: blur(4px) saturate(150%);
+}
+
+[data-tool-page-frame] [data-tpf-drawer-shell][data-open="true"] [data-drawer-arrow-closed] {
+	display: none;
+}
+
+[data-tool-page-frame] [data-tpf-drawer-shell][data-open="false"] [data-drawer-arrow-open] {
+	display: none;
+}
+
+[data-tool-page-frame] [data-tpf-drawer-shell][data-open="false"] [data-drawer-arrow-closed] {
+	display: block;
+}
+
+/* 第一屏外層：overlay Header 視覺高度後置中 */
+[data-tool-page-frame] .tpf-main-section {
+	--preview-header-height: 3.75rem;
+	position: relative;
+	z-index: 10;
+	margin-top: calc(-1 * var(--preview-header-height));
+	min-height: 100dvh;
+	background: transparent;
+}
+
+[data-tool-page-frame] .tpf-first-screen {
+	box-sizing: border-box;
+	display: grid;
+	min-height: 100dvh;
+	place-items: center;
+	width: 100%;
+}
+
+[data-tool-page-frame] .tpf-stage {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+[data-tool-page-frame] .tpf-result-group {
+	width: 100%;
+}
+
+[data-tool-page-frame] .tpf-desktop-controls {
+	display: none;
+	width: 100%;
+}
+
+/* 手機主控：placement 由 Frame 保證；內容由 tool slot */
+[data-tool-page-frame] .tpf-mobile-controls {
+	display: flex;
+	width: 100%;
+	justify-content: center;
+	margin-top: 2rem;
+}
+
+/*
+ * Capsule geometry：Frame 必須保證，不依賴 adopter 記得補尺寸。
+ * 不強制 tool-utility-control；語意／內容仍屬 tool。
+ */
+[data-tool-page-frame] .tpf-mobile-capsule {
+	box-sizing: border-box;
+	display: flex;
+	width: 100%;
+	max-width: min(100%, 20rem);
+	margin-inline: auto;
+	pointer-events: auto;
+}
+
+[data-tool-page-frame] .tpf-mobile-capsule > * {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 100%;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* 第一屏 → lower-content 間距；閱讀寬度由 markup max-w-3xl 負責 */
+[data-tool-page-frame] .tpf-lower-content {
+	margin-top: var(--tool-stage-to-lower-content-spacing, 48px);
+}
+
+/* md+：Desktop 輸入；隱藏手機主控 */
+@media (min-width: 768px) {
+	[data-tool-page-frame] .tpf-desktop-controls {
+		display: contents;
+	}
+
+	[data-tool-page-frame] .tpf-mobile-controls {
+		display: none;
+	}
+}
+
+/* 大型桌機 gate：stage 640px。不得套到 lower-content */
+@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
+	[data-tool-page-frame] .tpf-stage.preview-tool-stage {
+		max-width: 640px;
+	}
+}
+
+/*
+ * 手機直式：1fr / auto；結果置中、主控沉底。
+ * 必須含 orientation:portrait，勿洩漏到橫式。
+ */
+@media (max-width: 767px) and (orientation: portrait) {
+	[data-tool-page-frame] .tpf-first-screen {
+		place-items: stretch;
+		min-height: 100dvh;
+		box-sizing: border-box;
+	}
+
+	[data-tool-page-frame] .tpf-stage {
+		display: grid;
+		grid-template-rows: minmax(0, 1fr) auto;
+		min-height: 100dvh;
+		width: 100%;
+		box-sizing: border-box;
+		padding-block: 1.5rem 1.25rem;
+	}
+
+	[data-tool-page-frame] .tpf-result-group {
+		align-self: center;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		width: 100%;
+		min-height: 0;
+		pointer-events: none;
+	}
+
+	[data-tool-page-frame] .tpf-desktop-controls {
+		display: none;
+	}
+
+	[data-tool-page-frame] .tpf-mobile-controls {
+		position: relative;
+		align-self: center;
+		z-index: 25;
+		isolation: isolate;
+		width: 100%;
+		max-width: 100%;
+		margin-top: 0;
+		padding-bottom: 1rem;
+		pointer-events: auto;
+	}
+
+	[data-tool-page-frame] .tpf-mobile-capsule {
+		position: relative;
+		pointer-events: auto;
+	}
+
+	[data-tool-page-frame] .tpf-mobile-capsule > * {
+		min-height: var(--tool-mobile-portrait-control-min-height, 3.5rem);
+		padding: var(--tool-mobile-portrait-control-padding-y, 0.75rem)
+			var(--tool-mobile-portrait-control-padding-x, 1rem);
+	}
+}
+
+/*
+ * Landscape compact：完整 hero、整組置中；不套 portrait 1fr／沉底。
+ * 固定間距；不灌剩餘高度進 result ↔ capsule。
+ */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+	[data-tool-page-frame] .tpf-first-screen {
+		place-items: center;
+		padding-block: 1.25rem 1.5rem;
+	}
+
+	[data-tool-page-frame] .tpf-stage {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.75rem;
+		min-height: 0;
+	}
+
+	[data-tool-page-frame] .tpf-desktop-controls {
+		display: none;
+	}
+
+	[data-tool-page-frame] .tpf-mobile-controls {
+		display: flex;
+		margin-top: 1rem;
+	}
+
+	[data-tool-page-frame] .tpf-mobile-capsule {
+		width: auto;
+		max-width: none;
+		margin-inline: auto;
+	}
+
+	[data-tool-page-frame] .tpf-mobile-capsule > * {
+		width: auto;
+		max-width: none;
+		min-height: 2rem;
+		padding: 0.375rem 0.75rem;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	[data-tool-page-frame] .tpf-title {
+		margin-top: 0;
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	[data-tool-page-frame] .tpf-result-block {
+		margin-top: 0.75rem;
+	}
+
+	[data-tool-page-frame] .tpf-result-group {
+		padding-inline: 1rem;
+		box-sizing: border-box;
+	}
+
+	[data-tool-page-frame]:has([data-ame-root][data-ame-open="true"]) .tpf-mobile-controls {
+		opacity: 0;
+		pointer-events: none;
+	}
+}

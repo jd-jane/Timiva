@@ -34,6 +34,14 @@ SEO 是否完整
 是否沒有改壞既有頁面
 ```
 
+Validated shared baseline 的目的，是消除重複 Owner QA。新工具 QA 應集中於 tool-specific decisions，而不是重新驗證未修改的 shared frame。
+
+```text
+一般新工具只要使用 ToolPageFrame、validator PASS、且沒有 Frame-specific override／exception，
+就不再要求 Owner 每支工具重新量 768px、20rem、56px、640px gate、portrait 沉底等固定事項。
+只有 Frame 本身修改、工具需要特殊 Page Frame、或 validator／regression 發現 contract 被破壞時，才重新做完整 Frame QA。
+```
+
 ---
 
 ## 2. QA 總流程圖
@@ -315,6 +323,56 @@ FAQ 與工具功能不一致
 FAQ 標題不符合工具頁命名規則
 SEO 區塊放到主工具前面
 ```
+
+---
+
+## 11.0 B0 Tool Page Frame gate
+
+新工具 B0 必須使用 shared `ToolPageFrame`。這是 productionize 已驗證的 Tool Page page-type baseline，不是重新設計，也不是從單一工具複製 class。
+
+### 兩階段 QA
+
+**Baseline 建立期**（Lunar Date Converter 作 first adopter）：
+
+```text
+完整驗證一次 Frame：
+Desktop / portrait / landscape / lower content / capsule / drawer / stage
+```
+
+此階段通過後，Tool Page Frame baseline 才正式成立。
+
+**Baseline 正式成立後**（一般新工具）：
+
+```text
+[ ] 使用 ToolPageFrame（不得從 Hours／JEC／DC 重建 first-screen RWD）
+[ ] node scripts/validate-tool-page-frame.mjs 通過
+[ ] 沒有 Frame-specific override／exception
+[ ] 沒有 import preview CSS 當作 production Frame
+[ ] 沒有覆寫 .tpf-*
+[ ] stage 寬度與 lower-content max-w-3xl 未混用
+```
+
+通過以上項目後，Owner **不必**再為該工具重測：
+
+```text
+768px mobile／desktop 切換
+capsule 20rem／portrait 56px（3.5rem）
+desktop 640px gate
+portrait 1fr / auto 沉底
+lower-content max-w-3xl
+drawer 300px chrome／placement
+first-screen → lower-content spacing
+```
+
+必須重新做完整 Frame QA 的情況：
+
+```text
+Frame 本身被修改
+該工具需要特殊 Page Frame（必須在 product spec 或任務提詞明確指定）
+validator 或 regression 發現 contract 被破壞
+```
+
+B0 未通過時，**不得進入 B1A**。既有 DC／Hours／JEC production 不在本次 Frame 遷移範圍；它們仍是 regression comparator／來源，不是 adopter。
 
 ---
 

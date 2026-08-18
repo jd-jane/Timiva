@@ -196,6 +196,22 @@ Header component 為 locked component，layout 任務不應随意修改。
 
 路由：`/preview/tool`
 
+### 6.0 Production Tool Page Frame
+
+Production 工具頁 chrome **不是** import preview CSS，也不是從 Hours／JEC／DC 複製 first-screen RWD。
+
+```text
+Shared implementation：src/components/tools/shared/ToolPageFrame.astro
+Scoped CSS：src/styles/tools/tool-page-frame.css
+Validator：scripts/validate-tool-page-frame.mjs
+```
+
+`/preview/tool` 仍是已驗證的歷史視覺來源與 preview route；preview CSS 維持 preview-only。
+
+Production Frame 的主要來源是 Hours Calculator + rebuilt Japanese Era Converter；Date Calculator 只作 regression comparator。新工具 B0 必須使用 `ToolPageFrame`。Frame 不擁有 Header／Footer，只遵守既有 stacking contract。
+
+本節 6.1–6.5 描述 preview route 的視覺契約。正式工具頁的可重用實作以 6.0 與 6.6 為準。
+
 ### 6.1 第一屏工具區
 
 | 規則 | 說明 |
@@ -239,6 +255,7 @@ Header component 為 locked component，layout 任務不應随意修改。
 
 * 置中 `max-w-3xl`，區塊內左對齊
 * 不壓過第一屏工具體驗
+* Production 由 `ToolPageFrame` 的 `.tpf-lower-content` 保證此寬度；不得把 `max-w-3xl` 套到 stage
 
 ### 6.6 Tool page sidebar and lower content rules
 
@@ -260,11 +277,10 @@ Sidebar related cards 不得在 hover 時改變高度、造成 layout shift、�
 #### B. Drawer collapse / expand control
 
 ```text
-Desktop 工具頁 drawer 必須包含已核准的 collapse / expand 控制項。
+Desktop 工具頁 drawer 必須包含已確認的 collapse / expand 控制項。
 Collapse 控制項在 desktop 工具頁必須保持可見。
-控制項的 markup、位置、aria 狀態與 open/closed 行為必須遵循既有 production 工具。
-新工具必須複製既有 production drawer pattern，不得自創新的 drawer 系統。
-若無法在不修改 shared baseline 的前提下保留 drawer 控制項，implementation 必須停止並請求 Owner 核准。
+新工具必須使用 ToolPageFrame 的 drawer chrome／placement／toggle，不得自創新的 drawer 系統，也不得從既有工具複製一套平行 drawer。
+若產品需要特殊 Page Frame，必須在 product spec 或任務提詞明確指定，並取得 Owner 確認。
 ```
 
 允許使用 component 內 **inline drawer toggle script**（與 Date Range Calculator V2 等相同 shell pattern）；此屬 shell behavior，不是工具計算邏輯。
@@ -325,7 +341,7 @@ Related Tools 應優先最接近的使用者意圖，而非單純依新工具順
 
 #### F. 手機第一屏控制區 baseline（一般工具）
 
-本節適用於 **一般工具** 的手機 first-screen tool stage。特殊互動工具（例如 Countdown Timer）可例外，但例外必須在該工具 product spec 或任務提詞中 **明確指定**；Cursor 不得自行判斷某工具是否為例外。沒有明確例外時，一律套用本節。
+本節適用於 **一般工具** 的手機 first-screen tool stage。Production 由 `ToolPageFrame` 保證 portrait `1fr / auto`、capsule geometry、landscape compact 與 768px hide。特殊互動工具（例如 Countdown Timer）可例外，但例外必須在該工具 product spec 或任務提詞中 **明確指定**；Cursor 不得自行判斷某工具是否為例外。沒有明確例外時，一律套用本節。不得新增通用 `exceptionFirstScreen`。
 
 ##### F.1 手機第一屏結構
 

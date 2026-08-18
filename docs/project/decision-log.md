@@ -5,6 +5,43 @@
 
 ---
 
+## 2026-08-17 — Tool Page Frame productionize（F0–F2）
+
+### 背景
+
+```text
+Timiva 重做時已定義 Tool Page page-type baseline，並在 /preview/tool 完成版型與實機驗證。
+Production 工具後來以複製 Hours／JEC／DC composition CSS 的方式落地，缺少可重用的 shared Frame。
+JEC 初版 B0 曾漏套 page-type RWD，根因是沒有真正的 production Frame。
+本次是補完當初缺少的 production reusable implementation，不是重新設計 Tool Page，
+也不是「因為 DC／Hours／JEC 重複所以新抽一個 shared pattern」。
+```
+
+### 決策（最終結果）
+
+```text
+1. 將已驗證的 Tool Page baseline 正式 productionize 成 shared ToolPageFrame。
+2. Production Frame 主要來源＝Hours Calculator + rebuilt Japanese Era Converter。
+3. Date Calculator 只作 regression comparator，不當 Frame 來源，本次不遷移。
+4. portrait padding-block: 1.5rem 1.25rem 納入新 baseline。
+5. Shared CSS 必須 scoped 在 Frame root；不 import preview CSS；工具不得覆寫 .tpf-*。
+6. Frame 必須自己保證 capsule geometry，不能依賴 adopter 記得補尺寸。
+7. 不新增通用 exceptionFirstScreen；Frame 不擁有 Header／Footer。
+8. 本次只做 F0–F2（Frame + validator + canonical docs）。不開始 Lunar B0，不遷移既有工具。
+9. Lunar Date Converter 為 first adopter（尚未開始）。Baseline 建立期須完整驗證一次 Frame。
+10. Validated shared baseline 的目的是消除重複 Owner QA。Baseline 成立後，一般新工具只要使用 Frame、validator PASS、且無 Frame override，就不必重測 768px／20rem／56px／640px gate／portrait 沉底等固定事項。
+```
+
+### 影響
+
+```text
+新工具 B0 必須使用 ToolPageFrame。
+DC／Hours／JEC production 維持現況，直到未來另立遷移任務。
+/preview/tool 與 preview CSS 維持 preview-only 歷史來源。
+```
+
+---
+
 ## 2026-08-16 — Japanese Era Converter production deployment
 
 ### 背景

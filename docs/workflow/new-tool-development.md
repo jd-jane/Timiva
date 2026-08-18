@@ -1,6 +1,6 @@
 # Timiva New Tool Development Rules V2
 
-> 最後更新：2026-07-22
+> 最後更新：2026-08-17
 
 ## 文件目的
 
@@ -8,7 +8,7 @@
 
 所有新工具都應先遵守本文件，再進入設計、開發與驗收。
 
-**Shared UI reuse：** 若任務出現第二次相同 UI pattern，必須先完成 Reuse Review。完整規則以 [`shared-component-reuse-gate.md`](shared-component-reuse-gate.md) 為準（本文件不重複全文）。
+**Shared UI reuse：** 若任務出現第二次相同 UI pattern，必須先完成 Reuse Review。完整規則以 [`shared-component-reuse-gate.md`](shared-component-reuse-gate.md) 為準（本文件不重複全文）。新工具頁 chrome 必須使用 [`ToolPageFrame`](shared-component-reuse-gate.md)（Reuse Gate §9），不得從既有工具複製 first-screen RWD。
 
 ---
 
@@ -349,14 +349,64 @@ B0 scaffold 的定義：
 
 ```text
 B0 不是空白頁。
-B0 應該是「V2 工具頁共用版型 scaffold」。
-至少要包含 Header、Footer、tool page root、first-screen / stage 結構、lower content area、drawer / ToolAdSlot disabled 等基礎結構。
+B0 必須使用 shared ToolPageFrame（src/components/tools/shared/ToolPageFrame.astro）。
+這是把 Timiva 重做時已定義、且 Owner 已驗證的 Tool Page page-type baseline，正式 productionize 成可重用 Frame。
+不是因為 DC／Hours／JEC 重複才新抽一套 pattern，也不是重新設計 Tool Page。
 ```
+
+B0 必須包含（由 Frame 提供，工具不得自行重建）：
+
+```text
+first-screen outer composition
+stage placement／responsive width
+result-group 外殼
+portrait 1fr / auto composition
+mobile primary-control placement
+capsule geometry（Frame 包一層保證，不依賴工具自己記得補尺寸）
+landscape compact composition
+desktop 640px gate
+lower-content max-w-3xl
+first-screen → lower-content spacing
+drawer placement／chrome
+disabled ToolAdSlot placement
+```
+
+B0 禁止：
+
+```text
+從 Hours／JEC／DC class 名稱或 markup 重建 first-screen RWD
+把 lower-content 的 max-w-3xl 套到 stage（或把 stage 的 640px gate 套到 lower-content）
+import preview CSS（tool-preview-first-screen.css）當作 production Frame
+覆寫 Frame 內部 .tpf-*
+新增 exceptionFirstScreen 或同等通用 escape hatch
+修改 Header／Footer／BaseLayout／global background／preview baseline
+遷移既有 DC／Hours／JEC production 頁
+```
+
+工具在 B0 仍須提供（tool-local）：
+
+```text
+title／result slot 內容
+desktop input composition（若該工具有桌機輸入）
+mobile capsule 內容／語意（不強制 tool-utility-control）
+AME 內容（若採用 AME）
+drawerRelated／lowerRelated／lowerContent 文案與列
+calculation／validation 不在 B0
+```
+
+B0 完成後必須：
+
+```text
+node scripts/validate-tool-page-frame.mjs 通過
+沒有 Frame-specific override／exception
+```
+
+B0 未通過（未使用 Frame、validator FAIL、或自行覆寫 Frame）時，不得進入 B1A。
 
 批次命名建議：
 
 ```text
-B0：V2 工具頁版型 scaffold
+B0：V2 工具頁版型 scaffold（ToolPageFrame）
 B1A：下方內容層 + sidebar 基礎互動
 B1B：上方工具靜態畫面
 B2+：工具核心互動（Smart Date Input、計算、sheet 輸入 state machine 等）
@@ -396,7 +446,7 @@ B1A 不包含 Smart Date Input、日期計算、sheet 日期輸入 state machine
 
 ### 8.2 手機第一屏控制區 baseline（一般工具）
 
-B1B 靜態畫面與 B2 互動實作前，必須對齊 `docs/standards/layout-system.md` §6.7。
+B1B 靜態畫面與 B2 互動實作前，必須使用 `ToolPageFrame`，並對齊 `docs/standards/layout-system.md` §6（production Frame）與 §6.6 F。
 
 #### 結構與按鈕位置
 

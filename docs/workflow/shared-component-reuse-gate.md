@@ -1,7 +1,7 @@
 # Shared Component Reuse Gate
 
 > Canonical source：Timiva 共用 UI pattern 的 **Reuse Gate** 規則只以本文件為準。
-> 最後更新：2026-08-02（B9.1：Adaptive Mobile Editor scoped canonical）
+> 最後更新：2026-08-17（Tool Page Frame productionize）
 
 ## 文件目的
 
@@ -12,7 +12,7 @@
 - 任務入口：[`AGENTS.md`](../../AGENTS.md)
 - 新工具流程：[`new-tool-development.md`](new-tool-development.md)
 - 文件索引：[`docs/README.md`](../README.md)
-- 案例：`ResultSummary`（§6）、`DesktopCalendar`（§7）、`AdaptiveMobileEditor`（§8）
+- 案例：`ResultSummary`（§6）、`DesktopCalendar`（§7）、`AdaptiveMobileEditor`（§8）、`ToolPageFrame`（§9）
 
 ---
 
@@ -23,7 +23,7 @@
 Implementation Plan 必須先做 Reuse Review，再進入實作。
 ```
 
-「相同 UI pattern」包含但不限於：結果摘要、日期輸入殼、**Mobile Editor／多欄 Bottom Sheet 編輯流**、Related drawer、數字 digit ladder、工具主結果區。
+「相同 UI pattern」包含但不限於：結果摘要、日期輸入殼、**Mobile Editor／多欄 Bottom Sheet 編輯流**、Related drawer、數字 digit ladder、工具主結果區、**Tool Page page-type chrome**。
 
 ---
 
@@ -31,12 +31,14 @@ Implementation Plan 必須先做 Reuse Review，再進入實作。
 
 1. **Reuse Review 前置**：第二次出現相同 pattern，Plan 必須先完成 Reuse Review。
 2. **禁止複製改名**：不得複製既有 component／CSS／controller 後改名當作新實作。
-3. **優先 shared**：新工具必須優先使用現有 shared component。
-4. **Tool CSS 只做外部 composition**：
-   - stage
-   - placement
-   - margin／width
-   - controls／sheet／panel
+3. **優先 shared**：新工具必須優先使用現有 shared component。新工具頁 chrome 必須使用 `ToolPageFrame`（§9）。
+4. **Tool CSS 只做 tool-local composition**：
+   - desktop input cluster
+   - result UI／公開 tokens
+   - capsule 內容／語意
+   - AME 內容
+   - tool-specific controls／sheet internals
+   不得重建 first-screen／stage／capsule geometry／drawer chrome，也不得覆寫 `.tpf-*`。
 5. **Shared 擁有內部**：
    - DOM
    - typography
@@ -44,13 +46,14 @@ Implementation Plan 必須先做 Reuse Review，再進入實作。
    - digit behavior
    - accessibility
    - controller hooks
-6. **禁止內部覆寫**：Tool 不得直接選 shared 內部 class（例如 `.rs-*`）覆寫。
-7. **差異只能走公開契約**：僅能透過核准的 semantic `variant`／公開 token 表達差異；不得 tool-local 硬改內部尺寸。
+   - Tool Page Frame 的頁面骨架與 geometry（§9）
+6. **禁止內部覆寫**：Tool 不得直接選 shared 內部 class（例如 `.rs-*`、`.tpf-*`）覆寫。
+7. **差異只能走公開契約**：僅能透過確認過的 semantic `variant`／公開 token 表達差異；不得 tool-local 硬改內部尺寸。
 8. **兩套實作不算 reusable**：即使另寫 validator「對齊」兩套 UI，也不算 reusable architecture。
 9. **無法 reuse 時**：
    - Plan 必須記錄產品／技術原因
    - 列出共用失敗點
-   - **取得 Owner 核准**後才可另建實作
+   - **取得 Owner 確認**後才可另建實作
 10. **Plan Review 必列**：
     - reusable pattern inventory
     - ownership boundary
@@ -61,6 +64,7 @@ Implementation Plan 必須先做 Reuse Review，再進入實作。
 12. **ResultSummary 為正式案例**（§6）。
 13. **DesktopCalendar 為正式案例**（§7）。第二次以上相同 Desktop Calendar pattern 必須優先重用 Shared DesktopCalendar；不得複製 calendar DOM／controller／CSS。
 14. **Adaptive Mobile Editor（AME）為適用範圍內的正式 Mobile Editor foundation**（§8）。新工具多欄 mobile edit 必須先做 AME fit review；在第二個相似 pattern 出現前，不得另建平行 Mobile Editor foundation。
+15. **ToolPageFrame 為正式 Tool Page page-type chrome**（§9）。這是 productionize 已驗證 baseline，不是因為 DC／Hours／JEC 重複才新抽 pattern。新工具不得從既有工具複製 first-screen RWD。
 
 ---
 
@@ -69,8 +73,9 @@ Implementation Plan 必須先做 Reuse Review，再進入實作。
 | 層級 | 擁有 | 不得做 |
 |---|---|---|
 | Shared component | DOM、typography、grid／gap、digits、a11y、`rs:update`／controller | 讀 viewport／orientation 自行判斷 layout |
+| ToolPageFrame | first-screen／stage／capsule geometry／drawer chrome／640px gate／lower-content 寬度 | 擁有 Header／Footer；擁有 result UI 或 desktop 輸入內容 |
 | Tool layout contract | `data-rs-layout`（或同等）首次 paint＋正式 gate | 寫 `data-rs-digits`、更新 live status、dispatch 結果更新 |
-| Tool CSS | stage、placement、margin／width、controls／sheet／root stacking | 選內部 class（`.rs-*`／`.sdc-*`）；接管 ResultSummary／DesktopCalendar 內部 grid／gap／字級／尺寸 |
+| Tool CSS | desktop 輸入、result tokens、capsule 內容、AME 內容、tool-specific controls | 選內部 class（`.rs-*`／`.sdc-*`／`.tpf-*`）；重建 Frame 骨架 |
 | Tool script | 計算完成後 dispatch 正式事件／呼叫正式 `update()` | temporary adapter、本地 digit bucket |
 
 ---
@@ -98,7 +103,8 @@ L 級任務的 Agent Routing 中，Tech Architect 應檢查本 Gate；Experience
 ```text
 [ ] 無複製改名的第二套實作
 [ ] 工具頁只有一份 shared 結果（或同等）DOM
-[ ] Tool CSS 無 shared 內部 class override
+[ ] Tool CSS 無 shared 內部 class override（含 `.tpf-*`）
+[ ] 新工具頁使用 ToolPageFrame，未複製 first-screen RWD
 [ ] Tool 不寫 shared 內部 state attrs（如 data-rs-digits）
 [ ] Layout bootstrap 與正式 gate 共用同一 contract
 [ ] 遷移後無 temporary adapter／legacy hooks
@@ -240,7 +246,84 @@ Tool CSS 只做外部 composition；不得另造衝突的平行 Editor shell
 
 ---
 
-## 9. 與其他文件的關係
+## 9. 正式案例：Tool Page Frame
+
+| 項目 | 位置／規則 |
+|---|---|
+| Shared DOM | `src/components/tools/shared/ToolPageFrame.astro` |
+| Shared CSS | `src/styles/tools/tool-page-frame.css`（scoped `[data-tool-page-frame]`／`.tpf-*`） |
+| Naming | `ToolPageFrame`、`data-tool-page-frame`、`data-tpf-*`、`.tpf-*` |
+| 歷史視覺來源 | `/preview/tool`（已驗證 page-type baseline；**不是** production implementation） |
+| Production Frame 主要來源 | Hours Calculator + rebuilt Japanese Era Converter |
+| Regression comparator | Date Calculator（不當 Frame 來源、本次不遷移） |
+| 第一正式 adopter | Lunar Date Converter（尚未開始；F0–F2 只建立 Frame） |
+| Validator | `scripts/validate-tool-page-frame.mjs` |
+
+### 9.1 定位（不是抽重複 pattern）
+
+```text
+ToolPageFrame 是把 Timiva 重做時已定義、且 Owner 已驗證的 Tool Page page-type baseline，正式 productionize 成可重用 shared chrome。
+原 /preview/tool 已完成版型與實機驗證；本次不是重新設計 Tool Page，而是補完當初缺少的 production reusable implementation。
+不是「因為 DC／Hours／JEC 重複，所以新抽一個 shared pattern」。
+```
+
+### 9.2 Ownership
+
+**Frame 擁有：**
+
+```text
+first-screen outer composition
+stage placement / responsive width
+result-group 外殼
+portrait 1fr / auto composition
+mobile primary-control placement
+capsule geometry（Frame 包一層保證）
+landscape compact composition
+desktop 640px gate
+lower-content max-w-3xl
+first-screen → lower-content spacing
+drawer placement / chrome
+disabled ToolAdSlot placement
+```
+
+**Tool 擁有：**
+
+```text
+result UI
+desktop input composition
+capsule 內容／語意
+AME 內容
+calculation / validation
+FAQ / About
+tool-specific interaction
+```
+
+Frame 不擁有 Header／Footer，只遵守既有 stacking contract。不提供通用 `exceptionFirstScreen`。不得 import preview CSS 作 production implementation。工具不得覆寫 `.tpf-*`。
+
+### 9.3 既有工具策略
+
+```text
+本次不遷移 DC／Hours／JEC 或其他已上線工具。
+它們維持現況，作為來源或 regression comparator。
+新工具預設使用 ToolPageFrame。
+特殊 Page Frame 必須在 product spec 或任務提詞明確指定，並取得 Owner 確認。
+```
+
+### 9.4 Reuse Gate 通過標準（Tool Page Frame）
+
+```text
+新工具 B0 → 使用 ToolPageFrame
+validate-tool-page-frame.mjs PASS
+無 .tpf-* override、無 preview CSS import、無 exceptionFirstScreen
+stage 寬度與 lower-content max-w-3xl 未混用
+不得從 Hours／JEC／DC 複製 first-screen RWD 當作新實作
+```
+
+Validated shared baseline 的目的，是消除重複 Owner QA。Baseline 經 Lunar first adopter 完整 Frame QA 成立後，一般新工具只要使用 Frame、validator PASS、且無 Frame override，就不必重測 768px／20rem／56px／640px gate／portrait 沉底等固定事項。
+
+---
+
+## 10. 與其他文件的關係
 
 | 文件 | 關係 |
 |---|---|
@@ -248,3 +331,5 @@ Tool CSS 只做外部 composition；不得另造衝突的平行 Editor shell
 | `docs/standards/mobile-sheet.md` | Legacy Mobile Sheet style baseline＋**AME canonical interactive Editor**；工具不得另造衝突規則 |
 | `docs/standards/interactive-controls.md` | Control motion／shadow 由 shared baseline 擁有 |
 | `docs/workflow/new-tool-development.md` | 新工具流程引用本 Gate，不重複全文 |
+| `docs/workflow/tool-page-qa.md` | B0 Frame gate（§11.0）與兩階段 QA |
+| `docs/standards/layout-system.md` | Production Tool Page chrome 指向 ToolPageFrame |
