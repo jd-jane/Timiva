@@ -211,7 +211,18 @@ JSON-LD 格式正確
 
 Related Tools 是 Timiva 的內部連結核心。
 
-每個工具頁建議 2 到 4 個 Related Tools。
+數量與產品規則（現行 canonical）：
+
+```text
+最多 3 個
+不要求一定滿 3 個
+只有 1–2 個真正相關工具時就維持較少數量
+不為湊滿而加入低相關推薦
+優先最接近使用者意圖
+SEO 需求不得凌駕產品相關性
+```
+
+產品細節以 [`docs/workflow/new-tool-development.md`](../workflow/new-tool-development.md) §12 為準；本節只保留 SEO／內部連結責任摘要。
 
 原則：
 

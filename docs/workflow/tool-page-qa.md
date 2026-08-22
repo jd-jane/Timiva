@@ -374,6 +374,8 @@ validator 或 regression 發現 contract 被破壞
 
 B0 未通過時，**不得進入 B1A**。既有 DC／Hours／JEC production 不在本次 Frame 遷移範圍；它們仍是 regression comparator／來源，不是 adopter。
 
+**B1B Component Style 提醒：** 上方靜態畫面必須使用 canonical Component Style Baseline（title、A1 title→result gap、B3 textual primary defaults、Supporting Result Text、Textual Result Support Divider、Standard Pill Field 等）。不得從偏小 textual fallback 或任意 spacing 開始。Owner Visual QA 仍保留最終判斷。詳見 `docs/standards/design-system.md`、`layout-system.md` §6.0。
+
 ---
 
 ## 11A. B1A lower content and sidebar QA
@@ -480,7 +482,7 @@ Cursor 不得自行判斷某工具是否為例外。
 沒有明確例外時，一律套用標準 mobile first-screen baseline。
 ```
 
-規範來源：`docs/standards/layout-system.md` §6.7。
+規範來源：`docs/standards/layout-system.md` §6.6 F。
 
 若 Owner browser review 發現以上任一項失敗，**必須回到 B1B regression fix**，不得進入 B2。
 

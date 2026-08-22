@@ -1,6 +1,6 @@
 # Timiva New Tool Development Rules V2
 
-> 最後更新：2026-08-17
+> 最後更新：2026-08-22
 
 ## 文件目的
 
@@ -9,6 +9,8 @@
 所有新工具都應先遵守本文件，再進入設計、開發與驗收。
 
 **Shared UI reuse：** 若任務出現第二次相同 UI pattern，必須先完成 Reuse Review。完整規則以 [`shared-component-reuse-gate.md`](shared-component-reuse-gate.md) 為準（本文件不重複全文）。新工具頁 chrome 必須使用 [`ToolPageFrame`](shared-component-reuse-gate.md)（Reuse Gate §9），不得從既有工具複製 first-screen RWD。
+
+**Component Style Baseline：** 新工具 B1B 必須從 [`design-system.md`](../standards/design-system.md)／[`layout-system.md`](../standards/layout-system.md)／[`interactive-controls.md`](../standards/interactive-controls.md) 的 Component Style Baseline 開始（title、spacing、textual result defaults、pill field、divider、text actions）。不得從 tool-local 任意 spacing 或 undersized textual ResultSummary fallback 當 first paint。Owner Visual QA 仍為最終判斷。
 
 ---
 
@@ -62,12 +64,14 @@ J --> K[實作單一 Atomic Component]
     L --> M[視需要加入 LocalStorage / URL Sharing]
     M --> N[加入 Related Tools / FAQ / Meta]
     N --> O[跑 QA Checklist]
-    O --> P{四個 Agents 是否通過?}
+    O --> P{依任務層級是否需要 Targeted Agent Review?}
 
-    P -->|否| Q[修正問題後重跑對應 Gate]
+    P -->|需要| P2[執行指定 Agent Review]
+    P2 -->|有問題| Q[修正必要問題後重跑相關檢查]
     Q --> O
+    P2 -->|通過| R[Owner Final Review]
 
-    P -->|是| R[Owner Final Approval Summary]
+    P -->|不需要| R[Owner Final Review]
     R --> S{Owner 是否確認?}
 
     S -->|否| Q
@@ -446,7 +450,7 @@ B1A 不包含 Smart Date Input、日期計算、sheet 日期輸入 state machine
 
 ### 8.2 手機第一屏控制區 baseline（一般工具）
 
-B1B 靜態畫面與 B2 互動實作前，必須使用 `ToolPageFrame`，並對齊 `docs/standards/layout-system.md` §6（production Frame）與 §6.6 F。
+B1B 靜態畫面與 B2 互動實作前，必須使用 `ToolPageFrame`，並對齊 `docs/standards/layout-system.md` §6（production Frame）與 §6.6 F，以及 Component Style Baseline（`design-system.md` §4.1／§9–§11；`interactive-controls.md` §12–§13）。
 
 #### 結構與按鈕位置
 
@@ -802,9 +806,7 @@ npm run build 成功
 
 目前 Timiva 採用 Phase A：Owner 主導確認期。
 
-因此即使 Agents 全部通過，Cursor 仍必須整理 Owner Final Approval Summary。
-
-在 Owner 明確確認前，不得進入：
+因此即使 Targeted Agent Review 已通過（若該任務層級需要），Cursor 仍必須整理 Owner Final Approval Summary。Owner Final Review 通過前，不得進入：
 
 ```text
 commit

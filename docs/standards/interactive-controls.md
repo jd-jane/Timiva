@@ -9,13 +9,15 @@
 ```text
 A. Global Interactive Cursor Baseline — 全站語意化 cursor
 B. Utility Capsule Control — V2 次要膠囊按鈕的 hover 動效
+C. Plain Text Actions／Conversion Mode Switch — semantic recipes（見 §12–§13）
 ```
 
 本文件是**規範**，不是 plan。實作細節以 `src/styles/` 為準。
 
 相關標準：
 
-- [`docs/standards/design-system.md`](design-system.md)
+- [`docs/standards/design-system.md`](design-system.md)（visual shell、colors、icons、fields、error）
+- [`docs/standards/layout-system.md`](layout-system.md)（Frame／spacing／geometry）
 - [`docs/workflow/new-tool-development.md`](../workflow/new-tool-development.md)
 - [`docs/workflow/tool-page-qa.md`](../workflow/tool-page-qa.md)
 
@@ -140,16 +142,32 @@ navigation / structural control · sheet action
 |---|---|
 | Event Countdown | Edit, Theme, Share |
 | Year Progress | Theme, Share |
+| Hours Calculator | Mobile primary capsule（`.tool-utility-control`） |
+| Japanese Era Converter | Mobile primary capsule（`.tool-utility-control`） |
+
+> Docs 曾只列 EC／YP；以上以 production code truth 為準（2026-08-22 sync）。
+
+### 3.3A Visual shell vs interaction eligibility
+
+```text
+Visual shell = capsule 外觀 recipe（border／bg／text／radius／padding 等）
+  → 見 design-system；可與 primary-entry capsule 共用外觀語言
+Interaction eligibility = .tool-utility-control
+  → 只負責既有 hover lift／shadow／motion baseline
+不要因視覺長得像 capsule 就自動加入 lift
+Conversion／mode switch、primary data-entry capsule、text actions 不得套用 Utility Capsule lift
+```
 
 ### 3.4 明確 Excluded
 
 | 控制項 | 原因 |
 |---|---|
 | DR date range capsule | Primary task entry |
-| DR Clear Dates | Text action |
+| DR Clear Dates／DC／JEC Reset 等 | Text action（見 §12） |
 | CT Start / Pause / Resume / Done / Cancel | Primary task（獨立 `-1px` 合約） |
 | CT Quick Start | Primary preset |
 | CT Sound | 功能性 secondary，但**不是** Utility Capsule |
+| JEC／future conversion mode switch | Conversion semantic；non-lift（見 §13） |
 | Sheet Cancel / Apply | Sheet baseline 角色 |
 | Drawer toggles（全工具） | Navigation / structural |
 | FAQ summary | 內容 disclosure（有 global pointer，無 utility lift） |
@@ -309,6 +327,8 @@ node scripts/validate-tool-utility-control-baseline.mjs
 ```text
 EC: Edit, Theme, Share
 YP: Theme, Share
+Hours: mobile primary capsule
+JEC: mobile primary capsule
 Future: 符合十項資格的 V2 secondary capsule
 ```
 
@@ -316,8 +336,9 @@ Future: 符合十項資格的 V2 secondary capsule
 
 ```text
 DR #range-display-trigger（primary entry）
-DR Clear Dates
+DR Clear Dates／其他 Muted Text Actions
 CT 全部 primary row + Quick Start + Sound
+Conversion／mode switch
 All drawer toggles
 All sheet actions
 FAQ、Related Tools、Header、Footer
@@ -347,6 +368,7 @@ text inputs（保留 text cursor）
 | 只靠 `.preview-tool-control-btn` 套用 lift | 必須 opt-in `.tool-utility-control` |
 | tool-local 再寫 `transition:` shorthand | 只寫顏色；motion 交 shared |
 | 把 Sound 或 DR date capsule 當 Utility Capsule | 查 §3.4 excluded 表 |
+| 把 mode switch 加 `.tool-utility-control` | 用 §13 non-lift recipe |
 | 全站 `* { cursor: pointer }` | 只用語意選擇器 |
 
 ---
@@ -370,3 +392,53 @@ node scripts/validate-tool-themes.mjs
 ## 11. 決策紀錄
 
 此 baseline 源於 Year Progress B3 Owner review 發現的 cross-tool hover 不一致，以及全站 cursor 問題。詳細 plan 與 validation report 存於 `local-docs/plans/shared/` 與 `local-docs/reports/site-wide/`；**本文件為 tracked canonical 摘要**。
+
+2026-08-22：Component Style Baseline Batch 1 — Included list 與 code sync（Hours／JEC）；分層 visual shell vs interaction；新增 §12 Plain Text Actions、§13 Conversion／Mode Switch。
+
+---
+
+## 12. Plain Text Actions
+
+正式區分兩個 semantic variants（視覺細節亦見 [`design-system.md`](design-system.md)）：
+
+### 12.1 Muted Text Action — default
+
+例：Reset、Clear、Cancel、As-of／back 類弱操作。
+
+```text
+Size：0.875rem
+Weight：500
+Color：slate-400 / 0.72（rgb(148 163 184 / 0.72)）
+Hover：slate-300 / 0.88（rgb(203 213 225 / 0.88)）
+No underline
+```
+
+### 12.2 Accent Action Link — semantic exception
+
+只用於：新增額外功能、展開額外設定、額外 action entry。
+
+```text
+Hours「Add break」可作 production reference（indigo + underline）
+Accent 不是 plain text action default
+不得把所有純文字控制統一成 accent 或全部統一成 muted 而不看語意
+```
+
+---
+
+## 13. Conversion／Mode Switch recipe
+
+Japanese Era Converter mode switch 為 reusable **visual recipe**（非 Utility Capsule）：
+
+```text
+Pill visual language
+Icon + text
+Non-lift interaction（不得加 .tool-utility-control）
+Semantic = conversion／mode switch
+不等同 primary-entry Utility Capsule
+```
+
+```text
+Lunar Date Converter 預計為第二 adopter
+本階段只記錄 recipe／reuse contract；不抽 Astro component
+第二次採用並驗證後，再依 Shared Component Reuse Gate 決定是否 componentize
+```

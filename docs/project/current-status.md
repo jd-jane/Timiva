@@ -1,7 +1,7 @@
 # Timiva 專案現況
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
-> 更新日期：2026-08-16
+> 更新日期：2026-08-22
 > 狀態來源：整合既有 Timiva docs、正式網域 timiva.app、V1 tools + Year Progress + Age Calculator + Days Between Dates + Business Days Calculator + Date Calculator + Hours Calculator + **Japanese Era Converter** production。**Japanese Era Converter／日本年號換算（第十）：已正式上線。** Standalone `78903bc`；AME baseline `c47bab0`；Link Integration `43796cb`；**JEC Deployed HEAD：`43796cb`**。Owner Production QA＝PASS。catalog `available:true` · `featured:false` · icon `calendar`；Home Featured 不含 JEC。All Tools dates-events＝EC→DRC→DBD→BDC→DC→Hours→JEC→Age；inbound Related＝Age only（DRC→DBD→JEC）；JEC outbound＝DC→Age（2 個）；Related Tools 最多 3 個、不要求滿 3。Cloudflare Pages 由 main push 自動部署（未 manual deploy）。**Hours Calculator（第九）** 仍維持已上線（其當次 Production HEAD：`fd2ed68`）。**Date Calculator（第八）** 仍維持已上線（其當次 Production HEAD：`df2d82b`）。**Adaptive Mobile Editor**／Legacy MSB Archive-in-Place 已上線；Option C／B9.3 未授權。獨立 dirty（非本 release）：`astro.config.mjs`、Phase C `tool-mobile-sheet-v2-baseline.css`。
 ---
 
@@ -273,7 +273,7 @@ Home / Tool / All Tools / Legal Text page types
 Header / Footer / BaseLayout baseline
 Preview layout baseline
 Design / layout / Tailwind / SEO / QA docs（見 docs/standards/、docs/workflow/）
-Four-Agent review model（agents/）
+P / S / M / L workflow + targeted Agent Review（agents/）
 Post-tool Link Integration Gate（docs/workflow/tool-link-integration.md）
 ```
 
@@ -851,7 +851,20 @@ src/styles/tools/tool-result-v2-baseline.css
 src/styles/tools/tool-drawer-v2-baseline.css
 ```
 
-Rules: 48px stage→lower spacing · 8px desktop title→result gap · shared drawer hover（no translateY）
+Rules:
+
+```text
+48px stage→lower spacing
+Shared drawer hover（no translateY）
+
+Tool title → result gap（現行 canonical · 2026-08-22 Decision A1）：
+  Standard — Mobile 1.5rem / Desktop 2rem
+  DRC compact exception — Mobile 1.5rem / Desktop 0
+    （DesktopCalendar inline-large；明確 vertical-layout constraint）
+  Lunar（popover-compact）使用 standard gap
+  舊 8px desktop title→result 已 superseded
+  Reference：docs/standards/layout-system.md §6.0.1
+```
 
 ### 7.2 Tool overlay baseline
 

@@ -5,6 +5,45 @@
 
 ---
 
+## 2026-08-22 — Component Style Baseline Batch 1（docs-first）
+
+### 背景
+
+```text
+Inventory（2026-08-21）與 Canonicalization Plan 完成後，Owner 確認 A1／B3／C，
+並授權 Batch 1：只更新既有 canonical docs，建立新工具預設視覺／semantic contract。
+不修改 production CSS／components；不 migration 舊工具；不開始 Lunar／Batch 2。
+```
+
+### 決策（最終結果）
+
+```text
+1. Decision A = A1：Tool title → result standard gap = mobile 1.5rem／desktop 2rem。
+2. DRC compact exception 正式保留（mobile 1.5rem／desktop 0）；因 DesktopCalendar inline-large。
+3. Compact 必須有明確 layout constraint；不得工具自由新增 spacing。Lunar（popover-compact）用 standard。
+4. Decision B = B3：Textual Primary Result defaults = Desktop 5rem／Portrait 4.75rem／Landscape 3.75rem；EN＝ZH。
+5. JEC Desktop 8.5rem = 特殊 override，不是 general default；numeric RS ladder 不重開。
+6. Decision C = Yes：Pattern B supporting message 採 JEC production values as-is。
+7. Pattern A／B 皆正式；.ame-error 不同 semantic。
+8. Supporting Result Text 16px／400／slate-400／1.45；Textual Result Support Divider 48×1／white 0.2／24px。
+9. Standard Pill Field + Desktop form cluster 420px；Frame stage 640px；不建 512 general tier。
+10. Muted Text Action default；Accent Action Link 為 exception（Hours Add break reference）。
+11. JEC mode switch = reusable recipe；Lunar = 第二 adopter candidate；暫不抽 component。
+12. Utility Capsule：visual shell ≠ .tool-utility-control interaction；Included sync Hours／JEC。
+13. Semantic color map docs-first；本輪不建 CSS vars／token architecture（T1／T2 留後）。
+14. Docs-first strategy：更新 design-system／layout-system／interactive-controls／decision-log；不新建平行 guideline。
+15. 舊工具不 migration；Lunar = first new-tool adopter for this baseline。
+```
+
+### 影響
+
+```text
+Batch 2 才實作 result-summary.css defaults／必要 recipe CSS。
+新工具 B1B 必須從本 baseline 開始，不得任意 spacing／undersized textual first paint。
+```
+
+---
+
 ## 2026-08-17 — Tool Page Frame productionize（F0–F2）
 
 ### 背景
@@ -1489,6 +1528,24 @@ Only position / size may be adjusted per tool when content type requires it.
 Do not reduce shared spacing in order to force everything into the first screen.
 ```
 
+Historical note:
+
+```text
+此 entry 的 Desktop title → result 8px rhythm 已由
+2026-08-22 Component Style Baseline Decision A1 取代。
+
+現行新工具 standard：
+Mobile 1.5rem
+Desktop 2rem
+
+DRC Desktop 因 DesktopCalendar inline-large 為 formal compact exception：
+Mobile 1.5rem
+Desktop 0
+
+8px 不再作為新工具 canonical reference。
+現行規則見 docs/standards/layout-system.md §6.0.1。
+```
+
 ---
 
 ## 2026-06-13 — Date Range V2 responsive mode rules
@@ -2553,6 +2610,7 @@ mobile portrait closed / sheet-open、mobile landscape closed / sheet-open。
 Canonical references: docs/standards/layout-system.md §6.7,
 docs/workflow/tool-page-qa.md §7、§11B,
 docs/workflow/new-tool-development.md §8.2.
+（Current reference：mobile first-screen baseline 現位於 layout-system.md §6.6 F。）
 ```
 
 ---
@@ -2598,6 +2656,7 @@ B1B / B2 前 QA 必須在 mobile portrait sheet-open 與 mobile landscape sheet-
 Canonical references: docs/standards/layout-system.md §6.7 F.6、F.7、F.7A,
 docs/workflow/tool-page-qa.md §7、§11B,
 docs/workflow/new-tool-development.md §8.2.
+（Current reference：對應規則現位於 layout-system.md §6.6 F.6、F.7、F.7A。）
 ```
 
 ---
@@ -2651,6 +2710,7 @@ keyboard 關閉恢復、scroll lock，以及 landscape 不被 portrait keyboard 
 Canonical references: docs/standards/layout-system.md §6.7 F.7B,
 docs/workflow/tool-page-qa.md §7、§11B,
 docs/workflow/new-tool-development.md §8.2、§20.
+（Current reference：對應規則現位於 layout-system.md §6.6 F.7B。）
 ```
 
 ---

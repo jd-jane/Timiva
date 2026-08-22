@@ -106,6 +106,32 @@ CTA 清楚但不吵
 硬切色塊
 ```
 
+### 4.1 Tool UI Semantic Color Contract（docs-first；Batch 1）
+
+新工具（含 Lunar）應依下列 **semantic roles** 選色，不得從 white-alpha `0.1`–`0.22` 任意挑選。本節是 **role contract**，**不**代表 Batch 1 已新增 CSS variables。
+
+| Semantic role | Production baseline value | Notes |
+|---|---|---|
+| Primary Result / primary text | slate-50 family（`rgb(248 250 252)`） | ResultSummary primary |
+| Tool title / secondary UI text | `text-slate-300` / `rgb(203 213 225)` | Tool title baseline |
+| Supporting Result Text / muted UI | slate-400 / `rgb(148 163 184)` | Support text；Muted Text Action base |
+| Standard Pill Field surface | `rgb(255 255 255 / 0.06)` | Lineage C |
+| Standard Pill Field border | `1px rgb(255 255 255 / 0.12)` | Lineage C |
+| Textual Result Support Divider | `rgb(255 255 255 / 0.2)` | Named divider only |
+| Invalid indicator | slate-300 @ ~0.76（`rgb(203 213 225 / 0.76)`）；bang fill `#0f172a` | Canonical `!`；bang 為正式例外 |
+| Accent | existing indigo family（如 `rgb(165 180 252 / …)`、`--timiva-accent*`） | Accent Action Link／選取態 |
+
+責任邊界：
+
+```text
+--rs-* → 只負責 ResultSummary public／component roles
+--ame-* → 只負責 Adaptive Mobile Editor
+既有 --timiva-* → 可沿用；cross-tool field／action CSS vars 是否建立留 Batch 2（依 Lunar 需求）
+舊工具 hard-code／near-duplicate → 不強制本輪 migration
+```
+
+視覺／互動細節見 [`layout-system.md`](layout-system.md)（spacing／geometry）與 [`interactive-controls.md`](interactive-controls.md)（text actions／capsules／mode switch）。
+
 ---
 
 ## 5. 背景原則
@@ -303,9 +329,11 @@ navigation, or structural control.
 
 ### 目前 included / excluded
 
-**Included:** Event Countdown Edit / Theme / Share；Year Progress Theme / Share
+**Included（code truth）：** Event Countdown Edit / Theme / Share；Year Progress Theme / Share；**Hours Calculator mobile capsule**；**Japanese Era Converter mobile capsule**
 
-**Excluded:** Date Range date trigger、Clear Dates、Countdown Timer Sound / Quick Start / primary row、sheet actions、drawer toggles、FAQ、Related Tools cards、Header / Footer
+**Excluded 摘要：** Date Range date trigger、Clear／Reset 等 text action、Countdown Timer primary／Sound、sheet actions、drawer toggles、FAQ、Related Tools、Header／Footer、**conversion／mode switch**、primary-entry capsule（視覺可像 capsule，但不得因「長得像」就加 lift）
+
+完整 Included／Excluded 與 visual shell vs interaction 分層以 [`interactive-controls.md`](interactive-controls.md) 為準。
 
 ### Markup API
 
@@ -359,9 +387,9 @@ Icon 應：
 ```text
 使用一致風格
 大小使用 4px 倍數
-搭配 currentColor
+搭配 currentColor（優先）
 不搶文字焦點
-與文字垂直對齊
+與文字垂直對齊（inline-flex items-center）
 ```
 
 避免：
@@ -373,9 +401,33 @@ icon 顏色過亮
 icon 和文字風格不一致
 ```
 
+### 9.1 Recurring icon contract（新工具）
+
+```text
+優先 inline SVG／既有 Timiva visual language；不為新工具引入無關 icon family
+Outline icon 優先 stroke-width ≈ 1.5
+Rounded caps／joins
+優先 currentColor
+Field／invalid／control 常用約 14px（0.875rem）
+Utility capsule 內 icon 約 16–18px（既有 portrait token 可至 1.125rem）
+Icon + text gap 約 0.375rem–0.5rem
+Product-specific icon 可存在（如 CT ring、theme glyphs），但不得混入無關風格
+不要為了統一而重畫全部 production icons；不要建立 icon component library（本階段）
+```
+
+### 9.2 Canonical invalid `!`
+
+```text
+Triangle + bang（與 AmeFieldError／Age→JEC production 同 path）
+Size ≈ 0.875rem
+Triangle：currentColor
+Bang fill：#0f172a（正式例外，非 currentColor）
+Circle-i 等 info icon ≠ invalid indicator
+```
+
 ---
 
-## 10. 工具結果數字
+## 10. 工具結果數字與結果層級
 
 工具結果是 Tool Page 的視覺核心。
 
@@ -398,6 +450,69 @@ icon 和文字風格不一致
 被 FAQ 搶走焦點
 在手機橫式被壓扁
 ```
+
+### 10.1 Tool Title
+
+正式 baseline（一般工具）：
+
+```text
+Mobile：text-sm
+Desktop：md:text-base
+Weight：500（font-medium）
+Color：text-slate-300
+```
+
+不得建立 tool-local title visual variant，除非有明確特殊 product composition（須在 product spec／任務提詞註明）。
+
+Title → result **spacing** 見 [`layout-system.md`](layout-system.md) §6.0（standard gap A1；DRC compact exception）。
+
+### 10.2 Textual Primary Result default size（Decision B3）
+
+新 textual `ResultSummary` adopter 的 **canonical defaults**（EN／ZH **相同**）：
+
+| Viewport | Default size |
+|---|---|
+| Desktop | `5rem` |
+| Mobile Portrait | `4.75rem` |
+| Mobile Landscape | `3.75rem` |
+
+```text
+第一次呈現就使用上述 default；不得從偏小的 shared textual fallback 當 first paint 起點再逐支放大
+不預先建立 locale-specific sizing
+只有實際結果出現明顯長度／換行／overflow／比例問題，才做 tool-specific 或 locale-specific override
+不因單一 extreme string 降低整個語系 default
+Primary size override 不得連帶修改：Tool title、title→result gap、Supporting Result Text
+JEC Desktop 8.5rem = 特殊 composition override，不是 general default
+Numeric ResultSummary digit ladder 已 canonical，不重開
+Batch 1 = docs only；shared CSS default 實作留 Batch 2（result-summary.css）
+```
+
+### 10.3 Supporting Result Text
+
+```text
+Size：16px
+Weight：400
+Color：slate-400 / rgb(148 163 184)
+Line-height：1.45
+ResultSummary 既有 alignment／max-width 原則保留
+```
+
+另保留較弱的 **muted meta／hint** semantic level；不要把所有補充文字都定義為 Supporting Result Text。
+
+Batch 1 = docs contract；CSS default 留 Batch 2。
+
+### 10.4 Textual Result Support Divider
+
+正式命名：**Textual Result Support Divider**（不是全站唯一 divider）。
+
+```text
+Width：48px
+Height：1px
+Color：white / 0.2
+Vertical spacing：24px
+```
+
+適用新的 textual result composition。Age／DBD／EC／DRC 等既有 divider **不 migration**。
 
 ---
 
@@ -423,6 +538,61 @@ icon 和文字風格不一致
 複雜自訂 picker
 手機鍵盤遮住主結果
 ```
+
+### 11.1 Standard Pill Field
+
+一般 **single-input／converter** 類新工具的 default field visual language：
+
+```text
+Height：3.25rem
+Radius：pill（9999px）
+Background：white / 0.06
+Border：1px white / 0.12
+Backdrop blur：10px
+Text：0.9375rem / 500
+Standard Desktop form cluster：420px
+```
+
+Production lineage：Age → Date Calculator → Hours → Japanese Era Converter。
+
+正式保留不同 semantic variant（不為 baseline 而 migration）：
+
+```text
+DBD／BDC dual-date shell = range-specific
+DC duration cells = tool-specific grouped numeric control
+```
+
+Desktop stage／cluster geometry 見 [`layout-system.md`](layout-system.md) §6.0。
+
+### 11.2 Field-level Error UI（Pattern A／B）
+
+Canonical invalid icon 見 §9.2。正式保留兩個 field-level variants：
+
+**Pattern A — Invalid Indicator only**
+
+```text
+只顯示 canonical ! indicator
+```
+
+**Pattern B — Invalid Indicator + Supporting Message**
+
+```text
+同一個 canonical ! indicator
+加上 visible supporting message（JEC AME production values）：
+  font-size：0.75rem
+  weight：400
+  line-height：1.3
+  color：rgb(148 163 184 / 0.92)
+  field block gap：0.35rem
+僅在使用者無法單靠欄位 + indicator 理解錯誤規則時使用
+```
+
+```text
+AME form-level .ame-error（紅色 banner）是不同 semantic，不得與 Pattern A／B 合併
+本階段不抽 Desktop shared invalid component；視覺契約以本節與 AmeFieldError 為準
+```
+
+Plain text actions／Utility Capsule／Conversion mode switch 見 [`interactive-controls.md`](interactive-controls.md)。
 
 ---
 
@@ -458,7 +628,10 @@ Related Tools 應像自然推薦，而不是工具列表堆疊。
 原則：
 
 ```text
-2 到 4 個
+最多 3 個
+不要求一定滿 3 個
+只有 1–2 個真正相關工具時就維持較少數量
+不為湊滿而加入低相關推薦
 卡片式
 文字簡短
 優先同分類
@@ -581,6 +754,32 @@ Bottom Sheet 不能過高
 <!-- div -->
 <!-- layout -->
 ```
+
+---
+
+## 19.5 Component Style Baseline — transitional / do not reuse（新工具）
+
+「Do not reuse」= 新工具不要當 default；**不是**要求 migration 或刪除 production legacy。
+
+新工具（含 Lunar）**不要**沿用：
+
+```text
+舊 textual ResultSummary 偏小 fallback 作為 first paint 起點
+EC／DRC 3rem white／0.18 divider 作為新 textual result default
+Age／DBD slate divider 作為新 textual result default
+dual-date shell 作為 single-input converter default
+Hours Add-break accent style 作為所有 plain text action default
+V1 gradient result number
+preview CSS 作為 production Frame
+Legacy MSB 作為新工具 Mobile Editor
+Utility Capsule lift 套在 mode-switch／primary-entry control
+JEC 8.5rem 作為 general textual primary default
+EN／ZH 預設不同 textual primary size
+從 white-alpha 0.1–0.22 任意選 field／divider 色
+為單一工具自由新增 title→result spacing（見 layout-system §6.0）
+```
+
+正式 visual／interaction recipes 以本文件 §4.1／§9–§11、[`layout-system.md`](layout-system.md)、[`interactive-controls.md`](interactive-controls.md) 為準。
 
 ---
 

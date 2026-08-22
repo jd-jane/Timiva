@@ -321,6 +321,8 @@ stage 寬度與 lower-content max-w-3xl 未混用
 
 Validated shared baseline 的目的，是消除重複 Owner QA。Baseline 經 Lunar first adopter 完整 Frame QA 成立後，一般新工具只要使用 Frame、validator PASS、且無 Frame override，就不必重測 768px／20rem／56px／640px gate／portrait 沉底等固定事項。
 
+**Visual recipe vs component：** Conversion／Mode Switch 等 visual recipe 以 docs 為準；**第二次** production adopter 驗證後，才依本 Gate 評估是否抽 shared Astro component。Component Style Baseline 視覺規則見 [`design-system.md`](../standards/design-system.md)／[`interactive-controls.md`](../standards/interactive-controls.md)；本 Gate 不重複全文。
+
 ---
 
 ## 10. 與其他文件的關係

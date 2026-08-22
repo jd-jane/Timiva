@@ -210,6 +210,46 @@ Validator：scripts/validate-tool-page-frame.mjs
 
 Production Frame 的主要來源是 Hours Calculator + rebuilt Japanese Era Converter；Date Calculator 只作 regression comparator。新工具 B0 必須使用 `ToolPageFrame`。Frame 不擁有 Header／Footer，只遵守既有 stacking contract。
 
+視覺元件 baseline（title／result typography／pill field／divider／error／colors）見 [`design-system.md`](design-system.md)；互動控制見 [`interactive-controls.md`](interactive-controls.md)。
+
+### 6.0.1 Tool title → result spacing（Decision A1）
+
+**Standard gap（default — 一般 calculator／converter）：**
+
+| Viewport | Value | Tailwind（Frame 現況） |
+|---|---|---|
+| Mobile | `1.5rem` | `mt-6` |
+| Desktop | `2rem` | `md:mt-8` |
+
+```text
+Standard 是 default。
+不得因 Primary Result 字級較大或較小，就自行改 title → result margin。
+Primary Result 的高度問題由 font-size／line-height／wrapper 處理；不使用 layout margin 補 typography。
+Compact 必須有明確 layout constraint 才能使用，不得由單一工具自由新增 spacing。
+```
+
+**DRC compact exception（formal，不是 drift）：**
+
+| Viewport | Value | Evidence |
+|---|---|---|
+| Mobile | `1.5rem`（`mt-6`） | Date Range Calculator |
+| Desktop | `0`（`md:mt-0`） | Date Range Calculator |
+
+```text
+原因：DRC Desktop 使用 DesktopCalendar inline-large；Calendar 常駐佔用 first-screen 垂直空間。
+Compact gap 是 intentional layout exception。
+Lunar（popover-compact）不符合此例外，必須使用 standard gap。
+```
+
+### 6.0.2 Desktop geometry（新 ToolPageFrame adopter）
+
+```text
+Desktop result stage：640px（Frame desktop gate）
+Standard Desktop form cluster：420px（Standard Pill Field／converter 類）
+512px 目前僅 DC duration-specific，不升成 general tier
+舊工具 480／560／36rem 等 layout 不因本 baseline migration
+```
+
 本節 6.1–6.5 描述 preview route 的視覺契約。正式工具頁的可重用實作以 6.0 與 6.6 為準。
 
 ### 6.1 第一屏工具區
@@ -694,7 +734,7 @@ max-width: 36rem;
 * 手機橫式縮小標題、結果區、間距
 * 第一屏需完整顯示主結果數字與操作列
 * 手機橫式仍採 mobile pattern；不得套用 desktop inline input（除非 product spec 明確指定）
-* 主要操作按鈕樣式與位置須對齊 §6.7 mobile first-screen baseline
+* 主要操作按鈕樣式與位置須對齊 §6.6 F mobile first-screen baseline
 * 使用 `.preview-tool-landscape-*` 等 scoped 規則
 
 ### 11.3 通用

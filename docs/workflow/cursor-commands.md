@@ -272,7 +272,7 @@ Footer：
 3. Meta description
 4. FAQ 3 到 6 題
 5. FAQ Schema / JSON-LD
-6. Related Tools 2 到 4 個
+6. Related Tools 最多 3 個（不要求滿 3；不為湊數加入低相關工具）
 7. 語意化 HTML 檢查
 
 SEO 內容必須放在工具體驗之後，不可壓過主工具。
@@ -346,7 +346,7 @@ SEO 內容必須放在工具體驗之後，不可壓過主工具。
 1. 本次完成項目
 2. 修改檔案
 3. 是否修改 locked components
-4. 4 個 Agents 驗證結果
+4. Targeted Agent Review 結果（若該任務層級需要）
 5. 是否有 Block
 6. 是否有 minor notes
 7. 是否符合 Timiva 產品原則
