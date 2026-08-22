@@ -96,6 +96,8 @@ Implementation Plan 必須先做 Reuse Review，再進入實作。
 
 L 級任務的 Agent Routing 中，Tech Architect 應檢查本 Gate；Experience／Brand 檢查視覺是否仍走 shared variant，而非 tool 覆寫。
 
+**Project Design Assistant — Reuse Observation（cross-link）：** [`agents/skills/project-design-assistant-skill.md`](../../agents/skills/project-design-assistant-skill.md) 可提出 Observed / Repeated / Candidate；**不得**宣告 Shared。Design Assistant 只有提名權；正式處理仍由本 Reuse Gate + Owner decision；必要時再由既有技術 review 處理 architecture / validator。**Lunar × JEC Conversion / Mode Switch：** Lunar 預期為第二 adopter；Design Assistant 可在 B1B / B2 提出 Reuse Observation；Lunar Owner QA 完成前不得因 Observation 直接 componentize。不因 Observation 提前建立 shared component、shared API、validator 或 migration task。
+
 ---
 
 ## 5. 通過標準（摘要）

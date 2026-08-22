@@ -74,7 +74,8 @@ agents/skills/
 ├── seo-aeo-tool-page-skill.md
 ├── content-growth-review-skill.md
 ├── ad-placement-review-skill.md
-└── pre-deploy-check-skill.md
+├── pre-deploy-check-skill.md
+└── project-design-assistant-skill.md
 ```
 
 如果某些 skill 尚未建立，可以先保留本 README，之後依任務需要逐步新增。
@@ -95,6 +96,9 @@ agents/skills/
 | 內容成長、內部連結、AI Search | `content-growth-review-skill.md` | Growth Strategist |
 | 廣告版位與誤觸檢查 | `ad-placement-review-skill.md` | Experience Lead / Brand Guardian / Growth Strategist |
 | commit / deploy 前總檢查 | `pre-deploy-check-skill.md` | Tech Architect / Growth Strategist |
+| 新工具 B0 / B1B / B2 Gate；canonical guardrail review | `project-design-assistant-skill.md` | Gate-invoked / not default — Owner 或 workflow 主動呼叫 |
+
+**`project-design-assistant-skill.md`：** B0 Foundation Gate · B1B Design System Gate · B2 Interaction Drift Gate · optional Release Regression。canonical / implementation / visual evidence guardrail；非第五 Agent；非每任務預設必跑。
 
 ---
 
@@ -240,6 +244,8 @@ agents/skills/user-flow-review-skill.md
 agents/skills/component-visual-review-skill.md
 agents/skills/tool-page-qa-skill.md
 ```
+
+B0 / B1B / B2 完成且 Owner 或 workflow 指定 Gate review 時，另讀 [`project-design-assistant-skill.md`](project-design-assistant-skill.md)（Gate-invoked，非預設必跑）。
 
 ### 9.2 SEO / FAQ 補強
 

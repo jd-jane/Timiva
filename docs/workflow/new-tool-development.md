@@ -405,6 +405,20 @@ node scripts/validate-tool-page-frame.mjs 通過
 沒有 Frame-specific override／exception
 ```
 
+B0 implementation complete 後，建議流程：
+
+```text
+B0 implementation complete
+→ existing validator / browser evidence
+→ Project Design Assistant「B0 Foundation Gate」（agents/skills/project-design-assistant-skill.md）
+→ Owner review
+→ B1A
+```
+
+**Lunar Date Converter** 為 ToolPageFrame first adopter：B0 必須跑完整 Foundation Gate（baseline 建立期）。後續 adopter 在 baseline 穩定後可降低 review 重量；**降低重量 ≠ 停止 deviation detection**。
+
+Design Assistant **不取代**：`validate-tool-page-frame.mjs`、browser QA、Owner review。
+
 B0 未通過（未使用 Frame、validator FAIL、或自行覆寫 Frame）時，不得進入 B1A。
 
 批次命名建議：
@@ -451,6 +465,17 @@ B1A 不包含 Smart Date Input、日期計算、sheet 日期輸入 state machine
 ### 8.2 手機第一屏控制區 baseline（一般工具）
 
 B1B 靜態畫面與 B2 互動實作前，必須使用 `ToolPageFrame`，並對齊 `docs/standards/layout-system.md` §6（production Frame）與 §6.6 F，以及 Component Style Baseline（`design-system.md` §4.1／§9–§11；`interactive-controls.md` §12–§13）。
+
+B1B implementation complete 後：
+
+```text
+B1B implementation complete
+→ Review Packet（template 見 agents/skills/project-design-assistant-skill.md）
+→ Project Design Assistant「B1B Design System Gate」
+→ Owner Visual Review
+```
+
+Design Assistant 先清掉 evidence-based mismatch。Owner 保留 aesthetic judgment、tool-specific design decision、final visual acceptance。
 
 #### 結構與按鈕位置
 
@@ -529,6 +554,17 @@ mobile landscape sheet-open + keyboard + iOS input accessory bar
 ```
 
 有 mobile bottom sheet + input focus 的工具，B2B 不可在上述狀態未通過前開始。
+
+B2 implementation complete 後：
+
+```text
+B2 implementation complete
+→ relevant interaction evidence
+→ Project Design Assistant「B2 Interaction Drift Gate」
+→ Owner review / next workflow
+```
+
+目的：確認 interaction 未破壞已確認 B1B baseline。不取代 `tool-page-qa.md` §11B 或完整 B2 QA。
 
 
 ---

@@ -376,6 +376,8 @@ B0 未通過時，**不得進入 B1A**。既有 DC／Hours／JEC production 不�
 
 **B1B Component Style 提醒：** 上方靜態畫面必須使用 canonical Component Style Baseline（title、A1 title→result gap、B3 textual primary defaults、Supporting Result Text、Textual Result Support Divider、Standard Pill Field 等）。不得從偏小 textual fallback 或任意 spacing 開始。Owner Visual QA 仍保留最終判斷。詳見 `docs/standards/design-system.md`、`layout-system.md` §6.0。
 
+**Project Design Assistant（cross-link）：** Gate review 可作 QA evidence 的一部分。Canonical skill：[`agents/skills/project-design-assistant-skill.md`](../../agents/skills/project-design-assistant-skill.md)。**不取代** automated validator、browser QA、device / viewport QA、Owner visual QA、本文件既有 Tool Page QA checklist。Lunar first adopter：B0 仍依本節完整 ToolPageFrame QA；Design Assistant Foundation Gate 是補充 guardrail，不是替代。
+
 ---
 
 ## 11A. B1A lower content and sidebar QA

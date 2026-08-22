@@ -55,6 +55,17 @@ agents/
 └── growth-strategist.md
 ```
 
+### Project Design Assistant（skill，非第五 Agent）
+
+Timiva 另有 **Project Design Assistant** — Gate-based project design guardrail skill：
+
+```text
+Canonical skill：agents/skills/project-design-assistant-skill.md
+性質：review-only；由 Owner 或 workflow 在指定 Gate 主動呼叫
+```
+
+不加入 P / S / M / L Agent routing、Targeted Agent Review 固定名單、Pre-deploy 四 Agent routing。不取代 Owner Final Review。
+
 ---
 
 ## 4. Agents 工作流程
