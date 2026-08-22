@@ -57,6 +57,10 @@ export const zh: Messages = {
       description:
         "在西元與日本近現代年號（明治、大正、昭和、平成、令和）之間雙向換算，範圍為明治6年（1873年）至西元2100年；改元年份會同時顯示兩個年號。",
     },
+    lunarDateConverter: {
+      title: "國曆農曆轉換｜Timiva",
+      description: "在西曆與農曆日期之間換算。簡單日期轉換，不含農民曆宜忌等內容。",
+    },
     privacy: {
       title: "隱私權政策 — Timiva",
       description: "Timiva 如何處理您的資料與隱私。",
@@ -1119,5 +1123,35 @@ export const zh: Messages = {
         },
       ],
     },
+  },
+  lunarDateConverter: {
+    kicker: "國曆農曆轉換",
+    scaffoldLead: "在西曆與農曆日期之間換算。完整內容將於 B1A 加入。",
+    relatedToolsDrawerAriaLabel: "相關工具側欄",
+    toggleRelatedToolsDrawerAriaLabel: "開啟或關閉相關工具側欄",
+    relatedToolsHeading: "你可能也會需要",
+    mobileControlsAriaLabel: "國曆農曆轉換控制項",
+    resultsLabel: "國曆農曆轉換結果",
+    resultPrimaryPlaceholder: "？",
+    resultSupportPlaceholder: "輸入日期以換算",
+    primaryEntryPlaceholder: "日期輸入 placeholder",
+    primaryActionLabel: "輸入要換算的日期",
+    capsulePlaceholder: "選擇日期",
+    lowerPlaceholderHeading: "關於此工具",
+    lowerPlaceholderBody: "Scaffold only。About、使用方式、FAQ 與相關工具內容將於 B1A 加入。",
+    relatedPlaceholderRows: [
+      {
+        name: "相關工具 placeholder 1",
+        description: "側欄／下方區塊結構 placeholder。",
+      },
+      {
+        name: "相關工具 placeholder 2",
+        description: "側欄／下方區塊結構 placeholder。",
+      },
+      {
+        name: "相關工具 placeholder 3",
+        description: "側欄／下方區塊結構 placeholder。",
+      },
+    ],
   },
 };

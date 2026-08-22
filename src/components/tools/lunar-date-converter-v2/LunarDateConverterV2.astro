@@ -1,0 +1,84 @@
+---
+/**
+ * Lunar Date Converter V2 — B0 ToolPageFrame first-adopter scaffold.
+ * Static placeholders only; no conversion logic, no full input UI, no AME.
+ */
+import RelatedToolRow from "../../RelatedToolRow.astro";
+import ToolPageFrame from "../shared/ToolPageFrame.astro";
+import { type Locale } from "../../../i18n/config";
+import { getMessages } from "../../../i18n/messages";
+import "../../../styles/tools/lunar-date-converter-v2.css";
+
+interface Props {
+	locale?: Locale;
+}
+
+const { locale = "en" } = Astro.props;
+const messages = getMessages(locale);
+const m = messages.lunarDateConverter;
+---
+
+<div data-lunar-date-converter-v2 data-ldcv2-locale={locale === "zh" ? "zh" : "en"}>
+	<ToolPageFrame
+		locale={locale}
+		relatedDrawerAriaLabel={m.relatedToolsDrawerAriaLabel}
+		toggleRelatedToolsDrawerAriaLabel={m.toggleRelatedToolsDrawerAriaLabel}
+		relatedHeading={m.relatedToolsHeading}
+		mobileControlsAriaLabel={m.mobileControlsAriaLabel}
+	>
+		<Fragment slot="title">{m.kicker}</Fragment>
+
+		<div slot="result" class="ldcv2-result-placeholder" aria-live="polite">
+			<p class="ldcv2-result-primary">{m.resultPrimaryPlaceholder}</p>
+			<p class="ldcv2-result-support">{m.resultSupportPlaceholder}</p>
+		</div>
+
+		<div slot="desktopControls">
+			<div class="ldcv2-primary-entry-placeholder" aria-hidden="true">
+				{m.primaryEntryPlaceholder}
+			</div>
+		</div>
+
+		<button
+			slot="mobilePrimaryControl"
+			type="button"
+			class="preview-tool-control-btn ldcv2-mobile-capsule"
+			disabled
+			aria-label={m.primaryActionLabel}
+		>
+			{m.capsulePlaceholder}
+		</button>
+
+		<Fragment slot="drawerRelated">
+			{
+				m.relatedPlaceholderRows.map((row) => (
+					<RelatedToolRow
+						href="#"
+						name={row.name}
+						description={row.description}
+						icon="calendar"
+					/>
+				))
+			}
+		</Fragment>
+
+		<Fragment slot="lowerRelated">
+			{
+				m.relatedPlaceholderRows.map((row) => (
+					<RelatedToolRow
+						href="#"
+						name={row.name}
+						description={row.description}
+						icon="calendar"
+					/>
+				))
+			}
+		</Fragment>
+
+		<section slot="lowerContent" class="space-y-3 text-slate-400">
+			<h2 class="text-lg font-semibold text-white">{m.lowerPlaceholderHeading}</h2>
+			<p class="leading-relaxed">{m.scaffoldLead}</p>
+			<p class="text-sm leading-relaxed text-slate-500">{m.lowerPlaceholderBody}</p>
+		</section>
+	</ToolPageFrame>
+</div>

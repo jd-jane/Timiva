@@ -21,6 +21,7 @@ export const routePaths = {
   dateCalculator: "/date-calculator/",
   hoursCalculator: "/hours-calculator/",
   japaneseEraConverter: "/japanese-era-converter/",
+  lunarDateConverter: "/lunar-date-converter/",
   allTools: "/tools/",
   privacy: "/privacy/",
   terms: "/terms/",

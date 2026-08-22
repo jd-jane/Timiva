@@ -55,6 +55,11 @@ export const en = {
       description:
         "Convert between Gregorian years and Japanese eras—Meiji, Taisho, Showa, Heisei, and Reiwa—from 1873 through 2100. Handles era transition years.",
     },
+    lunarDateConverter: {
+      title: "Lunar Date Converter | Timiva",
+      description:
+        "Convert between Gregorian and lunar calendar dates. Simple date conversion without almanac extras.",
+    },
     privacy: {
       title: "Privacy Policy — Timiva",
       description: "How Timiva handles your data and privacy.",
@@ -1165,6 +1170,38 @@ export const en = {
         },
       ],
     },
+  },
+  lunarDateConverter: {
+    kicker: "Lunar Date Converter",
+    scaffoldLead:
+      "Convert between Gregorian and lunar calendar dates. Full content arrives in B1A.",
+    relatedToolsDrawerAriaLabel: "Related tools drawer",
+    toggleRelatedToolsDrawerAriaLabel: "Toggle related tools drawer",
+    relatedToolsHeading: "You may also need",
+    mobileControlsAriaLabel: "Lunar date converter controls",
+    resultsLabel: "Lunar date converter result",
+    resultPrimaryPlaceholder: "?",
+    resultSupportPlaceholder: "Enter a date to convert",
+    primaryEntryPlaceholder: "Date input placeholder",
+    primaryActionLabel: "Enter date to convert",
+    capsulePlaceholder: "Select date",
+    lowerPlaceholderHeading: "About this tool",
+    lowerPlaceholderBody:
+      "Scaffold only. About, how-to, FAQ, and related tools content will be added in B1A.",
+    relatedPlaceholderRows: [
+      {
+        name: "Related tool placeholder 1",
+        description: "Drawer / lower-content structure placeholder.",
+      },
+      {
+        name: "Related tool placeholder 2",
+        description: "Drawer / lower-content structure placeholder.",
+      },
+      {
+        name: "Related tool placeholder 3",
+        description: "Drawer / lower-content structure placeholder.",
+      },
+    ],
   },
 } as const;
 
