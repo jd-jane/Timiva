@@ -4,7 +4,7 @@
  *
  * content="numeric" | "textual"：
  * - numeric：既有 digit ladder／三欄 landscape
- * - textual：獨立排列與字級 token；不讀 data-rs-digits；support 不截斷
+ * - textual：獨立排列與字級 token（B3 defaults：desktop 5rem／portrait 4.75rem／landscape 3.75rem）；不讀 data-rs-digits；support 不截斷
  * - textual support：white-space:pre-line — 字串內 \\n 可顯示 1–2 行同層級輔助文字
  *
  * Phase D numeric typography:
@@ -288,18 +288,17 @@
 	align-items: center;
 	justify-content: center;
 	min-width: 0;
-	--rs-textual-primary-size: 2.75rem;
+	--rs-textual-primary-size: 5rem;
 	--rs-textual-weekday-size: 1.125rem;
-	--rs-textual-support-size: 0.875rem;
+	--rs-textual-support-size: 16px;
 	--rs-textual-weekday-gap: 0.5rem;
 	--rs-textual-support-gap: 0.75rem;
 	--rs-textual-support-max: min(100%, 28rem);
 }
 
+/* Textual spacious：無獨立 primary／support typography contract；weekday 保留 spacious-only token。 */
 [data-result-summary][data-rs-content="textual"][data-rs-variant="spacious"] {
-	--rs-textual-primary-size: 3.25rem;
 	--rs-textual-weekday-size: 1.25rem;
-	--rs-textual-support-size: 0.9375rem;
 }
 
 [data-result-summary][data-rs-content="textual"] .rs-primary {
@@ -364,9 +363,9 @@
 }
 
 [data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
-	--rs-textual-primary-size: clamp(2rem, 8vw, 2.75rem);
+	--rs-textual-primary-size: 4.75rem;
 	--rs-textual-weekday-size: clamp(1rem, 3.5vw, 1.125rem);
-	--rs-textual-support-size: clamp(0.8125rem, 3vw, 0.875rem);
+	--rs-textual-support-size: 16px;
 	--rs-textual-support-max: min(100%, 22rem);
 }
 
@@ -388,9 +387,9 @@
 	width: max-content;
 	max-width: 100%;
 	margin-inline: auto;
-	--rs-textual-primary-size: clamp(1.5rem, 4.5vw, 2.25rem);
+	--rs-textual-primary-size: 3.75rem;
 	--rs-textual-weekday-size: clamp(0.9375rem, 2.8vw, 1.125rem);
-	--rs-textual-support-size: clamp(0.75rem, 2.4vw, 0.875rem);
+	--rs-textual-support-size: 16px;
 	--rs-textual-support-max: min(100%, 36rem);
 }
 

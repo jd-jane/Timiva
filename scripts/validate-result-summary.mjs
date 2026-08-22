@@ -768,6 +768,38 @@ assert(
 	"textual landscape collapses when weekday hidden",
 );
 
+/* B3 textual primary defaults + supporting text size (Batch 2A) */
+assert(
+	/\[data-result-summary\]\[data-rs-content="textual"\][\s\S]*?--rs-textual-primary-size:\s*5rem/.test(
+		textualCss,
+	),
+	"textual shared base primary default = 5rem (B3 desktop)",
+);
+assert(
+	/\[data-result-summary\]\[data-rs-content="textual"\]\[data-rs-layout="portrait"\][\s\S]*?--rs-textual-primary-size:\s*4\.75rem/.test(
+		textualCss,
+	),
+	"textual portrait primary default = 4.75rem (B3)",
+);
+assert(
+	/\[data-result-summary\]\[data-rs-content="textual"\]\[data-rs-layout="landscape"\][\s\S]*?--rs-textual-primary-size:\s*3\.75rem/.test(
+		textualCss,
+	),
+	"textual landscape primary default = 3.75rem (B3)",
+);
+assert(
+	/\[data-result-summary\]\[data-rs-content="textual"\][\s\S]*?--rs-textual-support-size:\s*16px/.test(
+		textualCss,
+	),
+	"textual support default size = 16px",
+);
+assert(
+	!/\[data-rs-content="textual"\]\[data-rs-variant="spacious"\]\s*\{[^}]*--rs-textual-primary-size/.test(
+		textualCss,
+	),
+	"textual spacious has no alternate primary default",
+);
+
 function createTextualRoot({ weekday = "", support = "" } = {}) {
 	const summary = new MiniElement("section");
 	summary.setAttribute("data-result-summary", "");

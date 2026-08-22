@@ -1,0 +1,179 @@
+/**
+ * Tool Component Style Baseline — forward-looking shared visual recipes.
+ *
+ * Opt-in classes only. Not a component DOM contract. Not a legacy migration layer.
+ * New tools (e.g. Lunar) compose: cluster → field shell → tool-owned inner content.
+ */
+
+/* -------------------------------------------------------------------------- */
+/* Recipe A — Standard Pill Field（thin visual shell + desktop cluster width） */
+/* -------------------------------------------------------------------------- */
+
+.tool-standard-pill-field {
+	display: flex;
+	align-items: center;
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 0;
+	height: 3.25rem;
+	min-height: 3.25rem;
+	border-radius: 9999px;
+	background: rgb(255 255 255 / 0.06);
+	border: 1px solid rgb(255 255 255 / 0.12);
+	backdrop-filter: blur(10px);
+	color: rgb(248 250 252 / 0.92);
+	font-size: 0.9375rem;
+	font-weight: 500;
+	line-height: 1.35;
+}
+
+.tool-standard-pill-field-cluster {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	width: 100%;
+	max-width: min(100%, 420px);
+	margin-inline: auto;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Recipe B — Textual Result Support Divider（opt-in；不自動套 [data-rs-content]） */
+/* -------------------------------------------------------------------------- */
+
+.tool-textual-result-support-divider::before {
+	content: "";
+	display: block;
+	width: 48px;
+	height: 1px;
+	margin-inline: auto;
+	margin-block: 24px;
+	background: rgb(255 255 255 / 0.2);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Recipe C — Plain Text Actions（Muted default / Accent exception）          */
+/* -------------------------------------------------------------------------- */
+
+.tool-text-action--muted {
+	display: inline;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	backdrop-filter: none;
+	box-shadow: none;
+	font: inherit;
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.35;
+	color: rgb(148 163 184 / 0.72);
+	text-decoration: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.tool-text-action--muted:hover {
+		color: rgb(203 213 225 / 0.88);
+	}
+}
+
+.tool-text-action--accent {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+	font: inherit;
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.3;
+	color: rgb(165 180 252 / 0.92);
+	text-decoration: none;
+	cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.tool-text-action--accent:hover {
+		color: rgb(199 210 254);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+	}
+}
+
+/* -------------------------------------------------------------------------- */
+/* Recipe D — Conversion / Mode Switch（non-lift；不得加 .tool-utility-control） */
+/* -------------------------------------------------------------------------- */
+
+.tool-mode-switch {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.375rem;
+	box-sizing: border-box;
+	width: fit-content;
+	max-width: 100%;
+	margin: 0;
+	padding: 0.375rem 0.75rem;
+	border-radius: 9999px;
+	border: 1px solid rgb(255 255 255 / 0.1);
+	background: rgb(255 255 255 / 0.04);
+	color: rgb(148 163 184);
+	font: inherit;
+	font-size: 0.8125rem;
+	font-weight: 500;
+	line-height: 1.25;
+	white-space: nowrap;
+	backdrop-filter: none;
+	box-shadow: none;
+}
+
+.tool-mode-switch-icon {
+	display: block;
+	width: 0.875rem;
+	height: 0.875rem;
+	flex-shrink: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.tool-mode-switch:hover {
+		background: rgb(255 255 255 / 0.07);
+		border-color: rgb(255 255 255 / 0.14);
+	}
+}
+
+.tool-mode-switch:focus-visible {
+	background: rgb(255 255 255 / 0.07);
+	border-color: rgb(255 255 255 / 0.16);
+	outline: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Recipe E — Pattern B field-level supporting error                           */
+/* -------------------------------------------------------------------------- */
+
+.tool-field-error-block {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	min-width: 0;
+	width: 100%;
+}
+
+.tool-field-error-message {
+	margin: 0;
+	max-width: 100%;
+	min-width: 0;
+	overflow-wrap: anywhere;
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3;
+	color: rgb(148 163 184 / 0.92);
+}
+
+.tool-field-error-message[hidden] {
+	display: none;
+}
