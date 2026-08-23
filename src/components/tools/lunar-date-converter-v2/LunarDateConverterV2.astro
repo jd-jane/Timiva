@@ -1,12 +1,16 @@
 ---
 /**
  * Lunar Date Converter V2 — B0 ToolPageFrame first-adopter scaffold.
- * Static placeholders only; no conversion logic, no full input UI, no AME.
+ * B1A: lower content + temporary tool-local Related Tools wiring.
+ * Static placeholders only in upper stage; no conversion logic, no full input UI, no AME.
  */
 import RelatedToolRow from "../../RelatedToolRow.astro";
 import ToolPageFrame from "../shared/ToolPageFrame.astro";
-import { type Locale } from "../../../i18n/config";
+import { catalogIconMap } from "../../../lib/catalogIcons";
+import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
+import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getMessages } from "../../../i18n/messages";
+import type { CatalogToolId } from "../../../data/toolsCatalog";
 import "../../../styles/tools/lunar-date-converter-v2.css";
 
 interface Props {
@@ -16,6 +20,25 @@ interface Props {
 const { locale = "en" } = Astro.props;
 const messages = getMessages(locale);
 const m = messages.lunarDateConverter;
+const faqSchema = buildFaqPageJsonLd(m.faq.items);
+
+/** B1A temporary outbound Related Tools — canonical catalog integration deferred to Post-tool Link Integration Gate. */
+const b1aRelatedToolIds = ["japanese-era-converter", "age-calculator"] as const satisfies readonly CatalogToolId[];
+
+const toolCopy: Pick<
+	Record<CatalogToolId, { title: string; relatedDescription: string }>,
+	(typeof b1aRelatedToolIds)[number]
+> = {
+	"japanese-era-converter": messages.tools.japaneseEraConverter,
+	"age-calculator": messages.tools.ageCalculator,
+};
+
+const relatedToolItems = b1aRelatedToolIds.map((id) => ({
+	href: getLocalizedPath(locale, `/${id}/`),
+	name: toolCopy[id].title,
+	description: toolCopy[id].relatedDescription,
+	icon: catalogIconMap[id],
+}));
 ---
 
 <div data-lunar-date-converter-v2 data-ldcv2-locale={locale === "zh" ? "zh" : "en"}>
@@ -51,12 +74,12 @@ const m = messages.lunarDateConverter;
 
 		<Fragment slot="drawerRelated">
 			{
-				m.relatedPlaceholderRows.map((row) => (
+				relatedToolItems.map((tool) => (
 					<RelatedToolRow
-						href="#"
-						name={row.name}
-						description={row.description}
-						icon="calendar"
+						href={tool.href}
+						name={tool.name}
+						description={tool.description}
+						icon={tool.icon}
 					/>
 				))
 			}
@@ -64,21 +87,90 @@ const m = messages.lunarDateConverter;
 
 		<Fragment slot="lowerRelated">
 			{
-				m.relatedPlaceholderRows.map((row) => (
+				relatedToolItems.map((tool) => (
 					<RelatedToolRow
-						href="#"
-						name={row.name}
-						description={row.description}
-						icon="calendar"
+						href={tool.href}
+						name={tool.name}
+						description={tool.description}
+						icon={tool.icon}
 					/>
 				))
 			}
 		</Fragment>
 
-		<section slot="lowerContent" class="space-y-3 text-slate-400">
-			<h2 class="text-lg font-semibold text-white">{m.lowerPlaceholderHeading}</h2>
-			<p class="leading-relaxed">{m.scaffoldLead}</p>
-			<p class="text-sm leading-relaxed text-slate-500">{m.lowerPlaceholderBody}</p>
-		</section>
+		<Fragment slot="lowerContent">
+			<section class="pb-12" aria-labelledby="ldcv2-about-heading">
+				<h2 id="ldcv2-about-heading" class="mb-2 text-lg font-semibold text-white">
+					{m.about.heading}
+				</h2>
+				<p class="text-sm leading-relaxed text-slate-400">{m.about.body}</p>
+			</section>
+
+			<section class="pb-12" aria-labelledby="ldcv2-howto-heading">
+				<h2 id="ldcv2-howto-heading" class="mb-2 text-lg font-semibold text-white">
+					{m.howTo.heading}
+				</h2>
+				<ol class="list-decimal space-y-2 pl-5 text-sm leading-relaxed text-slate-400">
+					{m.howTo.steps.map((step) => <li>{step}</li>)}
+				</ol>
+			</section>
+
+			<section class="pb-12" aria-labelledby="ldcv2-tags-heading">
+				<h2 id="ldcv2-tags-heading" class="mb-4 text-lg font-semibold text-white">
+					{m.commonUses.heading}
+				</h2>
+				<ul class="tool-keyword-list" role="list">
+					{m.commonUses.items.map((item) => <li class="tool-keyword-chip">{item}</li>)}
+				</ul>
+			</section>
+
+			<section aria-labelledby="ldcv2-faq-heading">
+				<h2 id="ldcv2-faq-heading" class="mb-4 text-lg font-semibold text-white">
+					{m.faq.heading}
+				</h2>
+				<div class="border-t border-white/20">
+					{
+						m.faq.items.map((item) => (
+							<details class="group border-b border-white/20 py-4">
+								<summary class="flex list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden">
+									<span>{item.question}</span>
+									<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 16 16"
+											fill="none"
+											class="h-4 w-4 group-open:hidden"
+											aria-hidden="true"
+										>
+											<path
+												d="M8 3.5v9M3.5 8h9"
+												stroke="currentColor"
+												stroke-width="1.5"
+												stroke-linecap="round"></path>
+										</svg>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 16 16"
+											fill="none"
+											class="hidden h-4 w-4 group-open:block"
+											aria-hidden="true"
+										>
+											<path
+												d="M3.5 8h9"
+												stroke="currentColor"
+												stroke-width="1.5"
+												stroke-linecap="round"></path>
+										</svg>
+									</span>
+								</summary>
+								<p class="mt-3 text-sm leading-relaxed text-slate-300">{item.answer}</p>
+							</details>
+						))
+					}
+				</div>
+			</section>
+		</Fragment>
 	</ToolPageFrame>
 </div>
+
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />

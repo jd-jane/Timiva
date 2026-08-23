@@ -1173,8 +1173,6 @@ export const en = {
   },
   lunarDateConverter: {
     kicker: "Lunar Date Converter",
-    scaffoldLead:
-      "Convert between Gregorian and lunar calendar dates. Full content arrives in B1A.",
     relatedToolsDrawerAriaLabel: "Related tools drawer",
     toggleRelatedToolsDrawerAriaLabel: "Toggle related tools drawer",
     relatedToolsHeading: "You may also need",
@@ -1185,23 +1183,59 @@ export const en = {
     primaryEntryPlaceholder: "Date input placeholder",
     primaryActionLabel: "Enter date to convert",
     capsulePlaceholder: "Select date",
-    lowerPlaceholderHeading: "About this tool",
-    lowerPlaceholderBody:
-      "Scaffold only. About, how-to, FAQ, and related tools content will be added in B1A.",
-    relatedPlaceholderRows: [
-      {
-        name: "Related tool placeholder 1",
-        description: "Drawer / lower-content structure placeholder.",
-      },
-      {
-        name: "Related tool placeholder 2",
-        description: "Drawer / lower-content structure placeholder.",
-      },
-      {
-        name: "Related tool placeholder 3",
-        description: "Drawer / lower-content structure placeholder.",
-      },
-    ],
+    about: {
+      heading: "What is Lunar Date Converter?",
+      body: "Lunar Date Converter converts between Gregorian and lunar calendar dates in both directions. It shows today’s result by default and lets you pick any date from 1901 through 2099, including leap months, with the weekday shown. The year stem-branch (歲次) may appear as part of the date result. It does not include almanac content, auspicious or inauspicious guidance, zodiac interpretation, month or day stem-branch, fortune reading, or the 24 solar terms. It converts dates—it does not interpret them.",
+    },
+    howTo: {
+      heading: "How to use Lunar Date Converter",
+      steps: [
+        "The tool opens with today’s Gregorian date and its lunar equivalent.",
+        "Choose or enter another date to see the updated conversion.",
+        "Switch to lunar input to look up the matching Gregorian date.",
+        "If the date falls in a leap month, select the correct leap month.",
+      ],
+    },
+    commonUses: {
+      heading: "Common uses",
+      items: [
+        "Today's lunar date",
+        "Gregorian to lunar",
+        "Lunar to Gregorian",
+        "Lunar birthday",
+        "Leap month dates",
+      ],
+    },
+    faq: {
+      heading: "Lunar Date Converter FAQ",
+      items: [
+        {
+          question: "What is today's lunar date?",
+          answer:
+            "Open the tool to see today’s Gregorian date converted to the lunar calendar. To check another day, change the date and the lunar result updates right away.",
+        },
+        {
+          question: "How do I convert a Gregorian date to lunar?",
+          answer:
+            "Keep Gregorian input selected, then choose or enter the date you want. The tool shows the matching lunar date, including leap months when they apply.",
+        },
+        {
+          question: "How do I convert a lunar date to Gregorian?",
+          answer:
+            "Switch to lunar input, enter the lunar year, month, and day, and specify a leap month if needed. The tool returns the matching Gregorian date.",
+        },
+        {
+          question: "What is a leap month in the lunar calendar?",
+          answer:
+            "Some lunar years include an extra month—a leap month—with the same month name as the regular month before or after it. When converting a leap-month date, choose the leap month option so the tool picks the correct day.",
+        },
+        {
+          question: "Which years does this tool support?",
+          answer:
+            "Lunar Date Converter covers Gregorian and lunar dates from 1901 through 2099.",
+        },
+      ],
+    },
   },
 } as const;
 

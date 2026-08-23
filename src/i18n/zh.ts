@@ -1126,7 +1126,6 @@ export const zh: Messages = {
   },
   lunarDateConverter: {
     kicker: "國曆農曆轉換",
-    scaffoldLead: "在西曆與農曆日期之間換算。完整內容將於 B1A 加入。",
     relatedToolsDrawerAriaLabel: "相關工具側欄",
     toggleRelatedToolsDrawerAriaLabel: "開啟或關閉相關工具側欄",
     relatedToolsHeading: "你可能也會需要",
@@ -1137,21 +1136,51 @@ export const zh: Messages = {
     primaryEntryPlaceholder: "日期輸入 placeholder",
     primaryActionLabel: "輸入要換算的日期",
     capsulePlaceholder: "選擇日期",
-    lowerPlaceholderHeading: "關於此工具",
-    lowerPlaceholderBody: "Scaffold only。About、使用方式、FAQ 與相關工具內容將於 B1A 加入。",
-    relatedPlaceholderRows: [
-      {
-        name: "相關工具 placeholder 1",
-        description: "側欄／下方區塊結構 placeholder。",
-      },
-      {
-        name: "相關工具 placeholder 2",
-        description: "側欄／下方區塊結構 placeholder。",
-      },
-      {
-        name: "相關工具 placeholder 3",
-        description: "側欄／下方區塊結構 placeholder。",
-      },
-    ],
+    about: {
+      heading: "什麼是國曆農曆轉換？",
+      body: "國曆農曆轉換可在西曆（國曆）與農曆日期之間雙向換算。預設顯示今天的結果，也可指定 1901 至 2099 年間的任意日期，支援閏月並顯示星期。結果可包含歲次（年干支）。不做農民曆、宜忌、吉日、沖煞、生肖解讀、干支月／日、命理／運勢或二十四節氣。核心原則：換日期，不解讀日期。",
+    },
+    howTo: {
+      heading: "如何使用國曆農曆轉換",
+      steps: [
+        "開啟工具時，預設以今天的國曆日期顯示對應農曆結果。",
+        "選擇或輸入其他日期，即可查看更新後的換算結果。",
+        "切換為農曆輸入，可查看對應的國曆日期。",
+        "若日期落在閏月，請指定正確的閏月。",
+      ],
+    },
+    commonUses: {
+      heading: "常見用途",
+      items: ["今天農曆", "國曆轉農曆", "農曆轉國曆", "農曆生日", "閏月日期"],
+    },
+    faq: {
+      heading: "國曆農曆轉換 FAQ",
+      items: [
+        {
+          question: "今天農曆是幾月幾日？",
+          answer:
+            "開啟工具即可看到今天國曆對應的農曆日期。若要查其他日期，更改日期後農曆結果會立即更新。",
+        },
+        {
+          question: "怎麼把國曆轉成農曆？",
+          answer:
+            "保持國曆輸入，選擇或輸入要查的日期。工具會顯示對應的農曆日期；若該年有閏月，也會一併處理。",
+        },
+        {
+          question: "怎麼把農曆轉成國曆？",
+          answer:
+            "切換為農曆輸入，輸入農曆年、月、日；若為閏月，請指定閏月。工具會回傳對應的國曆日期。",
+        },
+        {
+          question: "農曆的閏月是什麼？",
+          answer:
+            "部分農曆年份會多出一個閏月，名稱與前後某個月份相同。換算閏月日期時，請選擇閏月選項，工具才能對應到正確的日期。",
+        },
+        {
+          question: "這個工具支援哪些年份？",
+          answer: "國曆農曆轉換支援 1901 至 2099 年的西曆與農曆日期。",
+        },
+      ],
+    },
   },
 };
