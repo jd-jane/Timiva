@@ -2745,3 +2745,45 @@ Phase A–I 完成（含 Owner Gate I PASS）；canonical validator 與 Reuse Ga
 
 > **歷史備註：** 本 entry 寫於 Phase I docs checkpoint 當下，當時尚未 push／deploy。
 > 後續已 push／deploy（Production HEAD：`c1aea32`）；見上方「2026-07-22 — ResultSummary Phase A–I production deploy」。
+
+---
+
+## 2026-08-23 — Primary Entry Capsule shared baseline
+
+Decision:
+
+```text
+Primary Entry Capsule 採單一 shared visual shell（opt-in `.tool-primary-entry-capsule`）。
+text-only 與 icon+text 為同一 shell 的 content variant。
+Primary Entry ≠ `.tool-utility-control`。
+```
+
+Rules:
+
+```text
+Shared shell（tool-primary-entry-capsule-baseline.css）：
+  border／bg／radius／blur／text／focus／disabled／nowrap／icon contract
+  content-driven：min-width 88px（5.5rem）；portrait padding-inline 20px
+  landscape compact：min-height 32px；padding 6px×16px；font 12px；min-width 88px
+  landscape gate：orientation:landscape + max-height:700px + max-width:1200px
+
+ToolPageFrame：placement、portrait wide（20rem／56px）、landscape layout mode
+Tool content：label、icon、ARIA、dynamic inner content
+
+Portrait wide（單一 primary entry）：max-width 20rem、min-height 56px
+Portrait content-driven：width auto、padding-inline 20px、min-width 88px
+Landscape：content-driven width；不維持 portrait wide
+
+823px + 824–899px（DR／BDC）：legacy responsive policy；保留；不納入新 baseline
+900–1200：不新增第三 button tier
+Hours／JEC `.tool-utility-control` on primary：legacy；本輪不 migration
+```
+
+Validators:
+
+```text
+scripts/validate-primary-entry-capsule-baseline.mjs
+scripts/validate-tool-page-frame-adopters.mjs
+```
+
+B0 Foundation Gate：geometry PASS + shell FAIL => BLOCK。

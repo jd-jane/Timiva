@@ -32,6 +32,25 @@ const resultBaselinePath = "src/styles/tools/tool-result-v2-baseline.css";
 assert(existsSync(join(root, baselinePath)), "baseline stylesheet exists");
 
 const baseline = read(baselinePath);
+const primaryCapsulePath = "src/styles/tools/tool-primary-entry-capsule-baseline.css";
+
+assert(
+	baseline.includes('@import "./tool-primary-entry-capsule-baseline.css";'),
+	"component style baseline imports primary entry capsule baseline",
+);
+
+assert(existsSync(join(root, primaryCapsulePath)), "primary entry capsule baseline file exists");
+
+const primaryCapsuleClasses = [
+	".tool-primary-entry-capsule",
+	".tool-primary-entry-capsule__icon",
+	".tool-primary-entry-capsule--content-driven",
+];
+
+for (const className of primaryCapsuleClasses) {
+	assert(read(primaryCapsulePath).includes(className), `primary capsule class present: ${className}`);
+}
+
 const resultBaseline = read(resultBaselinePath);
 const baselineCode = baseline.replace(/\/\*[\s\S]*?\*\//g, "");
 

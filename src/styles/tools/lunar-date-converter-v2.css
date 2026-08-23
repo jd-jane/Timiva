@@ -42,8 +42,3 @@
 	line-height: 1.35;
 	text-align: center;
 }
-
-[data-lunar-date-converter-v2] .ldcv2-mobile-capsule[disabled] {
-	cursor: default;
-	opacity: 0.92;
-}

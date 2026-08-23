@@ -158,6 +158,19 @@ Interaction eligibility = .tool-utility-control
 Conversion／mode switch、primary data-entry capsule、text actions 不得套用 Utility Capsule lift
 ```
 
+### 3.3B Primary Entry Capsule markup
+
+```text
+Opt-in: .tool-primary-entry-capsule（+ preview-tool-control-btn semantic hook）
+Variants: text-only | icon + .tool-primary-entry-capsule__icon
+Content-driven modifier: .tool-primary-entry-capsule--content-driven
+  portrait padding-inline 20px; min-width 88px
+Landscape compact shell: 12px font; 6×16px padding; min-width 88px; gate h≤700 + w≤1200
+Geometry: ToolPageFrame — not duplicated in shell CSS
+不得加 .tool-utility-control
+Source: tool-primary-entry-capsule-baseline.css
+```
+
 ### 3.4 明確 Excluded
 
 | 控制項 | 原因 |

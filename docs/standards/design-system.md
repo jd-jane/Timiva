@@ -335,6 +335,21 @@ navigation, or structural control.
 
 完整 Included／Excluded 與 visual shell vs interaction 分層以 [`interactive-controls.md`](interactive-controls.md) 為準。
 
+### Primary Entry Capsule（opt-in shared shell）
+
+**Source：** `src/styles/tools/tool-primary-entry-capsule-baseline.css`（via `tool-component-style-baseline.css`）
+
+```text
+Markup: preview-tool-control-btn + tool-primary-entry-capsule（+ optional __icon / --content-driven）
+Shell: border、bg、radius、blur、text、focus、disabled、nowrap、icon 18px、gap 8px
+Geometry: ToolPageFrame（wide portrait 20rem／56px；landscape layout compact）
+≠ .tool-utility-control（no lift）
+```
+
+Portrait wide：20rem max、56px min-height（Frame）。Portrait content-driven：padding-inline 20px、min-width 88px。Landscape compact：`orientation:landscape` + `max-height:700px` + `max-width:1200px` → content-driven、32px min-height、6×16px padding、12px font、min-width 88px。
+
+DR／BDC `823px`／`824–899px` tiers：legacy history；not new baseline. Validators: `validate-primary-entry-capsule-baseline.mjs`, `validate-tool-page-frame-adopters.mjs`.
+
 ### Markup API
 
 ```html

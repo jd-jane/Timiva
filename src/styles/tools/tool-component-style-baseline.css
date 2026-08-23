@@ -5,6 +5,8 @@
  * New tools (e.g. Lunar) compose: cluster → field shell → tool-owned inner content.
  */
 
+@import "./tool-primary-entry-capsule-baseline.css";
+
 /* -------------------------------------------------------------------------- */
 /* Recipe A — Standard Pill Field（thin visual shell + desktop cluster width） */
 /* -------------------------------------------------------------------------- */

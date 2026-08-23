@@ -414,6 +414,8 @@ Date Range 的手機日期按鈕也是同一套樣式，只是多了 icon。
 不要讓單一工具任意改變按鈕大小、重量或型態。
 ```
 
+**Primary Entry Capsule（2026-08）：** Visual shell = `.tool-primary-entry-capsule`（`tool-primary-entry-capsule-baseline.css`）。Placement／portrait wide／landscape layout = `ToolPageFrame`（`.tpf-mobile-capsule`）。Shell 負責 content-driven padding（portrait 20px／landscape 16px）與 min-width 88px；不得把 breathing room 寫成 Frame 對所有 `mobilePrimaryControl` child 的通用 padding。Landscape gate：`orientation:landscape` + `max-height:700px` + `max-width:1200px`。DR／BDC `823`／`824–899` = legacy；見 `decision-log.md` 2026-08-23。
+
 ##### F.4 手機直式 bottom sheet
 
 ```text

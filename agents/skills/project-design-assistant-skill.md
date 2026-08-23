@@ -397,9 +397,19 @@ tool-local workaround
 unnecessary override（含 .tpf-* 覆寫）
 bypass shared component
 validator evidence 與實際畫面是否一致
+Primary Entry Capsule visual shell（computed styles + validate-tool-page-frame-adopters.mjs）
 ```
 
-**參考：** `docs/workflow/new-tool-development.md` B0 定義 · `docs/workflow/tool-page-qa.md` §11.0 · `scripts/validate-tool-page-frame.mjs`
+**三層 B0 evidence（Primary Entry）：**
+
+```text
+1. Geometry — validate-tool-page-frame.mjs + viewport（20rem／56px portrait；landscape layout）
+2. Visual shell — computed border／bg／blur／flex；validate-primary-entry-capsule-baseline.mjs
+3. Semantic — mobilePrimaryControl 有 tool-primary-entry-capsule；無 tool-utility-control
+Geometry PASS + shell FAIL => BLOCK
+```
+
+**參考：** `docs/workflow/new-tool-development.md` B0 定義 · `docs/workflow/tool-page-qa.md` §11.0 · `scripts/validate-tool-page-frame.mjs` · `scripts/validate-tool-page-frame-adopters.mjs`
 
 **B0 不主要評論：**
 

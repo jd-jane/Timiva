@@ -325,6 +325,18 @@ Validated shared baseline 的目的，是消除重複 Owner QA。Baseline 經 Lu
 
 **Visual recipe vs component：** Conversion／Mode Switch 等 visual recipe 以 docs 為準；**第二次** production adopter 驗證後，才依本 Gate 評估是否抽 shared Astro component。Component Style Baseline 視覺規則見 [`design-system.md`](../standards/design-system.md)／[`interactive-controls.md`](../standards/interactive-controls.md)；本 Gate 不重複全文。
 
+### 9.5 Primary Entry Capsule（2026-08）
+
+| 項目 | 位置 |
+|---|---|
+| Shared shell CSS | `src/styles/tools/tool-primary-entry-capsule-baseline.css` |
+| Opt-in class | `.tool-primary-entry-capsule` |
+| Geometry | ToolPageFrame（不修改 `tool-page-frame.css` 僅為 padding 時） |
+| Validators | `validate-primary-entry-capsule-baseline.mjs`、`validate-tool-page-frame-adopters.mjs` |
+| First adopter | Lunar Date Converter（incremental；legacy DR…JEC 不 migration） |
+
+B0 Gate：geometry（Frame validator）+ visual shell（computed styles）+ semantic（no utility-control）三層；geometry PASS + shell FAIL => BLOCK。
+
 ---
 
 ## 10. 與其他文件的關係

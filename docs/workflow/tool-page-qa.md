@@ -346,6 +346,8 @@ Desktop / portrait / landscape / lower content / capsule / drawer / stage
 ```text
 [ ] 使用 ToolPageFrame（不得從 Hours／JEC／DC 重建 first-screen RWD）
 [ ] node scripts/validate-tool-page-frame.mjs 通過
+[ ] node scripts/validate-tool-page-frame-adopters.mjs 通過（Primary Entry shell opt-in）
+[ ] node scripts/validate-primary-entry-capsule-baseline.mjs 通過
 [ ] 沒有 Frame-specific override／exception
 [ ] 沒有 import preview CSS 當作 production Frame
 [ ] 沒有覆寫 .tpf-*

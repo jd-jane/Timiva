@@ -1,0 +1,90 @@
+/**
+ * Primary Entry Capsule — shared visual shell (opt-in).
+ *
+ * Owns: pill shell, alignment, focus/disabled, icon contract, content-driven breathing room.
+ * Does NOT own: ToolPageFrame placement, portrait wide geometry, utility-control motion.
+ * Not .tool-utility-control. Not EC/YP utility capsules or CT task controls.
+ */
+
+.tool-primary-entry-capsule {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--tool-mobile-portrait-control-gap, 0.5rem);
+	border-radius: 9999px;
+	border: 1px solid rgb(255 255 255 / 0.1);
+	background: rgb(255 255 255 / 0.05);
+	color: rgb(203 213 225);
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+	white-space: nowrap;
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.tool-primary-entry-capsule:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.35);
+	outline-offset: 2px;
+}
+
+.tool-primary-entry-capsule:disabled,
+.tool-primary-entry-capsule[aria-disabled="true"] {
+	cursor: default;
+	opacity: 0.92;
+}
+
+.tool-primary-entry-capsule__icon {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+}
+
+.tool-primary-entry-capsule__icon,
+.tool-primary-entry-capsule__icon svg {
+	width: var(--tool-mobile-portrait-control-icon-size, 1.125rem);
+	height: var(--tool-mobile-portrait-control-icon-size, 1.125rem);
+}
+
+/* Content-driven width + breathing room (portrait or standalone adopters). */
+.tool-primary-entry-capsule--content-driven {
+	width: auto;
+	max-width: none;
+	min-width: 5.5rem;
+	padding-block: var(--tool-mobile-portrait-control-padding-y, 0.75rem);
+	padding-inline: 1.25rem;
+}
+
+/*
+ * Landscape compact — shell typography + content-driven padding/min-width.
+ * Gate: orientation + max-height 700px + max-width 1200px (new canonical).
+ * Beat Frame generic child padding without changing tool-page-frame.css or selecting .tpf-*.
+ */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+	.tool-primary-entry-capsule {
+		width: auto;
+		max-width: none;
+		min-width: 5.5rem;
+		min-height: 2rem;
+		padding-block: 0.375rem;
+		padding-inline: 1rem;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	/* Beat Frame generic child padding without selecting .tpf-* internals. */
+	[data-tool-page-frame] .tool-primary-entry-capsule.preview-tool-control-btn {
+		width: auto;
+		max-width: none;
+		min-width: 5.5rem;
+		min-height: 2rem;
+		padding-block: 0.375rem;
+		padding-inline: 1rem;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+}
