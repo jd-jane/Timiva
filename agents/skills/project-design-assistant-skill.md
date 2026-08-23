@@ -57,6 +57,8 @@ docs/standards/interactive-controls.md
 讀 implementation code / CSS / component ownership
 讀 validator evidence
 讀 browser screenshots / visual evidence
+讀 browser computed style / getBoundingClientRect（或等效 rendered box）
+讀 parent layout context（wrapper / flex / grid / intrinsic sizing）
 判斷 canonical mismatch（需 evidence）
 標記 Owner judgment
 發現 interaction regression（相對已確認 B1B baseline）
@@ -230,13 +232,147 @@ EN / ZH
 relevant interaction states（依 Gate 與工具風險）
 ```
 
+有明確 geometry / shell contract 時，Visual Evidence **必須與 §5.5 Rendered Geometry Evidence 併用**；截圖不能單獨取代 computed / bounding box。
+
 ### 5.4 判斷原則
 
 ```text
 Screenshot 告訴你發生了什麼。
 Code 告訴你為什麼發生。
 Canonical docs 告訴你這算不算錯。
+Rendered box 告訴你宣告的 geometry 有沒有真的生效。
 ```
+
+### 5.5 Rendered Geometry Evidence（硬規則）
+
+#### 核心原則
+
+```text
+「canonical design rule 被宣告」≠「canonical design rule 已實際生效」
+```
+
+凡 review item 具有明確 **canonical geometry**，且該 geometry 對 Design System Gate / Foundation Gate / Release Regression 的 PASS 有實質影響，**不得**只靠下列任一項判 PASS：
+
+```text
+CSS declaration 存在
+class / token 存在
+validator PASS
+markup 看起來正確
+```
+
+必須驗證 **browser 最終 rendered result**。
+
+#### 適用的 geometry（非完整 CSS 清單）
+
+僅在 contract 明確、且會影響 Gate 判斷時啟用。例如：
+
+```text
+width / max-width / min-width
+height / min-height
+padding / gap（當為 contract 重點時）
+alignment（當為 contract 重點時）
+responsive width mode（fixed Standard／Wide／content-driven 等）
+portrait / landscape geometry
+visible / hidden breakpoint behavior
+visible shell（border / background / radius — 當 shell 為 contract）
+```
+
+**不做**無限量測：細小 decoration、非本輪 contract 的 property，不要求逐項量測。
+
+#### 四層 Evidence（Expected / Declared / Rendered / Visual）
+
+對每個「用作 PASS 依據」的 canonical geometry item，至少取得：
+
+| 層 | 回答 | 說明 |
+|---|---|---|
+| **A. Expected** | contract 目標／允許範圍 | 引用 canonical docs／Owner decision；例：Desktop Standard Primary Field 在 viewport 足夠時 = 420px；Portrait Primary Capsule = 320×56；Landscape Primary Capsule = content-driven，min-width ≥88px、min-height 32px（數值以 canonical 為準，此處僅示意） |
+| **B. Declared** | CSS／token／class／contract 來源 | **只是 evidence 之一**，不可單獨決定 PASS |
+| **C. Computed / Rendered** | computed style + `getBoundingClientRect()`（或等效） | 含實際 responsive mode；必要時查 parent layout context（§5.5.1） |
+| **D. Visual** | browser screenshot／browser review | 確認 rendered geometry 與 composition 一致 |
+
+```text
+四層無矛盾 → 才可判 PASS（就該 geometry item 而言）
+任一層顯示 contract 未生效 → 不得因 Declared／validator 漂亮而判 PASS
+```
+
+#### 建議精簡 evidence 格式
+
+只記錄本輪 Gate 拿來作 PASS 依據的 geometry：
+
+```text
+Component:
+Viewport:
+Expected:
+Declared:
+Rendered:
+Parent/layout context:
+Visual:
+Verdict: PASS | MISMATCH | BLOCK
+```
+
+#### 5.5.1 Parent layout context
+
+當 child 有下列情況時，**不得只讀 child 自己的 declaration**：
+
+```text
+width: 100%
+max-width
+flex / grid alignment
+display: contents
+shrink-to-content / fit-content / intrinsic sizing
+多餘 wrapper
+```
+
+若 actual rendered width／height 與 Expected 不同，必須檢查：
+
+```text
+parent rendered width
+flex / grid item behavior（align-items、justify-*、flex-basis）
+中間 wrapper 是否 shrink-wrap
+intrinsic / shrink-to-content context
+```
+
+典型假 PASS：child 宣告 `max-width: 420px` + `width: 100%`，但父層 shrink-to-content，實際 rendered ≈ content 寬（例如 ~253px）——**Declared 正確 ≠ Rendered 符合**。
+
+#### 5.5.2 Responsive geometry
+
+若 contract 明確區分 Desktop／Mobile portrait／Mobile landscape，必須在相關 **canonical QA viewport** 分別驗 actual rendered result。每個相關 viewport 至少記錄：
+
+```text
+viewport
+expected mode
+actual mode
+rendered width / height
+主要 padding / alignment（僅當為 review 重點）
+PASS / MISMATCH
+```
+
+不可只驗單一 viewport 就推論其他 mode 也 PASS。
+
+#### 5.5.3 PASS / MISMATCH / BLOCK
+
+```text
+Declared 正確 + validator PASS + Rendered 不符合 Expected
+  → 不得判 PASS
+  → 判 MISMATCH（輸出對應 Mismatch）
+```
+
+```text
+MISMATCH 影響主要操作或 foundation contract
+（例：Primary Field 幾何、Primary Capsule geometry／visible shell）
+  → Blocking Mismatch
+  → Gate 語意等同 BLOCK：不得建議 Proceed to next Gate
+```
+
+```text
+MISMATCH 為次要、不阻斷 foundation／主操作
+  → Non-blocking Mismatch
+  → 可 PASS with notes（若無 Blocking）
+```
+
+殼層假 PASS 同理：Expected 有 pill shell，geometry 尺寸正確，但 border／background／radius 實際缺失 → **不得判 PASS**（沿用 B0：Geometry PASS + shell FAIL => BLOCK）。
+
+**本規則是 Browser／Design Assistant review evidence hardening，不是新增 static validator。** 不得用「已有 CSS／class」取代 rendered evidence。
 
 ---
 
@@ -251,10 +387,14 @@ Mismatch
 Owner judgment
 ```
 
+Gate 進度語意：Blocking Mismatch ⇒ **BLOCK**（不得 Proceed）；見 §5.5.3。
+
 ### Mismatch
 
 ```text
 必須有 canonical / implementation / visual evidence 支持
+涉及明確 geometry contract 時，還必須有 Rendered Geometry Evidence（§5.5）
+Declared／validator 正確但 Rendered 不符 Expected → 必須標 Mismatch（不得 PASS）
 沒有足夠 evidence 時，不可因 aesthetic preference 判錯
 formal exception / Owner 已確認 decision / legacy transitional case（且不在 migration scope）不得重複判為 mismatch
 ```
@@ -409,6 +549,8 @@ Primary Entry Capsule visual shell（computed styles + validate-tool-page-frame-
 Geometry PASS + shell FAIL => BLOCK
 ```
 
+**Rendered Geometry Evidence（§5.5）適用：** Foundation geometry、Primary Capsule portrait／landscape box、visible shell。validator／class PASS 不足；必須有 Expected／Declared／Rendered／Visual 一致。相關 canonical viewport 分開驗。
+
 **參考：** `docs/workflow/new-tool-development.md` B0 定義 · `docs/workflow/tool-page-qa.md` §11.0 · `scripts/validate-tool-page-frame.mjs` · `scripts/validate-tool-page-frame-adopters.mjs`
 
 **B0 不主要評論：**
@@ -465,6 +607,18 @@ canonical recipe 被 tool-local implementation 重做
 
 **參考：** `docs/workflow/new-tool-development.md` Component Style Baseline 提醒 · `docs/standards/interactive-controls.md` §12–§13
 
+**Rendered Geometry Evidence（§5.5）適用：** 凡本 Gate 拿來作 PASS 依據、且有明確數值／mode contract 的項目，例如：
+
+```text
+ResultSummary／主結果區 composition（當 geometry 為 contract）
+Standard／Wide Desktop Primary Field（layout-driven width，非 content-shrink）
+Mode switch（content-driven；不得被拉成 field 同寬）
+Primary Capsule portrait／landscape
+responsive composition
+```
+
+Declared `max-width`／class 存在但 rendered width 不符 Expected → **Mismatch／BLOCK**（§5.5.3），不得 PASS。
+
 **禁止：** 重新設計工具。
 
 ---
@@ -502,6 +656,8 @@ Pre-deploy 第五 Agent
 ```
 
 只有 Owner 或 workflow **明確呼叫** 時執行。Scope 限本輪 changed files 與已知 regression 風險。
+
+若本輪 regression review **涉及**已確認的 canonical geometry（Primary Field width mode、Primary Capsule box／shell、breakpoint visibility 等），必須套用 §5.5：對相關 viewport 取 Rendered evidence；Declared／validator 正確但 Rendered 不符 → 不得 PASS。
 
 ---
 
@@ -637,6 +793,10 @@ Reuse Observation 直接變 refactor task 或 Shared 宣告
 沒 canonical evidence 卻因 aesthetic preference 判定 Mismatch
 在本 skill 或輸出中複製 design values，造成第二套 design system
 把 Design Assistant 輸出當成可自動 commit 的授權
+只看 CSS declaration／class／validator 就對 geometry contract 判 PASS（缺 Rendered evidence）
+忽略 parent shrink-wrap／display:contents／多餘 wrapper 造成的假 max-width
+只驗單一 viewport 就斷言 Desktop／portrait／landscape geometry 都符合
+把 Design Assistant 變成無限 CSS property 量測工具（只量影響 PASS 的 canonical geometry）
 ```
 
 ---

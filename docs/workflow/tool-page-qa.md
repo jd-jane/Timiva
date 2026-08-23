@@ -380,6 +380,8 @@ B0 未通過時，**不得進入 B1A**。既有 DC／Hours／JEC production 不�
 
 **Project Design Assistant（cross-link）：** Gate review 可作 QA evidence 的一部分。Canonical skill：[`agents/skills/project-design-assistant-skill.md`](../../agents/skills/project-design-assistant-skill.md)。**不取代** automated validator、browser QA、device / viewport QA、Owner visual QA、本文件既有 Tool Page QA checklist。Lunar first adopter：B0 仍依本節完整 ToolPageFrame QA；Design Assistant Foundation Gate 是補充 guardrail，不是替代。
 
+**Rendered Geometry Evidence：** 若 Design Assistant Gate（B0／B1B／Release）拿明確 geometry contract（width／height／shell／responsive mode 等）作 PASS 依據，必須有 browser **Expected／Declared／Rendered／Visual** 四層一致（見 skill §5.5）。CSS／class／validator PASS 不足；Declared 正確但 rendered 不符 → 不得判 PASS。本條是 review evidence 規則，**不是**新增 static validator。
+
 ---
 
 ## 11A. B1A lower content and sidebar QA
