@@ -123,6 +123,21 @@ export function resolveFieldStatus(segments: DateSegments): FieldStatus {
 	return parseDateSegments(segments) ? "valid" : "invalid";
 }
 
+/** Desktop field error presentation when segments are complete but invalid. */
+export type GregorianInvalidKind = "invalid-date" | "out-of-range";
+
+export function classifyGregorianInvalid(segments: DateSegments): GregorianInvalidKind {
+	const year = Number(segments.year);
+	const month = Number(segments.month);
+	const day = Number(segments.day);
+
+	if (!isValidCalendarDate(year, month, day)) {
+		return "invalid-date";
+	}
+
+	return "out-of-range";
+}
+
 export type GregorianFieldSnapshot = {
 	status: FieldStatus;
 	date: CivilDate | null;
@@ -217,15 +232,32 @@ export function createGregorianDateController(options?: {
 					? "clearAll"
 					: inputType;
 
+			let start = selectionStart;
+			let end = selectionEnd;
+			// Continuous raw stream：DOM caret 可能落後 1～2 碼；typing 時以 display 尾端為 SSOT（BDC production pattern）
+			if (
+				segments.preferStream &&
+				resolvedInputType === "insertText" &&
+				start === end
+			) {
+				start = end = formatted.length;
+			}
+
 			const result = applySegmentInputChange(
 				segments,
 				resolvedInputType,
 				data,
-				selectionStart,
-				selectionEnd,
+				start,
+				end,
 			);
 			segments = result.segments;
-			return { snapshot: emit(false), caret: result.caret };
+
+			let caret = result.caret;
+			if (segments.preferStream && resolvedInputType === "insertText") {
+				caret = formatSegmentsDisplay(segments).length;
+			}
+
+			return { snapshot: emit(false), caret };
 		},
 
 		applyPaste: (text) => {

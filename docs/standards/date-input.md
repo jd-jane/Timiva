@@ -359,15 +359,40 @@ valid → invalid 不可保留上一組有效日期的結果
 
 ## 11. invalid icon 規則
 
-Age Calculator 已驗證方向：
+Age Calculator 已驗證方向。Field-level error 正式 variants 見 [`design-system.md`](design-system.md) §9.2、§11.2。
 
 ### Desktop
 
 ```text
-invalid icon 低調顯示
-不使用紅框
-不顯示長錯誤文字
-icon 可接在日期文字附近
+invalid icon 低調顯示（canonical ! — muted slate；見 design-system §9.2）
+不使用紅框、不使用 danger red icon／inline message
+icon 可接在日期文字附近（Smart Date Input）或欄位內右側（JEC inline invalid）
+```
+
+**Pattern A — Invalid Indicator only（預設 for Smart Date Input）**
+
+```text
+只顯示 muted canonical !
+不顯示可見錯誤文字
+適用：incomplete draft、明顯 complete invalid（例：不存在日期 1986/04/71、Feb 30）
+compact 數字直輸在 parser 未接上前：仍用 Pattern A presentation，不另定義為 danger 格式
+```
+
+**Pattern B — Invalid Indicator + Supporting Message**
+
+```text
+muted canonical ! + neutral supporting message
+Desktop 沿用 JEC inline invalid production values（欄位內右側；見 JEC CSS）
+僅在規則需解釋時使用，例：
+  超出 public range（1901–2099）
+  該年無指定閏月
+  農曆月只有 29 天
+  需 actionable 說明的格式 typo（例：潤 → 閏）
+文案應 explanatory，不是系統式 danger 警告
+```
+
+```text
+Desktop Smart Date Input 預設不顯示欄位下方長錯誤文字；需要解釋時用 Pattern B inline，不是 red banner
 ```
 
 ### Mobile segmented input

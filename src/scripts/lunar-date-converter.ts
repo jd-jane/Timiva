@@ -6,6 +6,7 @@
 import { init as initResultSummary } from "./result-summary-controller.ts";
 import {
 	createGregorianDateController,
+	classifyGregorianInvalid,
 	type GregorianFieldSnapshot,
 	type LunarGregorianDateController,
 } from "../lib/lunarDateConverterGregorianInput.ts";
@@ -36,6 +37,8 @@ type Locale = "en" | "zh";
 
 type FieldPhase = "draft-incomplete" | "draft-complete-invalid" | "committed-valid";
 
+type FieldErrorPattern = "indicator-only" | "with-message";
+
 type ToolCopy = {
 	resetLabel: string;
 	errorUnrecognized: string;
@@ -63,6 +66,27 @@ function readCopy(root: HTMLElement): ToolCopy {
 		errorUnsupportedLeapTypo:
 			root.dataset.ldcv2CopyErrorUnsupportedLeapTypo ?? "Use 閏 for leap month",
 	};
+}
+
+function errorPresentationPattern(
+	source: InputMode,
+	code: string | null,
+): FieldErrorPattern {
+	if (source === "gregorian") {
+		return "indicator-only";
+	}
+
+	switch (code) {
+		case "out-of-public-range":
+		case "invalid-leap-month":
+		case "invalid-lunar-day":
+		case "unsupported-leap-typo":
+			return "with-message";
+		case "unrecognized-format":
+		case "invalid-lunar-date":
+		default:
+			return "indicator-only";
+	}
 }
 
 function errorMessage(copy: ToolCopy, code: string | null): string {
@@ -137,27 +161,31 @@ function applyInputModeUi(root: HTMLElement, mode: InputMode): void {
 function syncFieldError(
 	root: HTMLElement,
 	phase: FieldPhase,
-	errorText: string,
+	options: { pattern?: FieldErrorPattern; message?: string } = {},
 ): void {
 	const input = root.querySelector<HTMLInputElement>("[data-ldcv2-date-input]");
-	const invalidIcon = root.querySelector<HTMLElement>("[data-ldcv2-field-invalid]");
-	const errorEl = root.querySelector<HTMLElement>("[data-ldcv2-field-error]");
+	const errorWrap = root.querySelector<HTMLElement>("[data-ldcv2-field-error-wrap]");
+	const errorText = root.querySelector<HTMLElement>("[data-ldcv2-field-error-text]");
 
 	const showError = phase === "draft-complete-invalid";
+	const showMessage = showError && options.pattern === "with-message" && options.message;
 	root.setAttribute("data-ldcv2-field-phase", phase);
 
 	if (input) {
 		input.setAttribute("aria-invalid", showError ? "true" : "false");
+		if (showMessage && errorWrap?.id) {
+			input.setAttribute("aria-describedby", errorWrap.id);
+		} else {
+			input.removeAttribute("aria-describedby");
+		}
 	}
 
-	if (invalidIcon) {
-		invalidIcon.hidden = !showError;
-		invalidIcon.setAttribute("aria-hidden", showError ? "false" : "true");
+	if (errorWrap) {
+		errorWrap.hidden = !showError;
 	}
 
-	if (errorEl) {
-		errorEl.hidden = !showError;
-		errorEl.textContent = showError ? errorText : "";
+	if (errorText) {
+		errorText.textContent = showMessage ? options.message! : "";
 	}
 }
 
@@ -227,30 +255,43 @@ function initRoot(root: HTMLElement): void {
 		options: { commitAttempt: boolean },
 	) => {
 		if (snapshot.status === "valid" && snapshot.date) {
-			actualCivil = snapshot.date;
-			fieldPhase = "committed-valid";
-			syncFieldError(root, fieldPhase, "");
+			if (options.commitAttempt) {
+				actualCivil = snapshot.date;
+				fieldPhase = "committed-valid";
+				syncFieldError(root, fieldPhase);
+				syncCommittedResult(false);
+				notifyCalendar();
+				return;
+			}
+
+			fieldPhase = "draft-incomplete";
+			syncFieldError(root, fieldPhase);
 			syncCommittedResult(false);
-			notifyCalendar();
 			return;
 		}
 
 		if (snapshot.status === "incomplete" || snapshot.status === "empty") {
 			fieldPhase = "draft-incomplete";
-			syncFieldError(root, fieldPhase, "");
+			syncFieldError(root, fieldPhase);
 			syncCommittedResult(false);
 			return;
 		}
 
 		if (options.commitAttempt) {
 			fieldPhase = "draft-complete-invalid";
-			syncFieldError(root, fieldPhase, copy.errorInvalidDate);
+			const invalidKind = classifyGregorianInvalid(snapshot.segments);
+			const pattern: FieldErrorPattern =
+				invalidKind === "out-of-range" ? "with-message" : "indicator-only";
+			syncFieldError(root, fieldPhase, {
+				pattern,
+				message: invalidKind === "out-of-range" ? copy.errorOutOfRange : "",
+			});
 			syncCommittedResult(true);
 			return;
 		}
 
 		fieldPhase = "draft-incomplete";
-		syncFieldError(root, fieldPhase, "");
+		syncFieldError(root, fieldPhase);
 		syncCommittedResult(false);
 	};
 
@@ -263,7 +304,7 @@ function initRoot(root: HTMLElement): void {
 			if (civil) {
 				actualCivil = civil;
 				fieldPhase = "committed-valid";
-				syncFieldError(root, fieldPhase, "");
+				syncFieldError(root, fieldPhase);
 				syncCommittedResult(false);
 				return;
 			}
@@ -275,17 +316,17 @@ function initRoot(root: HTMLElement): void {
 			(!commitAttempt && evaluated.status === "invalid")
 		) {
 			fieldPhase = "draft-incomplete";
-			syncFieldError(root, fieldPhase, "");
+			syncFieldError(root, fieldPhase);
 			syncCommittedResult(false);
 			return;
 		}
 
 		fieldPhase = "draft-complete-invalid";
-		syncFieldError(
-			root,
-			fieldPhase,
-			errorMessage(copy, evaluated.errorCode),
-		);
+		const code = evaluated.errorCode;
+		syncFieldError(root, fieldPhase, {
+			pattern: errorPresentationPattern("lunar", code),
+			message: errorMessage(copy, code),
+		});
 		syncCommittedResult(true);
 	};
 
@@ -310,7 +351,7 @@ function initRoot(root: HTMLElement): void {
 		);
 		input.inputMode = nextMode === "gregorian" ? "numeric" : "text";
 		repopulateInputFromActual();
-		syncFieldError(root, "committed-valid", "");
+		syncFieldError(root, "committed-valid");
 		syncCommittedResult(false);
 	};
 
@@ -325,7 +366,7 @@ function initRoot(root: HTMLElement): void {
 			const snap = gregorianController!.getSnapshot();
 			input.value = snap.normalizedDisplay;
 			fieldPhase = "committed-valid";
-			syncFieldError(root, fieldPhase, "");
+			syncFieldError(root, fieldPhase);
 			syncCommittedResult(false);
 			notifyCalendar();
 		},
@@ -403,13 +444,7 @@ function initRoot(root: HTMLElement): void {
 				selectionEnd,
 			);
 			input.value = snapshot.display;
-			if (snapshot.status === "valid" && snapshot.date) {
-				const committed = gregorianController.commitNormalize();
-				input.value = committed.normalizedDisplay;
-				commitGregorianSnapshot(committed, { commitAttempt: true });
-			} else {
-				commitGregorianSnapshot(snapshot, { commitAttempt: false });
-			}
+			commitGregorianSnapshot(snapshot, { commitAttempt: false });
 			if (document.activeElement === input) {
 				const len = input.value.length;
 				const next = Math.max(0, Math.min(caret, len));
@@ -519,7 +554,7 @@ function initRoot(root: HTMLElement): void {
 		input.setAttribute("aria-label", root.dataset.ldcv2GregorianAria ?? "");
 		gregorianController?.setDate(actualCivil);
 		input.value = gregorianController?.getSnapshot().normalizedDisplay ?? "";
-		syncFieldError(root, "committed-valid", "");
+		syncFieldError(root, "committed-valid");
 		syncCommittedResult(false);
 	});
 

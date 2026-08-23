@@ -22,7 +22,19 @@ import {
 	MAX_GREGORIAN,
 	parseDateSegments,
 	resolveFieldStatus,
+	classifyGregorianInvalid,
+	createGregorianDateController,
 } from "../src/lib/lunarDateConverterGregorianInput.ts";
+import {
+	applySegmentInputChange,
+	emptyDateSegments,
+	formatSegmentsDisplay,
+	formatSegmentsNormalized,
+	isEntryCompleteForAutoFocus,
+	isSegmentsEmpty,
+	normalizeSegmentsForBlur,
+	segmentsFromPastedText,
+} from "../src/lib/daysBetweenDatesDateInput.ts";
 import { gregorianToLunar, lunarToGregorian } from "../src/lib/lunar/index.ts";
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -206,14 +218,212 @@ assert(
 	assertEq(low, "invalid", "1900 below public range invalid when complete");
 	const high = resolveFieldStatus({ year: "2100", month: "01", day: "01" });
 	assertEq(high, "invalid", "2100 above public range invalid when complete");
+	assertEq(
+		classifyGregorianInvalid({ year: "1986", month: "04", day: "71" }),
+		"invalid-date",
+		"Apr 71 → Pattern A invalid-date",
+	);
+	assertEq(
+		classifyGregorianInvalid({ year: "1900", month: "01", day: "01" }),
+		"out-of-range",
+		"1900 → Pattern B out-of-range",
+	);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Smart Date Input — canonical DBD engine via Lunar wrapper                   */
+/* -------------------------------------------------------------------------- */
+function typeDigitsForward(startSegments, chars) {
+	let segments = { ...startSegments };
+	let caret = formatSegmentsDisplay(segments).length;
+
+	for (const ch of chars) {
+		const result = applySegmentInputChange(
+			segments,
+			"insertText",
+			ch,
+			caret,
+			caret,
+		);
+		segments = result.segments;
+		caret = result.caret;
+	}
+
+	return segments;
+}
+
+function assertTypedAndPasted(raw, expectedDisplay, label) {
+	const typed = formatSegmentsDisplay(typeDigitsForward(emptyDateSegments(), raw));
+	const pasted = formatSegmentsDisplay(segmentsFromPastedText(raw));
+	assertEq(typed, expectedDisplay, `${label} typed`);
+	assertEq(pasted, expectedDisplay, `${label} pasted`);
+	assertEq(typed, pasted, `${label} typed/paste parity`);
+}
+
+{
+	assertTypedAndPasted("20001111", "2000 / 11 / 11", "8-digit 20001111");
+	assertTypedAndPasted("19991122", "1999 / 11 / 22", "8-digit 19991122");
+
+	const mid6 = typeDigitsForward(emptyDateSegments(), "200011");
+	assertEq(
+		isEntryCompleteForAutoFocus(mid6) === false,
+		true,
+		"6-digit stream not complete while typing",
+	);
+	assertEq(
+		resolveFieldStatus(mid6) === "valid",
+		true,
+		"6-digit 200011 temporarily valid but not entry-complete",
+	);
+	assertEq(
+		formatSegmentsNormalized(normalizeSegmentsForBlur(mid6)),
+		"2000 / 01 / 01",
+		"6-digit blur normalize (must not apply during typing)",
+	);
+	const mid7 = typeDigitsForward(emptyDateSegments(), "2000111");
+	assertEq(formatSegmentsDisplay(mid7), "2000 / 11 / 1", "7-digit 2000111 mid-stream display");
+	assertEq(
+		isEntryCompleteForAutoFocus(mid7) === false,
+		true,
+		"7-digit stream not complete while typing",
+	);
+
+	const controller = createGregorianDateController();
+	let caret = 0;
+	for (const ch of "20001111") {
+		({ caret } = controller.applyInputChange("insertText", ch, caret, caret));
+	}
+	const typing = controller.getSnapshot();
+	assertEq(typing.display, "2000 / 11 / 11", "controller typing 20001111 display");
+	assertEq(typing.status, "valid", "controller typing 20001111 valid");
+	const committed = controller.commitNormalize();
+	assertEq(committed.normalizedDisplay, "2000 / 11 / 11", "controller blur normalize");
+
+	controller.applyPaste("20001111");
+	const pasted = controller.commitNormalize();
+	assertEq(pasted.normalizedDisplay, "2000 / 11 / 11", "controller paste parity");
+	controller.destroy();
+
+	const clearController = createGregorianDateController();
+	clearController.applyPaste("20001111");
+	clearController.commitNormalize();
+	const formatted = clearController.getSnapshot().normalizedDisplay;
+	let backCaret = formatted.length;
+	for (let i = 0; i < 30; i += 1) {
+		const { snapshot, caret: nextCaret } = clearController.applyInputChange(
+			"deleteContentBackward",
+			null,
+			backCaret,
+			backCaret,
+		);
+		backCaret = nextCaret;
+		if (isSegmentsEmpty(snapshot.segments)) {
+			break;
+		}
+	}
+	assertEq(isSegmentsEmpty(clearController.getSnapshot().segments), true, "backspace to empty");
+	assertEq(clearController.getSnapshot().display, "", "backspace leaves empty display");
+	const cleared = clearController.applyInputChange(
+		"deleteContentBackward",
+		null,
+		0,
+		formatted.length,
+	);
+	assertEq(cleared.snapshot.status, "empty", "full selection delete → empty");
+	clearController.destroy();
+}
+
+/* -------------------------------------------------------------------------- */
+/* Continuous raw stream — stale DOM caret (BDC production regression)        */
+/* -------------------------------------------------------------------------- */
+function typeViaControllerWithLag(controller, chars, lag) {
+	for (const ch of chars) {
+		const display = controller.getSnapshot().display;
+		const domCaret = Math.max(0, display.length - lag);
+		controller.applyInputChange("insertText", ch, domCaret, domCaret);
+	}
+	return controller.getSnapshot();
+}
+
+{
+	const steps = [
+		["1", "1"],
+		["9", "19"],
+		["0", "190"],
+	];
+	const stepCtrl = createGregorianDateController();
+	for (const [ch, expected] of steps) {
+		stepCtrl.applyInputChange("insertText", ch, 0, 0);
+		assertEq(stepCtrl.getSnapshot().display, expected, `190 step ${ch} (stale dom caret 0)`);
+		assertEq(
+			stepCtrl.getSnapshot().segments.preferStream,
+			true,
+			`190 step ${ch} keeps preferStream`,
+		);
+	}
+	stepCtrl.destroy();
+
+	for (const lag of [0, 1, 2]) {
+		const lagCtrl = createGregorianDateController();
+		typeViaControllerWithLag(lagCtrl, "190", lag);
+		assertEq(lagCtrl.getSnapshot().display, "190", `190 full lag ${lag}`);
+		lagCtrl.destroy();
+
+		const longCtrl = createGregorianDateController();
+		typeViaControllerWithLag(longCtrl, "20001111", lag);
+		assertEq(longCtrl.getSnapshot().display, "2000 / 11 / 11", `20001111 lag ${lag}`);
+		longCtrl.destroy();
+
+		const altCtrl = createGregorianDateController();
+		typeViaControllerWithLag(altCtrl, "19991122", lag);
+		assertEq(altCtrl.getSnapshot().display, "1999 / 11 / 22", `19991122 lag ${lag}`);
+		altCtrl.destroy();
+	}
+
+	const segmentCtrl = createGregorianDateController();
+	segmentCtrl.applyPaste("2000/11/11");
+	segmentCtrl.commitNormalize();
+	const monthStart = segmentCtrl.getSnapshot().display.indexOf("11");
+	segmentCtrl.applyInputChange("deleteContentBackward", null, monthStart + 2, monthStart + 2);
+	const edited = segmentCtrl.applyInputChange("insertText", "0", monthStart + 1, monthStart + 1);
+	assertEq(
+		edited.snapshot.display.includes("2000 / 10 / 11"),
+		true,
+		"segment middle-edit month after stream complete",
+	);
+	segmentCtrl.destroy();
 }
 
 /* -------------------------------------------------------------------------- */
 /* UI contract snippets                                                        */
 /* -------------------------------------------------------------------------- */
 assert(/data-ldcv2-field-phase/.test(astro), "field phase attribute");
-assert(/data-ldcv2-field-error/.test(astro), "field error element");
-assert(/data-ldcv2-field-invalid/.test(astro), "invalid icon element");
+assert(/data-ldcv2-field-error-wrap/.test(astro), "inline field error wrap");
+assert(/data-ldcv2-field-error-text/.test(astro), "inline field error text");
+assert(/data-ldcv2-field-invalid/.test(astro), "invalid icon mark");
+assert(/ldcv2-inline-error/.test(astro), "JEC-like inline error structure");
+assert(!/248\s+113\s+113/.test(css), "no danger red field error color");
+assert(/203\s+213\s+225/.test(css), "muted invalid icon color");
+assert(/classifyGregorianInvalid/.test(script), "Gregorian invalid classification");
+assert(/errorPresentationPattern/.test(script), "lunar error pattern classification");
+assert(
+	/segments\.preferStream[\s\S]*formatted\.length/.test(
+		read("src/lib/lunarDateConverterGregorianInput.ts"),
+	),
+	"preferStream stale-caret guard in Gregorian controller",
+);
+{
+	const beforeinputBlock = script.match(/addEventListener\("beforeinput"[\s\S]*?\n\t\}\);/);
+	assert(beforeinputBlock, "beforeinput handler present");
+	assert(
+		!beforeinputBlock[0].includes("commitNormalize"),
+		"beforeinput must not commitNormalize during typing",
+	);
+	assert(
+		/if \(options\.commitAttempt\) \{[\s\S]*actualCivil = snapshot\.date/.test(script),
+		"valid actualCivil only updates on commitAttempt",
+	);
+}
 assert(/ldcv2-date-input/.test(astro), "single primary field");
 assert(!/ldcv2-lunar-year|ldcv2-lunar-month|ldcv2-lunar-day/.test(astro), "no lunar Y/M/D selectors");
 assert(/aria-controls="ldc-sdc"/.test(astro), "calendar aria-controls matches idPrefix");

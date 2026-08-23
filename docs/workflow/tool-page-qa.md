@@ -378,7 +378,11 @@ B0 未通過時，**不得進入 B1A**。既有 DC／Hours／JEC production 不�
 
 **B1B Component Style 提醒：** 上方靜態畫面必須使用 canonical Component Style Baseline（title、A1 title→result gap、B3 textual primary defaults、Supporting Result Text、Textual Result Support Divider、Standard Pill Field 等）。不得從偏小 textual fallback 或任意 spacing 開始。Owner Visual QA 仍保留最終判斷。詳見 `docs/standards/design-system.md`、`layout-system.md` §6.0。
 
-**Project Design Assistant（cross-link）：** Gate review 可作 QA evidence 的一部分。Canonical skill：[`agents/skills/project-design-assistant-skill.md`](../../agents/skills/project-design-assistant-skill.md)。**不取代** automated validator、browser QA、device / viewport QA、Owner visual QA、本文件既有 Tool Page QA checklist。Lunar first adopter：B0 仍依本節完整 ToolPageFrame QA；Design Assistant Foundation Gate 是補充 guardrail，不是替代。
+**Project Design Assistant（cross-link）：** Gate review 可作 QA evidence 的一部分。Canonical skill：[`agents/skills/project-design-assistant-skill.md`](../../agents/skills/project-design-assistant-skill.md)。**不取代** automated validator、browser QA、device / viewport QA、Owner visual QA、本文件既有 Tool Page QA checklist。**Implementation self-check ≠ Design Assistant PASS** — validator／browser QA／geometry PASS 不得代替 Design Assistant review（skill §5.6 Interaction / Error State Gate）。Lunar first adopter：B0 仍依本節完整 ToolPageFrame QA；Design Assistant Foundation Gate 是補充 guardrail，不是替代。
+
+**Interaction / Error State Gate（B2+）：** 若 batch 新增或修改 interaction state（含 field error、focus、reset、mode switch），Owner workflow 必須**另外**呼叫 Project Design Assistant 做 §5.6 獨立 review（至少 default → focus → incomplete → valid → invalid → reset；invalid 須區分 Pattern A／B）。Implementation QA 可收集 evidence，但**不得**將 QA PASS 等同 Design Assistant PASS。
+
+**Reusable interaction QA：** 若工具 reuse canonical interaction（例：Smart Date Input），validator／browser QA **與** Design Assistant review 必須包含該 behavior 核心 regression matrix（continuous digits、paste equivalence、Backspace/Delete to empty 等；見 skill §5.6），不可只測工具新增情境。
 
 **Rendered Geometry Evidence：** 若 Design Assistant Gate（B0／B1B／Release）拿明確 geometry contract（width／height／shell／responsive mode 等）作 PASS 依據，必須有 browser **Expected／Declared／Rendered／Visual** 四層一致（見 skill §5.5）。CSS／class／validator PASS 不足；Declared 正確但 rendered 不符 → 不得判 PASS。本條是 review evidence 規則，**不是**新增 static validator。
 

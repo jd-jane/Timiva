@@ -163,6 +163,7 @@ Visual Evidence:
 - Mobile Landscape: …
 - EN / ZH: …
 - Interaction states: …（僅 B2 / Release；列實際覆蓋，非全排列）
+- Design Assistant interaction/error review: …（若 §5.6 適用；**獨立**於 validator / browser QA）
 
 Known Exceptions / Owner Decisions:
 - （decision-log 條目、formal exception、legacy out-of-scope）
@@ -373,6 +374,93 @@ MISMATCH 為次要、不阻斷 foundation／主操作
 殼層假 PASS 同理：Expected 有 pill shell，geometry 尺寸正確，但 border／background／radius 實際缺失 → **不得判 PASS**（沿用 B0：Geometry PASS + shell FAIL => BLOCK）。
 
 **本規則是 Browser／Design Assistant review evidence hardening，不是新增 static validator。** 不得用「已有 CSS／class」取代 rendered evidence。
+
+### 5.6 Interaction / Error State Evidence Gate（硬規則）
+
+#### 核心原則
+
+```text
+Implementation self-check ≠ Project Design Assistant Review
+Validator PASS ≠ Design Assistant PASS
+Browser QA PASS ≠ Design Assistant PASS
+Geometry PASS ≠ Design Assistant PASS
+```
+
+凡 batch **新增或修改 interaction state**（含 field error、focus、mode switch、reset、result invalid），**不得**因 automated validator、implementation browser QA、或 geometry evidence 通過，就直接宣稱 **Design Assistant PASS**。Design Assistant 必須**獨立 review** 並輸出專用結論。
+
+#### 必須 review 的狀態（依工具風險；Desktop date tools 至少）
+
+```text
+default
+→ focus
+→ incomplete
+→ valid
+→ invalid（含 Pattern A / Pattern B 若適用）
+→ reset
+```
+
+若某狀態有視覺變化，對每個變化 item 查核 evidence chain：
+
+```text
+Canonical reference
+→ Expected
+→ Declared style / token
+→ Rendered computed state
+→ Visual
+```
+
+至少確認：
+
+```text
+icon style / color
+border / background
+supporting text（有無、語意、placement）
+visibility / placement
+EN / ZH
+是否與同類 production tools 一致（DC / JEC / Age 等 canonical comparator）
+```
+
+#### Field-level error 專用
+
+Canonical：**`design-system.md` §9.2、§11.2** · **`date-input.md` §11** · JEC Desktop inline invalid production。
+
+```text
+Pattern A — Invalid Indicator only：muted canonical !；不顯示可見錯誤文字；不用 danger red
+Pattern B — Invalid Indicator + Supporting Message：muted ! + neutral explanation（JEC inline values）；僅在規則需解釋時
+```
+
+找不到 canonical evidence 支持的新視覺 treatment → **Mismatch**
+若影響主要操作 → **Blocking Mismatch / BLOCK**
+
+#### 獨立輸出（不得由 implementation QA 代替）
+
+Design Assistant review 結果必須**另外**輸出：
+
+```text
+Result: PASS / PASS with notes / Mismatch / Owner judgment（Blocking ⇒ BLOCK）
+Reviewed states: …
+Canonical references: …（章節，非複製 values）
+Visual findings: …
+Owner attention: …（若需）
+```
+
+**本規則是 review evidence hardening，不是新增 static validator。**
+
+#### Reusable interaction QA（Smart Date Input 等）
+
+若工具宣稱 **reuse 既有 canonical interaction behavior**（例：Smart Date Input、DesktopCalendar、Mode Switch），implementation self-check **與** Design Assistant review **都必須**包含該 behavior 的 **core regression matrix**，不可只測本工具新增情境。
+
+至少納入 evidence（依 behavior 調整）：
+
+```text
+continuous digits（例：20001111、19991122；含 1→19→190 每步）
+paste equivalence（同 digits 與逐鍵結果一致）
+Backspace / Delete to empty（不得殘留 / / 01 等 normalized segment）
+caret lifecycle（typing 途中 caret 不得倒錄、raw stream 順序不得重排）
+incomplete editing 不觸發 error / 不更新 committed result
+```
+
+Validator／browser QA 可收集 evidence；**不得**因本工具專屬 scenario PASS 而省略 reusable behavior matrix，亦不得因此宣稱 Design Assistant PASS。
 
 ---
 
@@ -637,7 +725,9 @@ AME integration（若適用）
 mobile portrait / mobile landscape
 ```
 
-**參考：** `docs/workflow/tool-page-qa.md` §11B · `docs/standards/mobile-sheet.md`（若工具有 sheet）
+**Interaction / Error State Gate（§5.6）：** 若本 batch 新增或修改 interaction state，**必須**獨立執行 §5.6 review；implementation validator／browser QA／geometry evidence **不得**代替 Design Assistant PASS。Field-level error 須對照 Pattern A／B 與 canonical comparator（DC / JEC）。
+
+**參考：** `docs/workflow/tool-page-qa.md` §11B · `docs/standards/mobile-sheet.md`（若工具有 sheet）· `docs/standards/date-input.md` §11
 
 **原則：** Visual evidence 覆蓋風險，不是覆蓋排列組合。
 
