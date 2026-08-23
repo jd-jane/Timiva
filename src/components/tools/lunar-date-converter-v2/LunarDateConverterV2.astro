@@ -2,10 +2,11 @@
 /**
  * Lunar Date Converter V2 — ToolPageFrame adopter.
  * B1A: lower content + temporary Related Tools wiring.
- * B1B: upper static visual (ResultSummary + desktop input + mode switch + mobile capsule).
- * No conversion logic, calendar interaction, AME, or direction state in B1B.
+ * B1B: upper visual shell.
+ * B2B: Desktop Gregorian ↔ Lunar interaction.
  */
 import RelatedToolRow from "../../RelatedToolRow.astro";
+import DesktopCalendar from "../shared/DesktopCalendar.astro";
 import ResultSummary from "../shared/ResultSummary.astro";
 import ToolPageFrame from "../shared/ToolPageFrame.astro";
 import { catalogIconMap } from "../../../lib/catalogIcons";
@@ -42,19 +43,33 @@ const relatedToolItems = b1aRelatedToolIds.map((id) => ({
 	icon: catalogIconMap[id],
 }));
 
-const rsPrimaryText = m.fixtureDefaultPrimary;
-const rsPrimaryAria = rsPrimaryText.replace(/\n/g, "");
+const rsPrimaryText = locale === "zh" ? "…" : "…";
 const rsPrimary = {
 	text: rsPrimaryText,
-	ariaLabel: rsPrimaryAria,
+	ariaLabel: rsPrimaryText,
 };
 
 const modeSwitchIconHtml =
 	'<svg class="tool-mode-switch-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M5 2.75v10.5M5 13.25 2.6 10.85M5 13.25l2.4-2.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path><path d="M11 13.25V2.75M11 2.75 8.6 5.15M11 2.75l2.4 2.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
 ---
 
-<div data-lunar-date-converter-v2 data-ldcv2-locale={locale === "zh" ? "zh" : "en"}>
-	{/* Layout contract：blocking sync load，須在 ResultSummary 首次 paint 前可用 */}
+<div
+	data-lunar-date-converter-v2
+	data-ldcv2-locale={locale === "zh" ? "zh" : "en"}
+	data-ldcv2-input-mode="gregorian"
+	data-ldcv2-field-phase="committed-valid"
+	data-ldcv2-gregorian-placeholder={m.dateInputPlaceholder}
+	data-ldcv2-lunar-placeholder={m.lunarInputPlaceholder}
+	data-ldcv2-gregorian-aria={m.dateInputAriaLabel}
+	data-ldcv2-lunar-aria={m.lunarInputAriaLabel}
+	data-ldcv2-copy-reset={m.resetLabel}
+	data-ldcv2-copy-error-unrecognized={m.errorUnrecognizedFormat}
+	data-ldcv2-copy-error-out-of-range={m.errorOutOfRange}
+	data-ldcv2-copy-error-invalid-date={m.errorInvalidDate}
+	data-ldcv2-copy-error-invalid-leap={m.errorInvalidLeapMonth}
+	data-ldcv2-copy-error-invalid-day={m.errorInvalidLunarDay}
+	data-ldcv2-copy-error-unsupported-leap-typo={m.errorUnsupportedLeapTypo}
+>
 	<script is:inline src="/scripts/lunar-date-converter-layout-contract.js?v=ldc1"></script>
 
 	<ToolPageFrame
@@ -67,16 +82,7 @@ const modeSwitchIconHtml =
 		<Fragment slot="title">{m.kicker}</Fragment>
 
 		<div slot="result" class="ldcv2-result-host">
-			{/*
-				Critical primary 字級：blocking inline，與 ResultSummary 同帧。
-				避免 shared result-summary.css 先 paint 小字。
-			*/}
 			<style is:inline>
-				/*
-				  Lunar textual primary：語系分開調字級。
-				  EN 壓低 desktop max，避免正常／較長干支無意義折行。
-				  ZH 搭配 fixture \\n + tool-local pre-line，固定語意兩行。
-				*/
 				[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
 					[data-result-summary][data-rs-content="textual"]
 					.rs-value[data-rs-value="primary"] {
@@ -150,12 +156,11 @@ const modeSwitchIconHtml =
 				variant="spacious"
 				ariaLabel={m.resultsLabel}
 				primary={rsPrimary}
-				weekday={m.fixtureDefaultWeekday}
+				weekday={null}
 				support={null}
 				class="ldcv2-result-summary"
 			/>
 			<script is:inline>
-				/* Layout bootstrap — sync before first paint；bind resize／orientation */
 				(function () {
 					var layout = window.TimivaLunarDateConverterLayout;
 					layout?.applyLayoutAttrs(document);
@@ -164,39 +169,58 @@ const modeSwitchIconHtml =
 			</script>
 		</div>
 
-		{/*
-			Cluster 必須是 desktopControls slot 根節點。
-			多包一層無寬度 wrapper 時，tpf-stage align-items:center
-			會讓欄位縮成 content-driven（約 250px），吃不到 Standard 420。
-		*/}
 		<div
 			slot="desktopControls"
 			class="ldcv2-input-cluster ldcv2-input-cluster--desktop tool-standard-pill-field-cluster"
 			aria-label={m.upperControlsAriaLabel}
 		>
-			<button type="button" class="tool-mode-switch">
+			<button type="button" class="tool-mode-switch" data-ldcv2-switch="lunar">
 				<Fragment set:html={modeSwitchIconHtml} />
 				<span>{m.switchToLunarInput}</span>
 			</button>
-			<button type="button" class="tool-mode-switch" hidden>
+			<button type="button" class="tool-mode-switch" data-ldcv2-switch="gregorian" hidden>
 				<Fragment set:html={modeSwitchIconHtml} />
 				<span>{m.switchToGregorianInput}</span>
 			</button>
 
-			<div class="ldcv2-date-capsule" role="group" aria-label={m.dateLabel}>
+			<div class="ldcv2-date-capsule" data-ldcv2-date-capsule role="group" aria-label={m.dateLabel}>
 				<div class="ldcv2-date-input-wrap">
-					<input
-						type="text"
-						class="ldcv2-date-input"
-						readonly
-						value={m.fixtureDateValue}
-						aria-label={m.dateInputAriaLabel}
-						placeholder={m.dateInputPlaceholder}
-					/>
+					<div class="ldcv2-date-inline">
+						<input
+							type="text"
+							class="ldcv2-date-input"
+							data-ldcv2-date-input
+							inputmode="numeric"
+							autocomplete="off"
+							spellcheck="false"
+							value=""
+							aria-label={m.dateInputAriaLabel}
+							placeholder={m.dateInputPlaceholder}
+							aria-invalid="false"
+						/>
+						<span
+							class="ldcv2-date-invalid-icon"
+							data-ldcv2-field-invalid
+							hidden
+							aria-hidden="true"
+						>
+							<svg viewBox="0 0 16 16" aria-hidden="true">
+								<path fill="currentColor" d="M8 1.75 14.25 14.25H1.75L8 1.75z"></path>
+								<path
+									fill="#0f172a"
+									d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+								></path>
+							</svg>
+						</span>
+					</div>
 				</div>
 				<button
 					type="button"
 					class="ldcv2-calendar-toggle"
+					data-ldcv2-calendar-toggle
+					aria-haspopup="dialog"
+					aria-expanded="false"
+					aria-controls="ldc-sdc"
 					aria-label={m.openCalendarAriaLabel}
 				>
 					<svg
@@ -211,6 +235,12 @@ const modeSwitchIconHtml =
 					</svg>
 				</button>
 			</div>
+
+			<p class="ldcv2-field-error" data-ldcv2-field-error hidden></p>
+
+			<button type="button" class="ldcv2-reset" data-ldcv2-reset tabindex="-1">
+				{m.resetLabel}
+			</button>
 		</div>
 
 		<button
@@ -322,12 +352,25 @@ const modeSwitchIconHtml =
 			</section>
 		</Fragment>
 	</ToolPageFrame>
+
+	<div data-ldcv2-calendar-host>
+		<DesktopCalendar
+			variant="popover-compact"
+			idPrefix="ldc-sdc"
+			weekdays={m.weekdays}
+			labels={{
+				calendar: m.calendarLabel,
+				previousMonth: m.previousMonth,
+				nextMonth: m.nextMonth,
+				month: m.monthsLabel,
+				year: m.yearsLabel,
+			}}
+		/>
+	</div>
 </div>
 
 <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 
 <script>
-	import { init as initResultSummary } from "../../../scripts/result-summary-controller.ts";
-
-	initResultSummary();
+	import "../../../scripts/lunar-date-converter.ts";
 </script>

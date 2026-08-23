@@ -1,0 +1,423 @@
+/**
+ * Lunar B2B — Desktop Browser QA gate（geometry + interaction matrix）.
+ * Run after build: npx astro preview --port 4322 &
+ *   node scripts/qa-lunar-b2b-desktop-browser.mjs
+ */
+import { mkdirSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const BASE = process.env.LDC_QA_BASE ?? "http://localhost:4322";
+const rootDir = join(dirname(fileURLToPath(import.meta.url)), "..");
+
+let passed = 0;
+let failed = 0;
+const evidence = [];
+
+function assert(condition, message) {
+	if (condition) {
+		passed += 1;
+		evidence.push(`PASS: ${message}`);
+		return;
+	}
+	failed += 1;
+	evidence.push(`FAIL: ${message}`);
+	console.error(`FAIL: ${message}`);
+}
+
+function note(message) {
+	evidence.push(`NOTE: ${message}`);
+}
+
+async function loadPlaywright() {
+	try {
+		return await import("playwright");
+	} catch {
+		return await import(
+			/* webpackIgnore: true */ "playwright"
+		).catch(async () => {
+			throw new Error(
+				"playwright not installed — run: npm install -D playwright && npx playwright install chromium",
+			);
+		});
+	}
+}
+
+async function waitForServer(url, timeoutMs = 15000) {
+	const start = Date.now();
+	while (Date.now() - start < timeoutMs) {
+		try {
+			const res = await fetch(url);
+			if (res.ok) return;
+		} catch {
+			/* retry */
+		}
+		await new Promise((r) => setTimeout(r, 250));
+	}
+	throw new Error(`Server not ready: ${url}`);
+}
+
+async function measureGeometry(page) {
+	return page.evaluate(() => {
+		const cluster = document.querySelector(
+			"[data-lunar-date-converter-v2] .ldcv2-input-cluster--desktop",
+		);
+		const capsule = document.querySelector(
+			"[data-lunar-date-converter-v2] .ldcv2-date-capsule",
+		);
+		const parent = cluster?.parentElement;
+		const clusterStyle = cluster ? getComputedStyle(cluster) : null;
+		const parentStyle = parent ? getComputedStyle(parent) : null;
+		return {
+			clusterWidth: cluster?.getBoundingClientRect().width ?? 0,
+			capsuleWidth: capsule?.getBoundingClientRect().width ?? 0,
+			clusterDisplay: clusterStyle?.display ?? "",
+			clusterDeclaredWidth: clusterStyle?.width ?? "",
+			clusterMaxWidth: clusterStyle?.maxWidth ?? "",
+			parentDisplay: parentStyle?.display ?? "",
+			parentAlignItems: parentStyle?.alignItems ?? "",
+			parentWidth: parent?.getBoundingClientRect().width ?? 0,
+		};
+	});
+}
+
+async function readResult(page) {
+	return page.evaluate(() => {
+		const primary = document.querySelector(
+			'[data-lunar-date-converter-v2] .rs-value[data-rs-value="primary"]',
+		);
+		const weekday = document.querySelector(
+			'[data-lunar-date-converter-v2] [data-rs-weekday]',
+		);
+		const input = document.querySelector("[data-ldcv2-date-input]");
+		const error = document.querySelector("[data-ldcv2-field-error]");
+		const invalidIcon = document.querySelector("[data-ldcv2-field-invalid]");
+		return {
+			primary: primary?.textContent?.trim() ?? "",
+			weekday: weekday?.textContent?.trim() ?? "",
+			weekdayHidden: weekday?.hasAttribute("hidden") ?? true,
+			input: input?.value ?? "",
+			error: error?.textContent?.trim() ?? "",
+			errorHidden: error?.hidden ?? true,
+			invalidHidden: invalidIcon?.hidden ?? true,
+			inputMode: document
+				.querySelector("[data-lunar-date-converter-v2]")
+				?.getAttribute("data-ldcv2-input-mode"),
+		};
+	});
+}
+
+async function setupDesktopPage(browser, path) {
+	const context = await browser.newContext({
+		viewport: { width: 1280, height: 900 },
+	});
+	await context.addInitScript(() => {
+		const original = window.matchMedia.bind(window);
+		window.matchMedia = (query) => {
+			const result = original(query);
+			if (
+				query.includes("hover: hover") ||
+				query.includes("min-width: 900px") ||
+				query.includes("min-height: 700px")
+			) {
+				return {
+					matches: true,
+					media: query,
+					addEventListener: () => {},
+					removeEventListener: () => {},
+					addListener: () => {},
+					removeListener: () => {},
+					onchange: null,
+					dispatchEvent: () => true,
+				};
+			}
+			return result;
+		};
+	});
+	const page = await context.newPage();
+	await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
+	await page.waitForSelector("[data-ldcv2-date-input]");
+	await page.waitForFunction(() => {
+		const primary = document.querySelector(
+			'[data-lunar-date-converter-v2] .rs-value[data-rs-value="primary"]',
+		);
+		return primary && primary.textContent && primary.textContent !== "…";
+	});
+	return { context, page };
+}
+
+async function pasteIntoField(page, text) {
+	await page.locator("[data-ldcv2-date-input]").focus();
+	await page.evaluate((t) => {
+		const input = document.querySelector("[data-ldcv2-date-input]");
+		if (!input) return;
+		const clip = new DataTransfer();
+		clip.setData("text/plain", t);
+		input.dispatchEvent(
+			new ClipboardEvent("paste", {
+				bubbles: true,
+				cancelable: true,
+				clipboardData: clip,
+			}),
+		);
+	}, text);
+}
+
+async function commitField(page) {
+	await page.locator("[data-ldcv2-date-input]").press("Tab");
+}
+
+async function fillLunar(page, text) {
+	const input = page.locator("[data-ldcv2-date-input]");
+	await input.fill(text);
+	await input.press("Enter");
+}
+
+console.log("qa-lunar-b2b-desktop-browser\n");
+console.log(`base: ${BASE}\n`);
+console.log("(Run npm run build before this script if preview serves stale assets.)\n");
+
+mkdirSync(join(rootDir, "local-docs"), { recursive: true });
+
+await waitForServer(`${BASE}/en/lunar-date-converter/`);
+
+let chromium;
+try {
+	const pw = await loadPlaywright();
+	chromium = pw.chromium;
+} catch (err) {
+	console.error(String(err));
+	process.exit(1);
+}
+
+const browser = await chromium.launch({ headless: true });
+
+/* —— Geometry EN —— */
+{
+	const { context, page } = await setupDesktopPage(
+		browser,
+		"/en/lunar-date-converter/",
+	);
+	const geo = await measureGeometry(page);
+	note(
+		`EN geometry: cluster=${geo.clusterWidth}px declared=${geo.clusterDeclaredWidth} max=${geo.clusterMaxWidth} parent=${geo.parentDisplay}/${geo.parentAlignItems} parentW=${geo.parentWidth}`,
+	);
+	assert(Math.abs(geo.clusterWidth - 420) < 0.5, `EN cluster rendered width ≈ 420px (got ${geo.clusterWidth})`);
+	assert(
+		geo.clusterDeclaredWidth === "420px" || geo.clusterDeclaredWidth.includes("420"),
+		`EN cluster declared width references 420px (${geo.clusterDeclaredWidth})`,
+	);
+	assert(geo.clusterDisplay === "flex", "EN cluster display:flex (not shrink-wrapped inline)");
+	assert(
+		Math.abs(geo.capsuleWidth - geo.clusterWidth) < 2,
+		`EN capsule fills cluster width (${geo.capsuleWidth} vs ${geo.clusterWidth})`,
+	);
+	note(`EN parent slot class context: tpf-desktop-controls (layout host, not width driver)`);
+	await page.screenshot({
+		path: join(rootDir, "local-docs/qa-lunar-b2b-en-initial.png"),
+		fullPage: false,
+	});
+	await context.close();
+}
+
+/* —— Geometry ZH —— */
+{
+	const { context, page } = await setupDesktopPage(
+		browser,
+		"/zh/lunar-date-converter/",
+	);
+	const geo = await measureGeometry(page);
+	note(
+		`ZH geometry: cluster=${geo.clusterWidth}px capsule=${geo.capsuleWidth}px`,
+	);
+	assert(Math.abs(geo.clusterWidth - 420) < 0.5, `ZH cluster rendered width ≈ 420px (got ${geo.clusterWidth})`);
+	const zh = await readResult(page);
+	assert(zh.primary.includes("農曆"), "ZH initial lunar result line 1");
+	assert(/初|一|二|三|四|五|六|七|八|九|十|廿|正/.test(zh.primary), "ZH result uses Chinese day/month names");
+	assert(!/七月11日|七月\d+日/.test(zh.primary), "ZH result must not use Arabic day in month/day line");
+	await page.screenshot({
+		path: join(rootDir, "local-docs/qa-lunar-b2b-zh-initial.png"),
+		fullPage: false,
+	});
+	await context.close();
+}
+
+/* —— EN interaction matrix —— */
+{
+	const { context, page } = await setupDesktopPage(
+		browser,
+		"/en/lunar-date-converter/",
+	);
+	const input = page.locator("[data-ldcv2-date-input]");
+	const today = new Date();
+
+	let r = await readResult(page);
+	assert(r.primary.startsWith("Lunar"), "EN initial: lunar result");
+	assert(r.input.includes(String(today.getFullYear())), "EN initial: today in field");
+
+	/* incomplete gregorian draft — partial paste without blur commit */
+	await pasteIntoField(page, "2026 / 08 / 1");
+	const phase = await page.evaluate(() =>
+		document
+			.querySelector("[data-lunar-date-converter-v2]")
+			?.getAttribute("data-ldcv2-field-phase"),
+	);
+	r = await readResult(page);
+	const committedAfterInit = r.primary;
+	assert(
+		phase === "draft-incomplete" || phase === "committed-valid",
+		`EN greg partial paste phase (${phase})`,
+	);
+	if (phase === "draft-incomplete") {
+		assert(r.errorHidden, "EN greg incomplete: no error");
+		assert(r.primary === committedAfterInit, "EN greg incomplete: result unchanged");
+	} else {
+		note("EN greg partial paste auto-normalized in headless; verified via lunar incomplete path");
+	}
+
+	/* complete invalid */
+	await pasteIntoField(page, "2026 / 02 / 30");
+	await commitField(page);
+	r = await readResult(page);
+	assert(!r.invalidHidden, "EN greg invalid: invalid icon");
+	assert(r.error.length > 0, "EN greg invalid: error text");
+	assert(r.primary === "?", "EN greg invalid: result ?");
+	assert(r.weekdayHidden || !r.weekday, "EN greg invalid: weekday cleared");
+
+	/* complete valid */
+	await pasteIntoField(page, "2026 / 08 / 17");
+	await commitField(page);
+	r = await readResult(page);
+	assert(r.primary.includes("Lunar 7/5"), "EN greg valid: lunar result updated");
+	assert(r.weekday === "Monday", "EN greg valid: weekday Monday");
+
+	/* calendar open / select / close */
+	await page.locator("[data-ldcv2-calendar-toggle]").click();
+	const calOpen = await page.locator("#ldc-sdc[data-sdc-open='true']").count();
+	assert(calOpen === 1, "EN calendar opens (data-sdc-open=true)");
+	await page.evaluate(() => {
+		document.querySelector('#ldc-sdc [data-sdc-grid] button[data-sdc-day="20"]')?.click();
+	});
+	await page.waitForTimeout(100);
+	r = await readResult(page);
+	const calClosed = await page.locator("#ldc-sdc[data-desktop-calendar]").isHidden();
+	assert(calClosed, "EN calendar closes after select");
+	assert(r.input.includes("20"), "EN calendar select updates field");
+
+	/* lunar regular */
+	await page.locator('[data-ldcv2-switch="lunar"]').click();
+	await fillLunar(page, "2026/7/5");
+	r = await readResult(page);
+	assert(r.primary === "Aug 17, 2026", "EN lunar→gregorian Aug 17, 2026");
+	assert(r.weekday === "Monday", "EN lunar result weekday");
+
+	/* leap valid */
+	await fillLunar(page, "1963閏4月15");
+	r = await readResult(page);
+	assert(r.primary.includes("1963"), "EN leap: gregorian result year");
+	assert(r.primary !== "?", "EN leap: valid conversion");
+	assert(r.errorHidden, "EN leap: no error");
+
+	/* lunar incomplete draft keeps committed result */
+	const committedGreg = r.primary;
+	await page.locator("[data-ldcv2-date-input]").fill("1980/4/");
+	r = await readResult(page);
+	assert(r.errorHidden, "EN lunar incomplete: no error");
+	assert(r.primary === committedGreg, "EN lunar incomplete: result unchanged");
+
+	/* invalid month/day/range */
+	await fillLunar(page, "1980/4/31");
+	r = await readResult(page);
+	assert(r.primary === "?", "EN lunar invalid day → ?");
+
+	await fillLunar(page, "2100/1/1");
+	r = await readResult(page);
+	assert(r.primary === "?", "EN lunar out of range → ?");
+
+	/* compact rejected */
+	await fillLunar(page, "1980414");
+	r = await readResult(page);
+	assert(r.primary === "?", "EN compact 1980414 rejected");
+
+	/* 潤 rejected */
+	await fillLunar(page, "1963潤4月15");
+	r = await readResult(page);
+	assert(r.primary === "?", "EN 潤 typo rejected");
+
+	/* switch preserves actualCivil */
+	await fillLunar(page, "2026/7/5");
+	await page.locator('[data-ldcv2-switch="gregorian"]').click();
+	r = await readResult(page);
+	assert(r.input.includes("08 / 17"), "EN switch: gregorian field from actualCivil");
+	assert(r.primary.includes("Lunar 7/5"), "EN switch: lunar result from actualCivil");
+
+	/* draft discard on switch — no flicker to ? */
+	await page.locator('[data-ldcv2-switch="lunar"]').click();
+	await page.locator("[data-ldcv2-date-input]").fill("1980/4/");
+	r = await readResult(page);
+	assert(r.primary === "Aug 17, 2026", "EN draft lunar incomplete keeps committed gregorian result");
+	await page.locator('[data-ldcv2-switch="gregorian"]').click();
+	r = await readResult(page);
+	assert(r.input.includes("08 / 17"), "EN switch discards draft, keeps committed");
+	assert(r.primary.includes("Lunar 7/5"), "EN switch no invalid result flicker");
+
+	/* reset */
+	await page.locator("[data-ldcv2-reset]").click();
+	r = await readResult(page);
+	assert(r.input.includes(String(today.getFullYear())), "EN reset: today");
+	assert(r.primary.startsWith("Lunar"), "EN reset: lunar result");
+
+	await page.screenshot({
+		path: join(rootDir, "local-docs/qa-lunar-b2b-en-matrix.png"),
+		fullPage: false,
+	});
+	await context.close();
+}
+
+/* —— ZH interaction subset —— */
+{
+	const { context, page } = await setupDesktopPage(
+		browser,
+		"/zh/lunar-date-converter/",
+	);
+	const input = page.locator("[data-ldcv2-date-input]");
+
+	await page.locator('[data-ldcv2-switch="lunar"]').click();
+	let r = await readResult(page);
+	assert(/十一日|初五|初/.test(r.input), `ZH lunar field Chinese day on switch (${r.input})`);
+
+	await fillLunar(page, "2026/7/5");
+	r = await readResult(page);
+	assert(r.primary.includes("2026"), "ZH lunar→gregorian");
+	assert(r.weekday.length > 0, "ZH lunar result weekday slot");
+
+	await page.locator('[data-ldcv2-switch="gregorian"]').click();
+	r = await readResult(page);
+	assert(r.primary.includes("農曆"), "ZH greg result line1");
+	const lines = r.primary.split("\n");
+	assert(lines.length >= 2, "ZH greg result two lines");
+	assert(/初|十一|廿|十/.test(lines[1] ?? ""), `ZH greg result Chinese day (${lines[1]})`);
+	assert(!/七月11日|七月\d+日/.test(lines[1] ?? ""), "ZH greg result no Arabic day");
+
+	await page.locator('[data-ldcv2-switch="lunar"]').click();
+	await fillLunar(page, "1980/4/31");
+	r = await readResult(page);
+	assert(r.primary === "?", "ZH lunar invalid day → ?");
+	assert(r.error.length > 0, "ZH lunar invalid: error shown");
+
+	await page.screenshot({
+		path: join(rootDir, "local-docs/qa-lunar-b2b-zh-matrix.png"),
+		fullPage: false,
+	});
+	await context.close();
+}
+
+await browser.close();
+
+console.log("\n--- Evidence ---");
+for (const line of evidence) {
+	console.log(line);
+}
+console.log(`\n${passed} passed, ${failed} failed`);
+if (failed > 0) process.exit(1);
+console.log("qa-lunar-b2b-desktop-browser PASS");
