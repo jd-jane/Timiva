@@ -1,44 +1,247 @@
 /**
  * Lunar Date Converter — tool-local styles.
- * B0: placeholder content only; ToolPageFrame owns layout geometry.
- * 不得覆寫 .tpf-*；不得複製 DC／Hours／JEC first-screen RWD。
+ * B1B: ResultSummary typography tokens + desktop input cluster.
+ * 不得覆寫 .tpf-*；ToolPageFrame owns layout geometry.
  */
 
-[data-lunar-date-converter-v2] .ldcv2-result-placeholder {
+/* —— B1B ResultSummary host tokens —— */
+[data-lunar-date-converter-v2]
+	[data-result-summary][data-rs-content="textual"],
+[data-lunar-date-converter-v2]
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+[data-lunar-date-converter-v2]
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"],
+[data-lunar-date-converter-v2]
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+	--rs-textual-weekday-size: 1.125rem;
+}
+
+[data-lunar-date-converter-v2]
+	[data-result-summary][data-rs-content="textual"][data-rs-variant="spacious"] {
+	--rs-textual-weekday-size: 1.25rem;
+}
+
+/*
+ * ZH semantic two-line primary：fixture 內 \n + pre-line。
+ * 仍是單一 .rs-value；不拆 primary／detail；不改 shared ResultSummary。
+ */
+[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
+	[data-result-summary][data-rs-content="textual"]
+	.rs-value[data-rs-value="primary"] {
+	white-space: pre-line;
+}
+
+/* —— Desktop 輸入區（900×700+hover；對齊 ToolPageFrame desktop gate） —— */
+/* Standard primary field：layout-driven 420；非 content-driven capsule */
+[data-lunar-date-converter-v2] .ldcv2-input-cluster--desktop {
+	display: none;
+	/* width 用 min() 寫死可用寬，避免 flex + align-items:center 縮成內容寬 */
+	width: min(100%, 420px);
+	max-width: min(100%, 420px);
+	flex-direction: column;
+	align-items: stretch;
+	gap: 0.75rem;
+	margin-top: 2.5rem;
+	margin-inline: auto;
+}
+
+[data-lunar-date-converter-v2] .ldcv2-input-cluster--desktop > .tool-mode-switch {
+	align-self: center;
+	box-sizing: border-box;
+	height: 2.5rem;
+	min-height: 2.5rem;
+	padding: 0 1.25rem;
+	border: 0;
+	background: rgb(255 255 255 / 0.05);
+	color: rgb(203 213 225 / 0.9);
+	font-size: 0.875rem;
+	line-height: 1;
+}
+
+[data-lunar-date-converter-v2] .ldcv2-input-cluster--desktop > .tool-mode-switch .tool-mode-switch-icon {
+	width: 1.0625rem;
+	height: 1.0625rem;
+}
+
+[data-lunar-date-converter-v2] .tool-mode-switch[hidden] {
+	display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	[data-lunar-date-converter-v2] .ldcv2-input-cluster--desktop > .tool-mode-switch:hover {
+		background: rgb(255 255 255 / 0.1);
+	}
+}
+
+[data-lunar-date-converter-v2] .ldcv2-input-cluster--desktop > .tool-mode-switch:focus-visible {
+	background: rgb(255 255 255 / 0.1);
+	outline: none;
+}
+
+/* Date capsule：對齊 DC .dcv2-start-capsule */
+[data-lunar-date-converter-v2] .ldcv2-date-capsule {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
 	width: 100%;
 	min-width: 0;
-	text-align: center;
+	box-sizing: border-box;
+	height: 3.25rem;
+	min-height: 3.25rem;
+	padding: 0.75rem 1.125rem 0.75rem 1.25rem;
+	border-radius: 9999px;
+	background: rgb(255 255 255 / 0.06);
+	border: 1px solid rgb(255 255 255 / 0.12);
+	backdrop-filter: blur(10px);
 }
 
-[data-lunar-date-converter-v2] .ldcv2-result-primary {
-	margin: 0;
-	font-size: 5rem;
-	font-weight: 400;
-	line-height: 1.15;
-	letter-spacing: -0.02em;
-	color: rgb(248 250 252);
+[data-lunar-date-converter-v2] .ldcv2-date-input-wrap {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	min-width: 0;
 }
 
-[data-lunar-date-converter-v2] .ldcv2-result-support {
-	margin: 0.75rem 0 0;
-	font-size: 16px;
-	font-weight: 400;
-	line-height: 1.45;
-	color: rgb(148 163 184);
-}
-
-[data-lunar-date-converter-v2] .ldcv2-primary-entry-placeholder {
+[data-lunar-date-converter-v2] .ldcv2-date-input {
+	flex: 1 1 auto;
 	box-sizing: border-box;
 	width: 100%;
-	max-width: min(100%, 420px);
-	margin-inline: auto;
-	padding: 0.875rem 1.25rem;
-	border-radius: 9999px;
-	border: 1px dashed rgb(255 255 255 / 0.15);
-	background: rgb(255 255 255 / 0.03);
-	color: rgb(148 163 184 / 0.85);
-	font-size: 0.875rem;
+	min-width: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: rgb(248 250 252 / 0.92);
+	font: inherit;
+	font-size: 0.9375rem;
 	font-weight: 500;
 	line-height: 1.35;
-	text-align: center;
+	letter-spacing: 0.01em;
+	font-variant-numeric: tabular-nums;
+	text-align: start;
+	outline: none;
+	cursor: default;
+}
+
+[data-lunar-date-converter-v2] .ldcv2-date-input:focus {
+	outline: none;
+}
+
+[data-lunar-date-converter-v2] .ldcv2-date-input::placeholder {
+	color: rgb(244 243 248 / 0.48);
+}
+
+[data-lunar-date-converter-v2] .ldcv2-calendar-toggle {
+	display: grid;
+	flex-shrink: 0;
+	margin-left: auto;
+	place-items: center;
+	width: 2rem;
+	height: 2rem;
+	padding: 0;
+	border: 0;
+	border-radius: 9999px;
+	color: rgb(220 218 240 / 0.9);
+	background: rgb(255 255 255 / 0.05);
+	cursor: default;
+}
+
+[data-lunar-date-converter-v2] .ldcv2-calendar-toggle svg {
+	width: 1.125rem;
+	height: 1.125rem;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	[data-lunar-date-converter-v2] .ldcv2-calendar-toggle:hover {
+		background: rgb(255 255 255 / 0.1);
+	}
+}
+
+[data-lunar-date-converter-v2] .ldcv2-calendar-toggle:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.35);
+	outline-offset: 2px;
+}
+
+/* Desktop gate：對齊 ToolPageFrame 900×700+hover；Lunar = Standard 420（非 DC Wide 512） */
+@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
+	[data-lunar-date-converter-v2] .ldcv2-input-cluster--desktop {
+		display: flex;
+		width: min(100%, 420px);
+		max-width: min(100%, 420px);
+	}
+
+	[data-lunar-date-converter-v2] .ldcv2-result-host {
+		container-type: inline-size;
+		width: 100%;
+		max-width: 100%;
+		min-width: 0;
+	}
+
+	/* EN：壓低 max，讓正常／較長干支盡量單行 */
+	[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
+		[data-result-summary][data-rs-content="textual"]:is(
+			[data-rs-layout="desktop"],
+			[data-rs-layout="portrait"]
+		) {
+		--rs-textual-primary-size: clamp(3.25rem, 10.5cqi, 3.875rem);
+	}
+
+	/* ZH：語意兩行 hero；不要求與 EN 同行數 */
+	[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"]:is(
+			[data-rs-layout="desktop"],
+			[data-rs-layout="portrait"]
+		) {
+		--rs-textual-primary-size: clamp(3.5rem, 12cqi, 4.5rem);
+	}
+}
+
+/* Portrait：結果容器 cqi */
+@media (max-width: 767px) and (orientation: portrait) {
+	[data-lunar-date-converter-v2] .ldcv2-result-host {
+		container-type: inline-size;
+		width: 100%;
+		min-width: 0;
+	}
+
+	[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
+		[data-result-summary][data-rs-content="textual"],
+	[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+		/* 390 寬需壓低，避免 default EN 無意義折成兩行 */
+		--rs-textual-primary-size: clamp(2.125rem, 9.5cqi, 2.5rem);
+	}
+
+	[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"],
+	[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+		--rs-textual-primary-size: clamp(2.75rem, 13cqi, 3.5rem);
+	}
+}
+
+/* Landscape compact */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+	[data-lunar-date-converter-v2] .ldcv2-input-cluster--desktop {
+		display: none;
+	}
+
+	[data-lunar-date-converter-v2] .ldcv2-result-host {
+		container-type: inline-size;
+		width: 100%;
+		min-width: 0;
+	}
+
+	[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
+		[data-result-summary][data-rs-content="textual"],
+	[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+		--rs-textual-primary-size: 2.75rem;
+	}
+
+	[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"],
+	[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+		--rs-textual-primary-size: 2.5rem;
+	}
 }
