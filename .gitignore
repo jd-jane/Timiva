@@ -26,3 +26,9 @@ pnpm-debug.log*
 # Local-only Timiva working documents
 local-docs/
 local-fixtures/
+
+# Lunar B2A — generated HKO raw download cache（re-fetch: scripts/fetch-hko-lunar-tables.mjs）
+scripts/fixtures/hko-text/
+
+# Uncompressed daily reference（checked-in artifact is hko-lunar-daily.jsonl.gz）
+scripts/fixtures/hko-lunar-daily.jsonl

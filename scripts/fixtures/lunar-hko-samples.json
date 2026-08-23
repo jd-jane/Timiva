@@ -1,0 +1,49 @@
+{
+  "provenance": {
+    "baseline": "Hong Kong Observatory Gregorian-Lunar Calendar Conversion Table",
+    "url": "https://www.hko.gov.hk/en/gts/time/conversion.htm",
+    "textTables": "https://www.hko.gov.hk/en/gts/time/conversion1_text.htm",
+    "note": "Fixtures transcribed from HKO English text tables for B2A validation. Not a runtime dependency."
+  },
+  "gregorianToLunar": [
+    {
+      "gregorian": { "year": 1901, "month": 1, "day": 1 },
+      "lunar": { "year": 1900, "month": 11, "day": 11, "isLeapMonth": false },
+      "source": "T1901e.txt"
+    },
+    {
+      "gregorian": { "year": 1901, "month": 2, "day": 19 },
+      "lunar": { "year": 1901, "month": 1, "day": 1, "isLeapMonth": false },
+      "source": "T1901e.txt"
+    },
+    {
+      "gregorian": { "year": 1963, "month": 5, "day": 23 },
+      "lunar": { "year": 1963, "month": 4, "day": 1, "isLeapMonth": true },
+      "source": "T1963e.txt",
+      "note": "Second 4th Lunar month = leap 4"
+    },
+    {
+      "gregorian": { "year": 2020, "month": 5, "day": 23 },
+      "lunar": { "year": 2020, "month": 4, "day": 1, "isLeapMonth": true },
+      "source": "T2020e.txt"
+    },
+    {
+      "gregorian": { "year": 2026, "month": 8, "day": 17 },
+      "lunar": { "year": 2026, "month": 7, "day": 5, "isLeapMonth": false },
+      "stemBranchZh": "丙午",
+      "stemBranchEn": "Bing-wu",
+      "source": "T2026e.txt"
+    },
+    {
+      "gregorian": { "year": 2099, "month": 3, "day": 22 },
+      "lunar": { "year": 2099, "month": 2, "day": 1, "isLeapMonth": true },
+      "source": "T2099e.txt"
+    },
+    {
+      "lunar": { "year": 2099, "month": 12, "day": 1, "isLeapMonth": false },
+      "gregorian": { "year": 2100, "month": 1, "day": 10 },
+      "source": "T2100e.txt",
+      "note": "Public lunar year 2099 → Gregorian 2100 spill"
+    }
+  ]
+}
