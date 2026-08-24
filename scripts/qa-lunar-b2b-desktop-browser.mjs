@@ -546,7 +546,10 @@ const browser = await chromium.launch({ headless: true });
 
 	await page.locator('[data-ldcv2-switch="lunar"]').click();
 	let r = await readResult(page);
-	assert(/十一日|初五|初/.test(r.input), `ZH lunar field Chinese day on switch (${r.input})`);
+	assert(
+		/[初十廿三]?[一二三四五六七八九十]+日/.test(r.input) || /初/.test(r.input),
+		`ZH lunar field Chinese day on switch (${r.input})`,
+	);
 
 	await fillLunar(page, "2026/7/5");
 	r = await readResult(page);

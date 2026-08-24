@@ -72,6 +72,7 @@ export {
 export {
 	buildGregorianResultParts,
 	buildLunarResultParts,
+	formatLunarDayCellZh,
 	formatLunarDayZh,
 	formatLunarMonthZh,
 	type GregorianResultParts,

@@ -30,6 +30,10 @@ import {
 	createLunarCalendarAdapter,
 	type LunarCalendarAdapter,
 } from "../lib/lunarDateConverterCalendarAdapter.ts";
+import {
+	createLunarPickerAdapter,
+	type LunarPickerAdapter,
+} from "../lib/lunarDateConverterLunarCalendarAdapter.ts";
 import { gregorianToLunar } from "../lib/lunar/index.ts";
 import type { CivilDate } from "../lib/lunar/lunarTypes.ts";
 
@@ -146,6 +150,12 @@ function applyInputModeUi(root: HTMLElement, mode: InputMode): void {
 		'[data-ldcv2-switch="gregorian"]',
 	);
 	const calendarToggle = root.querySelector<HTMLElement>("[data-ldcv2-calendar-toggle]");
+	const gregorianCalendarHost = root.querySelector<HTMLElement>(
+		"[data-ldcv2-calendar-host-gregorian]",
+	);
+	const lunarCalendarHost = root.querySelector<HTMLElement>(
+		"[data-ldcv2-calendar-host-lunar]",
+	);
 
 	if (switchToLunar) {
 		switchToLunar.hidden = mode !== "gregorian";
@@ -153,8 +163,18 @@ function applyInputModeUi(root: HTMLElement, mode: InputMode): void {
 	if (switchToGregorian) {
 		switchToGregorian.hidden = mode !== "lunar";
 	}
+	if (gregorianCalendarHost) {
+		gregorianCalendarHost.hidden = mode !== "gregorian";
+	}
+	if (lunarCalendarHost) {
+		lunarCalendarHost.hidden = mode !== "lunar";
+	}
 	if (calendarToggle) {
-		calendarToggle.hidden = mode !== "gregorian";
+		calendarToggle.hidden = false;
+		calendarToggle.setAttribute(
+			"aria-controls",
+			mode === "gregorian" ? "ldc-sdc" : "ldc-lc",
+		);
 	}
 }
 
@@ -198,7 +218,12 @@ function initRoot(root: HTMLElement): void {
 	const locale = getLocale(root);
 	const copy = readCopy(root);
 	const input = root.querySelector<HTMLInputElement>("[data-ldcv2-date-input]");
-	const calendarHost = root.querySelector<HTMLElement>("[data-ldcv2-calendar-host]");
+	const calendarGregorianHost = root.querySelector<HTMLElement>(
+		"[data-ldcv2-calendar-host-gregorian]",
+	);
+	const calendarLunarHost = root.querySelector<HTMLElement>(
+		"[data-ldcv2-calendar-host-lunar]",
+	);
 	const calendarToggle = root.querySelector<HTMLButtonElement>(
 		"[data-ldcv2-calendar-toggle]",
 	);
@@ -217,7 +242,8 @@ function initRoot(root: HTMLElement): void {
 	let inputMode: InputMode = "gregorian";
 	let fieldPhase: FieldPhase = "committed-valid";
 	let lunarDraftText = "";
-	let calendarAdapter: LunarCalendarAdapter | null = null;
+	let gregorianCalendarAdapter: LunarCalendarAdapter | null = null;
+	let lunarPickerAdapter: LunarPickerAdapter | null = null;
 	let gregorianController: LunarGregorianDateController | null = null;
 	const calendarListeners = new Set<() => void>();
 
@@ -330,12 +356,17 @@ function initRoot(root: HTMLElement): void {
 		syncCommittedResult(true);
 	};
 
+	const closeAllCalendars = () => {
+		gregorianCalendarAdapter?.close();
+		lunarPickerAdapter?.close();
+	};
+
 	const performModeSwitch = (nextMode: InputMode) => {
 		if (nextMode === inputMode) {
 			return;
 		}
 
-		calendarAdapter?.close();
+		closeAllCalendars();
 		inputMode = nextMode;
 		fieldPhase = "committed-valid";
 		applyInputModeUi(root, inputMode);
@@ -358,7 +389,7 @@ function initRoot(root: HTMLElement): void {
 	/* —— Gregorian controller + calendar —— */
 	gregorianController = createGregorianDateController();
 
-	const dateSource = {
+	const gregorianDateSource = {
 		getDate: () => actualCivil,
 		setDate: (date: CivilDate) => {
 			actualCivil = date;
@@ -376,15 +407,58 @@ function initRoot(root: HTMLElement): void {
 		},
 	};
 
-	if (calendarHost && calendarToggle) {
-		calendarAdapter = createLunarCalendarAdapter({
-			host: calendarHost,
+	const lunarDateSource = {
+		getCivil: () => actualCivil,
+		setCivil: (date: CivilDate) => {
+			actualCivil = date;
+			fieldPhase = "committed-valid";
+			repopulateInputFromActual();
+			syncFieldError(root, fieldPhase);
+			syncCommittedResult(false);
+			notifyCalendar();
+		},
+		subscribe: (listener: () => void) => {
+			calendarListeners.add(listener);
+			return () => calendarListeners.delete(listener);
+		},
+	};
+
+	if (calendarGregorianHost && calendarToggle) {
+		gregorianCalendarAdapter = createLunarCalendarAdapter({
+			host: calendarGregorianHost,
 			trigger: calendarToggle,
 			anchor: capsule,
-			dateSource,
+			dateSource: gregorianDateSource,
 			intlLocale: locale === "zh" ? "zh-Hant" : "en-US",
+			bindTrigger: false,
 		});
 	}
+
+	if (calendarLunarHost && calendarToggle) {
+		lunarPickerAdapter = createLunarPickerAdapter({
+			host: calendarLunarHost,
+			trigger: calendarToggle,
+			anchor: capsule,
+			dateSource: lunarDateSource,
+			locale,
+			bindTrigger: false,
+		});
+	}
+
+	calendarToggle?.addEventListener("click", (event) => {
+		event.preventDefault();
+		event.stopPropagation();
+		const adapter =
+			inputMode === "gregorian" ? gregorianCalendarAdapter : lunarPickerAdapter;
+		if (!adapter) {
+			return;
+		}
+		if (adapter.isOpen()) {
+			adapter.close();
+		} else {
+			adapter.open();
+		}
+	});
 
 	/* Init defaults */
 	applyInputModeUi(root, inputMode);
@@ -533,7 +607,7 @@ function initRoot(root: HTMLElement): void {
 
 	resetButton?.addEventListener("click", (event) => {
 		event.preventDefault();
-		calendarAdapter?.close();
+		closeAllCalendars();
 
 		const active = document.activeElement;
 		if (
@@ -558,10 +632,41 @@ function initRoot(root: HTMLElement): void {
 		syncCommittedResult(false);
 	});
 
+	const layoutApi = window.TimivaLunarDateConverterLayout;
+	const compositionMedia: MediaQueryList[] = [];
+	const onDesktopInputCompositionChange = () => {
+		const inDesktopInput =
+			layoutApi?.isDesktopInputComposition?.(window) ??
+			window.matchMedia("(min-width: 768px)").matches;
+		if (!inDesktopInput) {
+			closeAllCalendars();
+		}
+	};
+
+	if (layoutApi?.DESKTOP_INPUT_MQ) {
+		compositionMedia.push(window.matchMedia(layoutApi.DESKTOP_INPUT_MQ));
+	}
+	if (layoutApi?.PORTRAIT_MOBILE_MQ) {
+		compositionMedia.push(window.matchMedia(layoutApi.PORTRAIT_MOBILE_MQ));
+	}
+	if (layoutApi?.LANDSCAPE_MQ) {
+		compositionMedia.push(window.matchMedia(layoutApi.LANDSCAPE_MQ));
+	}
+	if (compositionMedia.length === 0) {
+		compositionMedia.push(window.matchMedia("(min-width: 768px)"));
+	}
+	for (const mq of compositionMedia) {
+		mq.addEventListener("change", onDesktopInputCompositionChange);
+	}
+
 	window.addEventListener(
 		"pagehide",
 		() => {
-			calendarAdapter?.destroy();
+			for (const mq of compositionMedia) {
+				mq.removeEventListener("change", onDesktopInputCompositionChange);
+			}
+			gregorianCalendarAdapter?.destroy();
+			lunarPickerAdapter?.destroy();
 			gregorianController?.destroy();
 		},
 		{ once: true },

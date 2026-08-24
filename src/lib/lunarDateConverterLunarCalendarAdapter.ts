@@ -1,53 +1,50 @@
 /**
- * Lunar Date Converter — Shared DesktopCalendar thin adapter.
+ * Lunar Date Converter — tool-local Lunar Calendar thin adapter.
  */
-import type { CivilDate } from "./lunar/lunarTypes.ts";
+import { getLocalTodayCivil } from "./lunarDateConverterEvaluate.ts";
+import type { CivilDate, LunarDate } from "./lunar/lunarTypes.ts";
+import { lunarToGregorian } from "./lunar/index.ts";
 import {
-	createDesktopCalendar,
-	type DesktopCalendarApi,
-} from "../scripts/desktop-calendar-controller.ts";
+	LUNAR_PUBLIC_YEAR_MAX,
+	LUNAR_PUBLIC_YEAR_MIN,
+} from "./lunar/lunarTypes.ts";
 import {
-	MAX_GREGORIAN,
-	MIN_GREGORIAN,
-} from "./lunarDateConverterGregorianInput.ts";
+	createLunarCalendar,
+	type LunarCalendarApi,
+} from "../scripts/lunar-calendar-controller.ts";
 
-export interface LunarCalendarDateSource {
-	getDate: () => CivilDate | null;
-	setDate: (date: CivilDate) => void;
+export interface LunarPickerDateSource {
+	getCivil: () => CivilDate;
+	setCivil: (date: CivilDate) => void;
 	subscribe: (listener: () => void) => () => void;
 }
 
-export interface LunarCalendarAdapterConfig {
-	/** Host wrapping Shared DesktopCalendar root（含 [data-desktop-calendar]）. */
+export interface LunarPickerAdapterConfig {
 	host: HTMLElement;
 	trigger: HTMLButtonElement;
 	anchor: HTMLElement;
-	dateSource: LunarCalendarDateSource;
-	intlLocale: string;
+	dateSource: LunarPickerDateSource;
+	locale: "en" | "zh";
 	/** When false, orchestrator owns trigger click routing. */
 	bindTrigger?: boolean;
 }
 
-export interface LunarCalendarAdapter {
+export interface LunarPickerAdapter {
 	open: () => void;
 	close: () => void;
 	isOpen: () => boolean;
 	destroy: () => void;
 }
 
-function cloneDate(date: CivilDate | null) {
-	return date ? { year: date.year, month: date.month, day: date.day } : null;
-}
-
-export function createLunarCalendarAdapter(
-	config: LunarCalendarAdapterConfig,
-): LunarCalendarAdapter {
-	const { host, trigger, anchor, dateSource } = config;
+export function createLunarPickerAdapter(
+	config: LunarPickerAdapterConfig,
+): LunarPickerAdapter {
+	const { host, trigger, anchor, dateSource, locale } = config;
 	const bindTrigger = config.bindTrigger ?? true;
-	const calendarRoot = host.querySelector<HTMLElement>("[data-desktop-calendar]");
+	const calendarRoot = host.querySelector<HTMLElement>("[data-lunar-calendar]");
 	if (!calendarRoot) {
 		throw new Error(
-			"LunarDateConverter: calendar host must contain [data-desktop-calendar]",
+			"LunarDateConverter: lunar calendar host must contain [data-lunar-calendar]",
 		);
 	}
 
@@ -55,29 +52,23 @@ export function createLunarCalendarAdapter(
 	const { signal } = abort;
 	let destroyed = false;
 
-	const calendar: DesktopCalendarApi = createDesktopCalendar({
+	const calendar: LunarCalendarApi = createLunarCalendar({
 		root: calendarRoot,
-		variant: "popover-compact",
-		selectionMode: "single",
-		intlLocale: config.intlLocale,
-		yearList: {
-			min: MIN_GREGORIAN.year,
-			max: MAX_GREGORIAN.year,
-			mode: "full",
-		},
-		getMinDate: () => MIN_GREGORIAN,
-		getMaxDate: () => MAX_GREGORIAN,
-		getSelection: () => ({
-			start: cloneDate(dateSource.getDate()),
-			end: null,
-		}),
-		onSelect: ({ date }) => {
-			dateSource.setDate({ year: date.year, month: date.month, day: date.day });
+		locale,
+		yearMin: LUNAR_PUBLIC_YEAR_MIN,
+		yearMax: LUNAR_PUBLIC_YEAR_MAX,
+		getCommittedCivil: () => dateSource.getCivil(),
+		getTodayCivil: () => getLocalTodayCivil(),
+		onSelect: (lunar: LunarDate) => {
+			const civilResult = lunarToGregorian(lunar);
+			if (!civilResult.ok) {
+				return { shouldClose: false };
+			}
+			dateSource.setCivil(civilResult.value);
 			return { shouldClose: true };
 		},
 		getTrigger: () => trigger,
 		getPositionAnchor: () => anchor,
-		placement: "right",
 		resolvePopoverPosition: ({
 			width,
 			height,

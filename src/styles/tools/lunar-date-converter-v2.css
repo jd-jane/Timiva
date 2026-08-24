@@ -253,13 +253,20 @@
 	outline-offset: 2px;
 }
 
-/* Desktop gate：對齊 ToolPageFrame 900×700+hover；Lunar = Standard 420（非 DC Wide 512） */
-@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
+/* md+：Desktop 輸入；Mobile capsule 隱藏（對齊 DC／JEC hide/show） */
+@media (min-width: 768px) {
 	[data-lunar-date-converter-v2] .ldcv2-input-cluster--desktop {
 		display: flex;
 		width: min(100%, 420px);
 		max-width: min(100%, 420px);
 	}
+}
+
+/*
+ * 大型桌機（對齊 ToolPageFrame 900×700+hover）：stage／結果 cqi。
+ * Lunar = Standard 420（非 DC Wide 512）。
+ */
+@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
 
 	[data-lunar-date-converter-v2] .ldcv2-result-host {
 		container-type: inline-size;
@@ -287,8 +294,12 @@
 	}
 }
 
-/* Portrait：結果容器 cqi */
+/* 手機直式：結果容器 cqi；隱藏 desktop 輸入（對齊 DC） */
 @media (max-width: 767px) and (orientation: portrait) {
+	[data-lunar-date-converter-v2] .ldcv2-input-cluster--desktop {
+		display: none;
+	}
+
 	[data-lunar-date-converter-v2] .ldcv2-result-host {
 		container-type: inline-size;
 		width: 100%;
@@ -311,8 +322,15 @@
 	}
 }
 
-/* Landscape compact */
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+/*
+ * Mobile landscape — 須同時符合 non-desktop 且寬 ≤823（對齊 DRC canonical）。
+ * 824+ 拖窄桌機視窗不得進入 landscape compact／flat Primary Capsule。
+ */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (max-width: 899px),
+	(orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (max-height: 699px),
+	(orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (hover: none),
+	(orientation: landscape) and (max-height: 699px) and (max-width: 823px),
+	(orientation: landscape) and (max-height: 699px) and (max-width: 823px) and (hover: none) {
 	[data-lunar-date-converter-v2] .ldcv2-input-cluster--desktop {
 		display: none;
 	}
@@ -335,5 +353,20 @@
 	[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
 		[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
 		--rs-textual-primary-size: 2.5rem;
+	}
+}
+
+/*
+ * ToolPageFrame adopter — md+ 且 hover 裝置維持 desktop slot（對齊 DC 768+）。
+ * 反制 shared TPF landscape MQ 在桌機拖窄（824+）誤藏 desktop／露出 flat capsule。
+ * Tool-local scoped；不改 shared foundation。觸控／hover:none 仍走 canonical mobile path。
+ */
+@media (min-width: 768px) and (hover: hover) {
+	[data-lunar-date-converter-v2] [data-tool-page-frame] .tpf-desktop-controls {
+		display: contents;
+	}
+
+	[data-lunar-date-converter-v2] [data-tool-page-frame] .tpf-mobile-controls {
+		display: none;
 	}
 }

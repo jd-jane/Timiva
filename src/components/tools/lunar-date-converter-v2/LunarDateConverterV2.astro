@@ -7,6 +7,7 @@
  */
 import RelatedToolRow from "../../RelatedToolRow.astro";
 import DesktopCalendar from "../shared/DesktopCalendar.astro";
+import LunarCalendar from "./LunarCalendar.astro";
 import ResultSummary from "../shared/ResultSummary.astro";
 import ToolPageFrame from "../shared/ToolPageFrame.astro";
 import { catalogIconMap } from "../../../lib/catalogIcons";
@@ -134,7 +135,10 @@ const modeSwitchIconHtml =
 						--rs-textual-primary-size: clamp(3.5rem, 12cqi, 4.5rem);
 					}
 				}
-				@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+				@media (orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (max-width: 899px),
+					(orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (max-height: 699px),
+					(orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (hover: none),
+					(orientation: landscape) and (max-height: 699px) and (max-width: 823px) {
 					[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
 						[data-result-summary][data-rs-content="textual"],
 					[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
@@ -355,10 +359,23 @@ const modeSwitchIconHtml =
 		</Fragment>
 	</ToolPageFrame>
 
-	<div data-ldcv2-calendar-host>
+	<div data-ldcv2-calendar-host-gregorian data-ldcv2-calendar-host>
 		<DesktopCalendar
 			variant="popover-compact"
 			idPrefix="ldc-sdc"
+			weekdays={m.weekdays}
+			labels={{
+				calendar: m.calendarLabel,
+				previousMonth: m.previousMonth,
+				nextMonth: m.nextMonth,
+				month: m.monthsLabel,
+				year: m.yearsLabel,
+			}}
+		/>
+	</div>
+	<div data-ldcv2-calendar-host-lunar hidden>
+		<LunarCalendar
+			idPrefix="ldc-lc"
 			weekdays={m.weekdays}
 			labels={{
 				calendar: m.calendarLabel,

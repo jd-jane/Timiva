@@ -1,0 +1,140 @@
+---
+/**
+ * Lunar Date Converter — tool-local Lunar Calendar（B2C）.
+ * Visual family aligned with Shared DesktopCalendar；不共用 .sdc-* DOM contract。
+ */
+import "../../../styles/tools/lunar-calendar.css";
+
+interface Props {
+	weekdays: readonly string[];
+	labels: {
+		calendar: string;
+		previousMonth: string;
+		nextMonth: string;
+		month: string;
+		year: string;
+	};
+	class?: string;
+	idPrefix?: string;
+}
+
+const {
+	weekdays,
+	labels,
+	class: className,
+	idPrefix = "ldc-lc",
+} = Astro.props;
+
+if (weekdays.length !== 7) {
+	throw new Error("LunarCalendar: weekdays must contain exactly 7 labels");
+}
+
+const monthPanelId = `${idPrefix}-month-panel`;
+const yearPanelId = `${idPrefix}-year-panel`;
+---
+
+<div
+	id={idPrefix}
+	class:list={["ldc-lc", className]}
+	data-lunar-calendar
+	data-ldc-lc-variant="popover-compact"
+	data-ldc-lc-open="false"
+	role="dialog"
+	aria-label={labels.calendar}
+	aria-hidden="true"
+	hidden
+>
+	<div class="ldc-lc-panel">
+		<div class="ldc-lc-toolbar">
+			<button
+				type="button"
+				class="ldc-lc-nav-btn"
+				data-ldc-lc-prev
+				aria-label={labels.previousMonth}
+			>
+				‹
+			</button>
+
+			<div class="ldc-lc-selects">
+				<div class="ldc-lc-picker" data-ldc-lc-month-picker>
+					<button
+						type="button"
+						class="ldc-lc-picker-trigger"
+						data-ldc-lc-month-trigger
+						aria-expanded="false"
+						aria-haspopup="listbox"
+						aria-controls={monthPanelId}
+						aria-label={labels.month}
+					>
+						<span data-ldc-lc-month-label>—</span>
+					</button>
+					<div
+						id={monthPanelId}
+						class="ldc-lc-picker-panel ldc-lc-month-panel"
+						data-ldc-lc-month-panel
+						role="listbox"
+						aria-label={labels.month}
+						hidden
+					>
+						<div class="ldc-lc-month-grid" data-ldc-lc-month-grid></div>
+					</div>
+				</div>
+
+				<div class="ldc-lc-picker" data-ldc-lc-year-picker>
+					<button
+						type="button"
+						class="ldc-lc-picker-trigger"
+						data-ldc-lc-year-trigger
+						aria-expanded="false"
+						aria-haspopup="dialog"
+						aria-controls={yearPanelId}
+						aria-label={labels.year}
+					>
+						<span data-ldc-lc-year-label>—</span>
+					</button>
+					<div
+						id={yearPanelId}
+						class="ldc-lc-picker-panel ldc-lc-year-panel"
+						data-ldc-lc-year-panel
+						role="dialog"
+						aria-label={labels.year}
+						hidden
+					>
+						<input
+							type="text"
+							class="ldc-lc-year-input"
+							data-ldc-lc-year-input
+							inputmode="numeric"
+							autocomplete="off"
+							spellcheck="false"
+							maxlength="4"
+							aria-label={labels.year}
+						/>
+						<div
+							class="ldc-lc-year-list"
+							data-ldc-lc-year-list
+							role="listbox"
+							aria-label={labels.year}
+						>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<button
+				type="button"
+				class="ldc-lc-nav-btn"
+				data-ldc-lc-next
+				aria-label={labels.nextMonth}
+			>
+				›
+			</button>
+		</div>
+
+		<div class="ldc-lc-weekdays" aria-hidden="true">
+			{weekdays.map((day) => <span>{day}</span>)}
+		</div>
+
+		<div class="ldc-lc-grid" data-ldc-lc-grid></div>
+	</div>
+</div>

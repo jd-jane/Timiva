@@ -113,6 +113,11 @@ export function formatLunarDayZh(day: number): string {
 	return `${base}日`;
 }
 
+/** Calendar day cell — 初一…三十，不帶「日」. */
+export function formatLunarDayCellZh(day: number): string {
+	return LUNAR_DAY_ZH[day] ?? String(day);
+}
+
 /**
  * Build structured lunar result parts.
  * weekdayIndex 以對應國曆日計算（caller 傳入已換算的 civil）.

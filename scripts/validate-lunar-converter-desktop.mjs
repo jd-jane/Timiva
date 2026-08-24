@@ -428,7 +428,70 @@ assert(/ldcv2-date-input/.test(astro), "single primary field");
 assert(!/ldcv2-lunar-year|ldcv2-lunar-month|ldcv2-lunar-day/.test(astro), "no lunar Y/M/D selectors");
 assert(/aria-controls="ldc-sdc"/.test(astro), "calendar aria-controls matches idPrefix");
 assert(/idPrefix="ldc-sdc"/.test(astro), "calendar idPrefix ldc-sdc");
-assert(/\[data-desktop-calendar\]/.test(read("src/lib/lunarDateConverterCalendarAdapter.ts")), "adapter queries calendar root");
+assert(/LunarCalendar/.test(astro), "lunar calendar component in astro");
+assert(/data-lunar-calendar/.test(read("src/components/tools/lunar-date-converter-v2/LunarCalendar.astro")), "lunar calendar root");
+assert(/idPrefix="ldc-lc"/.test(astro), "lunar calendar idPrefix ldc-lc");
+assert(/data-ldcv2-calendar-host-lunar/.test(astro), "lunar calendar host");
+assert(/data-ldcv2-calendar-host-gregorian/.test(astro), "gregorian calendar host");
+assert(/createLunarPickerAdapter/.test(script), "lunar picker adapter wired");
+assert(/closeAllCalendars/.test(script), "close all calendars on mode switch");
+assert(
+	!/calendarToggle\.hidden = mode !== "gregorian"/.test(executableScript),
+	"calendar toggle visible in lunar mode",
+);
+assert(
+	exists("src/lib/lunarCalendarGrid.ts"),
+	"lunar calendar grid helpers exist",
+);
+assert(
+	exists("src/scripts/lunar-calendar-controller.ts"),
+	"lunar calendar controller exists",
+);
+assert(
+	!read("src/styles/tools/desktop-calendar.css").includes("ldc-lc"),
+	"shared desktop-calendar.css untouched",
+);
+assert(
+	!/gregorianToLunarFromDataset|lunarToGregorianFromDataset/.test(
+		read("src/lib/lunar/index.ts"),
+	),
+	"dataset sentinel helpers not in public lunar/index API",
+);
+assert(
+	/min-width:\s*768px/.test(css) &&
+		/hover:\s*hover/.test(css) &&
+		/tpf-desktop-controls/.test(css) &&
+		/max-width:\s*823px/.test(css),
+	"tool-local desktop-input composition CSS (768+ hover guard / landscape ≤823)",
+);
+assert(
+	!/\(max-width:\s*899px\)[^{]*\{[^}]*tpf-mobile-controls[^}]*display:\s*flex/s.test(
+		css,
+	),
+	"no non-desktop TPF mobile force-show override (removed incorrect 768–899 gap fix)",
+);
+assert(
+	/POPOVER_BASE_WIDTH_PX|23\.5\s*\*\s*16/.test(
+		read("src/scripts/lunar-calendar-controller.ts"),
+	),
+	"lunar calendar uses canonical width (no rect.width feedback)",
+);
+assert(
+	/clearPositionVars/.test(read("src/scripts/lunar-calendar-controller.ts")),
+	"lunar calendar clears position vars on close",
+);
+assert(
+	/isDesktopInputComposition|onDesktopInputCompositionChange|compositionMedia/.test(
+		script,
+	),
+	"leaving desktop input composition closes calendars",
+);
+assert(
+	/DESKTOP_INPUT_MQ|isDesktopInputComposition/.test(
+		read("public/scripts/lunar-date-converter-layout-contract.js"),
+	),
+	"layout contract exposes desktop input composition gate",
+);
 
 /* -------------------------------------------------------------------------- */
 /* Summary                                                                     */

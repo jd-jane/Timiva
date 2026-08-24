@@ -1,0 +1,368 @@
+/**
+ * Lunar Date Converter — tool-local Lunar Calendar styles.
+ * Visual family aligned with Shared DesktopCalendar（.sdc-*）；不修改 shared CSS。
+ */
+
+.ldc-lc {
+	--ldc-lc-panel-radius: 18px;
+	--ldc-lc-panel-padding: 12px 18px 10px;
+	--ldc-lc-panel-border: 1px solid rgb(255 255 255 / 0.08);
+	--ldc-lc-panel-bg: linear-gradient(
+		165deg,
+		rgb(120 108 210 / 0.22),
+		rgb(78 96 170 / 0.18)
+	);
+	--ldc-lc-panel-shadow: 0 18px 48px rgb(0 0 0 / 0.42);
+	--ldc-lc-toolbar-gap: 0.375rem;
+	--ldc-lc-toolbar-margin-bottom: 0.5rem;
+	--ldc-lc-selects-gap: 0.375rem;
+	--ldc-lc-trigger-min-width: 4.5rem;
+	--ldc-lc-trigger-max-width: 8rem;
+	--ldc-lc-trigger-min-height: 2.25rem;
+	--ldc-lc-trigger-font-size: 0.8125rem;
+	--ldc-lc-trigger-radius: 0.625rem;
+	--ldc-lc-nav-size: 2.25rem;
+	--ldc-lc-weekday-font-size: 0.6875rem;
+	--ldc-lc-weekday-margin-bottom: 0.25rem;
+	--ldc-lc-grid-gap: 1px;
+	--ldc-lc-day-min-height: 2.375rem;
+	--ldc-lc-day-font-size: 0.8125rem;
+	--ldc-lc-day-font-size-zh: 0.6875rem;
+	--ldc-lc-day-radius: 0.625rem;
+	--ldc-lc-month-panel-width: min(14.5rem, calc(100vw - 3rem));
+	--ldc-lc-month-option-min-height: 2.125rem;
+	--ldc-lc-month-option-font-size: 0.75rem;
+	--ldc-lc-year-panel-width: min(7.75rem, calc(100vw - 3rem));
+	--ldc-lc-year-list-max-height: 12.5rem;
+	--ldc-lc-year-option-min-height: 1.875rem;
+	--ldc-lc-year-option-font-size: 0.8125rem;
+	--ldc-lc-popover-width: min(23.5rem, calc(100vw - 2rem));
+	--ldc-lc-popover-z: 80;
+
+	box-sizing: border-box;
+	margin: 0;
+}
+
+.ldc-lc *,
+.ldc-lc *::before,
+.ldc-lc *::after {
+	box-sizing: border-box;
+}
+
+.ldc-lc[data-ldc-lc-variant="popover-compact"] {
+	position: fixed;
+	z-index: var(--ldc-lc-popover-z);
+	width: var(--ldc-lc-pos-width, var(--ldc-lc-popover-width));
+	left: var(--ldc-lc-pos-left, 0);
+	top: var(--ldc-lc-pos-top, 0);
+	transform: none;
+}
+
+.ldc-lc[data-ldc-lc-variant="popover-compact"][hidden],
+.ldc-lc[data-ldc-lc-variant="popover-compact"][data-ldc-lc-open="false"] {
+	display: none;
+}
+
+.ldc-lc[data-ldc-lc-variant="popover-compact"][data-ldc-lc-open="true"] {
+	display: block;
+}
+
+.ldc-lc-panel {
+	width: 100%;
+	padding: var(--ldc-lc-panel-padding);
+	border-radius: var(--ldc-lc-panel-radius);
+	border: var(--ldc-lc-panel-border);
+	background: var(--ldc-lc-panel-bg);
+	box-shadow: var(--ldc-lc-panel-shadow);
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+}
+
+.ldc-lc-toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--ldc-lc-toolbar-gap);
+	margin-bottom: var(--ldc-lc-toolbar-margin-bottom);
+}
+
+.ldc-lc-selects {
+	display: flex;
+	flex: 1 1 auto;
+	align-items: center;
+	justify-content: center;
+	gap: var(--ldc-lc-selects-gap);
+	min-width: 0;
+}
+
+.ldc-lc-picker {
+	position: relative;
+	display: block;
+	min-width: 0;
+}
+
+.ldc-lc-picker-trigger {
+	display: inline-flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.375rem;
+	width: 100%;
+	min-width: var(--ldc-lc-trigger-min-width);
+	max-width: var(--ldc-lc-trigger-max-width);
+	min-height: var(--ldc-lc-trigger-min-height);
+	padding: 0.25rem 1.75rem 0.25rem 0.625rem;
+	border-radius: var(--ldc-lc-trigger-radius);
+	border: 1px solid rgb(255 255 255 / 0.12);
+	background-color: rgb(255 255 255 / 0.08);
+	background-image: linear-gradient(45deg, transparent 50%, rgb(248 250 252 / 0.72) 50%),
+		linear-gradient(135deg, rgb(248 250 252 / 0.72) 50%, transparent 50%);
+	background-position:
+		calc(100% - 0.85rem) calc(50% - 0.1rem),
+		calc(100% - 0.55rem) calc(50% - 0.1rem);
+	background-size: 0.35rem 0.35rem, 0.35rem 0.35rem;
+	background-repeat: no-repeat;
+	color: rgb(248 250 252 / 0.94);
+	font-size: var(--ldc-lc-trigger-font-size);
+	font-weight: 600;
+	line-height: 1.25;
+	cursor: pointer;
+}
+
+.ldc-lc-picker-trigger:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.45);
+	outline-offset: 2px;
+}
+
+.ldc-lc-picker-trigger[aria-expanded="true"] {
+	background-color: rgb(255 255 255 / 0.14);
+}
+
+.ldc-lc-picker-panel {
+	position: absolute;
+	top: calc(100% + 0.25rem);
+	left: 50%;
+	z-index: 6;
+	padding: 0.5rem;
+	border-radius: 0.75rem;
+	border: 1px solid rgb(255 255 255 / 0.12);
+	background: linear-gradient(165deg, rgb(56 48 96 / 0.98), rgb(42 52 92 / 0.98));
+	box-shadow: 0 14px 36px rgb(0 0 0 / 0.45);
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+	transform: translateX(-50%);
+}
+
+.ldc-lc-picker-panel[hidden] {
+	display: none;
+}
+
+.ldc-lc-month-panel {
+	width: var(--ldc-lc-month-panel-width);
+}
+
+.ldc-lc-month-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.25rem;
+}
+
+.ldc-lc-month-option {
+	min-height: var(--ldc-lc-month-option-min-height);
+	padding: 0.25rem 0.375rem;
+	border: 0;
+	border-radius: 0.5rem;
+	background: transparent;
+	color: rgb(248 250 252 / 0.94);
+	font-size: var(--ldc-lc-month-option-font-size);
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.ldc-lc-month-option.is-selected,
+.ldc-lc-year-option.is-selected {
+	color: rgb(255 255 255);
+	background: rgb(99 102 241 / 0.92);
+	box-shadow: inset 0 0 0 1px rgb(210 218 255 / 0.4);
+}
+
+.ldc-lc-year-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+	width: var(--ldc-lc-year-panel-width);
+}
+
+.ldc-lc-year-input {
+	width: 100%;
+	min-height: 2.125rem;
+	padding: 0.25rem 0.5rem;
+	border-radius: 0.5rem;
+	border: 1px solid rgb(255 255 255 / 0.14);
+	background: rgb(255 255 255 / 0.08);
+	color: rgb(248 250 252 / 0.96);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+	letter-spacing: 0.04em;
+}
+
+.ldc-lc-year-input:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.45);
+	outline-offset: 1px;
+}
+
+.ldc-lc-year-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.125rem;
+	max-height: var(--ldc-lc-year-list-max-height);
+	overflow-x: hidden;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	padding-right: 0.125rem;
+	scrollbar-width: thin;
+	scrollbar-color: rgb(248 250 252 / 0.28) transparent;
+}
+
+.ldc-lc-year-option {
+	flex: 0 0 auto;
+	min-height: var(--ldc-lc-year-option-min-height);
+	padding: 0.2rem 0.5rem;
+	border: 0;
+	border-radius: 0.5rem;
+	background: transparent;
+	color: rgb(248 250 252 / 0.94);
+	font-size: var(--ldc-lc-year-option-font-size);
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+	cursor: pointer;
+}
+
+.ldc-lc-nav-btn {
+	min-height: var(--ldc-lc-nav-size);
+	min-width: var(--ldc-lc-nav-size);
+	padding: 0.25rem 0.5rem;
+	border-radius: var(--ldc-lc-trigger-radius);
+	border: 1px solid rgb(255 255 255 / 0.12);
+	background: rgb(255 255 255 / 0.08);
+	font-size: 1rem;
+	font-weight: 500;
+	color: rgb(248 250 252 / 0.94);
+	cursor: pointer;
+}
+
+.ldc-lc-nav-btn:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.ldc-lc-nav-btn:focus-visible {
+	outline: 2px solid rgb(255 255 255 / 0.45);
+	outline-offset: 2px;
+}
+
+.ldc-lc-weekdays {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: var(--ldc-lc-grid-gap);
+	margin-bottom: var(--ldc-lc-weekday-margin-bottom);
+}
+
+.ldc-lc-weekdays span {
+	text-align: center;
+	font-size: var(--ldc-lc-weekday-font-size);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	color: rgb(226 232 240 / 0.72);
+}
+
+.ldc-lc-grid {
+	display: grid;
+	grid-template-columns: repeat(7, minmax(0, 1fr));
+	gap: var(--ldc-lc-grid-gap);
+}
+
+.ldc-lc-cell--empty,
+.ldc-lc-day {
+	min-height: var(--ldc-lc-day-min-height);
+}
+
+.ldc-lc-day {
+	position: relative;
+	display: grid;
+	place-items: center;
+	border: 0;
+	border-radius: var(--ldc-lc-day-radius);
+	background: transparent;
+	font-size: var(--ldc-lc-day-font-size);
+	font-weight: 500;
+	color: rgb(248 250 252 / 0.94);
+	cursor: pointer;
+	transition:
+		background 160ms ease,
+		color 160ms ease,
+		box-shadow 160ms ease;
+}
+
+.ldc-lc[data-ldc-lc-locale="zh"] .ldc-lc-day {
+	font-size: var(--ldc-lc-day-font-size-zh);
+}
+
+.ldc-lc-day.is-today {
+	box-shadow: inset 0 0 0 1.5px rgb(165 180 252 / 0.9);
+}
+
+.ldc-lc-day.is-selected {
+	color: rgb(255 255 255);
+	background: rgb(99 102 241 / 0.92);
+	box-shadow: inset 0 0 0 1px rgb(210 218 255 / 0.4);
+	z-index: 1;
+}
+
+.ldc-lc-day.is-sentinel-locked {
+	cursor: default;
+	opacity: 0.92;
+	box-shadow:
+		inset 0 0 0 1px rgb(210 218 255 / 0.4),
+		inset 0 0 0 2px rgb(148 163 184 / 0.35);
+}
+
+.ldc-lc-day:disabled {
+	opacity: 0.28;
+	cursor: default;
+}
+
+.ldc-lc-day:active:not(:disabled) {
+	transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.ldc-lc-nav-btn:hover:not(:disabled) {
+		background: rgb(255 255 255 / 0.14);
+	}
+
+	.ldc-lc-picker-trigger:hover {
+		background-color: rgb(255 255 255 / 0.12);
+	}
+
+	.ldc-lc-month-option:hover:not(.is-selected):not(:disabled),
+	.ldc-lc-year-option:hover:not(.is-selected) {
+		background: rgb(255 255 255 / 0.1);
+	}
+
+	.ldc-lc-day:hover:not(:disabled):not(.is-selected):not(.is-sentinel-locked) {
+		background: rgb(255 255 255 / 0.1);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.ldc-lc-day {
+		transition-duration: 0s;
+	}
+
+	.ldc-lc-day:active:not(:disabled) {
+		transform: none;
+	}
+}

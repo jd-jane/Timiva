@@ -60,18 +60,15 @@ export function isPublicLunarYear(year: number): boolean {
 }
 
 /**
- * Gregorian → Lunar.
- * Public input years 1901–2099；output lunar year may be 1900 near lower edge.
+ * Gregorian → Lunar for dataset coverage（含 G 2100 upper sentinel）.
+ * Boundary-internal only — import from ./lunarConvert.ts in calendar grid code;
+ * not exported from lunar/index.ts public API.
  */
-export function gregorianToLunar(date: CivilDate): LunarConvertResult<LunarDate> {
+export function gregorianToLunarFromDataset(
+	date: CivilDate,
+): LunarConvertResult<LunarDate> {
 	if (!isValidCivilDate(date)) {
 		return fail("invalid-civil-date", "Not a valid Gregorian civil date.");
-	}
-	if (!isPublicGregorianInput(date)) {
-		return fail(
-			"out-of-public-range",
-			`Gregorian year must be ${LUNAR_PUBLIC_YEAR_MIN}–${LUNAR_PUBLIC_YEAR_MAX}.`,
-		);
 	}
 
 	let offset =
@@ -144,10 +141,31 @@ export function gregorianToLunar(date: CivilDate): LunarConvertResult<LunarDate>
 }
 
 /**
- * Lunar → Gregorian.
- * Public lunar years 1901–2099；output Gregorian year may be 2100 near upper edge.
+ * Gregorian → Lunar.
+ * Public input years 1901–2099；output lunar year may be 1900 near lower edge.
  */
-export function lunarToGregorian(lunar: LunarDate): LunarConvertResult<CivilDate> {
+export function gregorianToLunar(date: CivilDate): LunarConvertResult<LunarDate> {
+	if (!isValidCivilDate(date)) {
+		return fail("invalid-civil-date", "Not a valid Gregorian civil date.");
+	}
+	if (!isPublicGregorianInput(date)) {
+		return fail(
+			"out-of-public-range",
+			`Gregorian year must be ${LUNAR_PUBLIC_YEAR_MIN}–${LUNAR_PUBLIC_YEAR_MAX}.`,
+		);
+	}
+
+	return gregorianToLunarFromDataset(date);
+}
+
+/**
+ * Lunar → Gregorian for dataset coverage years（1900–2100）.
+ * Boundary-internal only — import from ./lunarConvert.ts in calendar grid code;
+ * not exported from lunar/index.ts public API.
+ */
+export function lunarToGregorianFromDataset(
+	lunar: LunarDate,
+): LunarConvertResult<CivilDate> {
 	const { year, month, day, isLeapMonth } = lunar;
 
 	if (
@@ -162,10 +180,10 @@ export function lunarToGregorian(lunar: LunarDate): LunarConvertResult<CivilDate
 		return fail("invalid-lunar-date", "Malformed lunar date.");
 	}
 
-	if (!isPublicLunarYear(year)) {
+	if (year < LUNAR_DATASET_YEAR_MIN || year > LUNAR_DATASET_YEAR_MAX) {
 		return fail(
-			"out-of-public-range",
-			`Lunar year must be ${LUNAR_PUBLIC_YEAR_MIN}–${LUNAR_PUBLIC_YEAR_MAX}.`,
+			"unsupported-internal-year",
+			`Lunar year must be within dataset ${LUNAR_DATASET_YEAR_MIN}–${LUNAR_DATASET_YEAR_MAX}.`,
 		);
 	}
 
@@ -214,4 +232,31 @@ export function lunarToGregorian(lunar: LunarDate): LunarConvertResult<CivilDate
 	}
 
 	return fail("invalid-lunar-date", "Month not found in lunar year.");
+}
+
+/**
+ * Lunar → Gregorian.
+ * Public lunar years 1901–2099；output Gregorian year may be 2100 near upper edge.
+ */
+export function lunarToGregorian(lunar: LunarDate): LunarConvertResult<CivilDate> {
+	if (
+		!Number.isInteger(lunar.year) ||
+		!Number.isInteger(lunar.month) ||
+		!Number.isInteger(lunar.day) ||
+		typeof lunar.isLeapMonth !== "boolean" ||
+		lunar.month < 1 ||
+		lunar.month > 12 ||
+		lunar.day < 1
+	) {
+		return fail("invalid-lunar-date", "Malformed lunar date.");
+	}
+
+	if (!isPublicLunarYear(lunar.year)) {
+		return fail(
+			"out-of-public-range",
+			`Lunar year must be ${LUNAR_PUBLIC_YEAR_MIN}–${LUNAR_PUBLIC_YEAR_MAX}.`,
+		);
+	}
+
+	return lunarToGregorianFromDataset(lunar);
 }
