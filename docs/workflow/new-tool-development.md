@@ -367,8 +367,8 @@ result-group 外殼
 portrait 1fr / auto composition
 mobile primary-control placement
 capsule geometry（Frame 包一層保證，不依賴工具自己記得補尺寸）
-landscape compact composition
-desktop 640px gate
+landscape compact composition（僅 Mobile Landscape gate；見 layout-system §6.0.3）
+desktop 640px Spacious gate（900×700+hover；≠ Desktop／Mobile composition）
 lower-content max-w-3xl
 first-screen → lower-content spacing
 drawer placement／chrome
@@ -385,19 +385,22 @@ import preview CSS（tool-preview-first-screen.css）當作 production Frame
 新增 exceptionFirstScreen 或同等通用 escape hatch
 修改 Header／Footer／BaseLayout／global background／preview baseline
 遷移既有 DC／Hours／JEC production 頁
+自創 768–899 intermediate composition、「<900 = mobile」、或 bare orientation:landscape 觸發 Mobile Landscape
+把 DR／BDC 823／824–899 legacy tiers 當新 canonical 複製
 ```
 
 工具在 B0 仍須提供（tool-local）：
 
 ```text
 title／result slot 內容
-desktop input composition（若該工具有桌機輸入）
+desktop input composition（若該工具有桌機輸入；Desktop continuity = min-width 768 + hover:hover）
 mobile capsule 內容／語意（不強制 tool-utility-control）
 AME 內容（若採用 AME）
 drawerRelated／lowerRelated／lowerContent 文案與列
 calculation／validation 不在 B0
 ```
 
+**Responsive Composition：** B0／後續批次必須遵守 [`layout-system.md`](../standards/layout-system.md) §6.0.3。Shared Frame／Capsule／validators 對齊前（Foundation Batch 1），不得假設 bare `max-width:1200` landscape MQ 已等於正式 Mobile Landscape gate。Foundation roadmap：Batch 0 docs → 1 Frame+Capsule+validators → 2 AME → 3 adopters → 4 Lunar workaround removal → 之後才 Lunar B2D。
 B0 完成後必須：
 
 ```text

@@ -346,9 +346,9 @@ Geometry: ToolPageFrame（wide portrait 20rem／56px；landscape layout compact�
 ≠ .tool-utility-control（no lift）
 ```
 
-Portrait wide：20rem max、56px min-height（Frame）。Portrait content-driven：padding-inline 20px、min-width 88px。Landscape compact：`orientation:landscape` + `max-height:700px` + `max-width:1200px` → content-driven、32px min-height、6×16px padding、12px font、min-width 88px。
+Portrait wide：20rem max、56px min-height（Frame）。Portrait content-driven：padding-inline 20px、min-width 88px。**Mobile Landscape compact geometry**（content-driven、32px min-height、6×16px padding、12px font、min-width 88px）僅在 Responsive Composition Contract 的 Mobile Landscape gate 成立時套用：已屬 Mobile-style composition + `orientation:landscape` + `max-height:700px` + `max-width:1200px` + `hover: none`。`orientation:landscape` 不得單獨觸發 compact。權威定義：[`layout-system.md`](layout-system.md) §6.0.3。
 
-DR／BDC `823px`／`824–899px` tiers：legacy history；not new baseline. Validators: `validate-primary-entry-capsule-baseline.mjs`, `validate-tool-page-frame-adopters.mjs`.
+DR／BDC `823px`／`824–899px` tiers：legacy tool-local only；not shared composition。Validators（Batch 1 將對齊 contract）：`validate-primary-entry-capsule-baseline.mjs`, `validate-tool-page-frame-adopters.mjs`。
 
 ### Markup API
 

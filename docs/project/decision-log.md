@@ -5,6 +5,71 @@
 
 ---
 
+## 2026-08-26 — Responsive Composition Contract Foundation（Batch 0 docs lock）
+
+### 背景
+
+```text
+Lunar B2C 發現 shared responsive contract 易讓 Desktop viewport（拖窄／矮窗）
+誤套 Mobile Landscape UI。Owner 確認正式 Composition hierarchy 與 Mobile Landscape gate。
+本 entry = Batch 0 Contract lock（docs-only）；不改 CSS／JS／validators。
+```
+
+### 決策（最終結果）
+
+```text
+1. Layer 1 = Desktop composition／Mobile-style composition。
+2. Layer 2（僅在 Mobile-style 內）：
+   - Mobile Landscape = 完整 opt-in gate 成立時。
+   - Mobile Default / Portrait-style = 其餘所有 Mobile-style（安全 fallback；
+     不要求 orientation: portrait）。
+3. Mobile Landscape 是明確 opt-in；未過 gate 的 Mobile-style 一律 Default／Portrait-style。
+4. orientation: landscape 不得單獨觸發 Mobile Landscape UI。
+5. Desktop continuity = min-width: 768px AND hover: hover。
+   矮窗、width <900、landscape ratio 皆不得因此把 Desktop 改判成 Mobile Landscape。
+6. 900×700 + hover = Spacious Desktop／ResultSummary／layout polish gate；
+   不是 Desktop／Mobile composition gate。
+7. Shared Mobile Landscape gate =
+   Mobile-style + orientation:landscape + max-height:700px
+   + max-width:1200px + hover: none。
+8. 824×650／900×650／1280×650 + hover:hover → Desktop。
+   844×390／667×375 + hover:none → Mobile Landscape。
+   390×844 + hover:none → Mobile Default / Portrait-style。
+   700×500 + hover:hover → Mobile Default / Portrait-style
+   （不得套 Mobile Landscape compact）。viewport 變窄 ≠ 手機橫式。
+9. pointer:coarse 不納入 shared baseline；特殊工具可另有更嚴 exception。
+10. DR／BDC 823／824–899 = legacy tool-local only；不升格 shared composition。
+11. 新 adopter 不得自創 768–899 intermediate、「<900 = mobile」、bare landscape composition。
+12. Lunar B2C tool-local responsive guard = workaround；shared foundation 完成後另批移除。
+13. Foundation roadmap：
+    Batch 0 docs → Batch 1 ToolPageFrame + Capsule + validators
+    → Batch 2 AME → Batch 3 adopters（CSS+layout-contract 配對）
+    → Batch 4 Lunar workaround removal → 之後才 Lunar B2D Mobile AME。
+14. Implementation self-check／validator PASS ≠ Project Design Assistant PASS。
+15. 產品文案可稱常見真機直式為「Mobile Portrait」；canonical composition 名稱用
+    Mobile Default / Portrait-style。
+```
+### 影響
+
+```text
+Canonical：layout-system.md §6.0.3／§11；design-system.md Primary Capsule；
+tool-page-qa.md Composition QA；new-tool-development.md B0；
+shared-component-reuse-gate.md §9 交叉引用。
+Batch 1 起 shared MQ／validators 必須對齊本 contract；本批不改程式碼。
+```
+
+### 取代／釐清
+
+```text
+2026-08-23 Primary Entry Capsule entry 的「landscape gate = orientation + max-h 700
++ max-w 1200」幾何條件仍成立，但 Tool Page 必須再加上：
+已屬 Mobile-style composition + hover: none。
+不得再把 bare 1200 landscape MQ 解讀成 Desktop 矮窗也可進 Mobile Landscape。
+823／824–899 legacy 決策維持不變。
+```
+
+---
+
 ## 2026-08-22 — Component Style Baseline Batch 1（docs-first）
 
 ### 背景
@@ -2765,7 +2830,9 @@ Shared shell（tool-primary-entry-capsule-baseline.css）：
   border／bg／radius／blur／text／focus／disabled／nowrap／icon contract
   content-driven：min-width 88px（5.5rem）；portrait padding-inline 20px
   landscape compact：min-height 32px；padding 6px×16px；font 12px；min-width 88px
-  landscape gate：orientation:landscape + max-height:700px + max-width:1200px
+  landscape geometry bounds：orientation:landscape + max-height:700px + max-width:1200px
+  （2026-08-26 升格）Tool Page Mobile Landscape 另需：已屬 Mobile-style + hover: none
+  → 見 decision-log「2026-08-26 — Responsive Composition Contract」
 
 ToolPageFrame：placement、portrait wide（20rem／56px）、landscape layout mode
 Tool content：label、icon、ARIA、dynamic inner content
@@ -2779,6 +2846,7 @@ Landscape：content-driven width；不維持 portrait wide
 Hours／JEC `.tool-utility-control` on primary：legacy；本輪不 migration
 ```
 
+> **後續釐清（2026-08-26）：** bare `orientation + max-height:700 + max-width:1200` 不足作為 Tool Page Mobile Landscape composition selector；必須先進入 Mobile-style 且含 `hover: none`。幾何尺寸（32px／6×16／12px）不變。
 Validators:
 
 ```text

@@ -280,8 +280,8 @@ result-group 外殼
 portrait 1fr / auto composition
 mobile primary-control placement
 capsule geometry（Frame 包一層保證）
-landscape compact composition
-desktop 640px gate
+landscape compact composition（僅 Mobile Landscape gate）
+desktop 640px Spacious gate（900×700+hover；≠ composition）
 lower-content max-w-3xl
 first-screen → lower-content spacing
 drawer placement / chrome
@@ -302,6 +302,7 @@ tool-specific interaction
 
 Frame 不擁有 Header／Footer，只遵守既有 stacking contract。不提供通用 `exceptionFirstScreen`。不得 import preview CSS 作 production implementation。工具不得覆寫 `.tpf-*`。
 
+**Responsive Composition Contract：** Frame／adopter 必須遵守 [`layout-system.md`](../standards/layout-system.md) §6.0.3（Desktop continuity = `768 + hover:hover`；Mobile Landscape 必須含 `hover: none`；不得自創 768–899／`<900=mobile`／bare landscape composition）。DR／BDC 823 tiers 為 legacy tool-local，不進 shared。詳見 `decision-log.md` 2026-08-26。Foundation Batch 1 起 shared CSS／validators 對齊；本 Gate 文件不重複全文。
 ### 9.3 既有工具策略
 
 ```text

@@ -244,11 +244,119 @@ Lunar（popover-compact）不符合此例外，必須使用 standard gap。
 ### 6.0.2 Desktop geometry（新 ToolPageFrame adopter）
 
 ```text
-Desktop result stage：640px（Frame desktop gate）
+Desktop result stage：640px（Frame Spacious Desktop / layout polish gate）
 Standard Desktop form cluster：420px（Standard Pill Field／converter 類）
 512px 目前僅 DC duration-specific，不升成 general tier
 舊工具 480／560／36rem 等 layout 不因本 baseline migration
 ```
+
+`900×700 + hover` 是 **Spacious Desktop** layout polish（stage 640、ResultSummary／spacious typography 等），**不是** Desktop／Mobile composition gate。Composition 見 §6.0.3。
+
+### 6.0.3 Responsive Composition Contract（canonical）
+
+Timiva 工具頁 responsive 採兩層 hierarchy。實作與 QA 必須分開命名，不得把不同 gate 混成同一 breakpoint。
+
+**Layer 1 — Composition**
+
+```text
+Desktop composition
+Mobile-style composition
+```
+
+**Layer 2 — Mobile sub-state（僅在已進入 Mobile-style composition 之後）**
+
+```text
+Mobile Landscape
+  = 完整 opt-in gate 成立時（見下）
+
+Mobile Default / Portrait-style
+  = 其餘所有 Mobile-style 狀態（安全 fallback）
+  不要求 viewport 實際為 portrait
+```
+
+**核心原則：** Mobile Landscape 是明確 opt-in 特殊狀態；沒有通過完整 landscape gate 的 Mobile-style，一律 fallback 到 **Mobile Default / Portrait-style**。
+
+產品文案仍可稱常見真機直式 viewport 為「Mobile Portrait」，但 **canonical composition 名稱** 用 `Mobile Default / Portrait-style`，避免把 fallback 綁死在 `orientation: portrait`。
+
+`orientation: landscape` **不得**單獨觸發 Mobile Landscape UI。
+
+**Desktop continuity（Layer 1）**
+
+```text
+Canonical Desktop input composition：
+  min-width: 768px AND hover: hover
+```
+
+只要 `width ≥ 768` 且 `hover: hover`，維持 Desktop composition。即使 viewport 很矮、`width < 900`、或 viewport ratio 為 landscape，也**不得**因此切成 Mobile Landscape。
+
+**Mobile Landscape interaction gate（Layer 2 opt-in；正式 shared）**
+
+必須**同時**滿足：
+
+```text
+1. 已屬 Mobile-style composition
+2. orientation: landscape
+3. max-height: 700px
+4. max-width: 1200px
+5. hover: none
+```
+
+未通過此 gate 的 Mobile-style → **Mobile Default / Portrait-style**（portrait-style Primary Capsule；不得套 landscape compact geometry）。
+
+**判定示例**
+
+| Viewport | Composition |
+|---|---|
+| `824×650 + hover:hover` | Desktop |
+| `900×650 + hover:hover` | Desktop |
+| `1280×650 + hover:hover` | Desktop |
+| `844×390 + hover:none` | Mobile Landscape |
+| `667×375 + hover:none` | Mobile Landscape |
+| `390×844 + hover:none` | Mobile Default / Portrait-style |
+| `700×500 + hover:hover` | Mobile Default / Portrait-style（Mobile-style；**不得**套 Mobile Landscape compact） |
+
+原則：**viewport 變窄 ≠ 手機橫式。**
+
+**Signal roles**
+
+| Signal | 角色 |
+|---|---|
+| width `768` | Desktop input continuity boundary |
+| width `900` + height `700` + `hover` | Spacious Desktop layout polish（非 composition） |
+| `orientation` | 只區分 Mobile 子狀態 |
+| height | 可影響 geometry／compactness；不得把 Desktop 改判成 Mobile |
+| `hover: none` | Mobile Landscape **必要** interaction evidence |
+| `pointer: coarse` | **不**納入 shared baseline；特殊工具可另有更嚴 exception |
+
+**禁止 adopter 自創（除非明確 exception）**
+
+```text
+768–899 intermediate composition
+「<900 = mobile」composition
+bare orientation: landscape 觸發 mobile-landscape UI
+把 823／824–899 升格成 shared composition breakpoint
+```
+
+**Legacy／exceptions**
+
+```text
+DR／BDC 823／824–899：legacy tool-local only；不進 shared composition
+Countdown 等更嚴 pointer／coarse gate：維持明確 product-spec exception
+Lunar B2C tool-local responsive guard：workaround；shared foundation 完成後另批移除
+```
+
+**Foundation roadmap（docs lock 後）**
+
+```text
+Batch 0 — Contract lock／docs（本節）
+Batch 1 — Shared ToolPageFrame + Primary Capsule + validators
+Batch 2 — AME responsive contract
+Batch 3 — production adopters 逐工具 migration（每支 CSS + layout-contract JS 配對）
+Batch 4 — Lunar workaround removal
+→ 完成後才進 Lunar B2D Mobile AME
+```
+
+詳見 `docs/project/decision-log.md`（2026-08-26）、`docs/workflow/tool-page-qa.md` Composition QA。
 
 本節 6.1–6.5 描述 preview route 的視覺契約。正式工具頁的可重用實作以 6.0 與 6.6 為準。
 
@@ -381,7 +489,7 @@ Related Tools 應優先最接近的使用者意圖，而非單純依新工具順
 
 #### F. 手機第一屏控制區 baseline（一般工具）
 
-本節適用於 **一般工具** 的手機 first-screen tool stage。Production 由 `ToolPageFrame` 保證 portrait `1fr / auto`、capsule geometry、landscape compact 與 768px hide。特殊互動工具（例如 Countdown Timer）可例外，但例外必須在該工具 product spec 或任務提詞中 **明確指定**；Cursor 不得自行判斷某工具是否為例外。沒有明確例外時，一律套用本節。不得新增通用 `exceptionFirstScreen`。
+本節適用於 **一般工具** 的手機 first-screen tool stage。Production 由 `ToolPageFrame` 保證 portrait `1fr / auto`、capsule geometry、Mobile Landscape compact（§6.0.3 gate）與 768px Desktop continuity hide。特殊互動工具（例如 Countdown Timer）可例外，但例外必須在該工具 product spec 或任務提詞中 **明確指定**；Cursor 不得自行判斷某工具是否為例外。沒有明確例外時，一律套用本節。不得新增通用 `exceptionFirstScreen`。
 
 ##### F.1 手機第一屏結構
 
@@ -414,7 +522,7 @@ Date Range 的手機日期按鈕也是同一套樣式，只是多了 icon。
 不要讓單一工具任意改變按鈕大小、重量或型態。
 ```
 
-**Primary Entry Capsule（2026-08）：** Visual shell = `.tool-primary-entry-capsule`（`tool-primary-entry-capsule-baseline.css`）。Placement／portrait wide／landscape layout = `ToolPageFrame`（`.tpf-mobile-capsule`）。Shell 負責 content-driven padding（portrait 20px／landscape 16px）與 min-width 88px；不得把 breathing room 寫成 Frame 對所有 `mobilePrimaryControl` child 的通用 padding。Landscape gate：`orientation:landscape` + `max-height:700px` + `max-width:1200px`。DR／BDC `823`／`824–899` = legacy；見 `decision-log.md` 2026-08-23。
+**Primary Entry Capsule（2026-08；landscape gate 2026-08-26 升格）：** Visual shell = `.tool-primary-entry-capsule`（`tool-primary-entry-capsule-baseline.css`）。Placement／portrait wide／landscape layout = `ToolPageFrame`（`.tpf-mobile-capsule`）。Shell 負責 content-driven padding（portrait 20px／landscape 16px）與 min-width 88px；不得把 breathing room 寫成 Frame 對所有 `mobilePrimaryControl` child 的通用 padding。**Mobile Landscape compact geometry** 僅在 §6.0.3 Mobile Landscape gate 成立時套用（含 `hover: none`）；`orientation:landscape` 不得單獨觸發。DR／BDC `823`／`824–899` = legacy tool-local；見 `decision-log.md` 2026-08-23／2026-08-26。
 
 ##### F.4 手機直式 bottom sheet
 
@@ -715,6 +823,8 @@ Drawer 開合 JS 邏輯
 
 手機橫式 **不是桌機版**，需有 compact handling。
 
+**Tool Page composition 權威：** §6.0.3 Responsive Composition Contract。本節 §11.2 受該 contract 約束；不得再用 bare `orientation: landscape` 單獨把 Desktop 視窗判成 Mobile Landscape。
+
 ### 11.1 Page Hero 副標
 
 共用 class：`.preview-page-hero-subtitle`
@@ -723,21 +833,24 @@ Drawer 開合 JS 邏輯
 /* 預設 */
 max-width: 36rem;
 
-/* 手機橫式 */
+/* 手機橫式（page hero；非 Tool Page composition gate） */
 @media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
   max-width: min(47.5rem, 100%);
 }
 ```
 
-適用：Home、All Tools page hero 副標。
+適用：Home、All Tools page hero 副標。Page hero 規則與 Tool Page Desktop／Mobile composition 分開；不要把本 MQ 複製成 Tool Page mobile-landscape 唯一條件。
 
 ### 11.2 Tool Page 第一屏
 
+* 僅在 **Mobile Landscape gate**（§6.0.3：Mobile-style + landscape + max-height 700 + max-width 1200 + `hover: none`）成立時，套用 Mobile Landscape compact
 * 手機橫式縮小標題、結果區、間距
 * 第一屏需完整顯示主結果數字與操作列
 * 手機橫式仍採 mobile pattern；不得套用 desktop inline input（除非 product spec 明確指定）
 * 主要操作按鈕樣式與位置須對齊 §6.6 F mobile first-screen baseline
-* 使用 `.preview-tool-landscape-*` 等 scoped 規則
+* Desktop continuity（`min-width: 768px` + `hover: hover`）下，即使矮窗／landscape ratio，也不得進 Mobile Landscape compact
+* 未通過 Mobile Landscape gate 的 Mobile-style（含 `<768 + hover:hover`、以及 `700×500 + hover:hover`）→ **Mobile Default / Portrait-style**；可用 mobile-style controls，維持 portrait-style Primary Capsule
+* 使用 `.preview-tool-landscape-*` 等 scoped 規則時，必須遵守同一 Mobile Landscape gate
 
 ### 11.3 通用
 
@@ -799,8 +912,10 @@ pt-10 (40px)  pt-12 (48px)  pb-20 (80px)
 ### 14.1 Viewport
 
 - [ ] 桌機（≥1280px 或專案 xl breakpoint）
-- [ ] 手機直式（375–430px 寬）
-- [ ] 手機橫式（landscape，height ≤700px）
+- [ ] Desktop resize continuity（§6.0.3）：1280／1000／900／899／824／769／768 × tall；以及 900×650／824×650 + `hover:hover` — **不得**誤進 Mobile Landscape
+- [ ] Desktop narrow `700×500 + hover:hover` → **Mobile Default / Portrait-style**；**不是** Mobile Landscape compact
+- [ ] 常見真機直式（375–430px 寬；例 390×844／430×932）→ Mobile Default / Portrait-style
+- [ ] 手機橫式（例 667×375／844×390 + `hover:none`；height ≤700px）→ Mobile Landscape compact
 
 ### 14.2 Home (`/preview/home`)
 

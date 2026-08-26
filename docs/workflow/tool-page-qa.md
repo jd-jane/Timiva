@@ -42,6 +42,55 @@ Validated shared baseline 的目的，是消除重複 Owner QA。新工具 QA �
 只有 Frame 本身修改、工具需要特殊 Page Frame、或 validator／regression 發現 contract 被破壞時，才重新做完整 Frame QA。
 ```
 
+### 1.1 Responsive Composition QA（canonical）
+
+權威定義：[`layout-system.md`](../standards/layout-system.md) §6.0.3。QA 必須分開測 **Composition** 與 **Spacious layout**，不得混用 breakpoint。
+
+**Desktop resize continuity（皆不得誤進 Mobile Landscape）**
+
+```text
+1280×900
+1000×800
+900×800
+899×800
+824×800
+769×800
+768×800
+900×650 / 824×650 + hover:hover
+```
+
+**Desktop browser narrow（非手機橫式）**
+
+```text
+700×500 + hover:hover
+→ Mobile Default / Portrait-style
+→ NOT Mobile Landscape compact geometry
+```
+
+**Mobile**
+
+```text
+390×844 / 430×932 → Mobile Default / Portrait-style
+667×375 / 844×390 + hover:none → Mobile Landscape compact
+```
+
+（產品文案可稱常見真機直式為「Mobile Portrait」；canonical composition 用 Mobile Default / Portrait-style。）
+**Transition**
+
+```text
+Desktop ↔ Mobile boundary 來回切換
+overlay／calendar／AME 跨 composition：依 contract 安全 close 或重建
+不得留下 stale geometry／state
+```
+
+```text
+implementation self-check／validator PASS
+≠
+Project Design Assistant PASS
+```
+
+Project Design Assistant 必須獨立確認 composition hierarchy 與跨 breakpoint continuity；不得以實作自檢或 validator 結果代替。
+
 ---
 
 ## 2. QA 總流程圖
@@ -357,14 +406,16 @@ Desktop / portrait / landscape / lower content / capsule / drawer / stage
 通過以上項目後，Owner **不必**再為該工具重測：
 
 ```text
-768px mobile／desktop 切換
+768px mobile／desktop 切換（Desktop continuity：min-width 768 + hover:hover）
 capsule 20rem／portrait 56px（3.5rem）
-desktop 640px gate
+desktop 640px Spacious gate（900×700+hover；≠ composition gate）
 portrait 1fr / auto 沉底
 lower-content max-w-3xl
 drawer 300px chrome／placement
 first-screen → lower-content spacing
 ```
+
+**仍須**依 §1.1 抽樣確認 Responsive Composition（Desktop resize 不得誤進 Mobile Landscape；真機 landscape 需 `hover:none`）。Frame shared MQ 尚未對齊 contract 前（Batch 1 前），Lunar 等 adopter 的 tool-local workaround 不免除本抽樣。
 
 必須重新做完整 Frame QA 的情況：
 
