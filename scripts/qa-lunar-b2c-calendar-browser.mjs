@@ -290,6 +290,8 @@ const browser = await pw.chromium.launch({ headless: true });
 {
 	const { context, page } = await setupDesktopPage(browser, "/en/lunar-date-converter/");
 	await switchToLunar(page);
+	/* Anchor away from “today” so day-15 select always changes state（e.g. 2026-08-27 = L7/15）. */
+	await pasteGregorian(page, "2020/5/23");
 	await openLunarCalendar(page);
 	const before = await readState(page);
 	await page.locator('[data-ldc-lc-day="15"]').first().click();

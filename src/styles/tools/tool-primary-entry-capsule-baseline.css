@@ -60,11 +60,12 @@
 }
 
 /*
- * Landscape compact — shell typography + content-driven padding/min-width.
- * Gate: orientation + max-height 700px + max-width 1200px (new canonical).
+ * Mobile Landscape compact — shell typography + content-driven padding/min-width.
+ * Gate（§6.0.3）：orientation + max-height 700 + max-width 1200 + hover: none.
+ * hover: none 必要；不得讓 Desktop short／narrow viewport 套 flat capsule。
  * Beat Frame generic child padding without changing tool-page-frame.css or selecting .tpf-*.
  */
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	.tool-primary-entry-capsule {
 		width: auto;
 		max-width: none;

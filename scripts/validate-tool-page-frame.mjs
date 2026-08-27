@@ -225,12 +225,20 @@ assert(
 	"Frame CSS includes portrait stage padding-block 1.5rem 1.25rem",
 );
 assert(
-	frameCss.includes("@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px)"),
-	"Frame CSS has landscape compact contract",
+	frameCss.includes(
+		"@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none)",
+	),
+	"Frame CSS has Mobile Landscape compact gate (incl. hover: none)",
+);
+assert(
+	!/@media\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s+and\s*\(\s*max-width:\s*1200px\s*\)\s*\{/.test(
+		frameCss.replace(/\/\*[\s\S]*?\*\//g, ""),
+	),
+	"Frame CSS must not use bare landscape+700+1200 without hover: none",
 );
 assert(
 	frameCss.includes("@media (min-width: 900px) and (min-height: 700px) and (hover: hover)"),
-	"Frame CSS has desktop 640px gate media query",
+	"Frame CSS has desktop 640px Spacious gate media query",
 );
 assert(
 	frameCss.includes("[data-tool-page-frame] .tpf-stage.preview-tool-stage") &&
@@ -246,10 +254,10 @@ assert(
 	"Frame CSS guarantees portrait capsule min-height 3.5rem",
 );
 assert(
-	frameCss.includes("@media (min-width: 768px)") &&
+	frameCss.includes("@media (min-width: 768px) and (hover: hover)") &&
 		frameCss.includes("[data-tool-page-frame] .tpf-mobile-controls") &&
 		frameCss.includes("display: none"),
-	"Frame CSS hides mobile controls at 768px+",
+	"Frame CSS Desktop continuity hides mobile at 768px + hover:hover",
 );
 assert(
 	frameCss.includes("var(--tool-stage-to-lower-content-spacing, 48px)"),
@@ -266,17 +274,29 @@ assert(!lowerWidthOnStage, "Frame CSS does not put max-w-3xl on stage");
 assert(!stageGateOnLower, "Frame CSS does not put 640px gate on lower-content");
 
 /* -------------------------------------------------------------------------- */
-/* Tool CSS must not override .tpf-*                                           */
+/* Tool CSS must not override .tpf-*（Lunar workaround allowlist → Batch 4）   */
 /* -------------------------------------------------------------------------- */
 const toolCssFiles = walkFiles(
 	join(root, "src/styles"),
 	(fullPath) => fullPath.endsWith(".css") && !fullPath.endsWith("tool-page-frame.css"),
 );
 
+/** Temporary until Foundation Batch 4 removes Lunar tool-local TPF guard. */
+const tpfOverrideAllowlist = new Set([
+	"src/styles/tools/lunar-date-converter-v2.css",
+]);
+
 for (const fullPath of toolCssFiles) {
 	const rel = relative(root, fullPath);
 	const css = readFileSync(fullPath, "utf8");
 	assert(!css.includes("tool-preview-first-screen.css") || rel.includes("preview/"), `${rel} must not import preview CSS as production Frame`);
+	if (tpfOverrideAllowlist.has(rel)) {
+		assert(
+			/\.tpf-/.test(stripComments(css)),
+			`${rel} Batch-4 allowlist: Lunar TPF workaround still present`,
+		);
+		continue;
+	}
 	assert(!/\.tpf-/.test(stripComments(css)), `${rel} must not override .tpf-*`);
 }
 

@@ -114,8 +114,8 @@ body:has([data-tool-page-frame]) footer {
 	margin-top: var(--tool-stage-to-lower-content-spacing, 48px);
 }
 
-/* md+：Desktop 輸入；隱藏手機主控 */
-@media (min-width: 768px) {
+/* Desktop continuity：min-width 768 + hover:hover（§6.0.3 Layer 1） */
+@media (min-width: 768px) and (hover: hover) {
 	[data-tool-page-frame] .tpf-desktop-controls {
 		display: contents;
 	}
@@ -191,10 +191,11 @@ body:has([data-tool-page-frame]) footer {
 }
 
 /*
- * Landscape compact：完整 hero、整組置中；不套 portrait 1fr／沉底。
- * 固定間距；不灌剩餘高度進 result ↔ capsule。
+ * Mobile Landscape compact（§6.0.3 Layer 2 opt-in）。
+ * 必須含 hover: none；不得以 bare landscape／short height／max-width:1200
+ * 把 Desktop（768 + hover:hover）切成 mobile-landscape。
  */
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	[data-tool-page-frame] .tpf-first-screen {
 		place-items: center;
 		padding-block: 1.25rem 1.5rem;

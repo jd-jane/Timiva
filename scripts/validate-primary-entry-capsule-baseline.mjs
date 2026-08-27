@@ -73,10 +73,16 @@ assert(
 assert(code.includes("min-width: 5.5rem"), "content-driven min-width 88px (5.5rem)");
 assert(code.includes("padding-inline: 1.25rem"), "portrait content-driven padding 20px");
 assert(
-	/@media\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s+and\s*\(\s*max-width:\s*1200px\s*\)/.test(
+	/@media\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s+and\s*\(\s*max-width:\s*1200px\s*\)\s+and\s*\(\s*hover:\s*none\s*\)/.test(
 		css,
 	),
-	"landscape gate: orientation + max-height 700px + max-width 1200px",
+	"Mobile Landscape gate: orientation + max-height 700 + max-width 1200 + hover: none",
+);
+assert(
+	!/@media\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s+and\s*\(\s*max-width:\s*1200px\s*\)\s*\{/.test(
+		code,
+	),
+	"capsule baseline must not use bare landscape+700+1200 without hover: none",
 );
 assert(code.includes("min-height: 2rem"), "landscape min-height 32px (2rem)");
 assert(code.includes("padding-block: 0.375rem"), "landscape vertical padding 6px");
