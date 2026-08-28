@@ -181,8 +181,20 @@ ok(/data-ame-reset/.test(compSrc), "Reset markers present");
 ok(/data-ame-mixed-stress|data-ame-mixed-panel/.test(compSrc), "Mixed stress fixture retained in Lab default content");
 ok(/data-ame-choice-group="direction"/.test(compSrc) && /data-ame-date/.test(compSrc) && /data-ame-select/.test(compSrc), "Mixed stress covers direction／date／select");
 
-/* Landscape AME surface — no Aurora */
+/* Landscape AME surface — no Aurora；Full-screen only under §6.0.3 Mobile Landscape gate */
 ok(/--ame-surface:/.test(cssSrc), "AME surface token defined");
+ok(
+	/@media \(orientation:\s*landscape\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s+and\s*\(\s*max-width:\s*1200px\s*\)\s+and\s*\(\s*hover:\s*none\s*\)/.test(
+		cssSrc,
+	),
+	"Mobile Landscape Full-screen gate includes hover: none + max-width 1200",
+);
+ok(
+	!/@media\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s*\{/.test(
+		cssSrc.replace(/\/\*[\s\S]*?\*\//g, ""),
+	),
+	"AME CSS must not use bare landscape+700 without max-width／hover:none for shell",
+);
 ok(
 	/@media \(orientation:\s*landscape\)[\s\S]*\.ame-shell[\s\S]*background:\s*var\(--ame-surface\)/.test(cssSrc),
 	"Landscape shell uses --ame-surface",

@@ -121,6 +121,20 @@ assert(
 	"layout-system requires hover: none for Mobile Landscape",
 );
 
+/* —— AME shared Full-screen gate（Batch 2） —— */
+const ameCss = stripComments(read("src/styles/tools/adaptive-mobile-editor.css"));
+assert(
+	MOBILE_LANDSCAPE_FULL.test(ameCss),
+	"AME Full-screen Mobile Landscape gate includes hover: none",
+);
+assert(
+	!BARE_LANDSCAPE_1200.test(ameCss) &&
+		!/@media\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s*\{/.test(
+			ameCss,
+		),
+	"AME has no bare landscape+700 shell gate",
+);
+
 console.log(`\nResult: ${passed} passed, ${failed} failed`);
 if (failed > 0) {
 	process.exitCode = 1;

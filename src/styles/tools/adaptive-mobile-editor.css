@@ -2,6 +2,7 @@
  * Adaptive Mobile Editor — B4 Mixed Controls UI Correction.
  * Boundary: [data-ame-root]／.ame-*／--ame-* only. No MSB selectors.
  * Presentation swap is CSS-only（orientation media）. No open／close on rotate.
+ * Mobile Landscape Full-screen gate：layout-system §6.0.3（incl. hover: none）.
  */
 
 [data-ame-root] {
@@ -791,8 +792,13 @@ button.ame-setting-row {
 	line-height: 1.25rem;
 }
 
-/* Landscape: same AME surface, full-bleed; CSS-only presentation */
-@media (orientation: landscape) and (max-height: 700px) {
+/*
+ * Mobile Landscape Full-screen（§6.0.3 Layer 2 opt-in）.
+ * Gate: Mobile-style + landscape + max-height 700 + max-width 1200 + hover: none.
+ * hover: none 必要；不得以 bare orientation／short height／max-width 把 Desktop AME
+ * 切成 Full-screen landscape shell。未過 gate 的 Mobile-style → Bottom Sheet（Default）。
+ */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	.ame-underlay {
 		display: none;
 	}
@@ -1208,6 +1214,10 @@ button.ame-setting-row {
 	}
 }
 
+/*
+ * Portrait background scale only applies under portrait MQ above.
+ * Any landscape orientation: force transform none（not Full-screen shell gate）.
+ */
 @media (orientation: landscape) {
 	[data-ame-page-content] [data-ame-background-scale-target] {
 		transform: none;

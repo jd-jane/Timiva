@@ -552,6 +552,18 @@ ok(
 	ok(!/visualViewport/.test(cssSrc) && !/visualViewport/.test(ctrlSrc), "No visualViewport usage in AME CSS／controller");
 }
 ok(
+	/@media \(orientation:\s*landscape\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s+and\s*\(\s*max-width:\s*1200px\s*\)\s+and\s*\(\s*hover:\s*none\s*\)/.test(
+		cssSrc,
+	),
+	"Lab/shared Mobile Landscape Full-screen gate includes hover: none + max-width 1200",
+);
+ok(
+	!/@media\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s*\{/.test(
+		cssSrc.replace(/\/\*[\s\S]*?\*\//g, ""),
+	),
+	"AME CSS must not use bare landscape+700 shell gate",
+);
+ok(
 	/@media \(orientation:\s*landscape\)[\s\S]*\.ame-underlay[\s\S]*display:\s*none/.test(cssSrc),
 	"Landscape hides underlay",
 );
