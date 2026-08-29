@@ -80,10 +80,10 @@ body:has([data-date-calculator-v2]) header {
  * 預設維持原字級（ZH 5rem／EN 5.5rem）；僅當整組超出結果容器寬度時，
  * 才以 min(原字級, Ncqi) 等比微縮——不是一進來就縮小。
  * - 公開 token＋data-rs-value；不改 shared ResultSummary
- * - MQ ≥768：涵蓋 layout=desktop 與 768–899 仍為 layout=portrait 的中等桌機
+ * - MQ ≥768 + hover:hover：Desktop composition（layout=desktop）
  * - 不改 Mobile ≤767／layout=landscape
  */
-@media (min-width: 768px) {
+@media (min-width: 768px) and (hover: hover) {
 	[data-date-calculator-v2] .preview-tool-result-group {
 		container-type: inline-size;
 		container-name: dcv2-result;
@@ -924,8 +924,8 @@ body:has([data-date-calculator-v2]) header {
 	margin-top: 0.125rem;
 }
 
-/* Portrait：near-fullscreen；內容 top-aligned；body 為唯一捲動區 */
-@media (max-width: 767px) and (orientation: portrait) {
+/* Mobile Default / Portrait-style：near-fullscreen；內容 top-aligned；body 為唯一捲動區 */
+@media (max-width: 767px) {
 	[data-dcv2-sheet-portal][data-mobile-sheet-baseline] .dcv2-sheet.msb-sheet.is-open {
 		box-sizing: border-box;
 		top: var(--dcv2-sheet-top-clearance);
@@ -963,8 +963,8 @@ body:has([data-date-calculator-v2]) header {
 	}
 }
 
-/* Landscape：near-fullscreen outer；compact 只約束內容密度，不約束 panel 高度 */
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+/* Mobile Landscape sheet compact（§6.0.3；legacy MSB portal CSS；AME 用 shared gate） */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	[data-dcv2-sheet-portal] {
 		--dcv2-sheet-top-clearance: 1rem; /* 16px，落在 12～20px */
 	}
@@ -1090,7 +1090,8 @@ body:has([data-date-calculator-v2]) header {
 	}
 }
 
-@media (min-width: 768px) {
+/* Desktop continuity：min-width 768 + hover:hover（§6.0.3 Layer 1） */
+@media (min-width: 768px) and (hover: hover) {
 	[data-date-calculator-v2] .preview-tool-main-section {
 		--preview-header-height: 4.25rem;
 	}
@@ -1241,8 +1242,11 @@ body:has([data-date-calculator-v2]) header {
 	}
 }
 
-/* 手機直式：結果置中、底部膠囊固定 */
-@media (max-width: 767px) and (orientation: portrait) {
+/*
+ * Mobile Default / Portrait-style（§6.0.3 fallback）。
+ * max-width 767 涵蓋 narrow mobile-style；Mobile Landscape gate 在後方覆寫 compact。
+ */
+@media (max-width: 767px) {
 	[data-date-calculator-v2] .preview-tool-first-screen {
 		place-items: stretch;
 		min-height: 100dvh;
@@ -1341,7 +1345,11 @@ body:has([data-date-calculator-v2]) header {
  * 會誤傷 1023×812 這類「寬>高但高度足夠」的桌機視窗，第一屏無法垂直置中。
  */
 
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+/*
+ * Mobile Landscape compact（§6.0.3 Layer 2 opt-in）。
+ * 必須含 hover: none；bare landscape／short height 不得誤切 Desktop。
+ */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	[data-date-calculator-v2] .dcv2-input-cluster--desktop {
 		display: none;
 	}
