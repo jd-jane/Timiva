@@ -649,9 +649,38 @@ body:has([data-hours-calculator-v2]) header {
 		display: none;
 	}
 
+	/*
+	 * First-screen：完整覆寫 Mobile Default 的 portrait geometry。
+	 * 保留 Default max-width:767 fallback（700×500）；此處還原 compact hero 置中。
+	 */
+	[data-hours-calculator-v2] .preview-tool-first-screen {
+		place-items: center;
+		min-height: 100dvh;
+		padding-block: 1.25rem 1.5rem;
+	}
+
+	[data-hours-calculator-v2] .preview-tool-stage {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		grid-template-rows: none;
+		min-height: 0;
+		height: auto;
+		padding-block: 0;
+	}
+
+	[data-hours-calculator-v2] .preview-tool-result-group {
+		align-self: auto;
+		display: block;
+		justify-content: normal;
+		min-height: 0;
+	}
+
 	[data-hours-calculator-v2] .hcv2-mobile-controls {
 		display: flex;
+		align-self: auto;
 		margin-top: 1rem;
+		padding-bottom: 0;
 	}
 
 	/* 橫式：主按鈕改回依文字寬度（直式仍維持 100%／max 20rem） */
@@ -669,9 +698,6 @@ body:has([data-hours-calculator-v2]) header {
 	 * Landscape 結果區壓縮：縮短 title／列間／separator 垂直距離。
 	 * 不使用 .rs-*；僅覆寫公開 token 與 host／tool 外層 spacing。
 	 */
-	[data-hours-calculator-v2] .preview-tool-first-screen {
-		padding-block: 1.25rem 1.5rem;
-	}
 
 	[data-hours-calculator-v2] .hcv2-result-summary {
 		margin-top: 0.75rem;

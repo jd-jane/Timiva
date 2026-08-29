@@ -90,6 +90,12 @@ assert(
 	"JEC Mobile Landscape gate includes hover: none",
 );
 assert(!BARE_LANDSCAPE_1200.test(css), "JEC has no bare landscape+700+1200 rule");
+assert(
+	/place-items:\s*center/.test(css) &&
+		/grid-template-rows:\s*none/.test(css) &&
+		/\.preview-tool-stage\s*\{[^}]*min-height:\s*0/s.test(css),
+	"JEC Mobile Landscape overrides Default stage 100dvh／1fr recipe",
+);
 
 /* —— Mobile Default not bound to orientation: portrait only —— */
 assert(

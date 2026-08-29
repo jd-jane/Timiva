@@ -176,9 +176,38 @@ body:has([data-japanese-era-converter-v2]) header {
  * 必須含 hover: none；bare landscape／short height 不得誤切 Desktop。
  */
 @media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
+	/*
+	 * First-screen：完整覆寫 Mobile Default 的 portrait geometry。
+	 * 保留 Default max-width:767 fallback（700×500）；此處還原 compact hero 置中。
+	 */
+	[data-japanese-era-converter-v2] .preview-tool-first-screen {
+		place-items: center;
+		min-height: 100dvh;
+		padding-block: 1.25rem 1.5rem;
+	}
+
+	[data-japanese-era-converter-v2] .preview-tool-stage {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		grid-template-rows: none;
+		min-height: 0;
+		height: auto;
+		padding-block: 0;
+	}
+
+	[data-japanese-era-converter-v2] .preview-tool-result-group {
+		align-self: auto;
+		display: block;
+		justify-content: normal;
+		min-height: 0;
+	}
+
 	[data-japanese-era-converter-v2] .jecv2-mobile-controls {
 		display: flex;
+		align-self: auto;
 		margin-top: 1rem;
+		padding-bottom: 0;
 	}
 
 	/* 橫式：主按鈕改回依文字寬度（直式仍維持 100%／max 20rem） */
@@ -196,9 +225,6 @@ body:has([data-japanese-era-converter-v2]) header {
 	 * Landscape 結果區壓縮：縮短 title／列間／separator 垂直距離。
 	 * 對齊 Hours／DC；不使用 .rs-*。
 	 */
-	[data-japanese-era-converter-v2] .preview-tool-first-screen {
-		padding-block: 1.25rem 1.5rem;
-	}
 
 	[data-japanese-era-converter-v2] .jecv2-result-summary {
 		margin-top: 0.75rem;

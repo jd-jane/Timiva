@@ -88,6 +88,18 @@ assert(
 	!BARE_LANDSCAPE_1200.test(css),
 	"DC has no bare landscape+700+1200 rule",
 );
+assert(
+	/place-items:\s*center/.test(css) &&
+		/grid-template-rows:\s*none/.test(css) &&
+		/\.preview-tool-stage\s*\{[^}]*min-height:\s*0/s.test(css),
+	"DC Mobile Landscape overrides Default stage 100dvh／1fr recipe",
+);
+assert(
+	/\.dcv2-mobile-capsule\s*\{[^}]*min-height:\s*2rem[^}]*padding:\s*0\.375rem\s+1rem[^}]*font-size:\s*0\.75rem[^}]*white-space:\s*nowrap/s.test(
+		css,
+	),
+	"DC Mobile Landscape declares compact CTA geometry that beats Default 56px",
+);
 
 /* —— Mobile Default not bound to orientation: portrait only —— */
 assert(

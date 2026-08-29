@@ -130,6 +130,7 @@ async function openPage(browser, path, viewport, hoverMode) {
 async function measureJecComposition(page) {
 	return page.evaluate(() => {
 		const api = window.TimivaJapaneseEraConverterLayout;
+		const root = document.querySelector("[data-japanese-era-converter-v2]");
 		const desktop = document.querySelector(
 			"[data-japanese-era-converter-v2] .jecv2-input-cluster--desktop",
 		);
@@ -142,9 +143,14 @@ async function measureJecComposition(page) {
 		const rs = document.querySelector(
 			"[data-japanese-era-converter-v2] [data-result-summary]",
 		);
+		const first = root?.querySelector(".preview-tool-first-screen");
+		const stage = root?.querySelector(".preview-tool-stage");
+		const result = root?.querySelector(".preview-tool-result-group");
 		const dStyle = desktop ? getComputedStyle(desktop) : null;
 		const mStyle = mobile ? getComputedStyle(mobile) : null;
 		const cStyle = capsule ? getComputedStyle(capsule) : null;
+		const firstStyle = first ? getComputedStyle(first) : null;
+		const stageStyle = stage ? getComputedStyle(stage) : null;
 		const desktopVisible =
 			Boolean(desktop) &&
 			dStyle.display !== "none" &&
@@ -163,6 +169,22 @@ async function measureJecComposition(page) {
 			padY <= 8 &&
 			fontSize > 0 &&
 			fontSize <= 13;
+		const stageMinH = stageStyle?.minHeight ?? "";
+		const stageGtr = stageStyle?.gridTemplateRows ?? "";
+		const stageMinHPx = Number.parseFloat(stageMinH);
+		const usesPortraitStageRecipe =
+			stageStyle?.display === "grid" &&
+			/1fr|minmax\(0,\s*1fr\)/.test(stageGtr) &&
+			(stageMinH.includes("dvh") ||
+				(!Number.isNaN(stageMinHPx) && stageMinHPx >= window.innerHeight * 0.9));
+		const ctaRect = capsule?.getBoundingClientRect();
+		const resultRect = result?.getBoundingClientRect();
+		const ctaBottomGap =
+			ctaRect != null ? Math.round(window.innerHeight - ctaRect.bottom) : null;
+		const ctaFullyVisible =
+			Boolean(ctaRect) &&
+			ctaRect.top >= -0.5 &&
+			ctaRect.bottom <= window.innerHeight + 0.5;
 		const mode = api?.resolveLayoutMode?.(window) ?? null;
 		const rsLayout = rs?.getAttribute("data-rs-layout") ?? null;
 		return {
@@ -173,6 +195,14 @@ async function measureJecComposition(page) {
 			resolveMode: mode,
 			capsuleMinHeight: cStyle?.minHeight ?? null,
 			capsuleFontSize: cStyle?.fontSize ?? null,
+			firstPlaceItems: firstStyle?.placeItems ?? null,
+			stageDisplay: stageStyle?.display ?? null,
+			stageMinHeight: stageMinH || null,
+			stageGridTemplateRows: stageGtr || null,
+			usesPortraitStageRecipe,
+			resultTop: resultRect ? Math.round(resultRect.top) : null,
+			ctaBottomGap,
+			ctaFullyVisible,
 			innerWidth: window.innerWidth,
 			innerHeight: window.innerHeight,
 		};
@@ -326,6 +356,7 @@ for (const localePath of [enPath, zhPath]) {
 	for (const viewport of [
 		{ width: 667, height: 375 },
 		{ width: 844, height: 390 },
+		{ width: 932, height: 430 },
 	]) {
 		const { context, page } = await openPage(
 			browser,
@@ -335,7 +366,7 @@ for (const localePath of [enPath, zhPath]) {
 		);
 		const ops = await measureJecComposition(page);
 		note(
-			`D ${locale} ${viewport.width}×${viewport.height}: rs=${ops.rsLayout} flat=${ops.flatLandscape}`,
+			`D ${locale} ${viewport.width}×${viewport.height}: rs=${ops.rsLayout} flat=${ops.flatLandscape} stage=${ops.stageDisplay} gap=${ops.ctaBottomGap} resultY=${ops.resultTop}`,
 		);
 		assert(
 			!ops.desktopVisible,
@@ -353,6 +384,32 @@ for (const localePath of [enPath, zhPath]) {
 			ops.rsLayout === "landscape" && ops.resolveMode === "landscape-era",
 			`D ${locale} ${viewport.width}×${viewport.height}: landscape layout attrs`,
 		);
+		assert(
+			!ops.usesPortraitStageRecipe,
+			`D ${locale} ${viewport.width}×${viewport.height}: stage not portrait 100dvh／1fr recipe`,
+		);
+		assert(
+			String(ops.firstPlaceItems || "").includes("center"),
+			`D ${locale} ${viewport.width}×${viewport.height}: first-screen place-items center`,
+		);
+		assert(
+			ops.ctaFullyVisible,
+			`D ${locale} ${viewport.width}×${viewport.height}: CTA fully in viewport`,
+		);
+		assert(
+			typeof ops.ctaBottomGap === "number" && ops.ctaBottomGap >= 48,
+			`D ${locale} ${viewport.width}×${viewport.height}: CTA bottom gap ≥48 (got ${ops.ctaBottomGap})`,
+		);
+		if (viewport.width === 667 && viewport.height === 375) {
+			assert(
+				typeof ops.resultTop === "number" && ops.resultTop >= 80 && ops.resultTop <= 150,
+				`D ${locale} 667×375: result Y near production compact (~109; got ${ops.resultTop})`,
+			);
+			assert(
+				ops.ctaBottomGap >= 90,
+				`D ${locale} 667×375: CTA bottom gap near production (~113; got ${ops.ctaBottomGap})`,
+			);
+		}
 		await context.close();
 	}
 }

@@ -130,6 +130,7 @@ async function openPage(browser, path, viewport, hoverMode) {
 async function measureDcComposition(page) {
 	return page.evaluate(() => {
 		const api = window.TimivaDateCalculatorLayout;
+		const root = document.querySelector("[data-date-calculator-v2]");
 		const desktop = document.querySelector(
 			"[data-date-calculator-v2] .dcv2-input-cluster--desktop",
 		);
@@ -142,9 +143,14 @@ async function measureDcComposition(page) {
 		const rs = document.querySelector(
 			"[data-date-calculator-v2] [data-result-summary]",
 		);
+		const first = root?.querySelector(".preview-tool-first-screen");
+		const stage = root?.querySelector(".preview-tool-stage");
+		const result = root?.querySelector(".preview-tool-result-group");
 		const dStyle = desktop ? getComputedStyle(desktop) : null;
 		const mStyle = mobile ? getComputedStyle(mobile) : null;
 		const cStyle = capsule ? getComputedStyle(capsule) : null;
+		const firstStyle = first ? getComputedStyle(first) : null;
+		const stageStyle = stage ? getComputedStyle(stage) : null;
 		const desktopVisible =
 			Boolean(desktop) &&
 			dStyle.display !== "none" &&
@@ -155,12 +161,38 @@ async function measureDcComposition(page) {
 			mobile.getBoundingClientRect().height > 0;
 		const marginTop = parseFloat(mStyle?.marginTop ?? "0");
 		const maxWidth = cStyle?.maxWidth ?? "";
-		/* DC landscape compact：content-width capsule + mobile margin-top 1rem */
+		const minH = parseFloat(cStyle?.minHeight ?? "0");
+		const padY = parseFloat(cStyle?.paddingTop ?? "0");
+		const fontSize = parseFloat(cStyle?.fontSize ?? "0");
+		const whiteSpace = cStyle?.whiteSpace ?? "";
+		/* DC landscape compact：content-width + margin-top + compact capsule geometry */
 		const landscapeCompact =
 			mobileVisible &&
 			!desktopVisible &&
 			(maxWidth === "none" || maxWidth === "0px") &&
-			marginTop >= 12;
+			marginTop >= 12 &&
+			minH > 0 &&
+			minH <= 36 &&
+			padY <= 8 &&
+			fontSize > 0 &&
+			fontSize <= 13 &&
+			whiteSpace === "nowrap";
+		const stageMinH = stageStyle?.minHeight ?? "";
+		const stageGtr = stageStyle?.gridTemplateRows ?? "";
+		const stageMinHPx = Number.parseFloat(stageMinH);
+		const usesPortraitStageRecipe =
+			stageStyle?.display === "grid" &&
+			/1fr|minmax\(0,\s*1fr\)/.test(stageGtr) &&
+			(stageMinH.includes("dvh") ||
+				(!Number.isNaN(stageMinHPx) && stageMinHPx >= window.innerHeight * 0.9));
+		const ctaRect = capsule?.getBoundingClientRect();
+		const resultRect = result?.getBoundingClientRect();
+		const ctaBottomGap =
+			ctaRect != null ? Math.round(window.innerHeight - ctaRect.bottom) : null;
+		const ctaFullyVisible =
+			Boolean(ctaRect) &&
+			ctaRect.top >= -0.5 &&
+			ctaRect.bottom <= window.innerHeight + 0.5;
 		const mode = api?.resolveLayoutMode?.(window) ?? null;
 		const rsLayout = rs?.getAttribute("data-rs-layout") ?? null;
 		return {
@@ -170,7 +202,19 @@ async function measureDcComposition(page) {
 			rsLayout,
 			resolveMode: mode,
 			capsuleMaxWidth: maxWidth,
+			capsuleMinHeight: cStyle?.minHeight ?? null,
+			capsulePaddingTop: cStyle?.paddingTop ?? null,
+			capsuleFontSize: cStyle?.fontSize ?? null,
+			capsuleWhiteSpace: whiteSpace || null,
 			mobileMarginTop: mStyle?.marginTop ?? null,
+			firstPlaceItems: firstStyle?.placeItems ?? null,
+			stageDisplay: stageStyle?.display ?? null,
+			stageMinHeight: stageMinH || null,
+			stageGridTemplateRows: stageGtr || null,
+			usesPortraitStageRecipe,
+			resultTop: resultRect ? Math.round(resultRect.top) : null,
+			ctaBottomGap,
+			ctaFullyVisible,
 			innerWidth: window.innerWidth,
 			innerHeight: window.innerHeight,
 		};
@@ -311,6 +355,7 @@ for (const localePath of [enPath, zhPath]) {
 	for (const viewport of [
 		{ width: 667, height: 375 },
 		{ width: 844, height: 390 },
+		{ width: 932, height: 430 },
 	]) {
 		const { context, page } = await openPage(
 			browser,
@@ -320,7 +365,7 @@ for (const localePath of [enPath, zhPath]) {
 		);
 		const ops = await measureDcComposition(page);
 		note(
-			`D ${locale} ${viewport.width}×${viewport.height}: rs=${ops.rsLayout} compact=${ops.landscapeCompact} maxW=${ops.capsuleMaxWidth}`,
+			`D ${locale} ${viewport.width}×${viewport.height}: rs=${ops.rsLayout} compact=${ops.landscapeCompact} maxW=${ops.capsuleMaxWidth} minH=${ops.capsuleMinHeight} gap=${ops.ctaBottomGap} resultY=${ops.resultTop}`,
 		);
 		assert(!ops.desktopVisible, `D ${locale} ${viewport.width}×${viewport.height}: desktop hidden`);
 		assert(ops.mobileVisible, `D ${locale} ${viewport.width}×${viewport.height}: mobile visible`);
@@ -332,6 +377,44 @@ for (const localePath of [enPath, zhPath]) {
 			ops.rsLayout === "landscape" && ops.resolveMode === "landscape-date",
 			`D ${locale} ${viewport.width}×${viewport.height}: landscape layout attrs`,
 		);
+		assert(
+			!ops.usesPortraitStageRecipe,
+			`D ${locale} ${viewport.width}×${viewport.height}: stage not portrait 100dvh／1fr recipe`,
+		);
+		assert(
+			String(ops.firstPlaceItems || "").includes("center"),
+			`D ${locale} ${viewport.width}×${viewport.height}: first-screen place-items center`,
+		);
+		assert(
+			ops.ctaFullyVisible,
+			`D ${locale} ${viewport.width}×${viewport.height}: CTA fully in viewport`,
+		);
+		assert(
+			typeof ops.ctaBottomGap === "number" && ops.ctaBottomGap >= 48,
+			`D ${locale} ${viewport.width}×${viewport.height}: CTA bottom gap ≥48 (got ${ops.ctaBottomGap})`,
+		);
+		assert(
+			parseFloat(ops.capsuleMinHeight ?? "99") <= 36,
+			`D ${locale} ${viewport.width}×${viewport.height}: CTA min-height ≤36`,
+		);
+		assert(
+			parseFloat(ops.capsulePaddingTop ?? "99") <= 8,
+			`D ${locale} ${viewport.width}×${viewport.height}: CTA padding-block ≤8`,
+		);
+		assert(
+			parseFloat(ops.capsuleFontSize ?? "99") <= 13,
+			`D ${locale} ${viewport.width}×${viewport.height}: CTA font-size compact`,
+		);
+		if (viewport.width === 667 && viewport.height === 375) {
+			assert(
+				typeof ops.resultTop === "number" && ops.resultTop >= 60 && ops.resultTop <= 130,
+				`D ${locale} 667×375: result Y near production compact (~84; got ${ops.resultTop})`,
+			);
+			assert(
+				ops.ctaBottomGap >= 70,
+				`D ${locale} 667×375: CTA bottom gap near production (~88; got ${ops.ctaBottomGap})`,
+			);
+		}
 		await context.close();
 	}
 }

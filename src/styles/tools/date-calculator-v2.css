@@ -1354,25 +1354,60 @@ body:has([data-date-calculator-v2]) header {
 		display: none;
 	}
 
-	[data-date-calculator-v2] .dcv2-mobile-controls {
-		display: flex;
-		margin-top: 1rem;
+	/*
+	 * First-screen：完整覆寫 Mobile Default 的 portrait geometry。
+	 * 保留 Default max-width:767 fallback（700×500）；此處還原 compact hero 置中。
+	 */
+	[data-date-calculator-v2] .preview-tool-first-screen {
+		place-items: center;
+		min-height: 100dvh;
+		padding-block: 1.25rem 1.5rem;
 	}
 
-	/* 橫式：主按鈕改回依文字寬度（直式仍維持 100%／max 20rem） */
+	[data-date-calculator-v2] .preview-tool-stage {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		grid-template-rows: none;
+		min-height: 0;
+		height: auto;
+	}
+
+	[data-date-calculator-v2] .preview-tool-result-group {
+		align-self: auto;
+		display: block;
+		justify-content: normal;
+		min-height: 0;
+	}
+
+	[data-date-calculator-v2] .dcv2-mobile-controls {
+		display: flex;
+		align-self: auto;
+		margin-top: 1rem;
+		padding-bottom: 0;
+	}
+
+	/*
+	 * 橫式 compact CTA：必須勝過 Default 56px 與 824–899 legacy portrait capsule。
+	 * 824–899 僅保留為 tool-local polish；不得蓋過真正 Mobile Landscape。
+	 */
 	[data-date-calculator-v2] .dcv2-mobile-capsule {
 		width: auto;
 		max-width: none;
 		margin-inline: auto;
+		min-height: 2rem;
+		min-width: 0;
+		padding: 0.375rem 1rem;
+		font-size: 0.75rem;
+		line-height: 1rem;
+		white-space: nowrap;
+		gap: 0.375rem;
 	}
 
 	/*
 	 * Landscape 結果區壓縮：primary 約 −15%～20%；縮短 title／列間／separator 垂直距離。
 	 * 不使用 .rs-*；僅覆寫公開 token 與 host／tool 外層 spacing。
 	 */
-	[data-date-calculator-v2] .preview-tool-first-screen {
-		padding-block: 1.25rem 1.5rem;
-	}
 
 	[data-date-calculator-v2] .dcv2-result-summary {
 		margin-top: 0.75rem;
