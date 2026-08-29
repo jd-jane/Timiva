@@ -459,8 +459,8 @@ body:has([data-hours-calculator-v2]) header {
 	height: 0.875rem;
 }
 
-/* md+：Desktop 輸入；Mobile capsule 隱藏 */
-@media (min-width: 768px) {
+/* Desktop continuity：min-width 768 + hover:hover（§6.0.3 Layer 1） */
+@media (min-width: 768px) and (hover: hover) {
 	[data-hours-calculator-v2] .hcv2-input-cluster--desktop {
 		display: flex;
 	}
@@ -484,10 +484,10 @@ body:has([data-hours-calculator-v2]) header {
  * Desktop／中等桌機：主結果強制單行；僅當超出結果容器寬度時以 cqi 等比微縮（對齊 DC）。
  * - EN 最大 7rem；ZH 最大 5.5rem
  * - 公開 token＋data-rs-value；不改 shared ResultSummary
- * - MQ ≥768：涵蓋 layout=desktop 與 768–899 仍為 layout=portrait 的中等桌機
+ * - MQ ≥768 + hover:hover：Desktop composition（layout=desktop）
  * - 不改 Mobile ≤767／layout=landscape
  */
-@media (min-width: 768px) {
+@media (min-width: 768px) and (hover: hover) {
 	[data-hours-calculator-v2] .preview-tool-result-group {
 		container-type: inline-size;
 		container-name: hcv2-result;
@@ -550,8 +550,11 @@ body:has([data-hours-calculator-v2]) header {
 	width: 100%;
 }
 
-/* 手機直式：結果置中、底部膠囊固定（對齊 DC；必須含 orientation:portrait，勿洩漏到橫式） */
-@media (max-width: 767px) and (orientation: portrait) {
+/*
+ * Mobile Default / Portrait-style（§6.0.3 fallback）。
+ * max-width 767 涵蓋 narrow mobile-style；Mobile Landscape gate 在後方覆寫 compact。
+ */
+@media (max-width: 767px) {
 	[data-hours-calculator-v2] .preview-tool-first-screen {
 		place-items: stretch;
 		min-height: 100dvh;
@@ -638,12 +641,10 @@ body:has([data-hours-calculator-v2]) header {
 }
 
 /*
- * Landscape：對齊 DC Date Calculator。
- * - 沿用 base min-height:100dvh + place-items:center → 完整 hero、整組置中
- * - 不套 portrait 的 1fr／沉底（已用 orientation:portrait 隔離）
- * - 固定 margin-top 間距；不灌剩餘高度進 result ↔ capsule
+ * Mobile Landscape compact（§6.0.3 Layer 2 opt-in）。
+ * 必須含 hover: none；bare landscape／short height 不得誤切 Desktop。
  */
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	[data-hours-calculator-v2] .hcv2-input-cluster--desktop {
 		display: none;
 	}

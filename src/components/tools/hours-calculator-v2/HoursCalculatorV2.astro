@@ -89,7 +89,7 @@ const ameRows = [
 >
 	<div data-ame-page-content>
 		{/* Layout contract：blocking sync load，須在 ResultSummary 首次 paint 前可用 */}
-		<script is:inline src="/scripts/hours-calculator-layout-contract.js?v=hc1"></script>
+		<script is:inline src="/scripts/hours-calculator-layout-contract.js?v=hc2"></script>
 
 		<section data-hcv2-main-tool class="preview-tool-main-section px-6">
 			<div class="preview-tool-first-screen">
@@ -125,7 +125,7 @@ const ameRows = [
 							[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
 							--rs-textual-primary-size: 4.25rem;
 						}
-						@media (max-width: 767px) and (orientation: portrait) {
+						@media (max-width: 767px) {
 							[data-hours-calculator-v2] .preview-tool-result-group {
 								container-type: inline-size;
 							}
@@ -142,7 +142,7 @@ const ameRows = [
 								--rs-textual-primary-size: clamp(3.25rem, 16cqi, 4.25rem);
 							}
 						}
-						@media (min-width: 768px) {
+						@media (min-width: 768px) and (hover: hover) {
 							[data-hours-calculator-v2] .preview-tool-result-group {
 								container-type: inline-size;
 							}

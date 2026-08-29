@@ -1,12 +1,12 @@
 /**
  * Hours Calculator layout contract — thin bootstrap for ResultSummary data-rs-layout.
- * Aligns with DC／DRC／BDC MQ gates. Layout attrs only — no result content or AME draft.
+ * Canonical Responsive Composition Contract（layout-system §6.0.3）.
+ * Layout attrs only — no result content or AME draft.
  */
 (function (global) {
-	var DESKTOP_MQ =
-		"(min-width: 900px) and (min-height: 700px) and (hover: hover)";
+	var DESKTOP_MQ = "(min-width: 768px) and (hover: hover)";
 	var LANDSCAPE_MQ =
-		"(orientation: landscape) and (max-height: 700px) and (max-width: 1200px)";
+		"(orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none)";
 
 	function resolveLayoutMode(win) {
 		var view = win || global;

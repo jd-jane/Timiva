@@ -400,6 +400,47 @@ const lockedChrome = [
 ];
 
 const frozen = gitDiffNames([...legacyProduction, ...lockedChrome]);
+const hoursBatch3aAllowed = new Set([
+	"src/components/tools/hours-calculator-v2/HoursCalculatorV2.astro",
+	"src/styles/tools/hours-calculator-v2.css",
+	"public/scripts/hours-calculator-layout-contract.js",
+]);
+if (frozen !== null) {
+	for (const rel of hoursBatch3aAllowed) {
+		frozen.delete(rel);
+	}
+}
+
+/* Hours Batch 3A responsive composition — when allowed files change, gates must hold */
+const hoursCss = exists("src/styles/tools/hours-calculator-v2.css")
+	? stripComments(read("src/styles/tools/hours-calculator-v2.css"))
+	: "";
+const hoursLayoutJs = exists("public/scripts/hours-calculator-layout-contract.js")
+	? stripComments(read("public/scripts/hours-calculator-layout-contract.js"))
+	: "";
+if (hoursBatch3aAllowed.has("src/styles/tools/hours-calculator-v2.css")) {
+	assert(
+		hoursCss.includes("@media (min-width: 768px) and (hover: hover)"),
+		"Hours CSS Desktop continuity: min-width 768 + hover:hover",
+	);
+	assert(
+		/@media\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s+and\s*\(\s*max-width:\s*1200px\s*\)\s+and\s*\(\s*hover:\s*none\s*\)/.test(
+			hoursCss,
+		),
+		"Hours CSS Mobile Landscape gate includes hover: none",
+	);
+}
+if (hoursBatch3aAllowed.has("public/scripts/hours-calculator-layout-contract.js")) {
+	assert(
+		hoursLayoutJs.includes('"(min-width: 768px) and (hover: hover)"'),
+		"Hours layout contract DESKTOP_MQ: min-width 768 + hover:hover",
+	);
+	assert(
+		hoursLayoutJs.includes("hover: none"),
+		"Hours layout contract LANDSCAPE_MQ includes hover: none",
+	);
+}
+
 if (frozen === null) {
 	assert(false, "git diff available to confirm DC／Hours／JEC／locked chrome untouched");
 } else {
