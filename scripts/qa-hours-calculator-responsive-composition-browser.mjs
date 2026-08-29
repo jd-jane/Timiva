@@ -366,11 +366,14 @@ for (const localePath of [enPath, zhPath]) {
 	await context.close();
 }
 
-/* —— F. AME presentation smoke (mobile-style entry only) —— */
+/* —— F. AME presentation smoke (Page composition ≠ AME presentation) —— */
 for (const { viewport, hover, label, expectFs } of [
-	{ viewport: { width: 700, height: 500 }, hover: "desktop-hover", label: "700×500", expectFs: false },
+	{ viewport: { width: 749, height: 701 }, hover: "desktop-hover", label: "749×701", expectFs: false },
+	{ viewport: { width: 749, height: 700 }, hover: "desktop-hover", label: "749×700 Constrained", expectFs: true },
+	{ viewport: { width: 700, height: 500 }, hover: "desktop-hover", label: "700×500 Constrained", expectFs: true },
+	{ viewport: { width: 390, height: 700 }, hover: "desktop-hover", label: "390×700 portrait short", expectFs: false },
 	{ viewport: { width: 390, height: 844 }, hover: "mobile-none", label: "390×844", expectFs: false },
-	{ viewport: { width: 667, height: 375 }, hover: "mobile-none", label: "667×375", expectFs: true },
+	{ viewport: { width: 667, height: 375 }, hover: "mobile-none", label: "667×375 ML", expectFs: true },
 ]) {
 	const { context, page } = await openPage(browser, enPath, viewport, hover);
 	await page.locator("[data-hcv2-sheet-trigger]").click();

@@ -59,13 +59,27 @@ Validated shared baseline 的目的，是消除重複 Owner QA。新工具 QA �
 900×650 / 824×650 + hover:hover
 ```
 
-**Desktop browser narrow（非手機橫式）**
+**Desktop browser narrow（非手機橫式 Page composition）**
 
 ```text
 700×500 + hover:hover
-→ Mobile Default / Portrait-style
+→ Page = Mobile Default / Portrait-style
 → NOT Mobile Landscape compact geometry
+→ AME presentation：Constrained Viewport Full-screen（見 layout-system AME Presentation Policy）
 ```
+
+**AME Presentation QA（≠ Page Composition）**
+
+```text
+749×701 + hover:hover → AME Bottom Sheet（Page 仍 Mobile Default）
+749×700 / 749×650 + hover:hover → AME Constrained Viewport Full-screen
+768×650 / 824×650 / 900×650 + hover:hover → NOT Constrained Full-screen
+390×700 / 430×650 + hover:hover（portrait）→ AME Bottom Sheet
+667×375 / 844×390 + hover:none → AME Mobile Landscape Full-screen
+390×844 / 430×932 → AME Bottom Sheet
+```
+
+禁止把 Constrained Viewport Full-screen 稱為 Mobile Landscape。
 
 **Mobile**
 

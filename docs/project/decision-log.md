@@ -5,6 +5,40 @@
 
 ---
 
+## 2026-08-29 — AME Constrained Viewport Full-screen（presentation policy）
+
+### 背景
+
+```text
+Owner 在 clean Desktop Chrome（hover:hover）確認：短高度下 Page 正確維持
+Mobile Default，但 AME Bottom Sheet 幾乎佔滿視窗仍保留 sheet chrome，體驗不佳。
+產品方向：Page composition 與 AME presentation 分離；不恢復 bare landscape+max-height
+作為 Mobile Landscape；也不把 Constrained 稱為 Mobile Landscape。
+```
+
+### 決策
+
+```text
+1. Page Responsive Composition（§6.0.3）不變。
+2. AME Full-screen 兩條獨立 trigger（共用同一套 shell presentation；CSS-only）：
+   A) Mobile Landscape：landscape + max-h 700 + max-w 1200 + hover:none
+   B) Constrained Viewport：max-w 767 + landscape + max-h 700 + hover:hover
+3. 正式 threshold = 700px；Constrained 僅 landscape（portrait short → Bottom Sheet）。
+4. 749×701 hover:hover → Page Mobile Default + AME Bottom Sheet。
+   749×700 hover:hover → Page Mobile Default + AME Constrained Full-screen。
+5. Desktop ≥768 + hover:hover 不得進 Constrained（max-width:767）。
+6. 不改 AME JS state machine；不改 production adopter layout-contract LANDSCAPE_MQ。
+```
+
+### 影響
+
+```text
+adaptive-mobile-editor.css／lab CSS／AME validators／Browser QA／layout-system
+AME Presentation Policy／tool-page-qa。
+```
+
+---
+
 ## 2026-08-26 — Responsive Composition Contract Foundation（Batch 0 docs lock）
 
 ### 背景

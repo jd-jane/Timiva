@@ -722,6 +722,8 @@ normal / focus / hover / error / disabled / selected
 editor / sheet open
 mode switch / state change
 AME integration（若適用）
+  — Page composition ≠ AME presentation
+  — Constrained Viewport Full-screen ≠ Mobile Landscape
 mobile portrait / mobile landscape
 ```
 

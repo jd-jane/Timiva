@@ -67,6 +67,9 @@ Bottom Control 是否不貼 Footer
 鍵盤開啟時是否不壓壞畫面
 轉回直式是否恢復正常
 廣告是否隱藏或後移
+AME：真機 Mobile Landscape Full-screen（hover:none gate）與
+     Constrained Viewport Full-screen（max-w 767 + hover:hover + landscape + max-h 700）
+     是兩條獨立 presentation；不得把 Constrained 稱為 Mobile Landscape
 ```
 
 ---

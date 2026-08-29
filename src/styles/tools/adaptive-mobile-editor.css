@@ -1,8 +1,11 @@
 /**
  * Adaptive Mobile Editor — B4 Mixed Controls UI Correction.
  * Boundary: [data-ame-root]／.ame-*／--ame-* only. No MSB selectors.
- * Presentation swap is CSS-only（orientation media）. No open／close on rotate.
- * Mobile Landscape Full-screen gate：layout-system §6.0.3（incl. hover: none）.
+ * Presentation swap is CSS-only（media）. No open／close on rotate.
+ * AME Full-screen triggers（presentation policy；≠ Page composition）：
+ *   A) Mobile Landscape：landscape + max-h 700 + max-w 1200 + hover: none
+ *   B) Constrained Viewport：max-w 767 + landscape + max-h 700 + hover: hover
+ * 兩條 OR 共用同一套 Full-screen shell declarations。
  */
 
 [data-ame-root] {
@@ -793,12 +796,20 @@ button.ame-setting-row {
 }
 
 /*
- * Mobile Landscape Full-screen（§6.0.3 Layer 2 opt-in）.
- * Gate: Mobile-style + landscape + max-height 700 + max-width 1200 + hover: none.
- * hover: none 必要；不得以 bare orientation／short height／max-width 把 Desktop AME
- * 切成 Full-screen landscape shell。未過 gate 的 Mobile-style → Bottom Sheet（Default）。
+ * AME Full-screen presentation（shared declarations；兩條獨立 trigger OR）。
+ *
+ * A — Mobile Landscape Full-screen（Page §6.0.3 Layer 2 opt-in）:
+ *     landscape + max-height 700 + max-width 1200 + hover: none
+ * B — Constrained Viewport Full-screen（AME presentation only；Page 仍可為 Mobile Default）:
+ *     max-width 767 + landscape + max-height 700 + hover: hover
+ *
+ * 不得以 bare orientation／short height 單獨觸發。
+ * Desktop（≥768 + hover:hover）不得進 B（max-width:767）。
+ * Portrait short-height 不得進 B（須 orientation: landscape）。
+ * 未過 A／B → Bottom Sheet（Default）。
  */
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none),
+	(max-width: 767px) and (orientation: landscape) and (max-height: 700px) and (hover: hover) {
 	.ame-underlay {
 		display: none;
 	}

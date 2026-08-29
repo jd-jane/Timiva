@@ -121,18 +121,38 @@ assert(
 	"layout-system requires hover: none for Mobile Landscape",
 );
 
-/* —— AME shared Full-screen gate（Batch 2） —— */
+/* —— AME shared Full-screen triggers（presentation；≠ Page composition） —— */
 const ameCss = stripComments(read("src/styles/tools/adaptive-mobile-editor.css"));
 assert(
 	MOBILE_LANDSCAPE_FULL.test(ameCss),
 	"AME Full-screen Mobile Landscape gate includes hover: none",
 );
 assert(
+	/\(\s*max-width:\s*767px\s*\)\s+and\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s+and\s*\(\s*hover:\s*hover\s*\)/.test(
+		ameCss,
+	),
+	"AME Constrained Viewport Full-screen gate: max-width 767 + landscape + max-height 700 + hover: hover",
+);
+{
+	const collapsed = ameCss.replace(/\s+/g, " ");
+	assert(
+		/@media \(orientation: landscape\) and \(max-height: 700px\) and \(max-width: 1200px\) and \(hover: none\), \(max-width: 767px\) and \(orientation: landscape\) and \(max-height: 700px\) and \(hover: hover\) \{/.test(
+			collapsed,
+		),
+		"AME Full-screen A∨B share one @media presentation block",
+	);
+}
+assert(
 	!BARE_LANDSCAPE_1200.test(ameCss) &&
 		!/@media\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s*\{/.test(
 			ameCss,
 		),
 	"AME has no bare landscape+700 shell gate",
+);
+assert(
+	layoutDoc.includes("AME Presentation Policy") ||
+		layoutDoc.includes("Constrained Viewport Full-screen"),
+	"layout-system documents AME Constrained Viewport / Presentation Policy",
 );
 
 console.log(`\nResult: ${passed} passed, ${failed} failed`);

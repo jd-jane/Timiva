@@ -313,9 +313,36 @@ Canonical Desktop input composition：
 | `844×390 + hover:none` | Mobile Landscape |
 | `667×375 + hover:none` | Mobile Landscape |
 | `390×844 + hover:none` | Mobile Default / Portrait-style |
-| `700×500 + hover:hover` | Mobile Default / Portrait-style（Mobile-style；**不得**套 Mobile Landscape compact） |
+| `700×500 + hover:hover` | Mobile Default / Portrait-style（Mobile-style；**不得**套 Mobile Landscape compact；AME presentation 見 **AME Presentation Policy**） |
 
 原則：**viewport 變窄 ≠ 手機橫式。**
+
+**AME Presentation Policy（獨立於 Page Composition；CSS-only）**
+
+Page composition **不**因短高度改變。AME Full-screen 有兩條**獨立** trigger（共用同一套 shell／topbar declarations；comma-OR）：
+
+```text
+A. Mobile Landscape Full-screen
+   = landscape + max-height:700 + max-width:1200 + hover:none
+   （對應 Page Mobile Landscape opt-in）
+
+B. Constrained Viewport Full-screen
+   = max-width:767 + landscape + max-height:700 + hover:hover
+   （Page 可仍為 Mobile Default；僅 AME presentation）
+
+其他 → Bottom Sheet
+```
+
+禁止把 Constrained Viewport 命名或判成 Mobile Landscape。
+
+| Viewport | Page composition | AME presentation |
+|---|---|---|
+| `749×701 + hover:hover` | Mobile Default | Bottom Sheet |
+| `749×700 + hover:hover` | Mobile Default | Constrained Viewport Full-screen |
+| `700×500 + hover:hover` | Mobile Default | Constrained Viewport Full-screen |
+| `844×390 + hover:none` | Mobile Landscape | Mobile Landscape Full-screen |
+| `390×700 + hover:hover`（portrait） | Mobile Default | Bottom Sheet（portrait 不進 Constrained） |
+| `824×650 + hover:hover` | Desktop | 通常無 mobile AME 入口；且不得進 Constrained（max-width:767） |
 
 **Signal roles**
 

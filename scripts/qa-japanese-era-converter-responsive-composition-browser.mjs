@@ -396,9 +396,27 @@ for (const localePath of [enPath, zhPath]) {
 /* —— F. AME presentation smoke —— */
 for (const { viewport, hover, label, expectFs } of [
 	{
+		viewport: { width: 749, height: 701 },
+		hover: "desktop-hover",
+		label: "749×701",
+		expectFs: false,
+	},
+	{
+		viewport: { width: 749, height: 700 },
+		hover: "desktop-hover",
+		label: "749×700 Constrained",
+		expectFs: true,
+	},
+	{
 		viewport: { width: 700, height: 500 },
 		hover: "desktop-hover",
-		label: "700×500",
+		label: "700×500 Constrained",
+		expectFs: true,
+	},
+	{
+		viewport: { width: 390, height: 700 },
+		hover: "desktop-hover",
+		label: "390×700 portrait short",
 		expectFs: false,
 	},
 	{
@@ -410,7 +428,7 @@ for (const { viewport, hover, label, expectFs } of [
 	{
 		viewport: { width: 667, height: 375 },
 		hover: "mobile-none",
-		label: "667×375",
+		label: "667×375 ML",
 		expectFs: true,
 	},
 ]) {

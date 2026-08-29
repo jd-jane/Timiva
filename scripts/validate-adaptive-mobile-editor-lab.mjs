@@ -558,6 +558,21 @@ ok(
 	"Lab/shared Mobile Landscape Full-screen gate includes hover: none + max-width 1200",
 );
 ok(
+	/\(\s*max-width:\s*767px\s*\)\s+and\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s+and\s*\(\s*hover:\s*hover\s*\)/.test(
+		cssSrc,
+	),
+	"Lab/shared Constrained Viewport Full-screen gate: max-width 767 + landscape + max-height 700 + hover: hover",
+);
+{
+	const collapsed = cssSrc.replace(/\s+/g, " ");
+	ok(
+		/@media \(orientation: landscape\) and \(max-height: 700px\) and \(max-width: 1200px\) and \(hover: none\), \(max-width: 767px\) and \(orientation: landscape\) and \(max-height: 700px\) and \(hover: hover\) \{/.test(
+			collapsed,
+		),
+		"Lab/shared Full-screen A∨B share one @media presentation block",
+	);
+}
+ok(
 	!/@media\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s*\{/.test(
 		cssSrc.replace(/\/\*[\s\S]*?\*\//g, ""),
 	),

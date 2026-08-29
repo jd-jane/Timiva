@@ -29,7 +29,9 @@
 	);
 }
 
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
+/* Lab Current visual：與 shared AME Full-screen triggers 對齊（A∨B；非 Page composition） */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none),
+	(max-width: 767px) and (orientation: landscape) and (max-height: 700px) and (hover: hover) {
 	[data-ame-lab-page] [data-ame-root][data-ame-visual="current"] .ame-shell {
 		background: var(--timiva-bg-aurora, #0f172a);
 	}

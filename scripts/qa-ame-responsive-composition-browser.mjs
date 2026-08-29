@@ -220,34 +220,62 @@ for (const viewport of [
 	{ width: 1280, height: 900, label: "1280×900" },
 	{ width: 900, height: 650, label: "900×650 short" },
 	{ width: 824, height: 650, label: "824×650 short" },
+	{ width: 768, height: 650, label: "768×650 short" },
 ]) {
 	const { context, page } = await openLab(browser, viewport, "desktop-hover");
 	await openAme(page);
 	const m = await measureAmeShell(page);
 	note(`${viewport.label}: fs=${m?.fullscreenLandscape} radius=${m?.borderRadius} underlay=${m?.underlayDisplay}`);
 	assert(m?.open, `A ${viewport.label}: AME opens`);
-	assert(!m?.fullscreenLandscape, `A ${viewport.label}: NOT Full-screen Mobile Landscape`);
+	assert(!m?.fullscreenLandscape, `A ${viewport.label}: NOT Constrained／ML Full-screen`);
 	await closeAmeViaEscape(page);
 	await context.close();
 }
 
-/* —— Narrow desktop browser —— */
-{
-	const { context, page } = await openLab(
-		browser,
-		{ width: 700, height: 500 },
-		"desktop-hover",
-	);
+/* —— Constrained Viewport Full-screen（Page stays Mobile Default；AME presentation only） —— */
+for (const { viewport, label, expectFs } of [
+	{ viewport: { width: 749, height: 701 }, label: "749×701", expectFs: false },
+	{ viewport: { width: 749, height: 700 }, label: "749×700", expectFs: true },
+	{ viewport: { width: 749, height: 650 }, label: "749×650", expectFs: true },
+	{ viewport: { width: 700, height: 500 }, label: "700×500", expectFs: true },
+]) {
+	const { context, page } = await openLab(browser, viewport, "desktop-hover");
 	await openAme(page);
 	const m = await measureAmeShell(page);
 	note(
-		`700×500: fs=${m?.fullscreenLandscape} sheet=${m?.bottomSheetLike} radius=${m?.borderRadius}`,
+		`B ${label}: fs=${m?.fullscreenLandscape} sheet=${m?.bottomSheetLike} radius=${m?.borderRadius} topbar=${m?.topbarDisplay}`,
 	);
-	assert(m?.open, "B 700×500: AME opens");
-	assert(!m?.fullscreenLandscape, "B 700×500: NOT Full-screen landscape");
+	assert(m?.open, `B ${label}: AME opens`);
 	assert(
-		m?.bottomSheetLike || (m && parseFloat(m.borderRadius) > 0),
-		"B 700×500: Mobile Default / Portrait-style Bottom Sheet chrome",
+		Boolean(m) && m.fullscreenLandscape === expectFs,
+		`B ${label}: Full-screen=${expectFs}（Constrained Viewport）`,
+	);
+	if (expectFs) {
+		assert(m?.underlayDisplay === "none", `B ${label}: underlay hidden`);
+		assert(parseFloat(m?.borderRadius || "1") === 0, `B ${label}: radius 0`);
+		assert(m?.topbarDisplay !== "none", `B ${label}: landscape topbar visible`);
+	} else {
+		assert(
+			m?.bottomSheetLike || (m && parseFloat(m.borderRadius) > 0),
+			`B ${label}: Bottom Sheet chrome`,
+		);
+	}
+	await closeAmeViaEscape(page);
+	await context.close();
+}
+
+/* —— Portrait short-height：不得 Constrained Full-screen —— */
+for (const viewport of [
+	{ width: 390, height: 700 },
+	{ width: 430, height: 650 },
+]) {
+	const { context, page } = await openLab(browser, viewport, "desktop-hover");
+	await openAme(page);
+	const m = await measureAmeShell(page);
+	assert(m?.open, `Bp ${viewport.width}×${viewport.height}: AME opens`);
+	assert(
+		!m?.fullscreenLandscape,
+		`Bp ${viewport.width}×${viewport.height}: portrait short → Bottom Sheet`,
 	);
 	await closeAmeViaEscape(page);
 	await context.close();
@@ -281,6 +309,7 @@ for (const viewport of [
 	);
 	assert(m?.open, `D ${viewport.width}×${viewport.height}: AME opens`);
 	assert(m?.fullscreenLandscape, `D ${viewport.width}×${viewport.height}: Full-screen landscape`);
+	assert(m?.underlayDisplay === "none", `D ${viewport.width}×${viewport.height}: underlay hidden`);
 	await closeAmeViaEscape(page);
 	await context.close();
 }
