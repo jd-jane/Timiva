@@ -91,7 +91,7 @@ const modeSwitchIconHtml =
 >
 	<div data-ame-page-content>
 		{/* Layout contract：blocking sync load，須在 ResultSummary 首次 paint 前可用 */}
-		<script is:inline src="/scripts/japanese-era-converter-layout-contract.js?v=jec1"></script>
+		<script is:inline src="/scripts/japanese-era-converter-layout-contract.js?v=jec2"></script>
 
 		<section data-jecv2-main-tool class="preview-tool-main-section px-6">
 			<div class="preview-tool-first-screen">
@@ -141,7 +141,7 @@ const modeSwitchIconHtml =
 								[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
 								--rs-textual-primary-size: 3.375rem;
 							}
-							@media (max-width: 767px) and (orientation: portrait) {
+							@media (max-width: 767px) {
 								[data-japanese-era-converter-v2] .preview-tool-result-group {
 									container-type: inline-size;
 								}
@@ -168,7 +168,7 @@ const modeSwitchIconHtml =
 									--rs-textual-primary-size: 10.5rem;
 								}
 							}
-							@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+							@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 								[data-japanese-era-converter-v2][data-jecv2-locale="en"]
 									[data-result-summary][data-rs-content="textual"],
 								[data-japanese-era-converter-v2][data-jecv2-locale="en"]
@@ -186,7 +186,7 @@ const modeSwitchIconHtml =
 									--rs-textual-primary-size: 3.375rem;
 								}
 							}
-							@media (min-width: 768px) {
+							@media (min-width: 768px) and (hover: hover) {
 								[data-japanese-era-converter-v2] .preview-tool-result-group {
 									container-type: inline-size;
 								}

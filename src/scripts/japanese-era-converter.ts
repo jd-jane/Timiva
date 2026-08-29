@@ -674,15 +674,17 @@ function initLayoutSync(root: HTMLElement, republish: () => void): void {
 
 	const desktopMq = window.matchMedia(
 		window.TimivaJapaneseEraConverterLayout?.DESKTOP_MQ ||
-			"(min-width: 900px) and (min-height: 700px) and (hover: hover)",
+			"(min-width: 768px) and (hover: hover)",
 	);
 	const landscapeMq = window.matchMedia(
 		window.TimivaJapaneseEraConverterLayout?.LANDSCAPE_MQ ||
-			"(orientation: landscape) and (max-height: 700px) and (max-width: 1200px)",
+			"(orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none)",
 	);
 
 	desktopMq.addEventListener("change", apply);
 	landscapeMq.addEventListener("change", apply);
+	window.addEventListener("resize", apply);
+	apply();
 }
 
 /**

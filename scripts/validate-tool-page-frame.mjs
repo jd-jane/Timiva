@@ -410,11 +410,20 @@ const dcBatch3bAllowed = new Set([
 	"src/styles/tools/date-calculator-v2.css",
 	"public/scripts/date-calculator-layout-contract.js",
 ]);
+const jecBatch3cAllowed = new Set([
+	"src/components/tools/japanese-era-converter-v2/JapaneseEraConverterV2.astro",
+	"src/styles/tools/japanese-era-converter-v2.css",
+	"public/scripts/japanese-era-converter-layout-contract.js",
+	"src/scripts/japanese-era-converter.ts",
+]);
 if (frozen !== null) {
 	for (const rel of hoursBatch3aAllowed) {
 		frozen.delete(rel);
 	}
 	for (const rel of dcBatch3bAllowed) {
+		frozen.delete(rel);
+	}
+	for (const rel of jecBatch3cAllowed) {
 		frozen.delete(rel);
 	}
 }
@@ -482,6 +491,42 @@ if (dcBatch3bAllowed.has("public/scripts/date-calculator-layout-contract.js")) {
 	assert(
 		dcLayoutJs.includes("hover: none"),
 		"DC layout contract LANDSCAPE_MQ includes hover: none",
+	);
+}
+
+/* JEC Batch 3C responsive composition — when allowed files change, gates must hold */
+const jecCss = exists("src/styles/tools/japanese-era-converter-v2.css")
+	? stripComments(read("src/styles/tools/japanese-era-converter-v2.css"))
+	: "";
+const jecLayoutJs = exists("public/scripts/japanese-era-converter-layout-contract.js")
+	? stripComments(read("public/scripts/japanese-era-converter-layout-contract.js"))
+	: "";
+if (jecBatch3cAllowed.has("src/styles/tools/japanese-era-converter-v2.css")) {
+	assert(
+		jecCss.includes("@media (min-width: 768px) and (hover: hover)"),
+		"JEC CSS Desktop continuity: min-width 768 + hover:hover",
+	);
+	assert(
+		/@media\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s+and\s*\(\s*max-width:\s*1200px\s*\)\s+and\s*\(\s*hover:\s*none\s*\)/.test(
+			jecCss,
+		),
+		"JEC CSS Mobile Landscape gate includes hover: none",
+	);
+	assert(
+		!/@media\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s+and\s*\(\s*max-width:\s*1200px\s*\)\s*\{/.test(
+			jecCss,
+		),
+		"JEC CSS has no bare landscape+700+1200 rule",
+	);
+}
+if (jecBatch3cAllowed.has("public/scripts/japanese-era-converter-layout-contract.js")) {
+	assert(
+		jecLayoutJs.includes('"(min-width: 768px) and (hover: hover)"'),
+		"JEC layout contract DESKTOP_MQ: min-width 768 + hover:hover",
+	);
+	assert(
+		jecLayoutJs.includes("hover: none"),
+		"JEC layout contract LANDSCAPE_MQ includes hover: none",
 	);
 }
 

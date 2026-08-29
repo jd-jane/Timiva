@@ -103,8 +103,8 @@ body:has([data-japanese-era-converter-v2]) header {
 	-webkit-tap-highlight-color: transparent;
 }
 
-/* md+：Desktop 輸入尚未接入；Mobile capsule 隱藏（對齊 Hours／DC hide/show） */
-@media (min-width: 768px) {
+/* Desktop continuity：min-width 768 + hover:hover（§6.0.3 Layer 1） */
+@media (min-width: 768px) and (hover: hover) {
 	[data-japanese-era-converter-v2] .jecv2-mobile-controls {
 		display: none;
 	}
@@ -120,8 +120,11 @@ body:has([data-japanese-era-converter-v2]) header {
 	}
 }
 
-/* 手機直式：結果置中、底部膠囊固定（對齊 Hours；必須含 orientation:portrait） */
-@media (max-width: 767px) and (orientation: portrait) {
+/*
+ * Mobile Default / Portrait-style（§6.0.3 fallback）。
+ * max-width 767 涵蓋 narrow mobile-style；Mobile Landscape gate 在後方覆寫 compact。
+ */
+@media (max-width: 767px) {
 	[data-japanese-era-converter-v2] .preview-tool-first-screen {
 		place-items: stretch;
 		min-height: 100dvh;
@@ -169,12 +172,10 @@ body:has([data-japanese-era-converter-v2]) header {
 }
 
 /*
- * Landscape：對齊 Hours／Date Calculator。
- * - 沿用 base min-height:100dvh + place-items:center → 完整 hero、整組置中
- * - 不套 portrait 的 1fr／沉底（已用 orientation:portrait 隔離）
- * - 固定 margin-top 間距；不灌剩餘高度進 result ↔ capsule
+ * Mobile Landscape compact（§6.0.3 Layer 2 opt-in）。
+ * 必須含 hover: none；bare landscape／short height 不得誤切 Desktop。
  */
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	[data-japanese-era-converter-v2] .jecv2-mobile-controls {
 		display: flex;
 		margin-top: 1rem;
@@ -834,7 +835,8 @@ body:has([data-japanese-era-converter-v2]) header {
 	display: none;
 }
 
-@media (min-width: 768px) {
+/* Desktop continuity：desktop cluster + ResultSummary typography（§6.0.3） */
+@media (min-width: 768px) and (hover: hover) {
 	[data-japanese-era-converter-v2] .jecv2-input-cluster--desktop {
 		display: flex;
 	}
@@ -877,7 +879,7 @@ body:has([data-japanese-era-converter-v2]) header {
 	}
 }
 
-@media (max-width: 767px) and (orientation: portrait) {
+@media (max-width: 767px) {
 	[data-japanese-era-converter-v2] .jecv2-input-cluster--desktop {
 		display: none;
 	}
@@ -911,7 +913,7 @@ body:has([data-japanese-era-converter-v2]) header {
 	}
 }
 
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	[data-japanese-era-converter-v2] .jecv2-input-cluster--desktop {
 		display: none;
 	}
