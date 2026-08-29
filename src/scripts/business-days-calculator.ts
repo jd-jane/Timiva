@@ -98,12 +98,11 @@ function initResultSummaryLayout(root: HTMLElement): void {
 	}
 
 	const desktopMedia = window.matchMedia(
-		layoutContract.DESKTOP_MQ ??
-			"(min-width: 900px) and (min-height: 700px) and (hover: hover)",
+		layoutContract.DESKTOP_MQ ?? "(min-width: 768px) and (hover: hover)",
 	);
 	const landscapeMedia = window.matchMedia(
 		layoutContract.LANDSCAPE_MQ ??
-			"(orientation: landscape) and (max-height: 700px) and (max-width: 1200px)",
+			"(orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none)",
 	);
 
 	const syncResultSummaryLayout = () => {
@@ -183,8 +182,14 @@ function initMobileSheet(root: HTMLElement): {
 	let savedScrollY = 0;
 	let lastTrigger: HTMLElement | null = null;
 	let isSheetOpen = false;
+	const layoutContract = window.TimivaBusinessDaysLayout;
+	const desktopMq = window.matchMedia(
+		layoutContract?.DESKTOP_MQ ?? "(min-width: 768px) and (hover: hover)",
+	);
+	/* Keyboard landscape：與 canonical Mobile Landscape interaction gate 對齊（含 hover: none） */
 	const landscapeMq = window.matchMedia(
-		"(orientation: landscape) and (max-height: 700px) and (max-width: 1200px)",
+		layoutContract?.LANDSCAPE_MQ ??
+			"(orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none)",
 	);
 
 	const getViewportMetrics = () => {
@@ -391,6 +396,27 @@ function initMobileSheet(root: HTMLElement): {
 			closeSheet();
 		}
 	});
+
+	/*
+	 * Desktop composition lifecycle：進入 Desktop（768 + hover:hover）時若 MSB 仍 open，
+	 * 走正式 closeSheet（scroll lock／inert／overlay／focus），避免 short-height hybrid。
+	 * 每次 live matchMedia（勿只依賴建立時的 MediaQueryList.matches 快取）。
+	 */
+	const syncSheetToDesktopComposition = () => {
+		const isDesktop = window.matchMedia(
+			layoutContract?.DESKTOP_MQ ?? "(min-width: 768px) and (hover: hover)",
+		).matches;
+		if (isDesktop && isSheetOpen) {
+			closeSheet();
+		}
+	};
+	desktopMq.addEventListener("change", syncSheetToDesktopComposition);
+	window.addEventListener("resize", syncSheetToDesktopComposition);
+	window.addEventListener("orientationchange", () => {
+		window.setTimeout(syncSheetToDesktopComposition, 200);
+		window.setTimeout(syncSheetToDesktopComposition, 550);
+	});
+	syncSheetToDesktopComposition();
 
 	return {
 		close: closeSheet,

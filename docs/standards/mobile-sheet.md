@@ -72,6 +72,8 @@ Shared system name: Mobile Sheet
 
 Both portrait and landscape variants share the same overlay, backdrop, scroll lock, container language, field language, and action hierarchy. Layout density may change by orientation.
 
+**Landscape presentation gate（shared baseline）：** must use the canonical Mobile Landscape interaction gate from `layout-system.md` §6.0.3 — `orientation: landscape` + `max-height: 700px` + `max-width: 1200px` + **`hover: none`**. Desktop composition (`min-width: 768px` + `hover: hover`), including short-height desktop, must not receive shared landscape MSB chrome. When page composition becomes Desktop, any open mobile sheet must be safely closed (tool lifecycle); do not leave a hybrid Desktop + open MSB state.
+
 ---
 
 ## 3. Scope of the shared style

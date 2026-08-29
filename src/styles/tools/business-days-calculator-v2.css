@@ -270,7 +270,7 @@ body:has([data-business-days-calculator-v2]) header {
 }
 
 /* 手機橫式 sheet：內容驅動 compact（覆蓋 msb 固定高度；勿改 shared baseline） */
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	[data-bdcv2-sheet-portal][data-mobile-sheet-baseline] .bdcv2-sheet.msb-sheet.is-open {
 		box-sizing: border-box;
 		display: flex;
@@ -323,11 +323,15 @@ body:has([data-business-days-calculator-v2]) header {
 	}
 }
 
+/* ≥768：header offset 沿用 production（含真機 landscape ≥768 寬）；composition 見下方 hover:hover */
 @media (min-width: 768px) {
 	[data-business-days-calculator-v2] .preview-tool-main-section {
 		--preview-header-height: 4.25rem;
 	}
+}
 
+/* Desktop continuity：min-width 768 + hover:hover（§6.0.3 Layer 1） */
+@media (min-width: 768px) and (hover: hover) {
 	[data-business-days-calculator-v2] .bdcv2-input-cluster--desktop {
 		display: flex;
 	}
@@ -341,7 +345,10 @@ body:has([data-business-days-calculator-v2]) header {
 	}
 }
 
-/* 824–899px：沿用 DRC 的 56px 主要操作尺寸 */
+/*
+ * 824–899px：legacy tool-local capsule polish（對齊 DRC 56px）。
+ * 不是 composition gate；真 Mobile Landscape 必須在後方明確覆寫 compact geometry。
+ */
 @media (min-width: 824px) and (max-width: 899px) {
 	[data-business-days-calculator-v2] .bdcv2-mobile-capsule {
 		min-height: var(--tool-mobile-portrait-control-min-height, 3.5rem);
@@ -354,8 +361,11 @@ body:has([data-business-days-calculator-v2]) header {
 	}
 }
 
-/* 手機直式 — 結果區在扣除底部按鈕區後垂直置中；膠囊固定第一屏底部（DBD 基準） */
-@media (max-width: 767px) and (orientation: portrait) {
+/*
+ * Mobile Default / Portrait-style（§6.0.3 fallback）。
+ * max-width 767 涵蓋 narrow mobile-style（含 700×500）；Mobile Landscape gate 在後方覆寫。
+ */
+@media (max-width: 767px) {
 	[data-business-days-calculator-v2] .preview-tool-first-screen {
 		place-items: stretch;
 		min-height: 100dvh;
@@ -423,7 +433,7 @@ body:has([data-business-days-calculator-v2]) header {
 }
 
 /* Sheet-open：直式結果略縮；keyboard-open 與 sheet 共用 shift，避免結果停原位 */
-@media (max-width: 767px) and (orientation: portrait) {
+@media (max-width: 767px) {
 	[data-business-days-calculator-v2] .preview-tool-result-group {
 		transition: transform 220ms ease, opacity 220ms ease;
 	}
@@ -453,8 +463,12 @@ body:has([data-business-days-calculator-v2]) header {
 	}
 }
 
-/* 手機橫式 — 對齊 Date Range Calculator 的單屏三欄結果與底部操作 */
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+/*
+ * Mobile Landscape compact（§6.0.3 Layer 2 opt-in）。
+ * 必須含 hover: none；bare landscape／short height 不得誤切 Desktop。
+ * 保留 BDC production landscape first-screen（對齊 Date Range 單屏構圖）。
+ */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	[data-business-days-calculator-v2] {
 		--bdcv2-landscape-title-result-gap: 0.875rem;
 		--bdcv2-landscape-result-row-max: min(100%, 40rem);
@@ -492,6 +506,10 @@ body:has([data-business-days-calculator-v2]) header {
 		place-items: stretch;
 	}
 
+	/*
+	 * Landscape stage：保留 BDC production 1fr／auto 單屏構圖（非 Hours／DC／JEC centered flex）。
+	 * 明確覆寫 Default 的 portrait min-height:100dvh；CTA 以 bottom-inset 淨空。
+	 */
 	[data-business-days-calculator-v2] .preview-tool-stage {
 		display: grid;
 		grid-template-rows: minmax(0, 1fr) auto;
@@ -578,11 +596,22 @@ body:has([data-business-days-calculator-v2]) header {
 		display: flex;
 	}
 
+	/*
+	 * Landscape compact CTA：必須勝過 Default 56px 與 824–899 legacy polish。
+	 * ≤823 另有更緊的 legacy compact（後方）。
+	 */
 	[data-business-days-calculator-v2] .bdcv2-mobile-capsule {
 		position: relative;
 		z-index: 1;
 		width: auto;
+		max-width: none;
+		min-width: 0;
 		margin-inline: auto;
+		min-height: 2rem;
+		padding: 0.375rem 1rem;
+		font-size: 0.75rem;
+		line-height: 1rem;
+		white-space: nowrap;
 		pointer-events: auto;
 		touch-action: manipulation;
 		-webkit-tap-highlight-color: transparent;
@@ -602,8 +631,11 @@ body:has([data-business-days-calculator-v2]) header {
 	}
 }
 
-/* 較窄的手機橫式才使用 compact 按鈕，與 DRC breakpoint 一致 */
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 823px) {
+/*
+ * Legacy ≤823 Mobile Landscape：更緊的 tool-local capsule polish（對齊 DRC）。
+ * 必須含 hover: none；不得升格成 composition breakpoint。
+ */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (hover: none) {
 	[data-business-days-calculator-v2] .bdcv2-mobile-capsule {
 		min-height: 1.75rem;
 		padding: 0.25rem 0.625rem;

@@ -302,8 +302,10 @@ body.msb-scroll-lock {
 	}
 }
 
-/* Landscape compact panel — handle + scrollable body + fixed action row */
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) {
+/* Landscape compact panel — handle + scrollable body + fixed action row.
+ * Canonical Mobile Landscape interaction gate（layout-system §6.0.3）：必須含 hover: none。
+ * Desktop short-height（hover:hover）不得套用此 chrome。 */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	[data-mobile-sheet-baseline] {
 		--msb-landscape-handle-block: 0.75rem;
 		--msb-landscape-input-row-height: 2.125rem;
