@@ -25,7 +25,7 @@ const LANDSCAPE_DATE_MEDIA = window.matchMedia(
 let savedScrollY = 0;
 let lastLayoutMode = null;
 
-const DR_JS_VERSION = "dr-msb2";
+const DR_JS_VERSION = "dr-p3";
 
 function loadDateRangeI18n() {
   const fallback = {
@@ -645,14 +645,16 @@ function finalizePortraitReset() {
 }
 
 function resetDateRangeLayoutOnModeChange() {
-  if (getDateRangeLayoutMode() === "portrait") {
+  const mode = getDateRangeLayoutMode();
+
+  if (mode === "portrait") {
     finalizePortraitReset();
     return;
   }
 
-  if (getDateRangeLayoutMode() === "landscape-date") {
+  if (mode === "landscape-date") {
     closeRangeSheetFully();
-    if (!LANDSCAPE_DATE_MEDIA.matches) {
+    if (lastLayoutMode !== "landscape-date") {
       closeCompactDatePanel();
     }
     syncLandscapeInputsFromState();

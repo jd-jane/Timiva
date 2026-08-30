@@ -111,7 +111,7 @@ assert(!/function resolveResultDigitBucket/.test(script), "no local bucket ladde
 assert(!/syncResultDigitBucket/.test(script), "no syncResultDigitBucket in script");
 assert(!/data-drv2-result-digits/.test(script), "script does not write drv2 digit attr");
 assert(/initResultSummary/.test(astro), "shared controller init before date-range.js");
-assert(script.includes('DR_JS_VERSION = "dr-msb2"'), "dr-msb2 script version");
+assert(script.includes('DR_JS_VERSION = "dr-p3"'), "dr-p3 script version");
 
 /* Initial layout bootstrap — before first paint, shared contract with layout gate */
 const contract = read("public/scripts/date-range-layout-contract.js");

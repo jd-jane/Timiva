@@ -130,7 +130,7 @@ assert(
 		script.includes("closeCompactDatePanel()"),
 	"Desktop transition reuses formal sheet／panel close paths",
 );
-assert(script.includes('DR_JS_VERSION = "dr-msb2"'), "date-range.js cache bust dr-msb2");
+assert(script.includes('DR_JS_VERSION = "dr-p3"'), "date-range.js cache bust dr-p3");
 
 /* —— CSS Desktop continuity —— */
 assert(
@@ -196,6 +196,10 @@ assert(
 	/orientation:\s*landscape[\s\S]*hover:\s*none/.test(legacyCss),
 	"legacy date-range.css landscape composition includes hover: none",
 );
+assert(
+	!/@media\s*\(\s*max-width:\s*600px\s*\),\s*\(\(orientation:\s*landscape/.test(legacyCss),
+	"legacy date-range.css no longer mixes max-width 600 with landscape composition",
+);
 
 /* —— 824–899 is capsule polish only —— */
 assert(
@@ -213,9 +217,9 @@ assert(
 
 /* —— Markup / cache bust —— */
 assert(
-	/date-range-layout-contract\.js\?v=dr-msb2/.test(astro) &&
-		/date-range\.js\?v=dr-msb2/.test(astro),
-	"DR scripts cache-bust dr-msb2",
+	/date-range-layout-contract\.js\?v=dr-p3/.test(astro) &&
+		/date-range\.js\?v=dr-p3/.test(astro),
+	"DR scripts cache-bust dr-p3",
 );
 assert(
 	/tool-input-card tool-date-card" aria-hidden="true"/.test(astro) ||

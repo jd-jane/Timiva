@@ -88,7 +88,7 @@ assert(
 		!/data-drv2-calendar-clear/.test(script),
 	"Portrait Clear wired through data-drv2-sheet-clear only",
 );
-assert(script.includes('DR_JS_VERSION = "dr-msb2"'), "date-range.js cache bust dr-msb2");
+assert(script.includes('DR_JS_VERSION = "dr-p3"'), "date-range.js cache bust dr-p3");
 
 assert(
 	/\[data-drv2-sheet-portal\][\s\S]*?\.msb-sheet-body[\s\S]*?overflow-y:\s*auto/.test(
@@ -140,9 +140,9 @@ assert(
 );
 
 assert(
-	/date-range-layout-contract\.js\?v=dr-msb2/.test(astro) &&
-		/date-range\.js\?v=dr-msb2/.test(astro),
-	"Astro cache bust dr-msb2",
+	/date-range-layout-contract\.js\?v=dr-p3/.test(astro) &&
+		/date-range\.js\?v=dr-p3/.test(astro),
+	"Astro cache bust dr-p3",
 );
 
 if (failed > 0) {

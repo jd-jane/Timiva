@@ -414,11 +414,11 @@ body:has([data-date-range-v2]) header {
 	z-index: -1;
 }
 
-[data-date-range-v2] .date-range-page.sheet-open .preview-tool-controls {
+[data-date-range-v2] .date-range-page[data-range-layout="portrait"].sheet-open .preview-tool-controls {
 	display: none;
 }
 
-[data-date-range-v2] .date-range-page.date-range-compact-open .preview-tool-controls {
+[data-date-range-v2] .date-range-page[data-range-layout="landscape-date"].date-range-compact-open .preview-tool-controls {
 	visibility: hidden;
 	opacity: 0;
 	pointer-events: none;
@@ -431,10 +431,9 @@ body:has([data-date-range-v2]) header {
 	transform-origin: center center;
 }
 
-@media (min-width: 768px) and (hover: hover) {
-	[data-date-range-v2] .preview-tool-controls {
-		display: none;
-	}
+[data-date-range-v2] .date-range-page:not([data-range-layout="landscape-date"]) .range-landscape-panel,
+[data-date-range-v2] .date-range-page:not([data-range-layout="landscape-date"]) .range-compact-overlay {
+	display: none;
 }
 
 @media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
@@ -522,6 +521,10 @@ body:has([data-date-range-v2]) header {
 		display: none;
 	}
 
+	[data-drv2-sheet-portal] {
+		display: none;
+	}
+
 	[data-date-range-v2] .preview-tool-stage > .preview-tool-result-group {
 		grid-row: 1;
 		align-self: stretch;
@@ -534,10 +537,6 @@ body:has([data-date-range-v2]) header {
 		align-self: end;
 		justify-self: center;
 		margin-bottom: var(--drv2-landscape-controls-bottom-inset);
-	}
-
-	[data-date-range-v2].drv2-landscape-first-screen [data-drv2-lower-content] {
-		pointer-events: none;
 	}
 
 	[data-date-range-v2] .date-range-page .range-main-preview {
@@ -833,7 +832,7 @@ body:has([data-date-range-v2]) header {
 	}
 }
 
-/* Phone landscape compact CTA geometry — hover:none so Desktop short-height 不被誤套 */
+/* Phone landscape compact CTA polish only — not an owner / composition gate */
 @media (orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (hover: none) {
 	[data-date-range-v2] .preview-tool-control-btn {
 		width: fit-content;
@@ -1437,13 +1436,6 @@ body:has([data-date-range-v2]) header {
 
 	[data-date-range-v2] .preview-tool-main-section {
 		min-height: 100dvh;
-	}
-}
-
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
-	[data-date-range-v2] [data-drv2-lower-content] {
-		position: relative;
-		z-index: 1;
 	}
 }
 
