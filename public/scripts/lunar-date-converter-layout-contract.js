@@ -1,31 +1,16 @@
 /**
  * Lunar Date Converter layout contract — thin bootstrap for ResultSummary data-rs-layout.
- * Aligns with DRC／DC non-desktop + ≤823 landscape gate. Layout attrs only.
+ * Canonical Responsive Composition Contract（layout-system §6.0.3）.
+ * Layout attrs only — no result content or tool state.
  */
 (function (global) {
-	var DESKTOP_MQ =
-		"(min-width: 900px) and (min-height: 700px) and (hover: hover)";
+	var DESKTOP_MQ = "(min-width: 768px) and (hover: hover)";
 	var LANDSCAPE_MQ =
-		"(orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (max-width: 899px), " +
-		"(orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (max-height: 699px), " +
-		"(orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (hover: none), " +
-		"(orientation: landscape) and (max-height: 699px) and (max-width: 823px), " +
-		"(orientation: landscape) and (max-height: 699px) and (max-width: 823px) and (hover: none)";
-	var PORTRAIT_MOBILE_MQ = "(max-width: 767px) and (orientation: portrait)";
-	var DESKTOP_INPUT_MQ = "(min-width: 768px)";
+		"(orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none)";
 
 	function isDesktopInputComposition(win) {
 		var view = win || global;
-		if (!view.matchMedia(DESKTOP_INPUT_MQ).matches) {
-			return false;
-		}
-		if (view.matchMedia(PORTRAIT_MOBILE_MQ).matches) {
-			return false;
-		}
-		if (view.matchMedia(LANDSCAPE_MQ).matches) {
-			return false;
-		}
-		return true;
+		return view.matchMedia(DESKTOP_MQ).matches;
 	}
 
 	function resolveLayoutMode(win) {
@@ -82,8 +67,6 @@
 	global.TimivaLunarDateConverterLayout = {
 		DESKTOP_MQ: DESKTOP_MQ,
 		LANDSCAPE_MQ: LANDSCAPE_MQ,
-		PORTRAIT_MOBILE_MQ: PORTRAIT_MOBILE_MQ,
-		DESKTOP_INPUT_MQ: DESKTOP_INPUT_MQ,
 		isDesktopInputComposition: isDesktopInputComposition,
 		resolveLayoutMode: resolveLayoutMode,
 		mapRsLayout: mapRsLayout,

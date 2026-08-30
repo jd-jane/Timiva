@@ -1,6 +1,6 @@
 /**
  * Shared Responsive Composition — Browser QA (Batch 1).
- * Uses Lunar TPF adopter as rendered fixture. Does not remove Lunar workaround.
+ * Uses Lunar TPF adopter as rendered fixture（Batch 4：workaround removed；canonical gates）.
  *
  * Run after build: npx astro preview --port 4351 &
  *   COMP_QA_BASE=http://localhost:4351 node scripts/qa-responsive-composition-shared-browser.mjs
@@ -234,6 +234,10 @@ for (const { width, height, label } of [
 	assert(!ops.desktopVisible, "B 700×500: desktop slot hidden (Mobile-style)");
 	assert(ops.mobileVisible, "B 700×500: mobile slot visible");
 	assert(!ops.flatLandscape, "B 700×500: NOT Mobile Landscape compact / flat");
+	assert(
+		parseFloat(ops.capsuleMinHeight ?? "0") >= 56 || ops.capsuleHeight >= 52,
+		`B 700×500: Mobile Default capsule ≥56px (minH=${ops.capsuleMinHeight}, h=${ops.capsuleHeight})`,
+	);
 	await context.close();
 }
 

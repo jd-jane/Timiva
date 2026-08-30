@@ -71,7 +71,7 @@ const modeSwitchIconHtml =
 	data-ldcv2-copy-error-invalid-day={m.errorInvalidLunarDay}
 	data-ldcv2-copy-error-unsupported-leap-typo={m.errorUnsupportedLeapTypo}
 >
-	<script is:inline src="/scripts/lunar-date-converter-layout-contract.js?v=ldc1"></script>
+	<script is:inline src="/scripts/lunar-date-converter-layout-contract.js?v=ldc4"></script>
 
 	<ToolPageFrame
 		locale={locale}
@@ -105,7 +105,7 @@ const modeSwitchIconHtml =
 					[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
 					--rs-textual-primary-size: 3.75rem;
 				}
-				@media (max-width: 767px) and (orientation: portrait) {
+				@media (max-width: 767px) {
 					[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
 						[data-result-summary][data-rs-content="textual"],
 					[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
@@ -135,10 +135,7 @@ const modeSwitchIconHtml =
 						--rs-textual-primary-size: clamp(3.5rem, 12cqi, 4.5rem);
 					}
 				}
-				@media (orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (max-width: 899px),
-					(orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (max-height: 699px),
-					(orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (hover: none),
-					(orientation: landscape) and (max-height: 699px) and (max-width: 823px) {
+				@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 					[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
 						[data-result-summary][data-rs-content="textual"],
 					[data-lunar-date-converter-v2][data-ldcv2-locale="en"]

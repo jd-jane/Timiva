@@ -133,10 +133,11 @@ body:has([data-tool-page-frame]) footer {
 }
 
 /*
- * 手機直式：1fr / auto；結果置中、主控沉底。
- * 必須含 orientation:portrait，勿洩漏到橫式。
+ * Mobile Default / Portrait-style（§6.0.3 fallback）。
+ * max-width 767；不綁死 orientation:portrait（700×500、767–733 窄窗等仍須 56px capsule）。
+ * Mobile Landscape gate 在後方覆寫 compact geometry。
  */
-@media (max-width: 767px) and (orientation: portrait) {
+@media (max-width: 767px) {
 	[data-tool-page-frame] .tpf-first-screen {
 		place-items: stretch;
 		min-height: 100dvh;

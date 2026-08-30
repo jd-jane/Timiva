@@ -460,15 +460,17 @@ assert(
 assert(
 	/min-width:\s*768px/.test(css) &&
 		/hover:\s*hover/.test(css) &&
-		/tpf-desktop-controls/.test(css) &&
-		/max-width:\s*823px/.test(css),
-	"tool-local desktop-input composition CSS (768+ hover guard / landscape ≤823)",
+		/max-width:\s*1200px/.test(css) &&
+		/hover:\s*none/.test(css) &&
+		!/tpf-desktop-controls/.test(css) &&
+		!/max-width:\s*823px/.test(css),
+	"canonical desktop + landscape gates; no tool-local TPF／≤823 workaround",
 );
 assert(
 	!/\(max-width:\s*899px\)[^{]*\{[^}]*tpf-mobile-controls[^}]*display:\s*flex/s.test(
 		css,
 	),
-	"no non-desktop TPF mobile force-show override (removed incorrect 768–899 gap fix)",
+	"no non-desktop TPF mobile force-show override",
 );
 assert(
 	/POPOVER_BASE_WIDTH_PX|23\.5\s*\*\s*16/.test(
@@ -487,7 +489,7 @@ assert(
 	"leaving desktop input composition closes calendars",
 );
 assert(
-	/DESKTOP_INPUT_MQ|isDesktopInputComposition/.test(
+	/DESKTOP_MQ|isDesktopInputComposition/.test(
 		read("public/scripts/lunar-date-converter-layout-contract.js"),
 	),
 	"layout contract exposes desktop input composition gate",

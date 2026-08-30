@@ -60,6 +60,17 @@
 }
 
 /*
+ * Frame Primary Entry — Mobile Default geometry（56px recipe）。
+ * 不綁 orientation:portrait；Landscape compact MQ 後方覆寫。
+ * Desktop 時 .tpf-mobile-controls 隱藏，此規則不影響可見 UI。
+ */
+[data-tool-page-frame] .tool-primary-entry-capsule.preview-tool-control-btn {
+	min-height: var(--tool-mobile-portrait-control-min-height, 3.5rem);
+	padding: var(--tool-mobile-portrait-control-padding-y, 0.75rem)
+		var(--tool-mobile-portrait-control-padding-x, 1rem);
+}
+
+/*
  * Mobile Landscape compact — shell typography + content-driven padding/min-width.
  * Gate（§6.0.3）：orientation + max-height 700 + max-width 1200 + hover: none.
  * hover: none 必要；不得讓 Desktop short／narrow viewport 套 flat capsule。

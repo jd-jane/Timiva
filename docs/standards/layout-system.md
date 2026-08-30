@@ -369,7 +369,7 @@ bare orientation: landscape 觸發 mobile-landscape UI
 ```text
 DR／BDC 823／824–899：legacy tool-local only；不進 shared composition
 Countdown 等更嚴 pointer／coarse gate：維持明確 product-spec exception
-Lunar B2C tool-local responsive guard：workaround；shared foundation 完成後另批移除
+Lunar B2C tool-local responsive guard：已於 Batch 4 移除；對齊 §6.0.3 canonical gates
 ```
 
 **Foundation roadmap（docs lock 後）**

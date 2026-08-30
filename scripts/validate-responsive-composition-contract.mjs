@@ -94,6 +94,21 @@ assert(
 	"Capsule has no bare landscape+700+1200 rule opening brace",
 );
 
+/* —— Mobile Default not locked to orientation:portrait —— */
+assert(
+	/@media\s*\(\s*max-width:\s*767px\s*\)\s*\{/.test(frameCss) &&
+		!/@media\s*\(\s*max-width:\s*767px\s*\)\s+and\s*\(\s*orientation:\s*portrait\s*\)/.test(
+			frameCss,
+		),
+	"TPF Mobile Default uses max-width 767 without orientation:portrait lock",
+);
+assert(
+	/\[data-tool-page-frame\]\s+\.tool-primary-entry-capsule\.preview-tool-control-btn\s*\{[^}]*min-height:\s*var\(--tool-mobile-portrait-control-min-height/s.test(
+		capsuleCss,
+	),
+	"Primary Capsule provides Frame Default 56px geometry without portrait lock",
+);
+
 /* —— Compact geometry only under gated block (presence check) —— */
 assert(
 	frameCss.includes("min-height: 2rem") &&

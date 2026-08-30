@@ -213,8 +213,11 @@ for (const selector of selectors) {
 }
 
 assert(
-	frameCss.includes("@media (max-width: 767px) and (orientation: portrait)"),
-	"Frame CSS has portrait contract",
+	/@media\s*\(\s*max-width:\s*767px\s*\)\s*\{/.test(frameCss) &&
+		!/@media\s*\(\s*max-width:\s*767px\s*\)\s+and\s*\(\s*orientation:\s*portrait\s*\)/.test(
+			frameCss,
+		),
+	"Frame CSS Mobile Default uses max-width 767 without orientation:portrait lock",
 );
 assert(
 	frameCss.includes("grid-template-rows: minmax(0, 1fr) auto"),
@@ -274,29 +277,17 @@ assert(!lowerWidthOnStage, "Frame CSS does not put max-w-3xl on stage");
 assert(!stageGateOnLower, "Frame CSS does not put 640px gate on lower-content");
 
 /* -------------------------------------------------------------------------- */
-/* Tool CSS must not override .tpf-*（Lunar workaround allowlist → Batch 4）   */
+/* Tool CSS must not override .tpf-*（Batch 4：Lunar workaround 已移除）         */
 /* -------------------------------------------------------------------------- */
 const toolCssFiles = walkFiles(
 	join(root, "src/styles"),
 	(fullPath) => fullPath.endsWith(".css") && !fullPath.endsWith("tool-page-frame.css"),
 );
 
-/** Temporary until Foundation Batch 4 removes Lunar tool-local TPF guard. */
-const tpfOverrideAllowlist = new Set([
-	"src/styles/tools/lunar-date-converter-v2.css",
-]);
-
 for (const fullPath of toolCssFiles) {
 	const rel = relative(root, fullPath);
 	const css = readFileSync(fullPath, "utf8");
 	assert(!css.includes("tool-preview-first-screen.css") || rel.includes("preview/"), `${rel} must not import preview CSS as production Frame`);
-	if (tpfOverrideAllowlist.has(rel)) {
-		assert(
-			/\.tpf-/.test(stripComments(css)),
-			`${rel} Batch-4 allowlist: Lunar TPF workaround still present`,
-		);
-		continue;
-	}
 	assert(!/\.tpf-/.test(stripComments(css)), `${rel} must not override .tpf-*`);
 }
 

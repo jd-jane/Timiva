@@ -1,12 +1,16 @@
 /**
- * Lunar B2C — Responsive Composition QA (A/B/C scenarios).
+ * Lunar B2C + Batch 4 — Responsive Composition Browser QA.
  *
- * A. Desktop browser resize — no mobile-landscape flat capsule when merely narrowed
- * B. Mobile portrait — canonical Primary Capsule geometry
- * C. Mobile landscape — compact capsule only under canonical mobile + landscape contract
+ * Blocking fixtures（§6.0.3）:
+ *   823×800 / 799×800 hover:hover → Desktop
+ *   700×500 hover:hover → Mobile Default
+ *   390×844 hover:none → Mobile Default
+ *   667×375 / 844×390 / 932×430 hover:none → Mobile Landscape
+ *
+ * Also: B2C calendar geometry stability；short-height Desktop continuity.
  *
  * Run after build: npx astro preview --port 4340 &
- *   node scripts/qa-lunar-b2c-responsive-browser.mjs
+ *   LDC_QA_BASE=http://localhost:4340 node scripts/qa-lunar-b2c-responsive-browser.mjs
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -60,29 +64,96 @@ async function waitForServer(url, timeoutMs = 15000) {
 	throw new Error(`Server not ready: ${url}`);
 }
 
-async function setupPage(browser, path, viewport, { mockHover = false } = {}) {
-	const context = await browser.newContext({ viewport });
-	if (mockHover) {
-		await context.addInitScript(() => {
-			const original = window.matchMedia.bind(window);
-			window.matchMedia = (query) => {
-				const result = original(query);
-				if (query.includes("hover: hover")) {
-					return {
-						matches: true,
-						media: query,
-						addEventListener: () => {},
-						removeEventListener: () => {},
-						addListener: () => {},
-						removeListener: () => {},
-						onchange: null,
-						dispatchEvent: () => true,
-					};
-				}
-				return result;
-			};
-		});
+/**
+ * Compound-aware hover mock: override hover clause when non-hover MQ parts match.
+ * Forwards change events from the stripped base MediaQueryList so resize listeners work.
+ * @param {"desktop-hover"|"mobile-none"} hoverMode
+ */
+function installHoverMatchMediaMock(hoverMode) {
+	const original = window.matchMedia.bind(window);
+
+	function stripHoverClauses(query) {
+		return query
+			.replace(/\s+and\s+\(\s*hover:\s*(?:hover|none)\s*\)/gi, "")
+			.replace(/\(\s*hover:\s*(?:hover|none)\s*\)\s+and\s+/gi, "")
+			.trim();
 	}
+
+	function resolveMatches(query, baseMatches) {
+		const hasHoverHover = /\(hover:\s*hover\)/.test(query);
+		const hasHoverNone = /\(hover:\s*none\)/.test(query);
+		if (!baseMatches) return false;
+		if (hoverMode === "desktop-hover") {
+			if (hasHoverHover) return true;
+			if (hasHoverNone) return false;
+		} else {
+			if (hasHoverNone) return true;
+			if (hasHoverHover) return false;
+		}
+		return baseMatches;
+	}
+
+	window.matchMedia = (query) => {
+		const hasHoverHover = /\(hover:\s*hover\)/.test(query);
+		const hasHoverNone = /\(hover:\s*none\)/.test(query);
+		if (!hasHoverHover && !hasHoverNone) {
+			return original(query);
+		}
+
+		const baseQuery = stripHoverClauses(query);
+		const baseMql = baseQuery ? original(baseQuery) : null;
+		const listeners = new Set();
+
+		const api = {
+			get matches() {
+				const baseMatches = baseMql ? baseMql.matches : true;
+				return resolveMatches(query, baseMatches);
+			},
+			media: query,
+			onchange: null,
+			addEventListener(type, listener) {
+				if (type === "change") listeners.add(listener);
+			},
+			removeEventListener(type, listener) {
+				if (type === "change") listeners.delete(listener);
+			},
+			addListener(listener) {
+				listeners.add(listener);
+			},
+			removeListener(listener) {
+				listeners.delete(listener);
+			},
+			dispatchEvent() {
+				return true;
+			},
+		};
+
+		const notify = () => {
+			const event = { matches: api.matches, media: query };
+			for (const listener of listeners) listener(event);
+			if (typeof api.onchange === "function") api.onchange(event);
+		};
+
+		if (baseMql && typeof baseMql.addEventListener === "function") {
+			baseMql.addEventListener("change", notify);
+		} else if (baseMql && typeof baseMql.addListener === "function") {
+			baseMql.addListener(notify);
+		}
+
+		return api;
+	};
+}
+
+/**
+ * @param {"desktop-hover"|"mobile-none"} hoverMode
+ */
+async function openPage(browser, path, viewport, hoverMode) {
+	const context = await browser.newContext({
+		viewport,
+		hasTouch: hoverMode === "mobile-none",
+		isMobile: hoverMode === "mobile-none" && viewport.width < 768,
+	});
+	await context.addInitScript(installHoverMatchMediaMock, hoverMode);
 	const page = await context.newPage();
 	await page.goto(`${BASE}${path}`, { waitUntil: "networkidle" });
 	await page.waitForSelector("[data-lunar-date-converter-v2]");
@@ -131,26 +202,44 @@ async function measureLc(page) {
 
 async function measureOps(page) {
 	return page.evaluate(() => {
+		const api = window.TimivaLunarDateConverterLayout;
 		const desktop = document.querySelector(".ldcv2-input-cluster--desktop");
 		const mobile = document.querySelector(
 			"[data-tool-page-frame] .tpf-mobile-controls",
 		);
 		const capsule = document.querySelector(".ldcv2-mobile-capsule");
+		const rs = document.querySelector(
+			"[data-lunar-date-converter-v2] [data-result-summary]",
+		);
 		const dStyle = desktop ? getComputedStyle(desktop) : null;
 		const mStyle = mobile ? getComputedStyle(mobile) : null;
 		const cStyle = capsule ? getComputedStyle(capsule) : null;
 		const capsuleRect = capsule?.getBoundingClientRect();
+		const desktopVisible =
+			Boolean(desktop) &&
+			dStyle.display !== "none" &&
+			desktop.getBoundingClientRect().height > 0;
+		const mobileVisible =
+			Boolean(mobile) &&
+			mStyle.display !== "none" &&
+			mobile.getBoundingClientRect().height > 0;
+		const minH = parseFloat(cStyle?.minHeight ?? "0");
+		const padY = parseFloat(cStyle?.paddingTop ?? "0");
+		const landscapeCompact =
+			mobileVisible &&
+			!desktopVisible &&
+			minH > 0 &&
+			minH <= 36 &&
+			padY <= 8;
+		const activeOwners =
+			(desktopVisible ? 1 : 0) + (mobileVisible ? 1 : 0);
 		return {
 			desktopDisplay: dStyle?.display ?? "missing",
 			mobileDisplay: mStyle?.display ?? "missing",
-			desktopVisible:
-				desktop &&
-				dStyle.display !== "none" &&
-				desktop.getBoundingClientRect().height > 0,
-			mobileVisible:
-				mobile &&
-				mStyle.display !== "none" &&
-				mobile.getBoundingClientRect().height > 0,
+			desktopVisible,
+			mobileVisible,
+			landscapeCompact,
+			activeOwners,
 			capsuleMinHeight: cStyle?.minHeight ?? null,
 			capsuleHeight: capsuleRect?.height ?? 0,
 			capsulePaddingTop: cStyle?.paddingTop ?? null,
@@ -162,9 +251,8 @@ async function measureOps(page) {
 				document
 					.querySelector("[data-desktop-calendar]")
 					?.getAttribute("data-sdc-open") === "true",
-			rsLayout: document
-				.querySelector("[data-lunar-date-converter-v2] [data-result-summary]")
-				?.getAttribute("data-rs-layout"),
+			rsLayout: rs?.getAttribute("data-rs-layout") ?? null,
+			resolveMode: api?.resolveLayoutMode?.(window) ?? null,
 		};
 	});
 }
@@ -201,13 +289,6 @@ async function openCloseCycle(page, times) {
 	return widths;
 }
 
-/** Flat landscape capsule ≈ min-height 2rem / padding 6px — not portrait 3.5rem */
-function isFlatLandscapeCapsule(ops) {
-	if (!ops.mobileVisible && !ops.capsuleHeight) return false;
-	const minH = parseFloat(ops.capsuleMinHeight ?? "0");
-	return minH > 0 && minH <= 36;
-}
-
 console.log("qa-lunar-b2c-responsive-browser\n");
 console.log(`base: ${BASE}\n`);
 
@@ -217,6 +298,8 @@ await waitForServer(`${BASE}/en/lunar-date-converter/`);
 const pw = await loadPlaywright();
 const browser = await pw.chromium.launch({ headless: true });
 const geometryLog = {};
+const enPath = "/en/lunar-date-converter/";
+const zhPath = "/zh/lunar-date-converter/";
 
 /* —— Calendar geometry ×20 (desktop composition) —— */
 for (const viewport of [
@@ -224,11 +307,11 @@ for (const viewport of [
 	{ name: "1000x800", width: 1000, height: 800 },
 	{ name: "900x800", width: 900, height: 800 },
 ]) {
-	const { context, page } = await setupPage(
+	const { context, page } = await openPage(
 		browser,
-		"/en/lunar-date-converter/",
+		enPath,
 		viewport,
-		{ mockHover: true },
+		"desktop-hover",
 	);
 	await switchToLunar(page);
 	const samples = await openCloseCycle(page, 20);
@@ -241,42 +324,50 @@ for (const viewport of [
 	await context.close();
 }
 
-/* —— A. Desktop browser resize —— */
-const desktopResizeCases = [
-	{ width: 1280, height: 900 },
-	{ width: 1000, height: 800 },
-	{ width: 900, height: 800 },
-	{ width: 899, height: 800 },
-	{ width: 824, height: 800 },
-	{ width: 769, height: 800 },
-	{ width: 768, height: 800 },
-];
-
-for (const { width, height } of desktopResizeCases) {
-	const { context, page } = await setupPage(
-		browser,
-		"/en/lunar-date-converter/",
-		{ width, height },
-	);
-	const ops = await measureOps(page);
-	note(
-		`A ${width}×${height}: desktop=${ops.desktopDisplay} mobile=${ops.mobileDisplay} capsuleH=${ops.capsuleHeight}`,
-	);
-	assert(ops.desktopVisible, `A ${width}×${height}: desktop cluster visible (not mobile gap)`);
-	assert(!ops.mobileVisible, `A ${width}×${height}: mobile controls hidden at md+`);
-	assert(
-		!isFlatLandscapeCapsule(ops),
-		`A ${width}×${height}: no flat mobile-landscape Primary Capsule`,
-	);
-	await context.close();
+/* —— A. Desktop continuity（含 blocking 823／799／短高度） —— */
+for (const localePath of [enPath, zhPath]) {
+	const locale = localePath.includes("/zh/") ? "zh" : "en";
+	for (const { width, height, label } of [
+		{ width: 1280, height: 900, label: "1280×900" },
+		{ width: 900, height: 800, label: "900×800" },
+		{ width: 899, height: 800, label: "899×800" },
+		{ width: 824, height: 800, label: "824×800" },
+		{ width: 823, height: 800, label: "823×800" },
+		{ width: 799, height: 800, label: "799×800" },
+		{ width: 768, height: 800, label: "768×800" },
+		{ width: 900, height: 650, label: "900×650 short" },
+		{ width: 824, height: 650, label: "824×650 short" },
+	]) {
+		const { context, page } = await openPage(
+			browser,
+			localePath,
+			{ width, height },
+			"desktop-hover",
+		);
+		const ops = await measureOps(page);
+		note(
+			`A ${locale} ${label}: desktop=${ops.desktopVisible} mobile=${ops.mobileVisible} rs=${ops.rsLayout} mode=${ops.resolveMode} owners=${ops.activeOwners}`,
+		);
+		assert(ops.desktopVisible, `A ${locale} ${label}: desktop cluster visible`);
+		assert(!ops.mobileVisible, `A ${locale} ${label}: mobile controls hidden`);
+		assert(!ops.landscapeCompact, `A ${locale} ${label}: NOT Mobile Landscape compact`);
+		assert(ops.activeOwners === 1, `A ${locale} ${label}: active primary input owner = 1`);
+		assert(
+			ops.rsLayout === "desktop" && ops.resolveMode === "desktop",
+			`A ${locale} ${label}: layout-contract + data-rs-layout = desktop`,
+		);
+		await context.close();
+	}
 }
 
 /* A: drag-narrow round-trip — calendar stays in desktop composition at 824 */
 {
-	const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
-	const page = await context.newPage();
-	await page.goto(`${BASE}/en/lunar-date-converter/`, { waitUntil: "networkidle" });
-	await page.waitForSelector("[data-lunar-date-converter-v2]");
+	const { context, page } = await openPage(
+		browser,
+		enPath,
+		{ width: 1280, height: 900 },
+		"desktop-hover",
+	);
 	await switchToLunar(page);
 	await clickCalendarToggle(page);
 	await waitLunarOpen(page);
@@ -285,10 +376,7 @@ for (const { width, height } of desktopResizeCases) {
 	await page.waitForTimeout(150);
 	const at824 = await measureOps(page);
 	assert(at824.desktopVisible, "A resize 1280→824: desktop cluster still visible");
-	assert(
-		!isFlatLandscapeCapsule(at824),
-		"A resize 1280→824: no flat landscape capsule",
-	);
+	assert(!at824.landscapeCompact, "A resize 1280→824: no flat landscape capsule");
 	note(`A resize 824: lcOpen=${at824.lcOpen} (desktop composition keeps calendar)`);
 
 	await page.setViewportSize({ width: 767, height: 800 });
@@ -296,6 +384,7 @@ for (const { width, height } of desktopResizeCases) {
 	const at767 = await measureOps(page);
 	assert(!at767.lcOpen && !at767.sdcOpen, "A resize →767: calendars safely closed");
 	assert(at767.mobileVisible, "A resize →767: mobile controls visible");
+	assert(at767.activeOwners === 1, "A resize →767: active owner = 1");
 
 	await page.setViewportSize({ width: 1280, height: 900 });
 	await page.waitForTimeout(150);
@@ -306,64 +395,84 @@ for (const { width, height } of desktopResizeCases) {
 	await context.close();
 }
 
-/* —— B. Mobile portrait —— */
-for (const locale of ["en", "zh"]) {
-	const path =
-		locale === "en" ? "/en/lunar-date-converter/" : "/zh/lunar-date-converter/";
-	const { context, page } = await setupPage(browser, path, {
-		width: 390,
-		height: 844,
-	});
-	const ops = await measureOps(page);
-	assert(!ops.desktopVisible, `B ${locale} portrait: desktop hidden`);
-	assert(ops.mobileVisible, `B ${locale} portrait: mobile visible`);
-	const minH = parseFloat(ops.capsuleMinHeight ?? "0");
-	assert(
-		minH >= 48,
-		`B ${locale} portrait: capsule min-height ≥3rem (${ops.capsuleMinHeight})`,
-	);
-	await context.close();
+/* —— B. Mobile Default —— */
+for (const localePath of [enPath, zhPath]) {
+	const locale = localePath.includes("/zh/") ? "zh" : "en";
+	for (const { width, height, label, hoverMode } of [
+		{ width: 390, height: 844, label: "390×844", hoverMode: "mobile-none" },
+		{ width: 700, height: 500, label: "700×500", hoverMode: "desktop-hover" },
+		/* Corrective：767–733 窄窗必須完整 56px Default capsule */
+		{ width: 767, height: 800, label: "767×800", hoverMode: "desktop-hover" },
+		{ width: 760, height: 800, label: "760×800", hoverMode: "desktop-hover" },
+		{ width: 750, height: 800, label: "750×800", hoverMode: "desktop-hover" },
+		{ width: 740, height: 800, label: "740×800", hoverMode: "desktop-hover" },
+		{ width: 733, height: 800, label: "733×800", hoverMode: "desktop-hover" },
+	]) {
+		const { context, page } = await openPage(
+			browser,
+			localePath,
+			{ width, height },
+			hoverMode,
+		);
+		const ops = await measureOps(page);
+		const minH = parseFloat(ops.capsuleMinHeight ?? "0");
+		note(
+			`B ${locale} ${label}: desktop=${ops.desktopVisible} mobile=${ops.mobileVisible} minH=${ops.capsuleMinHeight} h=${ops.capsuleHeight} rs=${ops.rsLayout}`,
+		);
+		assert(!ops.desktopVisible, `B ${locale} ${label}: desktop hidden`);
+		assert(ops.mobileVisible, `B ${locale} ${label}: mobile visible`);
+		assert(!ops.landscapeCompact, `B ${locale} ${label}: NOT landscape compact`);
+		assert(ops.activeOwners === 1, `B ${locale} ${label}: active owner = 1`);
+		assert(
+			ops.rsLayout === "portrait" && ops.resolveMode === "portrait",
+			`B ${locale} ${label}: layout-contract + data-rs-layout = portrait`,
+		);
+		assert(
+			minH >= 56 || ops.capsuleHeight >= 52,
+			`B ${locale} ${label}: Mobile Default capsule ≥56px (minH=${ops.capsuleMinHeight}, h=${ops.capsuleHeight})`,
+		);
+		await context.close();
+	}
 }
 
-/* —— C. Mobile landscape (canonical) —— */
-for (const locale of ["en", "zh"]) {
-	const path =
-		locale === "en" ? "/en/lunar-date-converter/" : "/zh/lunar-date-converter/";
-	const { context, page } = await setupPage(browser, path, {
-		width: 667,
-		height: 375,
-	});
-	const ops = await measureOps(page);
-	note(
-		`C ${locale} 667×375: desktop=${ops.desktopDisplay} mobile=${ops.mobileDisplay} minH=${ops.capsuleMinHeight}`,
-	);
-	assert(!ops.desktopVisible, `C ${locale} landscape: desktop hidden`);
-	assert(ops.mobileVisible, `C ${locale} landscape: mobile visible`);
-	assert(
-		isFlatLandscapeCapsule(ops) || ops.capsuleHeight <= 40,
-		`C ${locale} landscape: compact capsule geometry`,
-	);
-	await context.close();
-}
-
-/* C: 824×650 must NOT enter mobile landscape (desktop resize) */
-{
-	const { context, page } = await setupPage(
-		browser,
-		"/en/lunar-date-converter/",
-		{ width: 824, height: 650 },
-	);
-	const ops = await measureOps(page);
-	assert(ops.desktopVisible, "C guard 824×650: desktop cluster (not mobile landscape)");
-	assert(!isFlatLandscapeCapsule(ops), "C guard 824×650: no flat capsule");
-	await context.close();
+/* —— C. Mobile Landscape —— */
+for (const localePath of [enPath, zhPath]) {
+	const locale = localePath.includes("/zh/") ? "zh" : "en";
+	for (const { width, height, label } of [
+		{ width: 667, height: 375, label: "667×375" },
+		{ width: 844, height: 390, label: "844×390" },
+		{ width: 932, height: 430, label: "932×430" },
+	]) {
+		const { context, page } = await openPage(
+			browser,
+			localePath,
+			{ width, height },
+			"mobile-none",
+		);
+		const ops = await measureOps(page);
+		note(
+			`C ${locale} ${label}: desktop=${ops.desktopVisible} mobile=${ops.mobileVisible} minH=${ops.capsuleMinHeight} rs=${ops.rsLayout}`,
+		);
+		assert(!ops.desktopVisible, `C ${locale} ${label}: desktop hidden`);
+		assert(ops.mobileVisible, `C ${locale} ${label}: mobile visible`);
+		assert(ops.landscapeCompact, `C ${locale} ${label}: landscape compact capsule`);
+		assert(ops.activeOwners === 1, `C ${locale} ${label}: active owner = 1`);
+		assert(
+			ops.rsLayout === "landscape" && ops.resolveMode === "landscape-lunar",
+			`C ${locale} ${label}: layout-contract + data-rs-layout = landscape`,
+		);
+		await context.close();
+	}
 }
 
 /* —— Composition boundary calendar close (767) —— */
 {
-	const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
-	const page = await context.newPage();
-	await page.goto(`${BASE}/en/lunar-date-converter/`, { waitUntil: "networkidle" });
+	const { context, page } = await openPage(
+		browser,
+		enPath,
+		{ width: 1280, height: 900 },
+		"desktop-hover",
+	);
 	await switchToLunar(page);
 	await clickCalendarToggle(page);
 	await waitLunarOpen(page);
@@ -376,10 +485,11 @@ for (const locale of ["en", "zh"]) {
 
 /* —— Gregorian + Lunar modes at 824 desktop resize —— */
 {
-	const { context, page } = await setupPage(
+	const { context, page } = await openPage(
 		browser,
-		"/zh/lunar-date-converter/",
+		zhPath,
 		{ width: 824, height: 800 },
+		"desktop-hover",
 	);
 	let ops = await measureOps(page);
 	assert(ops.desktopVisible, "ZH 824: gregorian desktop visible");

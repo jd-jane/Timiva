@@ -73,6 +73,12 @@ assert(
 assert(code.includes("min-width: 5.5rem"), "content-driven min-width 88px (5.5rem)");
 assert(code.includes("padding-inline: 1.25rem"), "portrait content-driven padding 20px");
 assert(
+	/\[data-tool-page-frame\]\s+\.tool-primary-entry-capsule\.preview-tool-control-btn\s*\{[^}]*min-height:\s*var\(--tool-mobile-portrait-control-min-height/s.test(
+		code,
+	),
+	"Frame Primary Entry Default geometry includes 56px min-height token",
+);
+assert(
 	/@media\s*\(\s*orientation:\s*landscape\s*\)\s+and\s*\(\s*max-height:\s*700px\s*\)\s+and\s*\(\s*max-width:\s*1200px\s*\)\s+and\s*\(\s*hover:\s*none\s*\)/.test(
 		css,
 	),

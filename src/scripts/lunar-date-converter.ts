@@ -637,27 +637,28 @@ function initRoot(root: HTMLElement): void {
 	const onDesktopInputCompositionChange = () => {
 		const inDesktopInput =
 			layoutApi?.isDesktopInputComposition?.(window) ??
-			window.matchMedia("(min-width: 768px)").matches;
+			window.matchMedia("(min-width: 768px) and (hover: hover)").matches;
 		if (!inDesktopInput) {
 			closeAllCalendars();
 		}
 	};
 
-	if (layoutApi?.DESKTOP_INPUT_MQ) {
-		compositionMedia.push(window.matchMedia(layoutApi.DESKTOP_INPUT_MQ));
-	}
-	if (layoutApi?.PORTRAIT_MOBILE_MQ) {
-		compositionMedia.push(window.matchMedia(layoutApi.PORTRAIT_MOBILE_MQ));
+	if (layoutApi?.DESKTOP_MQ) {
+		compositionMedia.push(window.matchMedia(layoutApi.DESKTOP_MQ));
 	}
 	if (layoutApi?.LANDSCAPE_MQ) {
 		compositionMedia.push(window.matchMedia(layoutApi.LANDSCAPE_MQ));
 	}
 	if (compositionMedia.length === 0) {
-		compositionMedia.push(window.matchMedia("(min-width: 768px)"));
+		compositionMedia.push(
+			window.matchMedia("(min-width: 768px) and (hover: hover)"),
+		);
 	}
 	for (const mq of compositionMedia) {
 		mq.addEventListener("change", onDesktopInputCompositionChange);
 	}
+	window.addEventListener("resize", onDesktopInputCompositionChange);
+	window.addEventListener("orientationchange", onDesktopInputCompositionChange);
 
 	window.addEventListener(
 		"pagehide",
@@ -665,6 +666,11 @@ function initRoot(root: HTMLElement): void {
 			for (const mq of compositionMedia) {
 				mq.removeEventListener("change", onDesktopInputCompositionChange);
 			}
+			window.removeEventListener("resize", onDesktopInputCompositionChange);
+			window.removeEventListener(
+				"orientationchange",
+				onDesktopInputCompositionChange,
+			);
 			gregorianCalendarAdapter?.destroy();
 			lunarPickerAdapter?.destroy();
 			gregorianController?.destroy();
