@@ -56,7 +56,7 @@ const rsSecondary = [
 
 <div data-date-range-v2>
 	<!-- Layout contract：blocking sync load，須在 ResultSummary 首次 paint 前可用 -->
-	<script is:inline src="/scripts/date-range-layout-contract.js?v=dr22"></script>
+	<script is:inline src="/scripts/date-range-layout-contract.js?v=dr-ow1"></script>
 	<!-- 首屏工具區 -->
 	<section data-drv2-main-tool class="preview-tool-main-section px-6">
 		<section
@@ -628,7 +628,7 @@ const rsSecondary = [
 <script is:inline>
 	(function () {
 		var page = document.getElementById("date-range-page");
-		if (page) page.dataset.drJs = "dr13";
+		if (page) page.dataset.drJs = "dr-ow1";
 
 		function resetDateRangeOrientation() {
 			var sheet = document.getElementById("range-sheet");
@@ -672,7 +672,7 @@ const rsSecondary = [
 	initResultSummary();
 	installDateRangeDesktopCalendarBinder();
 </script>
-<script defer src="/scripts/date-range.js?v=dr22"></script>
+<script defer src="/scripts/date-range.js?v=dr-ow1"></script>
 
 <script is:inline>
 	document.addEventListener("DOMContentLoaded", () => {

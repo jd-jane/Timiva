@@ -3,10 +3,9 @@
  * Must match public/scripts/date-range.js layout gate (DESKTOP_MEDIA / LANDSCAPE_DATE_MEDIA).
  */
 (function (global) {
-  var DESKTOP_MQ =
-    "(min-width: 900px) and (min-height: 700px) and (hover: hover)";
+  var DESKTOP_MQ = "(min-width: 768px) and (hover: hover)";
   var LANDSCAPE_MQ =
-    "(orientation: landscape) and (max-height: 700px) and (max-width: 1200px)";
+    "(orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none)";
 
   function resolveLayoutMode(win) {
     var view = win || global;

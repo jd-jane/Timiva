@@ -141,6 +141,16 @@ body:has([data-date-range-v2]) header {
 
 [data-date-range-v2] .preview-tool-controls {
 	margin-top: 2rem;
+	display: flex;
+}
+
+/* Input composition default：Mobile Default capsule；Desktop 768+hover 再覆寫 */
+[data-date-range-v2] .date-range-page .tool-desktop-cluster {
+	display: none;
+}
+
+[data-date-range-v2] .drc-desktop-sdc-host {
+	display: none;
 }
 
 [data-date-range-v2] .mobile-bottom-control {
@@ -168,7 +178,7 @@ body:has([data-date-range-v2]) header {
 		box-shadow 180ms ease;
 }
 
-	[data-date-range-v2] .preview-tool-control-btn:focus-visible {
+[data-date-range-v2] .preview-tool-control-btn:focus-visible {
 		outline: 2px solid rgb(255 255 255 / 0.45);
 		outline-offset: 2px;
 	}
@@ -199,23 +209,48 @@ body:has([data-date-range-v2]) header {
 }
 
 /*
- * Date Range V2 RWD modes — must match public/scripts/date-range.js
- * Desktop:     (min-width: 900px) and (min-height: 700px) and (hover: hover)
- * Portrait:      orientation portrait when not desktop
- * Landscape:     (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) when not desktop
- * Non-desktop:   (max-width: 899px), (max-height: 699px), (hover: none)
+ * Date Range V2 composition — must match public/scripts/date-range-layout-contract.js
+ * Desktop:           min-width 768 + hover:hover
+ * Mobile Landscape:  landscape + max-height 700 + max-width 1200 + hover:none
+ * Mobile Default:    remaining Mobile-style
+ * Spacious Desktop:  min-width 900 + min-height 700 + hover:hover（geometry polish only）
  */
 
-@media (max-width: 899px), (max-height: 699px), (hover: none) {
+/* Desktop input owner — 768 + hover:hover（§6.0.3）；不得用 900×700 當 composition */
+@media (min-width: 768px) and (hover: hover) {
 	[data-date-range-v2] .date-range-page .tool-desktop-cluster {
-		display: none;
+		display: block;
 	}
 
 	[data-date-range-v2] .preview-tool-controls {
-		display: flex;
+		display: none;
 	}
 
-	/* Override tool-design-system.css @601px inline calendar */
+	[data-date-range-v2] .drc-desktop-sdc-host {
+		display: block;
+		width: 100%;
+		max-width: min(100%, 30rem);
+		margin-inline: auto;
+	}
+
+	[data-date-range-v2] .date-range-page .range-sheet.tool-bottom-sheet,
+	[data-date-range-v2] .date-range-page .desktop-tool-panel .range-sheet,
+	[data-date-range-v2] .date-range-page .range-sheet,
+	[data-date-range-v2] .date-range-page .range-sheet-backdrop,
+	[data-date-range-v2] .date-range-page .tool-sheet-overlay {
+		display: none;
+	}
+
+	[data-date-range-v2] .preview-tool-first-screen {
+		min-height: auto;
+	}
+}
+
+/*
+ * Mobile Default sheet chrome（Phase 2 不改 visual recipe）。
+ * 閘：非 Desktop＝ max-width 767 或 hover:none。不負責 Desktop/Mobile input 切換。
+ */
+@media (max-width: 767px), (hover: none) {
 	[data-date-range-v2] .date-range-page .desktop-tool-panel {
 		display: block;
 		position: static;
@@ -281,8 +316,8 @@ body:has([data-date-range-v2]) header {
 	}
 }
 
-/* Intermediate narrow width (824–899px): portrait control size, not landscape compact buttons */
-@media (min-width: 824px) and (max-width: 899px) {
+/* Intermediate narrow width (824–899px): Mobile Default portrait capsule geometry only — not composition */
+@media (min-width: 824px) and (max-width: 899px) and (hover: none) and (orientation: portrait) {
 	[data-date-range-v2] .preview-tool-control-btn {
 		width: 100%;
 		max-width: min(100%, 20rem);
@@ -301,93 +336,93 @@ body:has([data-date-range-v2]) header {
 	}
 }
 
-@media (orientation: portrait) and (max-width: 899px),
-	(orientation: portrait) and (max-height: 699px),
-	(orientation: portrait) and (hover: none) {
-	[data-date-range-v2] .preview-tool-first-screen {
-		place-items: stretch;
-		min-height: 100dvh;
-		max-width: 100%;
-		box-sizing: border-box;
-		overflow-x: clip;
-	}
+/* Mobile Default first-screen + capsule geometry — JS composition owner，非 CSS orientation */
+[data-date-range-v2] .date-range-page[data-range-layout="portrait"] .preview-tool-first-screen {
+	place-items: stretch;
+	min-height: 100dvh;
+	max-width: 100%;
+	box-sizing: border-box;
+	overflow-x: clip;
+}
 
-	[data-date-range-v2] .preview-tool-stage {
-		display: grid;
-		grid-template-rows: minmax(0, 1fr) auto;
-		min-height: 100dvh;
-		width: 100%;
-		max-width: 100%;
-		box-sizing: border-box;
-		overflow-x: clip;
-	}
+[data-date-range-v2] .date-range-page[data-range-layout="portrait"] .preview-tool-stage {
+	display: grid;
+	grid-template-rows: minmax(0, 1fr) auto;
+	min-height: 100dvh;
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+	overflow-x: clip;
+}
 
-	[data-date-range-v2] .preview-tool-result-group {
-		align-self: center;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		width: 100%;
-		max-width: 100%;
-		min-width: 0;
-		min-height: 0;
-		overflow-x: clip;
-		pointer-events: none;
-		/* 對齊 BDC portrait：結果區外層 inset 0.75rem（非 tool-hero-content 28px） */
-		padding-inline: 0.75rem;
-		box-sizing: border-box;
-	}
+[data-date-range-v2] .date-range-page[data-range-layout="portrait"] .preview-tool-result-group {
+	align-self: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	min-height: 0;
+	overflow-x: clip;
+	pointer-events: none;
+	/* 對齊 BDC portrait：結果區外層 inset 0.75rem（非 tool-hero-content 28px） */
+	padding-inline: 0.75rem;
+	box-sizing: border-box;
+}
 
-	[data-date-range-v2] .date-range-page .tool-hero-preview .tool-hero-content {
-		box-sizing: border-box;
-		width: 100%;
-		max-width: 100%;
-		min-width: 0;
-		padding-top: max(44px, calc(env(safe-area-inset-top) + 40px));
-		padding-bottom: 0;
-		padding-inline: 0;
-		overflow-x: clip;
-	}
+[data-date-range-v2]
+	.date-range-page[data-range-layout="portrait"]
+	.tool-hero-preview
+	.tool-hero-content {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 100%;
+	min-width: 0;
+	padding-top: max(44px, calc(env(safe-area-inset-top) + 40px));
+	padding-bottom: 0;
+	padding-inline: 0;
+	overflow-x: clip;
+}
 
-	[data-date-range-v2] .preview-tool-controls {
-		position: relative;
-		display: flex;
-		justify-content: center;
-		justify-self: center;
-		align-self: center;
-		box-sizing: border-box;
-		z-index: 25;
-		isolation: isolate;
-		width: 100%;
-		max-width: 100%;
-		margin-top: 0;
-		padding-bottom: max(16px, calc(12px + var(--safe-bottom)));
-		pointer-events: auto;
-	}
+[data-date-range-v2] .date-range-page[data-range-layout="portrait"] .preview-tool-controls {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	justify-self: center;
+	align-self: center;
+	box-sizing: border-box;
+	z-index: 25;
+	isolation: isolate;
+	width: 100%;
+	max-width: 100%;
+	margin-top: 0;
+	padding-bottom: max(16px, calc(12px + var(--safe-bottom)));
+	pointer-events: auto;
+}
 
-	/* 日期按鈕：寬度對齊 DBD capsule（100%／max 20rem）；高度不隨 digit bucket 縮 */
-	[data-date-range-v2] .preview-tool-control-btn {
-		position: relative;
-		box-sizing: border-box;
-		width: 100%;
-		max-width: min(100%, 20rem);
-		min-height: var(--tool-mobile-portrait-control-min-height);
-		padding: var(--tool-mobile-portrait-control-padding-y)
-			var(--tool-mobile-portrait-control-padding-x);
-		gap: var(--tool-mobile-portrait-control-gap);
-		font-size: 0.875rem;
-		line-height: 1.25rem;
-		pointer-events: auto;
-		touch-action: manipulation;
-		-webkit-tap-highlight-color: transparent;
-	}
+/* 日期按鈕：寬度對齊 DBD capsule（100%／max 20rem）；高度不隨 digit bucket 縮 */
+[data-date-range-v2] .date-range-page[data-range-layout="portrait"] .preview-tool-control-btn {
+	position: relative;
+	box-sizing: border-box;
+	width: 100%;
+	max-width: min(100%, 20rem);
+	min-height: var(--tool-mobile-portrait-control-min-height);
+	padding: var(--tool-mobile-portrait-control-padding-y)
+		var(--tool-mobile-portrait-control-padding-x);
+	gap: var(--tool-mobile-portrait-control-gap);
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	pointer-events: auto;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+}
 
-	[data-date-range-v2] [data-drv2-date-trigger]::after {
-		content: "";
-		position: absolute;
-		inset: -0.5rem;
-		z-index: -1;
-	}
+[data-date-range-v2] .date-range-page[data-range-layout="portrait"] [data-drv2-date-trigger]::after {
+	content: "";
+	position: absolute;
+	inset: -0.5rem;
+	z-index: -1;
 }
 
 [data-date-range-v2] .date-range-page.sheet-open .preview-tool-controls {
@@ -407,15 +442,13 @@ body:has([data-date-range-v2]) header {
 	transform-origin: center center;
 }
 
-@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
+@media (min-width: 768px) and (hover: hover) {
 	[data-date-range-v2] .preview-tool-controls {
 		display: none;
 	}
 }
 
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (max-width: 899px),
-	(orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (max-height: 699px),
-	(orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	[data-date-range-v2] {
 		--drv2-visual-height: 100dvh;
 		--drv2-landscape-title-result-gap: 0.875rem;
@@ -493,6 +526,10 @@ body:has([data-date-range-v2]) header {
 	}
 
 	[data-date-range-v2] .preview-tool-stage > .tool-desktop-cluster {
+		display: none;
+	}
+
+	[data-date-range-v2] .drc-desktop-sdc-host {
 		display: none;
 	}
 
@@ -618,8 +655,12 @@ body:has([data-date-range-v2]) header {
 		box-sizing: border-box;
 		width: fit-content;
 		max-width: min(100%, 22rem);
+		min-height: 2rem;
 		margin-inline: auto;
+		padding-block: 0.375rem;
 		padding-inline: var(--drv2-landscape-control-padding-x);
+		font-size: 0.75rem;
+		line-height: 1rem;
 		pointer-events: auto;
 		touch-action: manipulation;
 		-webkit-tap-highlight-color: transparent;
@@ -805,10 +846,8 @@ body:has([data-date-range-v2]) header {
 	}
 }
 
-/* Phone landscape compact buttons — width below 824px only */
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 823px),
-	(orientation: landscape) and (max-height: 699px) and (max-width: 823px),
-	(orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (hover: none) {
+/* Phone landscape compact CTA geometry — hover:none so Desktop short-height 不被誤套 */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 823px) and (hover: none) {
 	[data-date-range-v2] .preview-tool-control-btn {
 		width: fit-content;
 		max-width: min(100%, 22rem);
@@ -856,15 +895,11 @@ body:has([data-date-range-v2]) header {
 	}
 }
 
-@media (orientation: portrait) and (max-width: 899px),
-	(orientation: portrait) and (max-height: 699px),
-	(orientation: portrait) and (hover: none) {
-	[data-date-range-v2] .date-range-page.sheet-open .preview-tool-result-group {
-		opacity: 0.4;
-		transform: translateY(-18vh) scale(0.92);
-		transform-origin: top center;
-		pointer-events: none;
-	}
+[data-date-range-v2] .date-range-page[data-range-layout="portrait"].sheet-open .preview-tool-result-group {
+	opacity: 0.4;
+	transform: translateY(-18vh) scale(0.92);
+	transform-origin: top center;
+	pointer-events: none;
 }
 
 /* Calendar block — lighter supporting control area (touch targets preserved at 44px) */
@@ -1373,12 +1408,41 @@ body:has([data-date-range-v2]) header {
 	max-height: min(72dvh, 480px);
 }
 
-/* Desktop／Mobile dual-path host：預設隱藏 Shared DesktopCalendar */
+/* Desktop／Mobile dual-path host：預設隱藏；canonical Desktop 在後方覆寫 */
 [data-date-range-v2] .drc-desktop-sdc-host {
 	display: none;
 }
 
-@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
+@media (min-width: 768px) and (hover: hover) {
+	[data-date-range-v2] .date-range-page .desktop-tool-panel {
+		height: auto;
+		pointer-events: auto;
+	}
+
+	[data-date-range-v2] .drc-desktop-sdc-host {
+		display: block;
+		width: 100%;
+		max-width: min(100%, 30rem);
+		margin-inline: auto;
+		pointer-events: auto;
+	}
+
+	[data-date-range-v2] .date-range-page .desktop-tool-control .tool-input-card {
+		pointer-events: none;
+	}
+
+	[data-date-range-v2] .date-range-page .range-landscape-panel,
+	[data-date-range-v2] .date-range-page .range-compact-panel,
+	[data-date-range-v2] .date-range-page .range-compact-overlay {
+		display: none;
+	}
+
+	[data-date-range-v2] .date-range-page .desktop-tool-panel .range-sheet,
+	[data-date-range-v2] .date-range-page .range-sheet.tool-bottom-sheet,
+	[data-date-range-v2] .date-range-page .range-sheet {
+		display: none;
+	}
+
 	[data-date-range-v2] .date-range-page .tool-desktop-main {
 		justify-content: flex-start;
 		padding-top: max(36px, calc(env(safe-area-inset-top) + 28px));
@@ -1417,20 +1481,6 @@ body:has([data-date-range-v2]) header {
 		color: rgb(244 243 248 / 0.62);
 	}
 
-	/* Desktop：顯示 Shared host；隱藏 legacy sheet（Mobile 路徑保留） */
-	[data-date-range-v2] .drc-desktop-sdc-host {
-		display: block;
-		width: 100%;
-		max-width: min(100%, 30rem);
-		margin-inline: auto;
-	}
-
-	[data-date-range-v2] .date-range-page .desktop-tool-panel .range-sheet,
-	[data-date-range-v2] .date-range-page .range-sheet {
-		display: none;
-	}
-
-	/* Desktop Clear：純文字（對齊 DBD Include both dates 視覺；無 toggle／selected） */
 	[data-date-range-v2] .drc-desktop-clear-wrap {
 		display: flex;
 		justify-content: center;
@@ -1468,6 +1518,16 @@ body:has([data-date-range-v2]) header {
 		pointer-events: none;
 	}
 
+	[data-date-range-v2] .preview-tool-first-screen {
+		min-height: auto;
+	}
+
+	[data-date-range-v2] .preview-tool-stage {
+		max-width: var(--date-range-tool-max, 480px);
+	}
+}
+
+@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
 	[data-date-range-v2] .preview-tool-stage {
 		max-width: var(--date-range-tool-max, 480px);
 	}
@@ -1481,9 +1541,7 @@ body:has([data-date-range-v2]) header {
 	}
 }
 
-@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (max-width: 899px),
-	(orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (max-height: 699px),
-	(orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	[data-date-range-v2] [data-drv2-lower-content] {
 		position: relative;
 		z-index: 1;

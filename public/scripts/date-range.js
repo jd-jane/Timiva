@@ -14,19 +14,18 @@ let rangeEnd = null;
 const layoutContract = window.TimivaDateRangeLayout;
 
 const DESKTOP_MEDIA = window.matchMedia(
-  layoutContract?.DESKTOP_MQ ??
-    "(min-width: 900px) and (min-height: 700px) and (hover: hover)"
+  layoutContract?.DESKTOP_MQ ?? "(min-width: 768px) and (hover: hover)"
 );
 
 const LANDSCAPE_DATE_MEDIA = window.matchMedia(
   layoutContract?.LANDSCAPE_MQ ??
-    "(orientation: landscape) and (max-height: 700px) and (max-width: 1200px)"
+    "(orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none)"
 );
 
 let savedScrollY = 0;
 let lastLayoutMode = null;
 
-const DR_JS_VERSION = "dr22";
+const DR_JS_VERSION = "dr-ow1";
 
 function loadDateRangeI18n() {
   const fallback = {
@@ -428,6 +427,10 @@ function hasCompleteRange() {
 }
 
 function isMobileLayout() {
+  if (layoutContract?.resolveLayoutMode) {
+    return layoutContract.resolveLayoutMode(window) !== "desktop";
+  }
+
   return !DESKTOP_MEDIA.matches;
 }
 
@@ -647,6 +650,7 @@ function handleLayoutTransition() {
   }
 
   lastLayoutMode = mode;
+  bindDesktopSharedCalendar();
 }
 
 function scheduleLayoutTransitionAfterOrientation() {
@@ -1702,8 +1706,26 @@ syncSheetAccessibility();
 bindDesktopSharedCalendar();
 lastLayoutMode = getDateRangeLayoutMode();
 
+function syncEditorsToDesktopComposition() {
+  if (getDateRangeLayoutMode() !== "desktop") {
+    return;
+  }
+
+  if (rangeSheet?.classList.contains("is-open")) {
+    closeRangeSheet();
+  }
+
+  if (isCompactDatePanelOpen()) {
+    closeCompactDatePanel();
+  }
+
+  bindDesktopSharedCalendar();
+  renderCalendar();
+}
+
 DESKTOP_MEDIA.addEventListener("change", () => {
   closeAllCalendarNavPanels({ restoreFocus: false });
+  syncEditorsToDesktopComposition();
   if (!DESKTOP_MEDIA.matches) {
     resetDateRangeLayoutOnModeChange();
   } else {
@@ -1718,8 +1740,17 @@ DESKTOP_MEDIA.addEventListener("change", () => {
 
 LANDSCAPE_DATE_MEDIA.addEventListener("change", scheduleLayoutTransitionAfterOrientation);
 
-window.addEventListener("orientationchange", scheduleLayoutTransitionAfterOrientation);
-window.addEventListener("resize", handleLayoutTransition);
+window.addEventListener("orientationchange", () => {
+  scheduleLayoutTransitionAfterOrientation();
+  window.setTimeout(syncEditorsToDesktopComposition, 200);
+  window.setTimeout(syncEditorsToDesktopComposition, 550);
+});
+window.addEventListener("resize", () => {
+  handleLayoutTransition();
+  syncEditorsToDesktopComposition();
+  bindDesktopSharedCalendar();
+});
+syncEditorsToDesktopComposition();
 
 window.addEventListener("pageshow", (event) => {
   if (event.persisted) {

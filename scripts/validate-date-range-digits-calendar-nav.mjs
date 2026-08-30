@@ -111,15 +111,17 @@ assert(!/function resolveResultDigitBucket/.test(script), "no local bucket ladde
 assert(!/syncResultDigitBucket/.test(script), "no syncResultDigitBucket in script");
 assert(!/data-drv2-result-digits/.test(script), "script does not write drv2 digit attr");
 assert(/initResultSummary/.test(astro), "shared controller init before date-range.js");
-assert(script.includes('DR_JS_VERSION = "dr22"'), "dr22 script version");
+assert(script.includes('DR_JS_VERSION = "dr-ow1"'), "dr-ow1 script version");
 
 /* Initial layout bootstrap — before first paint, shared contract with layout gate */
 const contract = read("public/scripts/date-range-layout-contract.js");
 assert(/TimivaDateRangeLayout/.test(contract), "layout contract exposes TimivaDateRangeLayout");
 assert(
-	contract.includes('"(min-width: 900px) and (min-height: 700px) and (hover: hover)"') &&
-		contract.includes('"(orientation: landscape) and (max-height: 700px) and (max-width: 1200px)"'),
-	"layout contract media queries match DRC gate",
+	contract.includes('"(min-width: 768px) and (hover: hover)"') &&
+		contract.includes(
+			'"(orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none)"',
+		),
+	"layout contract media queries match DRC canonical composition gates",
 );
 assert(
 	/layoutContract\?\.DESKTOP_MQ/.test(script) && /layoutContract\?\.resolveLayoutMode/.test(script),
@@ -210,7 +212,7 @@ assert(
 	"shared portrait overflow guard"
 );
 assert(
-	/\[data-date-range-v2\] \.preview-tool-result-group[\s\S]*?padding-inline:\s*0\.75rem/.test(
+	/\[data-date-range-v2\][\s\S]*?\.preview-tool-result-group[\s\S]*?padding-inline:\s*0\.75rem/.test(
 		css,
 	),
 	"DRC portrait result-group padding-inline aligns BDC (0.75rem)",
