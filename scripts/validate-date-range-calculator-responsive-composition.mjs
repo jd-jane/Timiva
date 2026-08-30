@@ -130,7 +130,7 @@ assert(
 		script.includes("closeCompactDatePanel()"),
 	"Desktop transition reuses formal sheet／panel close paths",
 );
-assert(script.includes('DR_JS_VERSION = "dr-ow1"'), "date-range.js cache bust dr-ow1");
+assert(script.includes('DR_JS_VERSION = "dr-msb2"'), "date-range.js cache bust dr-msb2");
 
 /* —— CSS Desktop continuity —— */
 assert(
@@ -213,14 +213,20 @@ assert(
 
 /* —— Markup / cache bust —— */
 assert(
-	/date-range-layout-contract\.js\?v=dr-ow1/.test(astro) &&
-		/date-range\.js\?v=dr-ow1/.test(astro),
-	"DR scripts cache-bust dr-ow1",
+	/date-range-layout-contract\.js\?v=dr-msb2/.test(astro) &&
+		/date-range\.js\?v=dr-msb2/.test(astro),
+	"DR scripts cache-bust dr-msb2",
 );
 assert(
 	/tool-input-card tool-date-card" aria-hidden="true"/.test(astro) ||
 		/tool-input-card tool-date-card[\s\S]{0,80}aria-hidden="true"/.test(astro),
 	"Decorative ghost date card is aria-hidden",
+);
+assert(
+	script.includes("msb-scroll-lock") &&
+		script.includes("initDrv2SheetPortal") &&
+		/data-drv2-sheet-portal/.test(astro),
+	"Phase 2: Mobile Default uses shared MSB portal + scroll lock",
 );
 assert(!/!important/.test(css), "Phase 1 v2 CSS does not use !important");
 

@@ -10,6 +10,7 @@ import { getDateRangeClientI18n } from "../../../i18n/clientMessages";
 import { getMessages } from "../../../i18n/messages";
 import ResultSummary from "../shared/ResultSummary.astro";
 import DesktopCalendar from "../shared/DesktopCalendar.astro";
+import "../../../styles/tools/tool-mobile-sheet-v2-baseline.css";
 
 interface Props {
 	locale?: Locale;
@@ -56,7 +57,7 @@ const rsSecondary = [
 
 <div data-date-range-v2>
 	<!-- Layout contract：blocking sync load，須在 ResultSummary 首次 paint 前可用 -->
-	<script is:inline src="/scripts/date-range-layout-contract.js?v=dr-ow1"></script>
+	<script is:inline src="/scripts/date-range-layout-contract.js?v=dr-msb2"></script>
 	<!-- 首屏工具區 -->
 	<section data-drv2-main-tool class="preview-tool-main-section px-6">
 		<section
@@ -190,13 +191,6 @@ const rsSecondary = [
 					</div>
 				</div>
 
-				<div
-					class="tool-operation-overlay tool-sheet-overlay range-sheet-backdrop"
-					id="range-sheet-backdrop"
-					aria-hidden="true"
-				>
-				</div>
-
 				<section class="desktop-tool-panel">
 					{/* Desktop：Shared DesktopCalendar（inline-large）；Clear 留在工具外層 */}
 					<div class="drc-desktop-sdc-host" data-drc-desktop-sdc-host hidden>
@@ -220,223 +214,6 @@ const rsSecondary = [
 								id="clear-range-desktop"
 								data-clear-dates
 								data-drc-desktop-clear
-							>
-								{m.clearDates}
-							</button>
-						</div>
-					</div>
-
-					{/* Mobile：legacy Bottom Sheet calendar（與 Desktop shared 雙路徑） */}
-					<div
-						class="tool-bottom-sheet range-sheet"
-						id="range-sheet"
-						role="dialog"
-						aria-modal="true"
-						aria-label={m.calendarLabel}
-						aria-hidden="true"
-					>
-						<div class="tool-bottom-sheet-handle range-sheet-handle" aria-hidden="true"></div>
-
-						<div class="tool-bottom-sheet-content">
-							<div
-								class="calendar-panel calendar-card range-sheet-calendar"
-								data-drv2-calendar-panel
-								data-drv2-toolbar-panel="none"
-							>
-								<div class="calendar-toolbar" data-drv2-calendar-toolbar>
-									<button
-										type="button"
-										class="calendar-nav-btn"
-										id="prev-month"
-										aria-label={m.previousMonth}
-									>
-										‹
-									</button>
-									<div class="drv2-calendar-toolbar-center">
-										{/* 後備合併標籤（Landscape／初始化） */}
-										<h2
-											class="calendar-month-label drv2-calendar-mobile-month-label"
-											id="month-label"
-											data-drv2-mobile-month-label
-											hidden
-										>
-											—
-										</h2>
-
-										{/* Desktop：Month／Year 分開 triggers＋panels */}
-										<div
-											class="drv2-calendar-quick-nav"
-											data-drv2-calendar-nav
-											data-drv2-desktop-nav
-											hidden
-										>
-											<div class="drv2-calendar-picker" data-drv2-month-picker>
-												<button
-													type="button"
-													class="drv2-calendar-picker-trigger"
-													data-drv2-month-trigger
-													aria-expanded="false"
-													aria-haspopup="listbox"
-													aria-controls="drv2-calendar-month-panel"
-													aria-label={locale === "zh" ? "月份" : "Month"}
-												>
-													<span data-drv2-month-label>—</span>
-												</button>
-												<div
-													id="drv2-calendar-month-panel"
-													class="drv2-calendar-picker-panel drv2-calendar-month-panel"
-													data-drv2-month-panel
-													role="listbox"
-													aria-label={locale === "zh" ? "選擇月份" : "Choose month"}
-													hidden
-												>
-													<div
-														class="drv2-calendar-month-grid"
-														data-drv2-month-grid
-													>
-													</div>
-												</div>
-											</div>
-											<div class="drv2-calendar-picker" data-drv2-year-picker>
-												<button
-													type="button"
-													class="drv2-calendar-picker-trigger"
-													data-drv2-year-trigger
-													aria-expanded="false"
-													aria-haspopup="dialog"
-													aria-controls="drv2-calendar-year-panel"
-													aria-label={locale === "zh" ? "年份" : "Year"}
-												>
-													<span data-drv2-year-label>—</span>
-												</button>
-												<div
-													id="drv2-calendar-year-panel"
-													class="drv2-calendar-picker-panel drv2-calendar-year-panel"
-													data-drv2-year-panel
-													role="dialog"
-													aria-label={locale === "zh" ? "選擇年份" : "Choose year"}
-													hidden
-												>
-													<input
-														type="text"
-														class="drv2-calendar-year-input"
-														data-drv2-year-input
-														inputmode="numeric"
-														autocomplete="off"
-														spellcheck="false"
-														maxlength="4"
-														aria-label={locale === "zh" ? "年份" : "Year"}
-													/>
-													<div
-														class="drv2-calendar-year-list"
-														data-drv2-year-list
-														role="listbox"
-														aria-label={locale === "zh" ? "鄰近年份" : "Nearby years"}
-													>
-													</div>
-												</div>
-											</div>
-										</div>
-
-										{/* Mobile Portrait：單一「Jul 2026」標題式 trigger */}
-										<button
-											type="button"
-											class="drv2-calendar-period-trigger"
-											data-drv2-portrait-period-trigger
-											aria-expanded="false"
-											aria-controls="drv2-portrait-period-screen"
-											aria-label={locale === "zh" ? "選擇年月" : "Choose month and year"}
-											hidden
-										>
-											<span data-drv2-portrait-period-label>—</span>
-										</button>
-									</div>
-									<button
-										type="button"
-										class="calendar-nav-btn"
-										id="next-month"
-										aria-label={m.nextMonth}
-									>
-										›
-									</button>
-								</div>
-
-								<div class="calendar-weekdays" aria-hidden="true" data-drv2-calendar-weekdays>
-									{m.weekdays.map((day) => <span>{day}</span>)}
-								</div>
-
-								<div class="calendar-grid" id="calendar-grid"></div>
-
-								{/* Mobile Portrait：年月選擇（取代日期 grid；僅返回／年份／月份） */}
-								<div
-									id="drv2-portrait-period-screen"
-									class="drv2-portrait-period-screen"
-									data-drv2-portrait-period-screen
-									hidden
-								>
-									<div class="drv2-portrait-period-header">
-										<button
-											type="button"
-											class="drv2-portrait-period-back"
-											data-drv2-portrait-period-back
-											aria-label={locale === "zh" ? "返回日期" : "Back to dates"}
-										>
-											‹
-										</button>
-										<div class="drv2-portrait-year-row">
-											<button
-												type="button"
-												class="drv2-portrait-year-nav-btn"
-												data-drv2-portrait-prev-year
-												aria-label={locale === "zh" ? "上一年" : "Previous year"}
-											>
-												‹
-											</button>
-											<span
-												class="drv2-portrait-year-label"
-												data-drv2-portrait-year-label
-											>
-												—
-											</span>
-											<button
-												type="button"
-												class="drv2-portrait-year-nav-btn"
-												data-drv2-portrait-next-year
-												aria-label={locale === "zh" ? "下一年" : "Next year"}
-											>
-												›
-											</button>
-										</div>
-										<span class="drv2-portrait-period-header-spacer" aria-hidden="true"></span>
-									</div>
-									<div
-										class="drv2-portrait-month-grid"
-										data-drv2-portrait-month-grid
-										role="listbox"
-										aria-label={locale === "zh" ? "選擇月份" : "Choose month"}
-									>
-									</div>
-								</div>
-
-								<button
-									type="button"
-									class="calendar-clear-btn calendar-clear-btn--inline"
-									id="clear-range-sheet-inline"
-									data-clear-dates
-									data-drv2-calendar-clear
-								>
-									{m.clearDates}
-								</button>
-							</div>
-						</div>
-
-						<div class="tool-bottom-sheet-footer range-sheet-footer" data-drv2-sheet-footer>
-							<button
-								type="button"
-								class="calendar-clear-btn calendar-clear-btn--ghost"
-								id="clear-range"
-								data-clear-dates
-								data-drv2-calendar-clear
 							>
 								{m.clearDates}
 							</button>
@@ -621,6 +398,214 @@ const rsSecondary = [
 		</section>
 	</div>
 
+	{/* Mobile Default — shared MSB portal（Phase 2）；calendar 內容保留 DR ownership */}
+	<div data-drv2-sheet-portal data-mobile-sheet-baseline hidden aria-hidden="true">
+		<div
+			class="tool-operation-overlay"
+			data-drv2-sheet-overlay
+			data-tool-operation-overlay
+			hidden
+			aria-hidden="true"
+		>
+		</div>
+
+		<div
+			class="msb-sheet drv2-sheet"
+			id="range-sheet"
+			data-drv2-sheet
+			role="dialog"
+			aria-modal="true"
+			aria-label={m.calendarLabel}
+			aria-hidden="true"
+			tabindex="-1"
+			inert
+		>
+			<div class="msb-sheet-handle" aria-hidden="true"></div>
+
+			<div class="msb-sheet-body">
+				<div
+					class="calendar-panel range-sheet-calendar"
+					data-drv2-calendar-panel
+					data-drv2-toolbar-panel="none"
+				>
+					<div class="calendar-toolbar" data-drv2-calendar-toolbar>
+						<button
+							type="button"
+							class="calendar-nav-btn"
+							id="prev-month"
+							aria-label={m.previousMonth}
+						>
+							‹
+						</button>
+						<div class="drv2-calendar-toolbar-center">
+							<h2
+								class="calendar-month-label drv2-calendar-mobile-month-label"
+								id="month-label"
+								data-drv2-mobile-month-label
+								hidden
+							>
+								—
+							</h2>
+
+							<div
+								class="drv2-calendar-quick-nav"
+								data-drv2-calendar-nav
+								data-drv2-desktop-nav
+								hidden
+							>
+								<div class="drv2-calendar-picker" data-drv2-month-picker>
+									<button
+										type="button"
+										class="drv2-calendar-picker-trigger"
+										data-drv2-month-trigger
+										aria-expanded="false"
+										aria-haspopup="listbox"
+										aria-controls="drv2-calendar-month-panel"
+										aria-label={locale === "zh" ? "月份" : "Month"}
+									>
+										<span data-drv2-month-label>—</span>
+									</button>
+									<div
+										id="drv2-calendar-month-panel"
+										class="drv2-calendar-picker-panel drv2-calendar-month-panel"
+										data-drv2-month-panel
+										role="listbox"
+										aria-label={locale === "zh" ? "選擇月份" : "Choose month"}
+										hidden
+									>
+										<div class="drv2-calendar-month-grid" data-drv2-month-grid></div>
+									</div>
+								</div>
+								<div class="drv2-calendar-picker" data-drv2-year-picker>
+									<button
+										type="button"
+										class="drv2-calendar-picker-trigger"
+										data-drv2-year-trigger
+										aria-expanded="false"
+										aria-haspopup="dialog"
+										aria-controls="drv2-calendar-year-panel"
+										aria-label={locale === "zh" ? "年份" : "Year"}
+									>
+										<span data-drv2-year-label>—</span>
+									</button>
+									<div
+										id="drv2-calendar-year-panel"
+										class="drv2-calendar-picker-panel drv2-calendar-year-panel"
+										data-drv2-year-panel
+										role="dialog"
+										aria-label={locale === "zh" ? "選擇年份" : "Choose year"}
+										hidden
+									>
+										<input
+											type="text"
+											class="drv2-calendar-year-input"
+											data-drv2-year-input
+											inputmode="numeric"
+											autocomplete="off"
+											spellcheck="false"
+											maxlength="4"
+											aria-label={locale === "zh" ? "年份" : "Year"}
+										/>
+										<div
+											class="drv2-calendar-year-list"
+											data-drv2-year-list
+											role="listbox"
+											aria-label={locale === "zh" ? "鄰近年份" : "Nearby years"}
+										>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<button
+								type="button"
+								class="drv2-calendar-period-trigger"
+								data-drv2-portrait-period-trigger
+								aria-expanded="false"
+								aria-controls="drv2-portrait-period-screen"
+								aria-label={locale === "zh" ? "選擇年月" : "Choose month and year"}
+								hidden
+							>
+								<span data-drv2-portrait-period-label>—</span>
+							</button>
+						</div>
+						<button
+							type="button"
+							class="calendar-nav-btn"
+							id="next-month"
+							aria-label={m.nextMonth}
+						>
+							›
+						</button>
+					</div>
+
+					<div class="calendar-weekdays" aria-hidden="true" data-drv2-calendar-weekdays>
+						{m.weekdays.map((day) => <span>{day}</span>)}
+					</div>
+
+					<div class="calendar-grid" id="calendar-grid"></div>
+
+					<div
+						id="drv2-portrait-period-screen"
+						class="drv2-portrait-period-screen"
+						data-drv2-portrait-period-screen
+						hidden
+					>
+						<div class="drv2-portrait-period-header">
+							<button
+								type="button"
+								class="drv2-portrait-period-back"
+								data-drv2-portrait-period-back
+								aria-label={locale === "zh" ? "返回日期" : "Back to dates"}
+							>
+								‹
+							</button>
+							<div class="drv2-portrait-year-row">
+								<button
+									type="button"
+									class="drv2-portrait-year-nav-btn"
+									data-drv2-portrait-prev-year
+									aria-label={locale === "zh" ? "上一年" : "Previous year"}
+								>
+									‹
+								</button>
+								<span class="drv2-portrait-year-label" data-drv2-portrait-year-label>—</span>
+								<button
+									type="button"
+									class="drv2-portrait-year-nav-btn"
+									data-drv2-portrait-next-year
+									aria-label={locale === "zh" ? "下一年" : "Next year"}
+								>
+									›
+								</button>
+							</div>
+							<span class="drv2-portrait-period-header-spacer" aria-hidden="true"></span>
+						</div>
+						<div
+							class="drv2-portrait-month-grid"
+							data-drv2-portrait-month-grid
+							role="listbox"
+							aria-label={locale === "zh" ? "選擇月份" : "Choose month"}
+						>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="msb-action-row" data-drv2-sheet-footer>
+				<button
+					type="button"
+					class="msb-action-secondary"
+					id="clear-range"
+					data-clear-dates
+					data-drv2-sheet-clear
+				>
+					{m.clearDates}
+				</button>
+			</div>
+		</div>
+	</div>
+
 	<script type="application/json" id="date-range-i18n" set:html={JSON.stringify(clientI18n)} />
 	<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 </div>
@@ -628,17 +613,25 @@ const rsSecondary = [
 <script is:inline>
 	(function () {
 		var page = document.getElementById("date-range-page");
-		if (page) page.dataset.drJs = "dr-ow1";
+		if (page) page.dataset.drJs = "dr-msb2";
 
 		function resetDateRangeOrientation() {
 			var sheet = document.getElementById("range-sheet");
-			var backdrop = document.getElementById("range-sheet-backdrop");
+			var backdrop = document.querySelector("[data-drv2-sheet-overlay]");
 			var panel = document.getElementById("range-landscape-panel");
 			var overlay = document.getElementById("range-compact-overlay");
 
 			sheet?.classList.remove("is-open");
+			if (sheet) {
+				sheet.setAttribute("aria-hidden", "true");
+				sheet.setAttribute("inert", "");
+			}
 			backdrop?.classList.remove("is-visible");
-			if (backdrop) backdrop.setAttribute("aria-hidden", "true");
+			if (backdrop) {
+				backdrop.hidden = true;
+				backdrop.setAttribute("hidden", "");
+				backdrop.setAttribute("aria-hidden", "true");
+			}
 
 			if (panel) panel.hidden = true;
 			if (overlay) {
@@ -650,11 +643,17 @@ const rsSecondary = [
 				"sheet-open",
 				"tool-sheet-open",
 				"date-range-scroll-lock",
-				"date-range-compact-open"
+				"date-range-compact-open",
+				"tool-operation-open"
 			);
-			document.body.classList.remove("range-sheet-open", "tool-sheet-open");
-			document.body.style.overflow = "";
-			document.documentElement.style.overflow = "";
+			document.documentElement.classList.remove("msb-scroll-lock", "msb-sheet-open");
+			document.body.classList.remove(
+				"msb-scroll-lock",
+				"msb-sheet-open",
+				"range-sheet-open",
+				"tool-sheet-open",
+				"tool-operation-open"
+			);
 
 			window.TimivaDateRangeLayout?.applyLayoutAttrs(document);
 		}
@@ -672,7 +671,7 @@ const rsSecondary = [
 	initResultSummary();
 	installDateRangeDesktopCalendarBinder();
 </script>
-<script defer src="/scripts/date-range.js?v=dr-ow1"></script>
+<script defer src="/scripts/date-range.js?v=dr-msb2"></script>
 
 <script is:inline>
 	document.addEventListener("DOMContentLoaded", () => {

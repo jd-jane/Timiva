@@ -267,6 +267,8 @@ async function measureOwnership(page) {
 		const jsMode = window.TimivaDateRangeLayout?.resolveLayoutMode?.(window) ?? null;
 		const declared = pageEl?.dataset.rangeLayout ?? null;
 		const scrollLock =
+			document.documentElement.classList.contains("msb-scroll-lock") ||
+			document.body.classList.contains("msb-scroll-lock") ||
 			document.documentElement.style.overflow === "hidden" ||
 			document.body.style.overflow === "hidden" ||
 			Boolean(pageEl?.classList.contains("date-range-scroll-lock")) ||
@@ -411,8 +413,20 @@ for (const localePath of [enPath, zhPath]) {
 			await page.locator("#range-display-trigger").click();
 			await page.waitForTimeout(180);
 			const after = await measureOwnership(page);
-			assert(after.sheetOpen, "en 747×800: capsule opens existing range-sheet");
-			note("Phase 2: sheet chrome / duplicate Clear / scroll not asserted");
+			assert(after.sheetOpen, "en 747×800: capsule opens shared MSB range-sheet");
+			const sheetProbe = await page.evaluate(() => {
+				const portal = document.querySelector("[data-drv2-sheet-portal]");
+				return {
+					portalOnBody: portal?.parentElement === document.body,
+					hasHandle: Boolean(portal?.querySelector(".msb-sheet-handle")),
+					clearCount: portal?.querySelectorAll("[data-drv2-sheet-clear]").length ?? 0,
+					legacyWrapper: Boolean(portal?.querySelector(".tool-bottom-sheet-content")),
+				};
+			});
+			assert(sheetProbe.portalOnBody, "en 747×800: MSB portal on body");
+			assert(sheetProbe.hasHandle, "en 747×800: MSB shell handle present");
+			assert(sheetProbe.clearCount === 1, "en 747×800: single Clear dates in portal");
+			assert(!sheetProbe.legacyWrapper, "en 747×800: no legacy double-wrapper");
 		}
 		await context.close();
 	}

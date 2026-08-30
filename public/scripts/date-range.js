@@ -25,7 +25,7 @@ const LANDSCAPE_DATE_MEDIA = window.matchMedia(
 let savedScrollY = 0;
 let lastLayoutMode = null;
 
-const DR_JS_VERSION = "dr-ow1";
+const DR_JS_VERSION = "dr-msb2";
 
 function loadDateRangeI18n() {
   const fallback = {
@@ -142,10 +142,13 @@ const calendarToolbar =
   document.querySelector("[data-drv2-calendar-toolbar]");
 
 const calendarClearButtons =
-  document.querySelectorAll("[data-drv2-calendar-clear]");
+  document.querySelectorAll("[data-drv2-sheet-clear]");
 
 const sheetFooter =
   document.querySelector("[data-drv2-sheet-footer]");
+
+const sheetPortal =
+  document.querySelector("[data-drv2-sheet-portal]");
 
 /** @type {"none" | "month" | "year"} Desktop toolbar panels */
 let toolbarPanel = "none";
@@ -177,7 +180,8 @@ const rangeSheet =
   document.querySelector("#range-sheet");
 
 const rangeSheetBackdrop =
-  document.querySelector("#range-sheet-backdrop");
+  sheetPortal?.querySelector("[data-drv2-sheet-overlay]") ??
+  document.querySelector("[data-drv2-sheet-overlay]");
 
 const rangeLandscapePanel =
   document.querySelector("#range-landscape-panel");
@@ -526,14 +530,31 @@ function syncLayoutMode() {
   syncCalendarNavVisibility();
 }
 
-function forceUnlockBodyScroll() {
-  document.documentElement.style.overflow = "";
-  document.body.style.overflow = "";
+function initDrv2SheetPortal() {
+  if (!sheetPortal || sheetPortal.dataset.drv2PortalReady === "true") {
+    return;
+  }
 
-  dateRangePage?.classList.remove("date-range-scroll-lock", "tool-operation-open");
+  document.body.appendChild(sheetPortal);
+  sheetPortal.removeAttribute("hidden");
+  sheetPortal.setAttribute("aria-hidden", "false");
+  sheetPortal.dataset.drv2PortalReady = "true";
+}
+
+function forceUnlockBodyScroll() {
+  document.documentElement.classList.remove("msb-scroll-lock", "msb-sheet-open");
   document.body.classList.remove(
+    "msb-scroll-lock",
+    "msb-sheet-open",
     "tool-operation-open",
     "range-sheet-open",
+    "tool-sheet-open"
+  );
+
+  dateRangePage?.classList.remove(
+    "date-range-scroll-lock",
+    "tool-operation-open",
+    "sheet-open",
     "tool-sheet-open"
   );
 
@@ -598,8 +619,14 @@ function closeRangeSheetFully() {
     }
   }
   rangeSheet?.classList.remove("is-open");
-  rangeSheetBackdrop?.classList.remove("is-visible");
-  rangeSheetBackdrop?.setAttribute("aria-hidden", "true");
+  rangeSheet?.setAttribute("aria-hidden", "true");
+  rangeSheet?.setAttribute("inert", "");
+  if (rangeSheetBackdrop) {
+    rangeSheetBackdrop.classList.remove("is-visible");
+    rangeSheetBackdrop.hidden = true;
+    rangeSheetBackdrop.setAttribute("hidden", "");
+    rangeSheetBackdrop.setAttribute("aria-hidden", "true");
+  }
   dateRangePage?.classList.remove("sheet-open", "tool-sheet-open", "date-range-scroll-lock");
   forceUnlockBodyScroll();
   syncSheetAccessibility();
@@ -741,12 +768,12 @@ function updateStats() {
 
 function lockBodyScroll() {
   savedScrollY = window.scrollY;
-  document.documentElement.style.overflow = "hidden";
-  document.body.style.overflow = "hidden";
-  dateRangePage?.classList.add("date-range-scroll-lock", "tool-operation-open");
-  document.body.classList.add(
+  document.documentElement.classList.add("msb-scroll-lock", "msb-sheet-open");
+  document.body.classList.add("msb-scroll-lock", "msb-sheet-open");
+  dateRangePage?.classList.add(
+    "date-range-scroll-lock",
     "tool-operation-open",
-    "range-sheet-open",
+    "sheet-open",
     "tool-sheet-open"
   );
 }
@@ -759,8 +786,14 @@ function openRangeSheet() {
   closeCompactDatePanel();
 
   rangeSheet.classList.add("is-open");
-  rangeSheetBackdrop?.classList.add("is-visible");
-  rangeSheetBackdrop?.setAttribute("aria-hidden", "false");
+  rangeSheet.removeAttribute("inert");
+  rangeSheet.setAttribute("aria-hidden", "false");
+  if (rangeSheetBackdrop) {
+    rangeSheetBackdrop.hidden = false;
+    rangeSheetBackdrop.removeAttribute("hidden");
+    rangeSheetBackdrop.classList.add("is-visible");
+    rangeSheetBackdrop.setAttribute("aria-hidden", "false");
+  }
   dateRangePage?.classList.add("sheet-open", "tool-sheet-open");
   lockBodyScroll();
   syncSheetAccessibility();
@@ -777,7 +810,7 @@ function closeRangeSheet() {
   closeRangeSheetFully();
 
   if (isMobileLayout() && wasOpen) {
-    rangeDisplayTrigger?.focus();
+    rangeDisplayTrigger?.focus({ preventScroll: true });
   }
 }
 
@@ -1640,6 +1673,10 @@ rangeCompactOverlay?.addEventListener("click", () => {
 
 rangeSheetBackdrop?.addEventListener("click", closeRangeSheet);
 
+rangeSheet?.addEventListener("click", (event) => {
+  event.stopPropagation();
+});
+
 document.addEventListener("keydown", (event) => {
   if (event.key !== "Escape") {
     return;
@@ -1697,6 +1734,7 @@ function bindDesktopSharedCalendar() {
 }
 
 bindCalendarNav();
+initDrv2SheetPortal();
 syncCalendarNavVisibility();
 updateStats();
 renderCalendar();

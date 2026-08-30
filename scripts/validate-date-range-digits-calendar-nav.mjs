@@ -68,7 +68,7 @@ const rsCss = read("src/styles/tools/result-summary.css");
 
 const portraitScreen = (() => {
 	const start = astro.indexOf('data-drv2-portrait-period-screen');
-	const end = astro.indexOf("data-drv2-calendar-clear");
+	const end = astro.indexOf("data-drv2-sheet-clear");
 	return start >= 0 && end > start ? astro.slice(start, end) : "";
 })();
 
@@ -111,7 +111,7 @@ assert(!/function resolveResultDigitBucket/.test(script), "no local bucket ladde
 assert(!/syncResultDigitBucket/.test(script), "no syncResultDigitBucket in script");
 assert(!/data-drv2-result-digits/.test(script), "script does not write drv2 digit attr");
 assert(/initResultSummary/.test(astro), "shared controller init before date-range.js");
-assert(script.includes('DR_JS_VERSION = "dr-ow1"'), "dr-ow1 script version");
+assert(script.includes('DR_JS_VERSION = "dr-msb2"'), "dr-msb2 script version");
 
 /* Initial layout bootstrap — before first paint, shared contract with layout gate */
 const contract = read("public/scripts/date-range-layout-contract.js");
@@ -288,15 +288,19 @@ assert(
 	"Desktop densify calendar internal overrides removed from DRC CSS",
 );
 
-/* Mobile legacy markup retained inside sheet */
+/* Mobile Default — shared MSB portal + DR calendar body */
 assert(
-	/data-drv2-desktop-nav/.test(astro) &&
+	/data-drv2-sheet-portal/.test(astro) &&
+		/data-mobile-sheet-baseline/.test(astro) &&
+		/msb-sheet-body/.test(astro) &&
+		/data-drv2-desktop-nav/.test(astro) &&
 		/data-drv2-month-trigger/.test(astro) &&
 		/data-drv2-year-trigger/.test(astro) &&
 		/data-drv2-year-list/.test(astro) &&
 		/id=["']range-sheet["']/.test(astro) &&
-		/id=["']calendar-grid["']/.test(astro),
-	"Mobile Sheet legacy calendar markup retained",
+		/id=["']calendar-grid["']/.test(astro) &&
+		!/tool-bottom-sheet-content/.test(astro),
+	"Mobile Default MSB portal retains DR calendar markup without legacy wrapper",
 );
 assert(
 	/function setDesktopToolbarPanel/.test(script) &&
@@ -359,10 +363,12 @@ assert(
 		/sheetFooter\.hidden\s*=\s*period/.test(script),
 	"Portrait period mode hides toolbar, month arrows, Clear, and sheet footer"
 );
-assert(
-	/\.drv2-portrait-month-grid\s*\{[\s\S]*?repeat\(3/.test(css),
-	"Portrait month grid is 3 columns"
-);
+	assert(
+		/:is\(\[data-date-range-v2\], \[data-drv2-sheet-portal\]\) \.drv2-portrait-month-grid[\s\S]*?repeat\(3/.test(
+			css,
+		) || /\.drv2-portrait-month-grid\s*\{[\s\S]*?repeat\(3/.test(css),
+		"Portrait month grid is 3 columns",
+	);
 assert(
 	/\.drv2-portrait-month-option-label/.test(css) &&
 		/\.drv2-portrait-month-option\.is-selected\s+\.drv2-portrait-month-option-label/.test(
@@ -378,11 +384,10 @@ assert(
 	"Portrait period trigger is title-like (no form/select chevron fill)"
 );
 assert(
-	/data-range-layout=["']portrait["'][\s\S]*?overflow-y:\s*hidden/.test(css) ||
-		/\[data-range-layout=["']portrait["']\][\s\S]*?\.range-sheet[\s\S]*?overflow-y:\s*hidden/.test(
-			css
-		),
-	"Portrait sheet calendar avoids inner vertical scroll"
+	/\[data-drv2-sheet-portal\][\s\S]*?\.msb-sheet-body[\s\S]*?overflow-y:\s*auto/.test(
+		css,
+	),
+	"Portrait MSB body owns vertical scroll (no nested sheet scroll)",
 );
 assert(
 	/\.drv2-portrait-period-screen[\s\S]*?overflow:\s*hidden/.test(css) &&
@@ -391,12 +396,12 @@ assert(
 );
 assert(
 	/calendar-panel\[data-drv2-toolbar-panel=["']portrait-period["']\][\s\S]*?\.calendar-toolbar/.test(
-		css
+		css,
 	) &&
-		/calendar-panel\[data-drv2-toolbar-panel=["']portrait-period["']\][\s\S]*?\.calendar-clear-btn/.test(
-			css
+		/:has\(\.calendar-panel\[data-drv2-toolbar-panel=["']portrait-period["']\]\)[\s\S]*?\[data-drv2-sheet-footer\]/.test(
+			css,
 		),
-	"CSS hides date toolbar and Clear while Portrait period mode is open"
+	"CSS hides date toolbar and footer Clear while Portrait period mode is open",
 );
 
 /* Mode isolation */
