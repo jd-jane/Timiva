@@ -11,6 +11,7 @@ import {
 	deriveResultPresentation,
 	formatEnGregorianPrimary,
 	civilFromLunarInput,
+	resolveEnLunarDesktopRsComposition,
 } from "../src/lib/lunarDateConverterEvaluate.ts";
 import {
 	evaluateLunarInput,
@@ -106,6 +107,35 @@ assert(
 
 	const gregInputEn = deriveResultPresentation(civil, "gregorian", "en");
 	assert(gregInputEn.primaryText.startsWith("Lunar"), "Gregorian input → EN lunar result");
+	const enLunarPortrait = deriveResultPresentation(civil, "gregorian", "en", {
+		rsLayout: "portrait",
+	});
+	assert(enLunarPortrait.primaryText.includes("\n"), "EN lunar portrait uses two-line \\n");
+	assert(!enLunarPortrait.primaryText.includes("·"), "EN lunar portrait omits middle dot");
+	const enLunarLandscape = deriveResultPresentation(civil, "gregorian", "en", {
+		rsLayout: "landscape",
+	});
+	assert(enLunarLandscape.primaryText.includes("·"), "EN lunar landscape keeps canonical dot line");
+	const enLunarDesktopConstrained = deriveResultPresentation(civil, "gregorian", "en", {
+		rsLayout: "desktop",
+		rsComposition: "constrained",
+	});
+	assert(enLunarDesktopConstrained.primaryText.includes("\n"), "EN lunar desktop constrained uses \\n");
+	assert(!enLunarDesktopConstrained.primaryText.includes("·"), "EN lunar desktop constrained omits dot");
+	const enLunarDesktopWide = deriveResultPresentation(civil, "gregorian", "en", {
+		rsLayout: "desktop",
+		rsComposition: "wide",
+	});
+	assert(enLunarDesktopWide.primaryText.includes("·"), "EN lunar desktop wide keeps dot");
+	assert(!enLunarDesktopWide.primaryText.includes("\n"), "EN lunar desktop wide single line");
+	assert(
+		resolveEnLunarDesktopRsComposition({ hostWidthPx: 400, textWidthPx: 420 }) === "constrained",
+		"EN lunar desktop composition flips constrained when text wider than host",
+	);
+	assert(
+		resolveEnLunarDesktopRsComposition({ hostWidthPx: 500, textWidthPx: 420 }) === "wide",
+		"EN lunar desktop composition stays wide when text fits host",
+	);
 
 	const lunarInputEn = deriveResultPresentation(civil, "lunar", "en");
 	assertEq(lunarInputEn.primaryText, "Aug 17, 2026", "Lunar input → EN Aug 17, 2026");
@@ -113,7 +143,10 @@ assert(
 	const lunarInputZh = deriveResultPresentation(civil, "lunar", "zh");
 	assert(lunarInputZh.primaryText.includes("2026"), "Lunar input → ZH Gregorian primary");
 	assert(lunarInputZh.primaryText.includes("8"), "ZH Gregorian includes month");
-	assert(!lunarInputZh.primaryText.includes("\n"), "Lunar→Gregorian ZH is single line");
+	assert(lunarInputZh.primaryText.includes("\n"), "Lunar→Gregorian ZH uses deliberate two-line \\n");
+	const zhGregLines = lunarInputZh.primaryText.split("\n");
+	assertEq(zhGregLines.length, 2, "Lunar→Gregorian ZH exactly two lines");
+	assert(zhGregLines[0]?.endsWith("年"), "ZH Gregorian line 1 ends with 年");
 }
 
 /* -------------------------------------------------------------------------- */

@@ -1,9 +1,23 @@
 /**
- * Lunar Date Converter — B2B Desktop interaction.
+ * Lunar Date Converter — B2B Desktop + B2D Mobile AME.
  * SSOT: actualCivil (committed Gregorian date).
- * No LocalStorage. Mobile capsule stays disabled（B2D）.
+ * No LocalStorage. Mobile AME lifecycle = live（picker 即時更新；Done 只關）.
  */
 import { init as initResultSummary } from "./result-summary-controller.ts";
+import {
+	createAdaptiveMobileEditor,
+	type AdaptiveMobileEditorController,
+} from "./adaptive-mobile-editor-controller.ts";
+import {
+	bindLdcAmeInteractions,
+	cloneLdcAmeDraft,
+	draftFromCommitted,
+	ldcAmeResetDraft,
+	resolveLdcAmeDraft,
+	syncLdcAmeUi,
+	validateLdcAmeDraft,
+	type LdcAmeDraft,
+} from "./lunar-date-converter-ame-adapter.ts";
 import {
 	createGregorianDateController,
 	classifyGregorianInvalid,
@@ -18,14 +32,18 @@ import {
 import {
 	evaluateLunarInput,
 	formatLunarInputDisplayForLocale,
-	type LunarFieldStatus,
 } from "../lib/lunarDateConverterLunarInput.ts";
 import {
 	civilFromLunarInput,
 	deriveResultPresentation,
 	getLocalTodayCivil,
+	lunarFromActualCivil,
+	resolveEnLunarDesktopRsComposition,
 	type InputMode,
+	type ResultRsComposition,
+	type ResultRsLayout,
 } from "../lib/lunarDateConverterEvaluate.ts";
+import { buildLunarResultParts } from "../lib/lunar/lunarFormat.ts";
 import {
 	createLunarCalendarAdapter,
 	type LunarCalendarAdapter,
@@ -51,9 +69,24 @@ type ToolCopy = {
 	errorInvalidLeap: string;
 	errorInvalidDay: string;
 	errorUnsupportedLeapTypo: string;
+	errorIncomplete: string;
 };
 
 const initialized = new WeakSet<HTMLElement>();
+const ameSessions = new WeakMap<HTMLElement, { destroy: () => void }>();
+
+declare global {
+	interface Window {
+		TimivaLunarDateConverterLayout?: {
+			DESKTOP_MQ: string;
+			LANDSCAPE_MQ: string;
+			isDesktopInputComposition?: (win?: Window) => boolean;
+			applyLayoutAttrs?: (doc?: Document) => void;
+			bindLayoutListeners?: () => void;
+			resolveLayoutMode?: (win?: Window) => string;
+		};
+	}
+}
 
 function getLocale(root: HTMLElement): Locale {
 	return root.getAttribute("data-ldcv2-locale") === "zh" ? "zh" : "en";
@@ -69,6 +102,7 @@ function readCopy(root: HTMLElement): ToolCopy {
 		errorInvalidDay: root.dataset.ldcv2CopyErrorInvalidDay ?? "Invalid day for this month",
 		errorUnsupportedLeapTypo:
 			root.dataset.ldcv2CopyErrorUnsupportedLeapTypo ?? "Use 閏 for leap month",
+		errorIncomplete: root.dataset.ldcv2CopyErrorIncomplete ?? "Enter a complete date",
 	};
 }
 
@@ -111,6 +145,73 @@ function errorMessage(copy: ToolCopy, code: string | null): string {
 	}
 }
 
+function readResultRsLayout(root: HTMLElement): ResultRsLayout | null {
+	const layout = root
+		.querySelector("[data-result-summary]")
+		?.getAttribute("data-rs-layout");
+	if (layout === "desktop" || layout === "portrait" || layout === "landscape") {
+		return layout;
+	}
+	return null;
+}
+
+function applyRsComposition(root: HTMLElement, composition: ResultRsComposition | null): void {
+	if (composition === "constrained") {
+		root.setAttribute("data-ldcv2-rs-composition", "constrained");
+		return;
+	}
+	if (composition === "wide") {
+		root.setAttribute("data-ldcv2-rs-composition", "wide");
+		return;
+	}
+	root.removeAttribute("data-ldcv2-rs-composition");
+}
+
+function measurePrimaryTextWidth(root: HTMLElement, text: string): number {
+	const primary = root.querySelector<HTMLElement>('[data-rs-value="primary"]');
+	if (!primary) {
+		return 0;
+	}
+	const style = getComputedStyle(primary);
+	const canvas = document.createElement("canvas");
+	const ctx = canvas.getContext("2d");
+	if (!ctx) {
+		return text.length * (parseFloat(style.fontSize) || 16) * 0.55;
+	}
+	ctx.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+	return ctx.measureText(text).width;
+}
+
+function resolveRsCompositionForDispatch(
+	root: HTMLElement,
+	actualCivil: CivilDate,
+	inputMode: InputMode,
+	locale: Locale,
+	rsLayout: ResultRsLayout | null,
+	invalid: boolean,
+): ResultRsComposition | null {
+	if (invalid || locale !== "en" || inputMode !== "gregorian" || rsLayout !== "desktop") {
+		return null;
+	}
+	const lunar = lunarFromActualCivil(actualCivil);
+	if (!lunar) {
+		return "wide";
+	}
+	const parts = buildLunarResultParts(lunar, actualCivil);
+	const host = root.querySelector<HTMLElement>(".ldcv2-result-host");
+	const hostWidth = host?.getBoundingClientRect().width ?? 0;
+	if (hostWidth <= 0) {
+		return "wide";
+	}
+
+	applyRsComposition(root, "wide");
+	const textWidth = measurePrimaryTextWidth(root, parts.enPrimary);
+	return resolveEnLunarDesktopRsComposition({
+		hostWidthPx: hostWidth,
+		textWidthPx: textWidth,
+	});
+}
+
 function dispatchResult(
 	root: HTMLElement,
 	actualCivil: CivilDate,
@@ -123,8 +224,21 @@ function dispatchResult(
 		return;
 	}
 
+	const rsLayout = readResultRsLayout(root);
+	const rsComposition = resolveRsCompositionForDispatch(
+		root,
+		actualCivil,
+		inputMode,
+		locale,
+		rsLayout,
+		invalid,
+	);
+	applyRsComposition(root, rsComposition);
+
 	const presentation = deriveResultPresentation(actualCivil, inputMode, locale, {
 		invalid,
+		rsLayout,
+		rsComposition,
 	});
 
 	resultSummary.dispatchEvent(
@@ -255,6 +369,11 @@ function initRoot(root: HTMLElement): void {
 
 	const composition = createCompositionGuard();
 
+	const closeAllCalendars = () => {
+		gregorianCalendarAdapter?.close();
+		lunarPickerAdapter?.close();
+	};
+
 	const syncCommittedResult = (invalid = false) => {
 		dispatchResult(root, actualCivil, inputMode, locale, invalid);
 	};
@@ -356,11 +475,6 @@ function initRoot(root: HTMLElement): void {
 		syncCommittedResult(true);
 	};
 
-	const closeAllCalendars = () => {
-		gregorianCalendarAdapter?.close();
-		lunarPickerAdapter?.close();
-	};
-
 	const performModeSwitch = (nextMode: InputMode) => {
 		if (nextMode === inputMode) {
 			return;
@@ -386,8 +500,10 @@ function initRoot(root: HTMLElement): void {
 		syncCommittedResult(false);
 	};
 
-	/* —— Gregorian controller + calendar —— */
+	/* —— Gregorian controller + calendar（Desktop only；AME 用 structured picker） —— */
 	gregorianController = createGregorianDateController();
+
+	let ameApi: AdaptiveMobileEditorController<LdcAmeDraft> | null = null;
 
 	const gregorianDateSource = {
 		getDate: () => actualCivil,
@@ -448,6 +564,9 @@ function initRoot(root: HTMLElement): void {
 	calendarToggle?.addEventListener("click", (event) => {
 		event.preventDefault();
 		event.stopPropagation();
+		if (ameApi?.isOpen()) {
+			return;
+		}
 		const adapter =
 			inputMode === "gregorian" ? gregorianCalendarAdapter : lunarPickerAdapter;
 		if (!adapter) {
@@ -459,6 +578,98 @@ function initRoot(root: HTMLElement): void {
 			adapter.open();
 		}
 	});
+
+	const applyCommittedFromAme = (committed: LdcAmeDraft) => {
+		const resolved = resolveLdcAmeDraft(committed);
+		if (!resolved.ok) {
+			return;
+		}
+		actualCivil = resolved.civil;
+		inputMode = resolved.mode;
+		fieldPhase = "committed-valid";
+		applyInputModeUi(root, inputMode);
+		input.inputMode = inputMode === "gregorian" ? "numeric" : "text";
+		input.placeholder =
+			inputMode === "gregorian"
+				? (root.dataset.ldcv2GregorianPlaceholder ?? "")
+				: (root.dataset.ldcv2LunarPlaceholder ?? "");
+		input.setAttribute(
+			"aria-label",
+			inputMode === "gregorian"
+				? (root.dataset.ldcv2GregorianAria ?? "")
+				: (root.dataset.ldcv2LunarAria ?? ""),
+		);
+		repopulateInputFromActual();
+		syncFieldError(root, "committed-valid");
+		syncCommittedResult(false);
+		notifyCalendar();
+	};
+
+	/* —— B2D AME live lifecycle：picker 即時更新；Done 只關；不 focus／keyboard／calendar —— */
+	const pageContent = root.querySelector<HTMLElement>("[data-ame-page-content]");
+	const ameRoot = root.querySelector<HTMLElement>("[data-ame-root]");
+	const sheetTriggers = [
+		...root.querySelectorAll<HTMLElement>("[data-ldcv2-sheet-trigger]"),
+	];
+
+	if (pageContent && ameRoot && !ameSessions.has(root)) {
+		ameApi = createAdaptiveMobileEditor<LdcAmeDraft>(ameRoot, {
+			pageContent,
+			numericFields: [],
+			adapter: {
+				lifecycle: "live",
+				getCommitted: () => draftFromCommitted(actualCivil, inputMode),
+				createOpenDraft: (committed) => cloneLdcAmeDraft(committed),
+				getResetDraft: () => ldcAmeResetDraft(),
+				validate: (draft) => validateLdcAmeDraft(draft),
+				onCommit: (committed) => {
+					applyCommittedFromAme(committed);
+				},
+				onDraftChange: (draft) => {
+					syncLdcAmeUi(root, draft, locale);
+				},
+			},
+			onSyncUi: (draft) => {
+				syncLdcAmeUi(root, draft, locale);
+			},
+			onOpen: () => {
+				closeAllCalendars();
+			},
+			onClose: () => {
+				closeAllCalendars();
+				applyInputModeUi(root, inputMode);
+			},
+		});
+
+		const unbindAme = bindLdcAmeInteractions(root, {
+			getDraft: () => ameApi!.getDraft(),
+			patchDraft: (partial) => ameApi!.patchDraft(partial),
+			isOpen: () => ameApi!.isOpen(),
+			locale,
+		});
+
+		for (const trigger of sheetTriggers) {
+			trigger.addEventListener("click", (event) => {
+				event.preventDefault();
+				ameApi?.open(trigger);
+			});
+		}
+
+		ameSessions.set(root, {
+			destroy: () => {
+				unbindAme();
+				ameApi?.destroy();
+				ameSessions.delete(root);
+				ameApi = null;
+			},
+		});
+
+		const preferOpen =
+			new URLSearchParams(window.location.search).get("ldcv2Sheet") === "open";
+		if (preferOpen) {
+			ameApi.open(sheetTriggers[0] ?? undefined);
+		}
+	}
 
 	/* Init defaults */
 	applyInputModeUi(root, inputMode);
@@ -638,7 +849,14 @@ function initRoot(root: HTMLElement): void {
 		const inDesktopInput =
 			layoutApi?.isDesktopInputComposition?.(window) ??
 			window.matchMedia("(min-width: 768px) and (hover: hover)").matches;
-		if (!inDesktopInput) {
+		if (inDesktopInput) {
+			if (ameApi?.isOpen()) {
+				ameApi.close("api");
+			}
+			closeAllCalendars();
+			return;
+		}
+		if (!ameApi?.isOpen()) {
 			closeAllCalendars();
 		}
 	};
@@ -660,6 +878,21 @@ function initRoot(root: HTMLElement): void {
 	window.addEventListener("resize", onDesktopInputCompositionChange);
 	window.addEventListener("orientationchange", onDesktopInputCompositionChange);
 
+	const refreshResultForResponsiveState = () => {
+		layoutApi?.applyLayoutAttrs?.(document);
+		syncCommittedResult(fieldPhase === "draft-complete-invalid");
+	};
+	window.addEventListener("resize", refreshResultForResponsiveState);
+	window.addEventListener("orientationchange", refreshResultForResponsiveState);
+	const resultHost = root.querySelector<HTMLElement>(".ldcv2-result-host");
+	const resultHostObserver =
+		resultHost && typeof ResizeObserver !== "undefined"
+			? new ResizeObserver(() => {
+					refreshResultForResponsiveState();
+				})
+			: null;
+	resultHostObserver?.observe(resultHost!);
+
 	window.addEventListener(
 		"pagehide",
 		() => {
@@ -671,9 +904,13 @@ function initRoot(root: HTMLElement): void {
 				"orientationchange",
 				onDesktopInputCompositionChange,
 			);
+			window.removeEventListener("resize", refreshResultForResponsiveState);
+			window.removeEventListener("orientationchange", refreshResultForResponsiveState);
+			resultHostObserver?.disconnect();
 			gregorianCalendarAdapter?.destroy();
 			lunarPickerAdapter?.destroy();
 			gregorianController?.destroy();
+			ameSessions.get(root)?.destroy();
 		},
 		{ once: true },
 	);

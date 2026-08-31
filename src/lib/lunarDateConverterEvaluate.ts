@@ -52,12 +52,49 @@ export function lunarFromActualCivil(civil: CivilDate): LunarDate | null {
 	return r.ok ? r.value : null;
 }
 
+export type ResultRsLayout = "desktop" | "portrait" | "landscape";
+
+/** EN Lunar Desktop：依 result host 可用寬在 wide 單行 vs constrained 兩行間切換。 */
+export type ResultRsComposition = "wide" | "constrained";
+
+export type DeriveResultOptions = {
+	invalid?: boolean;
+	rsLayout?: ResultRsLayout | null;
+	rsComposition?: ResultRsComposition | null;
+};
+
+/** Tool-local：以量到的文字寬 vs host 寬決定 EN Lunar Desktop composition。 */
+export function resolveEnLunarDesktopRsComposition(options: {
+	hostWidthPx: number;
+	textWidthPx: number;
+	safetyRatio?: number;
+}): ResultRsComposition {
+	const ratio = options.safetyRatio ?? 0.94;
+	if (options.hostWidthPx <= 0) {
+		return "wide";
+	}
+	return options.textWidthPx <= options.hostWidthPx * ratio ? "wide" : "constrained";
+}
+
+function buildEnLunarTwoLinePrimary(
+	lunar: NonNullable<ReturnType<typeof lunarFromActualCivil>>,
+	actualCivil: CivilDate,
+): { primaryText: string; primaryAria: string } {
+	const parts = buildLunarResultParts(lunar, actualCivil);
+	const leapEn = lunar.isLeapMonth ? "Leap " : "";
+	const dateLine = `${leapEn}Lunar ${lunar.month}/${lunar.day}`;
+	return {
+		primaryText: `${dateLine}\n${parts.stemBranch.en}`,
+		primaryAria: parts.enPrimary,
+	};
+}
+
 /** Derive ResultSummary from committed actualCivil + inputMode. */
 export function deriveResultPresentation(
 	actualCivil: CivilDate,
 	inputMode: InputMode,
 	locale: "en" | "zh",
-	options: { invalid?: boolean } = {},
+	options: DeriveResultOptions = {},
 ): ResultPresentation {
 	if (options.invalid) {
 		return {
@@ -88,6 +125,18 @@ export function deriveResultPresentation(
 				isInvalid: false,
 			};
 		}
+		if (
+			options.rsLayout === "portrait" ||
+			(options.rsLayout === "desktop" && options.rsComposition === "constrained")
+		) {
+			const twoLine = buildEnLunarTwoLinePrimary(lunar, actualCivil);
+			return {
+				primaryText: twoLine.primaryText,
+				primaryAria: twoLine.primaryAria,
+				weekday: parts.weekdayEn,
+				isInvalid: false,
+			};
+		}
 		return {
 			primaryText: parts.enPrimary,
 			primaryAria: parts.enPrimary,
@@ -98,9 +147,12 @@ export function deriveResultPresentation(
 
 	const parts = buildGregorianResultParts(actualCivil);
 	if (locale === "zh") {
+		/* ZH Portrait 兩行 composition（對齊 DC formatResultPrimary）；Desktop 以 nowrap 併回單行 */
+		const primaryText = `${parts.civil.year} 年\n${parts.civil.month} 月 ${parts.civil.day} 日`;
+		const primaryAria = `${parts.civil.year} 年${parts.civil.month} 月 ${parts.civil.day} 日`;
 		return {
-			primaryText: parts.zhPrimary,
-			primaryAria: parts.zhPrimary,
+			primaryText,
+			primaryAria,
 			weekday: parts.weekdayZh,
 			isInvalid: false,
 		};

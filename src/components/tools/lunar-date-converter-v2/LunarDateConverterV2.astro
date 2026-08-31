@@ -6,6 +6,7 @@
  * B2B: Desktop Gregorian ↔ Lunar interaction.
  */
 import RelatedToolRow from "../../RelatedToolRow.astro";
+import AdaptiveMobileEditor from "../shared/AdaptiveMobileEditor.astro";
 import DesktopCalendar from "../shared/DesktopCalendar.astro";
 import LunarCalendar from "./LunarCalendar.astro";
 import ResultSummary from "../shared/ResultSummary.astro";
@@ -15,6 +16,7 @@ import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getMessages } from "../../../i18n/messages";
 import type { CatalogToolId } from "../../../data/toolsCatalog";
+import "../../../styles/tools/adaptive-mobile-editor.css";
 import "../../../styles/tools/lunar-date-converter-v2.css";
 
 interface Props {
@@ -70,6 +72,7 @@ const modeSwitchIconHtml =
 	data-ldcv2-copy-error-invalid-leap={m.errorInvalidLeapMonth}
 	data-ldcv2-copy-error-invalid-day={m.errorInvalidLunarDay}
 	data-ldcv2-copy-error-unsupported-leap-typo={m.errorUnsupportedLeapTypo}
+	data-ldcv2-copy-error-incomplete={m.errorIncompleteDate}
 >
 	<script is:inline src="/scripts/lunar-date-converter-layout-contract.js?v=ldc4"></script>
 
@@ -89,42 +92,102 @@ const modeSwitchIconHtml =
 					.rs-value[data-rs-value="primary"] {
 					white-space: pre-line;
 				}
-				[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
-					[data-result-summary][data-rs-content="textual"],
-				[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
-					[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
-				[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
-					[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
-					--rs-textual-primary-size: 3.75rem;
+				@media (min-width: 768px) and (hover: hover) {
+					[data-lunar-date-converter-v2][data-ldcv2-locale="zh"][data-ldcv2-input-mode="lunar"]
+						[data-result-summary][data-rs-content="textual"]
+						.rs-value[data-rs-value="primary"] {
+						white-space: nowrap;
+					}
+					[data-lunar-date-converter-v2][data-ldcv2-locale="en"][data-ldcv2-input-mode="lunar"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"]
+						.rs-value[data-rs-value="primary"] {
+						white-space: nowrap;
+					}
+					[data-lunar-date-converter-v2][data-ldcv2-locale="en"][data-ldcv2-input-mode="lunar"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"] {
+						--rs-textual-primary-size: 4.5rem;
+					}
+					[data-lunar-date-converter-v2][data-ldcv2-rs-composition="wide"][data-ldcv2-locale="en"][data-ldcv2-input-mode="gregorian"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"]
+						.rs-value[data-rs-value="primary"] {
+						white-space: nowrap;
+					}
+					[data-lunar-date-converter-v2][data-ldcv2-rs-composition="constrained"][data-ldcv2-locale="en"][data-ldcv2-input-mode="gregorian"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"] {
+						width: 100%;
+						max-width: 100%;
+					}
+					[data-lunar-date-converter-v2][data-ldcv2-rs-composition="constrained"][data-ldcv2-locale="en"][data-ldcv2-input-mode="gregorian"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"]
+						.rs-primary {
+						width: 100%;
+						max-width: 100%;
+					}
+					[data-lunar-date-converter-v2][data-ldcv2-rs-composition="constrained"][data-ldcv2-locale="en"][data-ldcv2-input-mode="gregorian"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"]
+						.rs-value[data-rs-value="primary"] {
+						white-space: pre-line;
+					}
 				}
+				[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
+					[data-result-summary][data-rs-content="textual"],
+				[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
+					[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
 				[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
 					[data-result-summary][data-rs-content="textual"],
 				[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
-					[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
-				[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
-					[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+					[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"] {
 					--rs-textual-primary-size: 3.75rem;
 				}
 				@media (max-width: 767px) {
-					[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
-						[data-result-summary][data-rs-content="textual"],
-					[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
-						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
-						--rs-textual-primary-size: clamp(2.125rem, 9.5cqi, 2.5rem);
+					[data-lunar-date-converter-v2] .ldcv2-result-host {
+						padding-inline: 1.25rem;
+						box-sizing: border-box;
 					}
-					[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
+					[data-lunar-date-converter-v2][data-ldcv2-locale="en"][data-ldcv2-input-mode="lunar"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"]
+						.rs-value[data-rs-value="primary"] {
+						white-space: nowrap;
+						max-width: 100%;
+					}
+					[data-lunar-date-converter-v2][data-ldcv2-locale="en"][data-ldcv2-input-mode="gregorian"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"]
+						.rs-value[data-rs-value="primary"] {
+						white-space: pre-line;
+						max-width: 100%;
+					}
+					[data-lunar-date-converter-v2][data-ldcv2-locale="en"][data-ldcv2-input-mode="lunar"]
 						[data-result-summary][data-rs-content="textual"],
-					[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
+					[data-lunar-date-converter-v2][data-ldcv2-locale="en"][data-ldcv2-input-mode="lunar"]
 						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
-						--rs-textual-primary-size: clamp(2.75rem, 13cqi, 3.5rem);
+						--rs-textual-primary-size: clamp(2.75rem, 18cqi, 4rem);
+					}
+					[data-lunar-date-converter-v2][data-ldcv2-locale="en"][data-ldcv2-input-mode="gregorian"]
+						[data-result-summary][data-rs-content="textual"],
+					[data-lunar-date-converter-v2][data-ldcv2-locale="en"][data-ldcv2-input-mode="gregorian"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+						--rs-textual-primary-size: clamp(3.125rem, 18cqi, 4.125rem);
+					}
+					[data-lunar-date-converter-v2][data-ldcv2-locale="zh"][data-ldcv2-input-mode="lunar"]
+						[data-result-summary][data-rs-content="textual"],
+					[data-lunar-date-converter-v2][data-ldcv2-locale="zh"][data-ldcv2-input-mode="lunar"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+						--rs-textual-primary-size: 4.125rem;
+					}
+					[data-lunar-date-converter-v2][data-ldcv2-locale="zh"][data-ldcv2-input-mode="gregorian"]
+						[data-result-summary][data-rs-content="textual"],
+					[data-lunar-date-converter-v2][data-ldcv2-locale="zh"][data-ldcv2-input-mode="gregorian"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+						--rs-textual-primary-size: 3.5rem;
 					}
 				}
 				@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
-					[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
-						[data-result-summary][data-rs-content="textual"]:is(
-							[data-rs-layout="desktop"],
-							[data-rs-layout="portrait"]
-						) {
+					[data-lunar-date-converter-v2][data-ldcv2-locale="en"][data-ldcv2-input-mode="lunar"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"] {
+						--rs-textual-primary-size: clamp(4.25rem, 13cqi, 5rem);
+					}
+					[data-lunar-date-converter-v2][data-ldcv2-locale="en"][data-ldcv2-input-mode="gregorian"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"] {
 						--rs-textual-primary-size: clamp(3.25rem, 10.5cqi, 3.875rem);
 					}
 					[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
@@ -136,17 +199,56 @@ const modeSwitchIconHtml =
 					}
 				}
 				@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
+					[data-lunar-date-converter-v2]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+						display: flex;
+						flex-direction: column;
+						align-items: center;
+						justify-content: center;
+						width: 100%;
+						max-width: 100%;
+						margin-inline: auto;
+						--rs-textual-weekday-size: clamp(0.9375rem, 2.8vw, 1.125rem);
+					}
+					[data-lunar-date-converter-v2]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"]
+						.rs-primary {
+						grid-area: unset;
+						width: 100%;
+						max-width: 100%;
+						min-width: 0;
+					}
+					[data-lunar-date-converter-v2]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"]
+						.rs-value[data-rs-value="primary"] {
+						white-space: nowrap;
+						max-width: 100%;
+					}
+					[data-lunar-date-converter-v2]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"]
+						.rs-weekday {
+						grid-area: unset;
+						margin-top: 0.375rem;
+						width: 100%;
+						text-align: center;
+					}
+					[data-lunar-date-converter-v2]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"]
+						.rs-support {
+						grid-area: unset;
+						margin-top: 0.5rem;
+					}
 					[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
 						[data-result-summary][data-rs-content="textual"],
 					[data-lunar-date-converter-v2][data-ldcv2-locale="en"]
 						[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
-						--rs-textual-primary-size: 2.75rem;
+						--rs-textual-primary-size: clamp(2.25rem, 10cqi, 3.75rem);
 					}
 					[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
 						[data-result-summary][data-rs-content="textual"],
 					[data-lunar-date-converter-v2][data-ldcv2-locale="zh"]
 						[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
-						--rs-textual-primary-size: 2.5rem;
+						--rs-textual-primary-size: clamp(2rem, 9cqi, 3.375rem);
 					}
 				}
 			</style>
@@ -250,11 +352,122 @@ const modeSwitchIconHtml =
 			slot="mobilePrimaryControl"
 			type="button"
 			class="preview-tool-control-btn tool-primary-entry-capsule ldcv2-mobile-capsule"
-			disabled
+			data-ldcv2-sheet-trigger
 			aria-label={m.primaryActionLabel}
 		>
 			{m.capsulePlaceholder}
 		</button>
+
+		<AdaptiveMobileEditor
+			slot="ame"
+			id="ldcv2-ame"
+			ariaLabel={m.sheetAriaLabel}
+			title={m.sheetTitle}
+		>
+			<div slot="content" class="ldcv2-ame-form" data-ldcv2-ame-form>
+				<div class="ldcv2-ame-panel" data-ldcv2-ame-gregorian>
+					<div
+						class="ldcv2-ame-picker"
+						data-ldcv2-ame-picker="gregorian"
+						role="group"
+						aria-label={m.ameGregorianLabel}
+					>
+						<label class="ame-setting-row ame-setting-row--select ldcv2-ame-picker-row">
+							<span class="ame-setting-label">{m.amePickerYear}</span>
+							<span class="ame-setting-control">
+								<select
+									class="ame-native-control"
+									data-ldcv2-ame-g-year
+									aria-label={m.amePickerYear}
+								>
+								</select>
+							</span>
+						</label>
+						<label class="ame-setting-row ame-setting-row--select ldcv2-ame-picker-row">
+							<span class="ame-setting-label">{m.amePickerMonth}</span>
+							<span class="ame-setting-control">
+								<select
+									class="ame-native-control"
+									data-ldcv2-ame-g-month
+									aria-label={m.amePickerMonth}
+								>
+								</select>
+							</span>
+						</label>
+						<label class="ame-setting-row ame-setting-row--select ldcv2-ame-picker-row">
+							<span class="ame-setting-label">{m.amePickerDay}</span>
+							<span class="ame-setting-control">
+								<select
+									class="ame-native-control"
+									data-ldcv2-ame-g-day
+									aria-label={m.amePickerDay}
+								>
+								</select>
+							</span>
+						</label>
+					</div>
+					<button
+						type="button"
+						class="tool-mode-switch ldcv2-mode-switch"
+						data-ldcv2-ame-switch="lunar"
+					>
+						<Fragment set:html={modeSwitchIconHtml} />
+						<span>{m.ameSwitchToLunar}</span>
+					</button>
+				</div>
+
+				<div class="ldcv2-ame-panel" data-ldcv2-ame-lunar hidden>
+					<div
+						class="ldcv2-ame-picker"
+						data-ldcv2-ame-picker="lunar"
+						role="group"
+						aria-label={m.ameLunarLabel}
+					>
+						<label class="ame-setting-row ame-setting-row--select ldcv2-ame-picker-row">
+							<span class="ame-setting-label">{m.amePickerYear}</span>
+							<span class="ame-setting-control">
+								<select
+									class="ame-native-control"
+									data-ldcv2-ame-l-year
+									aria-label={m.amePickerYear}
+								>
+								</select>
+							</span>
+						</label>
+						<label class="ame-setting-row ame-setting-row--select ldcv2-ame-picker-row">
+							<span class="ame-setting-label">{m.amePickerMonth}</span>
+							<span class="ame-setting-control">
+								<select
+									class="ame-native-control"
+									data-ldcv2-ame-l-month
+									aria-label={m.amePickerMonth}
+								>
+								</select>
+							</span>
+						</label>
+						<label class="ame-setting-row ame-setting-row--select ldcv2-ame-picker-row">
+							<span class="ame-setting-label">{m.amePickerDay}</span>
+							<span class="ame-setting-control">
+								<select
+									class="ame-native-control"
+									data-ldcv2-ame-l-day
+									aria-label={m.amePickerDay}
+								>
+								</select>
+							</span>
+						</label>
+					</div>
+					<button
+						type="button"
+						class="tool-mode-switch ldcv2-mode-switch"
+						data-ldcv2-ame-switch="gregorian"
+					>
+						<Fragment set:html={modeSwitchIconHtml} />
+						<span>{m.ameSwitchToGregorian}</span>
+					</button>
+				</div>
+			</div>
+		</AdaptiveMobileEditor>
 
 		<Fragment slot="drawerRelated">
 			{
