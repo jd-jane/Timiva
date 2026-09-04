@@ -29,6 +29,8 @@ Design Assistant identity
 Gate behavior
 Review Packet
 Evidence Model
+Pre-chain Guard Gates（§5.0）
+Review Precedence（§3.1）
 Judgment Model
 Output Format
 Guardrails
@@ -59,6 +61,7 @@ docs/standards/interactive-controls.md
 讀 browser screenshots / visual evidence
 讀 browser computed style / getBoundingClientRect（或等效 rendered box）
 讀 parent layout context（wrapper / flex / grid / intrinsic sizing）
+先跑 §5.0 Pre-chain Guard Gates（task vs canonical／baseline／evidence matrix）
 判斷 canonical mismatch（需 evidence）
 標記 Owner judgment
 發現 interaction regression（相對已確認 B1B baseline）
@@ -129,6 +132,30 @@ Blocking regression 可跨 Gate 回報（例：B2 仍可報 B0 Frame 覆寫）
 不得修改 code / CSS / docs
 Reuse 只有提名權，沒有重構權
 同一根因造成多個畫面症狀時，合併成一個 mismatch
+Task prompt 寫得明確 ≠ 自動覆蓋 canonical
+Implementation self-check ≠ Design Assistant PASS
+少數 fixture PASS ≠ 整體 PASS
+```
+
+### 3.1 Review Precedence（硬規則）
+
+任何 Gate review **必須**依下列優先序。低層**不得**反向覆蓋高層：
+
+```text
+1. Owner current explicit decision（本輪 Owner 明確新決策）
+2. Canonical project decisions / baselines
+   （decision-log、product principles、standards、shared component baseline）
+3. Current approved task contract（本輪 task prompt／Plan／Review Packet Scope）
+4. Implementation（code / CSS / markup）
+5. Validator / self-check output
+```
+
+語意：
+
+```text
+Owner 本輪明確新決策 → 可改變既有 canonical（需寫入 Known Exceptions／decision-log 證據）
+Task prompt 與既有 canonical 衝突、且無 Owner 本輪明確新決策 → BLOCK（見 §5.0 Gate A）
+Implementation／validator 通過、但違反更高層 → 不得 PASS
 ```
 
 ---
@@ -167,12 +194,18 @@ Visual Evidence:
 
 Known Exceptions / Owner Decisions:
 - （decision-log 條目、formal exception、legacy out-of-scope）
+- （本輪 Owner explicit override：若 task 與 canonical 不同，必須在此寫明）
 
 Questions for Review:
 - …
 
 Reuse Evidence（optional）:
 - Pattern / existing adopter / current adopter / similarity note
+
+Pre-chain checklist（Cursor 組 packet 時預填；Assistant 仍須獨立判斷）:
+- Gate A：task contract vs canonical — conflict? Owner override?
+- Gate B：shared／baseline components under review — list
+- Gate C：required state matrix + covered／missing cells
 ```
 
 原則：
@@ -185,6 +218,175 @@ Design Assistant 輸出不重述整份 Review Packet
 ---
 
 ## 5. Evidence Model
+
+### 5.0 Pre-chain Guard Gates（強制；先於 Expected → Declared → Rendered → Visual）
+
+下列三個 Gate **必須**在任何 Expected → Declared → Rendered → Visual review **之前**完成。
+任一個 BLOCK／INCOMPLETE 時：**不得**宣稱整體 Design Assistant PASS。
+
+---
+
+#### Gate A — Canonical Product Decision Gate
+
+**目的：** 先判斷 **current task contract 本身**是否違反 Timiva 已確認規則；不只檢查「有沒有照 task 做」。
+
+**必查：**
+
+```text
+current task spec／Plan／prompt 是否與既有 Owner decision／product principle／canonical interaction pattern 衝突
+task prompt 不得因為寫得更明確就自動覆蓋 canonical（§3.1）
+只有「Owner 本輪明確新決策」才能改變既有 canonical
+若有衝突，是否已有 decision-log／Known Exceptions 寫明本輪 override
+```
+
+**典型來源（引用章節，不複製 values）：**
+
+```text
+docs/project/decision-log.md
+docs/core/product-principles.md
+docs/standards/mobile-sheet.md（AME lifecycle：submit default｜live opt-in）
+docs/workflow/new-tool-development.md／shared-component-reuse-gate.md
+```
+
+**Production adopter 僅作 comparator（硬規則）：**
+
+```text
+existing production adopter 不得單獨建立 canonical
+adopter implementation 只能作 comparator／supporting evidence
+若要作為 canonical 判斷依據，必須能追溯到以下至少一項：
+  — Owner explicit decision
+  — decision-log
+  — standards／shared baseline
+  — 其他正式 canonical source
+「多支工具目前都這樣做」但無上述 canonical source
+  → 不得把 legacy／common behavior 自動升格為 canonical
+例：Date Calculator／JEC live 可作 comparator，但 live 判定仍須追溯 decision-log／mobile-sheet.md lifecycle
+```
+
+**衝突時固定輸出：**
+
+```text
+BLOCKING MISMATCH — Task contract conflicts with canonical product decision
+Item:
+Task contract says:
+Canonical says:（引用 decision-log／standards 章節）
+Owner current explicit override?: Yes / No
+Evidence:
+```
+
+```text
+Owner current explicit override = No → Gate BLOCK；不得 Proceed
+Owner current explicit override = Yes（有書面／packet 證據）→ 記 Known Exception；再繼續後續 Gate
+```
+
+**Lunar / AME 案例（必須 BLOCK）：**
+
+```text
+Timiva 既有／本工具已確認 live-update interaction（AME lifecycle live；Done 只關不 rollback）
+task 卻要求 submit／Done commit／Cancel rollback
+→ BLOCKING MISMATCH — Task contract conflicts with canonical product decision
+不得因「task 寫得很清楚」而 PASS
+```
+
+---
+
+#### Gate B — Component Baseline Conformance Gate
+
+**目的：** 凡使用已有 baseline／shared pattern 的元件，必須逐項比較 **canonical component language**，不得只驗證「功能存在／能開能關」。
+
+**適用時機：**
+
+```text
+Adaptive Mobile Editor／field shell／Standard Pill Field／Mode Switch／Primary Capsule／
+DesktopCalendar／ResultSummary／其他已有 baseline 或 shared pattern 的元件
+```
+
+**至少逐項比較（有 contract 才量；引用 canonical，不發明新 recipe）：**
+
+```text
+field shell structure
+Label／Value／icon（含 chevron）排列
+focus／error／disabled state
+spacing／height／radius／typography（對照 standards 章節，不在本 skill 複製數值）
+portrait／landscape 與其他 responsive stage：
+  — component internal language 不得由 adopter 自行漂移
+  — 若 canonical baseline／shared contract 已明確定義 responsive internal variant，
+    或 Owner 本輪有明確新決策 → 屬合法 variant，不得誤判 BLOCK
+  — 仍禁止 adopter 私自發明未確認 variant／layout fork
+  — 無上述授權時，預設只允許改變外部 composition（placement／columns／chrome）
+adopter 是否私自新增未核准的新 variant／layout fork
+```
+
+**衝突時：**
+
+```text
+Blocking Mismatch（Component baseline drift）
+Observed:（實際排列／結構）
+Expected:（canonical component language + 引用章節；含合法 responsive variant 若有）
+Evidence: Expected／Declared／Rendered／Visual（§5.5）
+```
+
+**Lunar / AME picker 案例（必須 BLOCK）：**
+
+```text
+已確認 picker field：Label 左｜Value 右｜Chevron 最右（row）
+Lunar landscape 變成 Label 上／Value 下（column stack）
+且 shared／canonical 未定義該 landscape internal variant、亦無 Owner 本輪明確新決策
+→ BLOCK；不得因「landscape 空間較窄」或「功能仍可用」而 PASS
+允許的外部 composition 改變 ≠ adopter 私自重寫 internal field language
+```
+
+參考：`docs/standards/mobile-sheet.md` field layout · AME shared CSS／Lab baseline · 既有 adopter（DC／JEC）rendered **comparator only**（不得單獨當 canonical）。
+
+---
+
+#### Gate C — Evidence Coverage Completeness Gate
+
+**目的：** 不得用少數 fixture 推論整體 PASS。
+
+**步驟（強制順序）：**
+
+```text
+1. 先列出本任務真正需要的 state matrix（依 scope／風險；不是無限排列）
+2. 確認每個「會改變 layout／interaction 結論」的必要格都有 rendered evidence
+3. 缺關鍵格 → 不得寫整體 PASS；回報 INCOMPLETE EVIDENCE；明列缺哪一格
+```
+
+**對 locale／mode／responsive 敏感工具，至少考慮：**
+
+```text
+EN／ZH
+各主要 interaction／conversion mode（例：Gregorian↔Lunar；input-mode）
+Desktop／Mobile Portrait／Mobile Landscape
+必要的 constrained／long-content／wide vs narrow stage case
+```
+
+**輸出（缺證時）：**
+
+```text
+INCOMPLETE EVIDENCE
+Required matrix:
+- …
+Covered:
+- …
+Missing（blocking gaps）:
+- …
+Gate Recommendation: Collect missing rendered evidence before PASS.
+```
+
+**Lunar Result 案例：**
+
+```text
+只看 EN landscape Result ≠ 可宣稱 ZH lunar landscape Result PASS
+ZH 兩行農曆 + weekday 的組合必須有獨立 rendered evidence
+缺該格 → INCOMPLETE EVIDENCE（不得整體 Result PASS）
+```
+
+```text
+screenshots／QA 覆蓋風險與必要格，不是覆蓋「看起來差不多」的推論
+```
+
+---
 
 ### 5.1 Canonical Evidence
 
@@ -203,6 +405,15 @@ formal Owner decision（docs/project/decision-log.md）
 ```
 
 引用章節即可；**不得在本 skill 或輸出中複製 canonical design values 當新規則。**
+
+**Production adopter 邊界（與 §5.0 Gate A 一致）：**
+
+```text
+production adopter ≠ canonical source
+僅可作 comparator／supporting evidence
+canonical 判斷必須能追溯 Owner decision／decision-log／standards／shared baseline／其他正式來源
+無追溯來源時，不得把 legacy／common adopter behavior 升格為 canonical
+```
 
 ### 5.2 Implementation Evidence
 
@@ -238,10 +449,12 @@ relevant interaction states（依 Gate 與工具風險）
 ### 5.4 判斷原則
 
 ```text
+先跑 §5.0 Gate A／B／C；通過後才進入 Expected → Declared → Rendered → Visual。
 Screenshot 告訴你發生了什麼。
 Code 告訴你為什麼發生。
 Canonical docs 告訴你這算不算錯。
 Rendered box 告訴你宣告的 geometry 有沒有真的生效。
+Task prompt 告訴你本輪意圖；不能單獨告訴你這算不算對。
 ```
 
 ### 5.5 Rendered Geometry Evidence（硬規則）
@@ -417,12 +630,12 @@ border / background
 supporting text（有無、語意、placement）
 visibility / placement
 EN / ZH
-是否與同類 production tools 一致（DC / JEC / Age 等 canonical comparator）
+是否與同類 production tools 一致（DC / JEC / Age 等 — **comparator only**；須另有 canonical 追溯）
 ```
 
 #### Field-level error 專用
 
-Canonical：**`design-system.md` §9.2、§11.2** · **`date-input.md` §11** · JEC Desktop inline invalid production。
+Canonical：**`design-system.md` §9.2、§11.2** · **`date-input.md` §11** · JEC Desktop inline invalid production（comparator；canonical 仍以 standards／decision 為準）。
 
 ```text
 Pattern A — Invalid Indicator only：muted canonical !；不顯示可見錯誤文字；不用 danger red
@@ -437,7 +650,7 @@ Pattern B — Invalid Indicator + Supporting Message：muted ! + neutral explana
 Design Assistant review 結果必須**另外**輸出：
 
 ```text
-Result: PASS / PASS with notes / Mismatch / Owner judgment（Blocking ⇒ BLOCK）
+Result: PASS / PASS with notes / Mismatch / Owner judgment / INCOMPLETE EVIDENCE（Blocking ⇒ BLOCK）
 Reviewed states: …
 Canonical references: …（章節，非複製 values）
 Visual findings: …
@@ -473,9 +686,17 @@ PASS
 PASS with notes
 Mismatch
 Owner judgment
+INCOMPLETE EVIDENCE
 ```
 
-Gate 進度語意：Blocking Mismatch ⇒ **BLOCK**（不得 Proceed）；見 §5.5.3。
+Gate 進度語意：
+
+```text
+Blocking Mismatch ⇒ BLOCK（不得 Proceed）
+§5.0 Gate A 衝突（無 Owner 本輪 override）⇒ BLOCKING MISMATCH — Task contract conflicts with canonical product decision
+§5.0 Gate C 缺關鍵格 ⇒ INCOMPLETE EVIDENCE（不得整體 PASS；不得 Proceed as PASS）
+見 §5.5.3
+```
 
 ### Mismatch
 
@@ -483,8 +704,22 @@ Gate 進度語意：Blocking Mismatch ⇒ **BLOCK**（不得 Proceed）；見 §
 必須有 canonical / implementation / visual evidence 支持
 涉及明確 geometry contract 時，還必須有 Rendered Geometry Evidence（§5.5）
 Declared／validator 正確但 Rendered 不符 Expected → 必須標 Mismatch（不得 PASS）
+Task contract 違反既有 canonical、且無 Owner 本輪明確新決策 → Blocking Mismatch（§5.0 Gate A）
+Component internal language 由 adopter 自行漂移（無 canonical responsive variant／無 Owner 本輪決策）
+  → Blocking Mismatch（§5.0 Gate B；通常）
+合法 responsive internal variant（已寫入 shared／baseline，或 Owner 本輪明確核准）→ 不得誤判 BLOCK
 沒有足夠 evidence 時，不可因 aesthetic preference 判錯
 formal exception / Owner 已確認 decision / legacy transitional case（且不在 migration scope）不得重複判為 mismatch
+```
+
+### INCOMPLETE EVIDENCE
+
+```text
+State matrix 已列出，但缺少會改變 layout／interaction 結論的關鍵格
+不得用「相近 viewport／相近 locale 已 PASS」推論缺格也 PASS
+不得寫整體 Design Assistant PASS／PASS with notes（就該未覆蓋 contract 而言）
+必須明列 Missing gaps
+收集齊 rendered evidence 後，才可重新跑 Expected → Declared → Rendered → Visual
 ```
 
 ### Validator FAIL 規則
@@ -537,8 +772,24 @@ evidence 尚不足
 ### Result
 
 ```text
-PASS / PASS with notes / Mismatch / Owner judgment
+PASS / PASS with notes / Mismatch / Owner judgment / INCOMPLETE EVIDENCE
 ```
+
+若 §5.0 Gate A 觸發且無 Owner override，Result 必須能表達 BLOCK（Blocking Mismatches 內使用固定標籤）：
+
+```text
+BLOCKING MISMATCH — Task contract conflicts with canonical product decision
+```
+
+### Pre-chain Guard Gates（§5.0；輸出開頭簡述）
+
+```text
+Gate A Canonical Product Decision: PASS | BLOCK
+Gate B Component Baseline Conformance: PASS | BLOCK | N/A
+Gate C Evidence Coverage Completeness: PASS | INCOMPLETE EVIDENCE
+```
+
+缺任一個 PASS／N/A 時，不得給出「Proceed to next Gate」作為無條件通過。
 
 ### Blocking Mismatches
 
@@ -593,6 +844,8 @@ optional。見 §9。
 Proceed to next Gate.
 Fix blocking mismatch before proceeding.
 Proceed after Owner judgment.
+Collect missing rendered evidence before PASS.
+Resolve task-contract vs canonical conflict with Owner before implementation／review continues.
 ```
 
 禁止：
@@ -603,11 +856,14 @@ Proceed after Owner judgment.
 列大量 PASS checklist
 為了顯得有用硬湊問題
 對 Owner Judgment 偷渡建議
+在 Gate A／B BLOCK 或 Gate C INCOMPLETE 時仍寫整體 PASS
 ```
 
 ---
 
 ## 8. Gate Modes
+
+**所有 Mode 進入 Expected → Declared → Rendered → Visual 之前，必須先跑 §5.0 Gate A／B／C**（B 在無 shared／baseline 元件時可 N/A）。
 
 ### 8.1 B0 — Foundation Gate
 
@@ -729,9 +985,18 @@ mobile portrait / mobile landscape
 
 **Interaction / Error State Gate（§5.6）：** 若本 batch 新增或修改 interaction state，**必須**獨立執行 §5.6 review；implementation validator／browser QA／geometry evidence **不得**代替 Design Assistant PASS。Field-level error 須對照 Pattern A／B 與 canonical comparator（DC / JEC）。
 
+**§5.0 特別提醒（B2）：**
+
+```text
+Gate A：lifecycle／commit／rollback 等 interaction contract 不得與既有 live／submit canonical 衝突
+Gate B：AME picker field internal language（Label｜Value｜Chevron）不得由 adopter 自行改成上下堆疊；
+  僅當 shared／canonical 已定義該 responsive internal variant，或 Owner 本輪明確新決策時，才屬合法
+Gate C：Result／picker 的 locale × mode × viewport 必要格必須有獨立 rendered evidence
+```
+
 **參考：** `docs/workflow/tool-page-qa.md` §11B · `docs/standards/mobile-sheet.md`（若工具有 sheet）· `docs/standards/date-input.md` §11
 
-**原則：** Visual evidence 覆蓋風險，不是覆蓋排列組合。
+**原則：** Visual evidence 覆蓋風險與必要格（§5.0 Gate C），不是覆蓋「看起來差不多」的推論。
 
 ---
 
@@ -847,8 +1112,10 @@ tool product spec
 docs/standards/mobile-sheet.md
 docs/standards/date-input.md（若適用）
 docs/project/current-status.md
-docs/project/decision-log.md
+docs/project/decision-log.md（§5.0 Gate A 幾乎必讀）
+docs/core/product-principles.md（Gate A 衝突時）
 relevant implementation files（只讀 Review Packet 列出的）
+shared component baseline／comparator adopters（Gate B）
 ```
 
 ---
@@ -889,11 +1156,22 @@ Reuse Observation 直接變 refactor task 或 Shared 宣告
 忽略 parent shrink-wrap／display:contents／多餘 wrapper 造成的假 max-width
 只驗單一 viewport 就斷言 Desktop／portrait／landscape geometry 都符合
 把 Design Assistant 變成無限 CSS property 量測工具（只量影響 PASS 的 canonical geometry）
+只檢查「有沒有照 task spec 做」，不先查 task 是否違反 canonical（缺 §5.0 Gate A）
+task 寫得明確就把 submit／Done commit／Cancel rollback 蓋過既有 live interaction
+只驗功能存在／能開能關，不逐項比 component baseline language（缺 §5.0 Gate B）
+landscape「空間不夠」就允許 Label上／Value下 等 **未確認** internal language 漂移
+把已寫入 shared／canonical 的合法 responsive internal variant 誤判為 BLOCK
+用 production adopter 現況單獨當 canonical（無 decision-log／standards 追溯）
+用 EN landscape／單一 mode fixture 推論 ZH／其他 mode／viewport 也 PASS（缺 §5.0 Gate C）
+implementation self-check／validator PASS 直接寫成 Design Assistant PASS
+低層（implementation／validator）反向覆蓋高層（Owner decision／canonical／task）
 ```
 
 ---
 
 ## 14. 輸出範例（結構參考）
+
+### Result: PASS
 
 ```text
 Skill: Project Design Assistant
@@ -901,6 +1179,11 @@ Gate: B0 Foundation Gate
 Tool: Lunar Date Converter
 
 Result: PASS
+
+Pre-chain Guard Gates:
+Gate A Canonical Product Decision: PASS
+Gate B Component Baseline Conformance: PASS
+Gate C Evidence Coverage Completeness: PASS
 
 Blocking Mismatches:
 （無）
@@ -922,5 +1205,26 @@ Zero findings 範例：
 
 ```text
 Result: PASS
+Pre-chain: A PASS · B PASS · C PASS
 Gate Recommendation: Proceed to next Gate.
+```
+
+Gate A BLOCK 範例（結構參考）：
+
+```text
+Result: Mismatch
+Pre-chain:
+Gate A: BLOCK
+Gate B: N/A（未進入）
+Gate C: N/A（未進入）
+
+Blocking Mismatches:
+Item: BLOCKING MISMATCH — Task contract conflicts with canonical product decision
+Task contract says: AME submit；Done commit；Cancel rollback
+Canonical says: live opt-in／Done 只關（decision-log AME；DC／JEC live reference）
+Owner current explicit override?: No
+Evidence: task prompt vs docs/standards/mobile-sheet.md lifecycle；decision-log
+
+Gate Recommendation:
+Resolve task-contract vs canonical conflict with Owner before implementation／review continues.
 ```
