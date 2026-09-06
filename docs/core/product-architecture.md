@@ -1,8 +1,8 @@
 # Timiva Product Architecture V4
 
-> Updated: 2026-08-16
+> Updated: 2026-09-06
 > Replaces the planning assumptions in V3 where Life Progress Bar was the V1 fourth tool.
-> V1.5 redefined as Search Foundation／搜尋鋪路期（開發優先順序策略，非分類變更）。
+> V1.5 Search Foundation＝closed／Production Complete。Current phase：V1.6 Taiwan Local Tools。
 
 ## 文件目的
 
@@ -45,13 +45,14 @@ Simple tools for important dates, focus, daily rhythm, and life progress.
 
 分類名稱不因工具調整而更改。
 
-### V1.5 Search Foundation（優先順序策略，非分類變更）
+### V1.5 Search Foundation（優先順序策略，非分類變更 · **closed**）
 
 ```text
 V1.5 Search Foundation is a priority strategy, not a category change.
 V1.5 是搜尋鋪路期的開發優先順序，不改變 Timiva 四大分類。
-優先做高搜尋意圖、低維護的日期與時間工具。
-Daily Rhythm / Timers & Focus / Life Progress 的完整補齊延後至 V2。
+2026-09-06：V1.5＝closed／Production Complete（含 Lunar Date Converter）。
+Current phase：V1.6 Taiwan Local Tools preparation。
+Daily Rhythm / Timers & Focus / Life Progress 的完整補齊延後至 V2（Year Progress 2.0 在 V1.6 之後）。
 ```
 
 ---
@@ -75,6 +76,7 @@ flowchart TD
     C --> C6[Date Calculator<br/>Deployed]
     C --> C7[Hours Calculator<br/>Deployed]
     C --> C8[Japanese Era Converter<br/>Deployed]
+    C --> C9[Lunar Date Converter<br/>Deployed]
 
     D --> D1[Countdown Timer]
     D --> D2[Stopwatch]
@@ -157,22 +159,25 @@ Days Between Dates 為 Timiva **第六個工具**，已正式上線於 `https://
 | P1 | Business Days Calculator | 工作日計算 | 排除週末的工作日差 | Low — **已部署 · V1.5 third Search Foundation tool** · MVP 不做國定假日資料庫 |
 | P1 | Date Calculator / Add or Subtract Days | 日期加減計算 | 計算 N 天前後 | Low — **已部署 · V1.5 fourth Search Foundation tool** · Production HEAD：`df2d82b` |
 | P1 | Hours Calculator | 時數計算 | 時數／時間差計算 | Low — **已部署 · V1.5 Search Foundation** · Production HEAD：`fd2ed68` |
-| P2 | Lunar Date Converter | 農曆日期轉換 | 公曆／農曆日期轉換 | Low — optional；不做農民曆／宜忌／吉日 |
-| P2 | Pet Age Calculator | 寵物年齡換算 | 年齡換算參考 | Low — optional；不做健康／醫療建議 |
-| P2 | Japanese Era Converter | 日本年號換算 | 明治／大正／昭和／平成／令和等現代年號 | Low — **已部署 · Timiva 第十個正式工具** · Production HEAD：`43796cb`；不做大型歷史年號資料庫 |
+| P1 | Japanese Era Converter | 日本年號換算 | 明治／大正／昭和／平成／令和等現代年號 | Low — **已部署 · Timiva 第十** · Production HEAD：`43796cb`；不做大型歷史年號資料庫 |
+| P1 | Lunar Date Converter | 國曆農曆轉換 | 公曆／農曆日期雙向換算 | Low — **已部署 · Production Complete** · HEAD：`35dadef`；「換日期，不解讀日期」 |
+| P2 | 特休試算 | 特休試算 | 台灣特休試算 | Low — **V1.6 next tool** |
+| P2 | 民國西元／年歲對照 | 民國西元／年歲對照 | 民國／西元與年歲對照 | Low — **V1.6 第二支** |
+| P3 | Pet Age Calculator | 寵物年齡換算 | 年齡換算參考 | Low — **deferred／future candidate**；不做健康／醫療建議 |
 | P2 | Birthday Countdown | 生日倒數 | 生日情境倒數 | Low |
 | P3 | Holiday Countdown | 節日倒數 | 長尾節日情境 | Medium |
 | P3 | Anniversary Countdown | 週年倒數 | 紀念日情境 | Low |
 
 Holiday data must not become a high-maintenance global database in early phases.
 
-Important Dates 低維護邊界（V1.5 Search Foundation）：
+Important Dates 低維護邊界：
 
 ```text
 Business Days Calculator MVP：排除週末即可，不做國定假日資料庫
-Lunar Date Converter：可列 optional；不做農民曆、宜忌、吉日、沖煞
-Pet Age Calculator：只做年齡換算參考，不做健康、醫療、照護建議
+Lunar Date Converter：換日期，不解讀日期；不做農民曆、宜忌、吉日、沖煞
+Pet Age Calculator：deferred；若未來做，只做年齡換算參考，不做健康、醫療、照護建議
 Japanese Era Converter：只做現代年號換算，不做大型歷史年號資料庫
+V1.6：只規劃特休試算、民國西元／年歲對照兩支
 ```
 
 ---
@@ -289,7 +294,7 @@ Backend / account / sync
 4. Year Progress — deployed
 ```
 
-### Phase 1.5 / V1.5 — Search Foundation／搜尋鋪路期
+### Phase 1.5 / V1.5 — Search Foundation／搜尋鋪路期（**closed · Production Complete**）
 
 ```text
 5. Age Calculator — deployed · first Search Foundation tool
@@ -297,12 +302,21 @@ Backend / account / sync
 7. Business Days Calculator — deployed · third Search Foundation tool · MVP：排除週末；無國定假日資料庫
 8. Date Calculator / Add or Subtract Days — deployed · fourth Search Foundation tool · Production HEAD：df2d82b
 9. Hours Calculator — deployed · Production HEAD：fd2ed68
-10. Lunar Date Converter — optional
-11. Pet Age Calculator — optional
-12. Japanese Era Converter — deployed · 第十個正式工具 · Production HEAD：43796cb
+10. Japanese Era Converter — deployed · 第十個正式工具 · Production HEAD：43796cb
+11. Lunar Date Converter — deployed · Production Complete · HEAD：35dadef
+Pet Age Calculator — deferred／future candidate（不屬於 V1.5）
 ```
 
 V1.5 是優先順序策略，不是分類變更。Daily Rhythm 不在此階段前段優先開發。
+
+### Phase 1.6 / V1.6 — Taiwan Local Tools（preparation · 2026-09）
+
+```text
+1. 特休試算 — next tool
+2. 民國西元／年歲對照
+不含：Pet Age、Japanese Era、Lunar、Year Progress 2.0
+V1.6 後已知方向：Year Progress 2.0（非 V1.6 scope）
+```
 
 ### Phase 2 / V2 — Category completion and brand differentiation
 

@@ -300,9 +300,17 @@ timiva/
 | Days Between Dates (DBD) | 已部署 · V1.5 second Search Foundation tool |
 | Business Days Calculator (BDC) | 已部署 · V1.5 third Search Foundation tool |
 | Date Calculator (DC) | **已部署** · Production HEAD：`df2d82b` · V1.5 fourth Search Foundation tool |
-| Hours Calculator | **下一支產品工具** |
+| Hours Calculator | **已部署** · Production HEAD：`fd2ed68` |
+| Japanese Era Converter | **已部署** · Production HEAD：`43796cb` |
+| Lunar Date Converter | **Production Complete** · HEAD：`35dadef` · V1.5 closed |
+| Pet Age Calculator | **deferred**（不屬於 V1.5／不移入 V1.6） |
 
-Canonical docs：`docs/tools/<tool>/README.md`、`docs/tools/<tool>/product-spec.md`（例：date-calculator、age-calculator、days-between-dates、business-days-calculator）
+**Current phase：** V1.6 Taiwan Local Tools preparation
+**Next tool：** 特休試算（第二支：民國西元／年歲對照）
+**V1.6 後方向：** Year Progress 2.0（非 V1.6 scope）
+
+Canonical docs：`docs/tools/<tool>/README.md`、`docs/tools/<tool>/product-spec.md`
+（含 `lunar-date-converter`、`japanese-era-converter`、`hours-calculator`、`date-calculator`、`age-calculator` 等）
 
 ---
 

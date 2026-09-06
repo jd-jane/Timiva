@@ -5,6 +5,55 @@
 
 ---
 
+## 2026-09-06 — Lunar Production Complete · Close V1.5 · Open V1.6 Taiwan Local Tools
+
+### 背景
+
+```text
+Lunar Date Converter／國曆農曆轉換已 Production Complete。
+latest production corrective／repo HEAD：35dadef。
+V1.5 Search Foundation 至此正式收尾；Pet Age 不納入 V1.5。
+2026-09 起進入 V1.6 Taiwan Local Tools。
+```
+
+### 決策
+
+```text
+1. Lunar Date Converter／國曆農曆轉換＝Production Complete。
+   Routes：/en/lunar-date-converter/ · /zh/lunar-date-converter/
+   Category：Important Dates／重要日子
+   Canonical boundary：「換日期，不解讀日期。」
+   Link Integration 完成；All Tools：JEC → Lunar → Age
+   Lunar Related：JEC＋Age；JEC Related：Date Calculator＋Age＋Lunar
+   Home Featured 不含 Lunar
+   EN／ZH production smoke PASS
+   Latest production corrective：35dadef
+2. V1.5 Search Foundation 正式 closed／Production Complete。
+   Production 順序含：Hours、Japanese Era Converter、Lunar Date Converter（皆 deployed）。
+3. Pet Age Calculator＝deferred／future candidate；不屬於 V1.5；不移入 V1.6。
+4. 2026-09 進入 V1.6 Taiwan Local Tools。
+5. V1.6 固定兩支（不加第三支；不含 JEC／Lunar／Pet Age）：
+   1) 特休試算
+   2) 民國西元／年歲對照
+6. V1.6 後已知方向：Year Progress 2.0（非 V1.6 scope）。
+7. Current phase＝V1.6 preparation；Next tool＝特休試算。
+8. Repo production HEAD：35dadef；main＝origin/main。
+9. Protected HEAD 既有 3 項 Validation drift 保留紀錄；本輪不改 fixture。
+```
+
+### 影響
+
+```text
+docs/project/current-status.md
+docs/project/decision-log.md
+docs/core/roadmap.md
+docs/core/product-architecture.md
+docs/README.md
+docs/tools/lunar-date-converter/（README · product-spec）
+```
+
+---
+
 ## 2026-08-29 — AME Constrained Viewport Full-screen（presentation policy）
 
 ### 背景
