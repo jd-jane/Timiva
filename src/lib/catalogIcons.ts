@@ -14,5 +14,6 @@ export const catalogIconMap: Record<
 	"date-calculator": "calendar",
 	"hours-calculator": "calendar",
 	"japanese-era-converter": "calendar",
+	"lunar-date-converter": "calendar",
 	"life-progress": "progress",
 };

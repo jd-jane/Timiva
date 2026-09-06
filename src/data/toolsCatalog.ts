@@ -20,6 +20,7 @@ export type CatalogToolId =
   | "date-calculator"
   | "hours-calculator"
   | "japanese-era-converter"
+  | "lunar-date-converter"
   | "life-progress";
 
 export interface CatalogTool {
@@ -102,7 +103,16 @@ export const catalogTools: CatalogTool[] = [
     available: true,
     featured: false,
     icon: "calendar",
-    relatedIds: ["date-calculator", "age-calculator"],
+    relatedIds: ["date-calculator", "age-calculator", "lunar-date-converter"],
+  },
+  {
+    id: "lunar-date-converter",
+    slug: "lunar-date-converter",
+    categoryId: "dates-events",
+    available: true,
+    featured: false,
+    icon: "calendar",
+    relatedIds: ["japanese-era-converter", "age-calculator"],
   },
   {
     id: "countdown-timer",

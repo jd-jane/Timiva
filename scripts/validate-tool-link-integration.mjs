@@ -20,6 +20,7 @@ const PRODUCTION_TOOL_IDS = [
 	"date-calculator",
 	"hours-calculator",
 	"japanese-era-converter",
+	"lunar-date-converter",
 	"countdown-timer",
 	"year-progress",
 	"age-calculator",
@@ -44,7 +45,12 @@ const APPROVED_RELATED_IDS = {
 		"business-days-calculator",
 		"date-calculator",
 	],
-	"japanese-era-converter": ["date-calculator", "age-calculator"],
+	"japanese-era-converter": [
+		"date-calculator",
+		"age-calculator",
+		"lunar-date-converter",
+	],
+	"lunar-date-converter": ["japanese-era-converter", "age-calculator"],
 	"countdown-timer": ["event-countdown", "date-range", "year-progress"],
 	"year-progress": ["event-countdown", "date-range", "age-calculator"],
 	"age-calculator": ["date-range", "days-between-dates", "japanese-era-converter"],
@@ -58,6 +64,7 @@ const DATES_EVENTS_ORDER = [
 	"date-calculator",
 	"hours-calculator",
 	"japanese-era-converter",
+	"lunar-date-converter",
 	"age-calculator",
 ];
 
@@ -69,6 +76,7 @@ const PRODUCTION_RELATED_COMPONENTS = [
 	"src/components/tools/date-calculator-v2/DateCalculatorV2.astro",
 	"src/components/tools/hours-calculator-v2/HoursCalculatorV2.astro",
 	"src/components/tools/japanese-era-converter-v2/JapaneseEraConverterV2.astro",
+	"src/components/tools/lunar-date-converter-v2/LunarDateConverterV2.astro",
 	"src/components/tools/countdown-timer-v2/CountdownTimerV2.astro",
 	"src/components/tools/year-progress-v2/YearProgressV2.astro",
 	"src/components/tools/age-calculator-v2/AgeCalculatorV2.astro",
@@ -111,7 +119,7 @@ function countHref(html, href) {
 
 function extractRelatedHrefs(html, localePrefix) {
 	const sectionPattern = new RegExp(
-		`<section[^>]*(?:data-preview-related-tools|data-drv2-related-tools|data-ctv2-related-tools|data-ypv2-related-tools|data-acv2-related-tools|data-dbdv2-related-tools|data-bdcv2-related-tools|data-dcv2-related-tools|data-hcv2-related-tools|data-jecv2-related-tools)[^>]*>([\\s\\S]*?)</section>`,
+		`<section[^>]*(?:data-preview-related-tools|data-drv2-related-tools|data-ctv2-related-tools|data-ypv2-related-tools|data-acv2-related-tools|data-dbdv2-related-tools|data-bdcv2-related-tools|data-dcv2-related-tools|data-hcv2-related-tools|data-jecv2-related-tools|data-tpf-lower-related)[^>]*>([\\s\\S]*?)</section>`,
 		"g",
 	);
 	const hrefPattern = new RegExp(
@@ -300,6 +308,17 @@ assert(
 	"japanese-era-converter slug is japanese-era-converter",
 );
 
+const lunarEntries = catalogTools.filter((tool) => tool.id === "lunar-date-converter");
+assert(lunarEntries.length === 1, "exactly one lunar-date-converter catalog entry");
+
+const lunarDateConverter = lunarEntries[0];
+assert(lunarDateConverter?.available === true, "lunar-date-converter.available === true");
+assert(lunarDateConverter?.featured === false, "lunar-date-converter.featured === false");
+assert(
+	lunarDateConverter?.slug === "lunar-date-converter",
+	"lunar-date-converter slug is lunar-date-converter",
+);
+
 for (const id of PRODUCTION_TOOL_IDS) {
 	const tool = catalogTools.find((entry) => entry.id === id);
 	assert(tool?.available === true, `${id} is available`);
@@ -311,7 +330,7 @@ const datesEventsOrder = catalogTools
 	.filter((id) => DATES_EVENTS_ORDER.includes(id));
 assert(
 	JSON.stringify(datesEventsOrder) === JSON.stringify(DATES_EVENTS_ORDER),
-	"dates-events available order is event-countdown → date-range → days-between-dates → business-days-calculator → date-calculator → hours-calculator → japanese-era-converter → age-calculator",
+	"dates-events available order is event-countdown → date-range → days-between-dates → business-days-calculator → date-calculator → hours-calculator → japanese-era-converter → lunar-date-converter → age-calculator",
 );
 
 for (const [toolId, expectedIds] of Object.entries(APPROVED_RELATED_IDS)) {
@@ -370,6 +389,10 @@ assert(
 assert(
 	APPROVED_RELATED_IDS["age-calculator"].includes("japanese-era-converter"),
 	"age-calculator relatedIds include japanese-era-converter",
+);
+assert(
+	!APPROVED_RELATED_IDS["age-calculator"].includes("lunar-date-converter"),
+	"age-calculator relatedIds do not include lunar-date-converter",
 );
 assert(
 	!APPROVED_RELATED_IDS["age-calculator"].includes("event-countdown"),
@@ -459,16 +482,33 @@ assert(
 );
 assert(
 	JSON.stringify(APPROVED_RELATED_IDS["japanese-era-converter"]) ===
-		JSON.stringify(["date-calculator", "age-calculator"]),
-	"japanese-era-converter outbound relatedIds are date-calculator → age-calculator",
+		JSON.stringify([
+			"date-calculator",
+			"age-calculator",
+			"lunar-date-converter",
+		]),
+	"japanese-era-converter outbound relatedIds are date-calculator → age-calculator → lunar-date-converter",
 );
 assert(
-	APPROVED_RELATED_IDS["japanese-era-converter"].length === 2,
-	"japanese-era-converter relatedIds length is 2 (max 3, not required to fill 3)",
+	APPROVED_RELATED_IDS["japanese-era-converter"].length === 3,
+	"japanese-era-converter relatedIds length is 3",
 );
 assert(
 	!APPROVED_RELATED_IDS["japanese-era-converter"].includes("event-countdown"),
 	"japanese-era-converter relatedIds do not include event-countdown fallback",
+);
+assert(
+	JSON.stringify(APPROVED_RELATED_IDS["lunar-date-converter"]) ===
+		JSON.stringify(["japanese-era-converter", "age-calculator"]),
+	"lunar-date-converter outbound relatedIds are japanese-era-converter → age-calculator",
+);
+assert(
+	APPROVED_RELATED_IDS["lunar-date-converter"].length === 2,
+	"lunar-date-converter relatedIds length is 2 (no featured padding required)",
+);
+assert(
+	!APPROVED_RELATED_IDS["lunar-date-converter"].includes("date-calculator"),
+	"lunar-date-converter relatedIds do not include date-calculator",
 );
 assert(
 	JSON.stringify(APPROVED_RELATED_IDS["age-calculator"]) ===
@@ -565,6 +605,10 @@ assert(
 	!featuredTools.some((tool) => tool.id === "japanese-era-converter"),
 	"Home featured tools do not include Japanese Era Converter",
 );
+assert(
+	!featuredTools.some((tool) => tool.id === "lunar-date-converter"),
+	"Home featured tools do not include Lunar Date Converter",
+);
 
 const homeAgeCalculator = featuredTools[1];
 assert(homeAgeCalculator?.id === "age-calculator", "Home second tool is age-calculator");
@@ -602,6 +646,10 @@ assert(
 	catalogIconMap["japanese-era-converter"] === "calendar",
 	"catalog japanese-era-converter uses calendar icon",
 );
+assert(
+	catalogIconMap["lunar-date-converter"] === "calendar",
+	"catalog lunar-date-converter uses calendar icon",
+);
 assert(en.tools.dateCalculator.title === "Date Calculator", "EN tools.dateCalculator exists");
 assert(zh.tools.dateCalculator.title === "日期加減計算", "ZH tools.dateCalculator exists");
 assert(en.tools.hoursCalculator.title === "Hours Calculator", "EN tools.hoursCalculator exists");
@@ -613,6 +661,19 @@ assert(
 assert(
 	zh.tools.japaneseEraConverter.title === "日本年號換算",
 	"ZH tools.japaneseEraConverter exists",
+);
+assert(
+	en.tools.lunarDateConverter.title === "Lunar Date Converter",
+	"EN tools.lunarDateConverter exists",
+);
+assert(zh.tools.lunarDateConverter.title === "國曆農曆轉換", "ZH tools.lunarDateConverter exists");
+assert(
+	Boolean(en.tools.lunarDateConverter.relatedDescription),
+	"EN tools.lunarDateConverter relatedDescription exists",
+);
+assert(
+	Boolean(zh.tools.lunarDateConverter.relatedDescription),
+	"ZH tools.lunarDateConverter relatedDescription exists",
 );
 
 assert(
@@ -693,6 +754,14 @@ assert(
 	!zh.home.featuredTools["japanese-era-converter"],
 	"ZH Home featuredTools has no japanese-era-converter entry",
 );
+assert(
+	!en.home.featuredTools["lunar-date-converter"],
+	"EN Home featuredTools has no lunar-date-converter entry",
+);
+assert(
+	!zh.home.featuredTools["lunar-date-converter"],
+	"ZH Home featuredTools has no lunar-date-converter entry",
+);
 
 // --- Source: production Related Tools components ---
 const countdownTimerSource = readSource(
@@ -767,6 +836,10 @@ for (const relativePath of PRODUCTION_RELATED_COMPONENTS) {
 		),
 		`${relativePath} maps japanese-era-converter copy`,
 	);
+	assert(
+		source.includes('"lunar-date-converter": messages.tools.lunarDateConverter'),
+		`${relativePath} maps lunar-date-converter copy`,
+	);
 }
 
 const japaneseEraSource = readSource(
@@ -777,10 +850,26 @@ assert(
 	"Japanese Era Converter uses getRelatedTools from catalog",
 );
 assert(
-	japaneseEraSource.includes(
-		'tool.id === "date-calculator" || tool.id === "age-calculator"',
-	),
-	"Japanese Era Converter keeps tool-local 2-tool related filter",
+	japaneseEraSource.includes('tool.id === "lunar-date-converter"'),
+	"Japanese Era Converter tool-local filter includes lunar-date-converter",
+);
+assert(
+	japaneseEraSource.includes("date-calculator") &&
+		japaneseEraSource.includes("age-calculator") &&
+		japaneseEraSource.includes("lunar-date-converter"),
+	"Japanese Era Converter keeps tool-local 3-tool related filter",
+);
+
+const lunarSource = readSource(
+	"src/components/tools/lunar-date-converter-v2/LunarDateConverterV2.astro",
+);
+assert(
+	!lunarSource.includes("getRelatedTools("),
+	"Lunar Date Converter does not use getRelatedTools padding",
+);
+assert(
+	lunarSource.includes('getCatalogTool("lunar-date-converter")'),
+	"Lunar Date Converter reads declared relatedIds from catalog",
 );
 
 // --- Built output ---
@@ -794,6 +883,7 @@ const builtPages = [
 			"/en/date-calculator/",
 			"/en/hours-calculator/",
 			"/en/japanese-era-converter/",
+			"/en/lunar-date-converter/",
 		],
 		datesEventsOrder: [
 			"/en/event-countdown/",
@@ -803,6 +893,7 @@ const builtPages = [
 			"/en/date-calculator/",
 			"/en/hours-calculator/",
 			"/en/japanese-era-converter/",
+			"/en/lunar-date-converter/",
 			"/en/age-calculator/",
 		],
 	},
@@ -815,6 +906,7 @@ const builtPages = [
 			"/zh/date-calculator/",
 			"/zh/hours-calculator/",
 			"/zh/japanese-era-converter/",
+			"/zh/lunar-date-converter/",
 		],
 		datesEventsOrder: [
 			"/zh/event-countdown/",
@@ -824,6 +916,7 @@ const builtPages = [
 			"/zh/date-calculator/",
 			"/zh/hours-calculator/",
 			"/zh/japanese-era-converter/",
+			"/zh/lunar-date-converter/",
 			"/zh/age-calculator/",
 		],
 	},
@@ -951,15 +1044,29 @@ const builtPages = [
 		path: "en/japanese-era-converter/index.html",
 		locale: "en",
 		selfSlug: "japanese-era-converter",
-		related: ["date-calculator", "age-calculator"],
+		related: ["date-calculator", "age-calculator", "lunar-date-converter"],
 		relatedAttr: "data-jecv2-related-tools",
 	},
 	{
 		path: "zh/japanese-era-converter/index.html",
 		locale: "zh",
 		selfSlug: "japanese-era-converter",
-		related: ["date-calculator", "age-calculator"],
+		related: ["date-calculator", "age-calculator", "lunar-date-converter"],
 		relatedAttr: "data-jecv2-related-tools",
+	},
+	{
+		path: "en/lunar-date-converter/index.html",
+		locale: "en",
+		selfSlug: "lunar-date-converter",
+		related: ["japanese-era-converter", "age-calculator"],
+		relatedAttr: "data-tpf-lower-related",
+	},
+	{
+		path: "zh/lunar-date-converter/index.html",
+		locale: "zh",
+		selfSlug: "lunar-date-converter",
+		related: ["japanese-era-converter", "age-calculator"],
+		relatedAttr: "data-tpf-lower-related",
 	},
 ];
 
@@ -986,7 +1093,7 @@ for (const page of builtPages) {
 				positions.every(
 					(position, index) => index === 0 || positions[index - 1] < position,
 				),
-				`${page.path} dates-events order is EC → DRC → DBD → BDC → DC → Hours → JEC → AC`,
+				`${page.path} dates-events order is EC → DRC → DBD → BDC → DC → Hours → JEC → Lunar → AC`,
 			);
 		}
 		continue;
@@ -1054,6 +1161,10 @@ for (const page of builtPages) {
 		assert(
 			!relatedHrefs.some((href) => href.endsWith("/event-countdown/")),
 			`${page.path} related section no longer links to event-countdown`,
+		);
+		assert(
+			!relatedHrefs.some((href) => href.endsWith("/lunar-date-converter/")),
+			`${page.path} related section does not link to lunar-date-converter`,
 		);
 		assert(
 			relatedHrefs.includes(`${localePrefix}/date-range-calculator/`) &&
@@ -1125,17 +1236,38 @@ for (const page of builtPages) {
 
 	if (page.selfSlug === "japanese-era-converter") {
 		assert(
-			relatedHrefs.length === 2,
-			`${page.path} related section has exactly two links`,
+			relatedHrefs.length === 3,
+			`${page.path} related section has exactly three links`,
 		);
 		assert(
 			relatedHrefs.includes(`${localePrefix}/date-calculator/`) &&
-				relatedHrefs.includes(`${localePrefix}/age-calculator/`),
-			`${page.path} related section is Date Calculator → Age Calculator`,
+				relatedHrefs.includes(`${localePrefix}/age-calculator/`) &&
+				relatedHrefs.includes(`${localePrefix}/lunar-date-converter/`),
+			`${page.path} related section is Date Calculator → Age Calculator → Lunar Date Converter`,
 		);
 		assert(
 			!relatedHrefs.some((href) => href.endsWith("/event-countdown/")),
 			`${page.path} related section does not include event-countdown fallback`,
+		);
+	}
+
+	if (page.selfSlug === "lunar-date-converter") {
+		assert(
+			relatedHrefs.length === 2,
+			`${page.path} related section has exactly two links`,
+		);
+		assert(
+			relatedHrefs.includes(`${localePrefix}/japanese-era-converter/`) &&
+				relatedHrefs.includes(`${localePrefix}/age-calculator/`),
+			`${page.path} related section is Japanese Era Converter → Age Calculator`,
+		);
+		assert(
+			!relatedHrefs.some((href) => href.endsWith("/date-calculator/")),
+			`${page.path} related section does not include date-calculator`,
+		);
+		assert(
+			!relatedHrefs.some((href) => href.endsWith("/event-countdown/")),
+			`${page.path} related section does not include event-countdown featured padding`,
 		);
 	}
 
@@ -1160,6 +1292,7 @@ for (const homePage of ["en/index.html", "zh/index.html"]) {
 	const dcHref = `/${locale}/date-calculator/`;
 	const hoursHref = `/${locale}/hours-calculator/`;
 	const jecHref = `/${locale}/japanese-era-converter/`;
+	const lunarHref = `/${locale}/lunar-date-converter/`;
 
 	assert(
 		countHref(html, acHref) >= 1,
@@ -1184,6 +1317,10 @@ for (const homePage of ["en/index.html", "zh/index.html"]) {
 	assert(
 		countHref(html, jecHref) === 0,
 		`${homePage} does not contain Japanese Era Converter featured link`,
+	);
+	assert(
+		countHref(html, lunarHref) === 0,
+		`${homePage} does not contain Lunar Date Converter featured link`,
 	);
 	assert(!html.includes("life-progress"), `${homePage} does not link to life-progress slug`);
 	assert(

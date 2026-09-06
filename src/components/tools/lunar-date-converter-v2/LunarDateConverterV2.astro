@@ -15,7 +15,7 @@ import { catalogIconMap } from "../../../lib/catalogIcons";
 import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getMessages } from "../../../i18n/messages";
-import type { CatalogToolId } from "../../../data/toolsCatalog";
+import { getCatalogTool, type CatalogToolId } from "../../../data/toolsCatalog";
 import "../../../styles/tools/adaptive-mobile-editor.css";
 import "../../../styles/tools/lunar-date-converter-v2.css";
 
@@ -28,23 +28,37 @@ const messages = getMessages(locale);
 const m = messages.lunarDateConverter;
 const faqSchema = buildFaqPageJsonLd(m.faq.items);
 
-/** B1A temporary outbound Related Tools — canonical catalog integration deferred to Post-tool Link Integration Gate. */
-const b1aRelatedToolIds = ["japanese-era-converter", "age-calculator"] as const satisfies readonly CatalogToolId[];
+/** Catalog-declared outbound only — no getRelatedTools featured padding. */
+const lunarCatalog = getCatalogTool("lunar-date-converter");
+const declaredRelatedIds = (lunarCatalog?.relatedIds ?? []) as CatalogToolId[];
 
-const toolCopy: Pick<
-	Record<CatalogToolId, { title: string; relatedDescription: string }>,
-	(typeof b1aRelatedToolIds)[number]
+const toolCopy: Record<
+	CatalogToolId,
+	{ title: string; relatedDescription: string }
 > = {
-	"japanese-era-converter": messages.tools.japaneseEraConverter,
+	"event-countdown": messages.tools.eventCountdown,
+	"date-range": messages.tools.dateRange,
+	"countdown-timer": messages.tools.countdownTimer,
+	"year-progress": messages.tools.yearProgress,
 	"age-calculator": messages.tools.ageCalculator,
+	"days-between-dates": messages.tools.daysBetweenDates,
+	"business-days-calculator": messages.tools.businessDaysCalculator,
+	"life-progress": messages.tools.lifeProgress,
+	"date-calculator": messages.tools.dateCalculator,
+	"hours-calculator": messages.tools.hoursCalculator,
+	"japanese-era-converter": messages.tools.japaneseEraConverter,
+	"lunar-date-converter": messages.tools.lunarDateConverter,
 };
 
-const relatedToolItems = b1aRelatedToolIds.map((id) => ({
-	href: getLocalizedPath(locale, `/${id}/`),
-	name: toolCopy[id].title,
-	description: toolCopy[id].relatedDescription,
-	icon: catalogIconMap[id],
-}));
+const relatedToolItems = declaredRelatedIds
+	.map((id) => getCatalogTool(id))
+	.filter((tool): tool is NonNullable<typeof tool> => Boolean(tool?.available))
+	.map((tool) => ({
+		href: getLocalizedPath(locale, `/${tool.slug}/`),
+		name: toolCopy[tool.id].title,
+		description: toolCopy[tool.id].relatedDescription,
+		icon: catalogIconMap[tool.id],
+	}));
 
 const rsPrimaryText = locale === "zh" ? "…" : "…";
 const rsPrimary = {

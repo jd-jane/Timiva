@@ -263,6 +263,12 @@ export const zh: Messages = {
       compactDescription: "和曆與西元年份換算。",
       relatedDescription: "和曆與西元年份換算。",
     },
+    lunarDateConverter: {
+      title: "國曆農曆轉換",
+      description: "在西曆與農曆日期之間雙向換算，支援閏月。",
+      compactDescription: "國曆與農曆日期換算。",
+      relatedDescription: "國曆與農曆日期換算。",
+    },
     lifeProgress: {
       title: "人生進度條",
       description: "把一年、人生或目標期限變成清楚的時間進度。",

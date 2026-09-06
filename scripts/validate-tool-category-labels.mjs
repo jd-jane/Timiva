@@ -52,6 +52,7 @@ const EXPECTED_CATEGORY_ASSIGNMENTS = {
 	"date-calculator": "dates-events",
 	"hours-calculator": "dates-events",
 	"japanese-era-converter": "dates-events",
+	"lunar-date-converter": "dates-events",
 	"life-progress": "momentum",
 };
 
@@ -77,7 +78,12 @@ const EXPECTED_RELATED_IDS = {
 		"business-days-calculator",
 		"date-calculator",
 	],
-	"japanese-era-converter": ["date-calculator", "age-calculator"],
+	"japanese-era-converter": [
+		"date-calculator",
+		"age-calculator",
+		"lunar-date-converter",
+	],
+	"lunar-date-converter": ["japanese-era-converter", "age-calculator"],
 };
 
 const DATES_EVENTS_ORDER = [
@@ -88,6 +94,7 @@ const DATES_EVENTS_ORDER = [
 	"date-calculator",
 	"hours-calculator",
 	"japanese-era-converter",
+	"lunar-date-converter",
 	"age-calculator",
 ];
 
@@ -210,7 +217,7 @@ assert(
 	JSON.stringify(categoryIds) === JSON.stringify(STABLE_CATEGORY_IDS),
 	"toolCategories ids remain dates-events → productivity → body-flow → momentum",
 );
-assert(catalogTools.length === 11, "catalogTools has 11 entries");
+assert(catalogTools.length === 12, "catalogTools has 12 entries");
 
 for (const [toolId, categoryId] of Object.entries(EXPECTED_CATEGORY_ASSIGNMENTS)) {
 	const tool = catalogTools.find((entry) => entry.id === toolId);
@@ -255,7 +262,7 @@ assert(
 );
 
 const availableCount = catalogTools.filter((tool) => tool.available).length;
-assert(availableCount === 10, "available production tool count is 10");
+assert(availableCount === 11, "available production tool count is 11");
 assert(
 	catalogTools.find((tool) => tool.id === "date-calculator")?.available === true,
 	"date-calculator is available",
@@ -282,6 +289,19 @@ assert(
 	catalogTools.find((tool) => tool.id === "japanese-era-converter")?.categoryId ===
 		"dates-events",
 	"japanese-era-converter category remains dates-events",
+);
+assert(
+	catalogTools.find((tool) => tool.id === "lunar-date-converter")?.available === true,
+	"lunar-date-converter is available",
+);
+assert(
+	catalogTools.find((tool) => tool.id === "lunar-date-converter")?.featured === false,
+	"lunar-date-converter remains non-featured",
+);
+assert(
+	catalogTools.find((tool) => tool.id === "lunar-date-converter")?.categoryId ===
+		"dates-events",
+	"lunar-date-converter category remains dates-events",
 );
 
 /* --- built All Tools pages --- */

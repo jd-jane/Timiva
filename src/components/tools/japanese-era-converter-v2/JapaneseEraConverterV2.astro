@@ -39,10 +39,16 @@ const toolCopy: Record<
 	"date-calculator": messages.tools.dateCalculator,
 	"hours-calculator": messages.tools.hoursCalculator,
 	"japanese-era-converter": messages.tools.japaneseEraConverter,
+	"lunar-date-converter": messages.tools.lunarDateConverter,
 };
 
 const relatedToolItems = relatedTools
-	.filter((tool) => tool.id === "date-calculator" || tool.id === "age-calculator")
+	.filter(
+		(tool) =>
+			tool.id === "date-calculator" ||
+			tool.id === "age-calculator" ||
+			tool.id === "lunar-date-converter",
+	)
 	.map((tool) => ({
 	href: getLocalizedPath(locale, `/${tool.slug}/`),
 	name: toolCopy[tool.id].title,

@@ -281,6 +281,13 @@ export const en = {
       compactDescription: "Convert Japanese era years and Gregorian years.",
       relatedDescription: "Convert Japanese era and Gregorian years.",
     },
+    lunarDateConverter: {
+      title: "Lunar Date Converter",
+      description:
+        "Convert between Gregorian and lunar calendar dates in both directions, including leap months.",
+      compactDescription: "Convert Gregorian and lunar dates.",
+      relatedDescription: "Convert Gregorian and lunar dates.",
+    },
     lifeProgress: {
       title: "Life Progress Bar",
       description:
