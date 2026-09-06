@@ -166,8 +166,11 @@ const modeSwitchIconHtml =
 					}
 					[data-lunar-date-converter-v2][data-ldcv2-locale="en"][data-ldcv2-input-mode="gregorian"]
 						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"]
+						.rs-value[data-rs-value="primary"],
+					[data-lunar-date-converter-v2][data-ldcv2-locale="zh"][data-ldcv2-input-mode="gregorian"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"]
 						.rs-value[data-rs-value="primary"] {
-						white-space: pre-line;
+						white-space: pre;
 						max-width: 100%;
 					}
 					[data-lunar-date-converter-v2][data-ldcv2-locale="en"][data-ldcv2-input-mode="lunar"]
@@ -193,6 +196,12 @@ const modeSwitchIconHtml =
 					[data-lunar-date-converter-v2][data-ldcv2-locale="zh"][data-ldcv2-input-mode="gregorian"]
 						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
 						--rs-textual-primary-size: 3.5rem;
+					}
+					[data-lunar-date-converter-v2][data-ldcv2-rs-portrait-fit][data-ldcv2-locale="en"][data-ldcv2-input-mode="gregorian"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"],
+					[data-lunar-date-converter-v2][data-ldcv2-rs-portrait-fit][data-ldcv2-locale="zh"][data-ldcv2-input-mode="gregorian"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+						--rs-textual-primary-size: var(--ldcv2-rs-portrait-fit-size);
 					}
 				}
 				@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {

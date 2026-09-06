@@ -375,10 +375,17 @@
 		max-width: 100%;
 	}
 
+	/*
+	 * EN／ZH 農曆 Portrait：semantic \\n 兩行用 pre（禁 soft-wrap）。
+	 * leap 長行若超出可用寬 → data-ldcv2-rs-portrait-fit 縮字級，不開第三行。
+	 */
 	[data-lunar-date-converter-v2][data-ldcv2-locale="en"][data-ldcv2-input-mode="gregorian"]
 		[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"]
+		.rs-value[data-rs-value="primary"],
+	[data-lunar-date-converter-v2][data-ldcv2-locale="zh"][data-ldcv2-input-mode="gregorian"]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"]
 		.rs-value[data-rs-value="primary"] {
-		white-space: pre-line;
+		white-space: pre;
 		max-width: 100%;
 	}
 
@@ -412,6 +419,14 @@
 	[data-lunar-date-converter-v2][data-ldcv2-locale="zh"][data-ldcv2-input-mode="gregorian"]
 		[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
 		--rs-textual-primary-size: 3.5rem;
+	}
+
+	/* Leap／長語意行 fit：必須覆寫 locale size（放最後、更高 specificity） */
+	[data-lunar-date-converter-v2][data-ldcv2-rs-portrait-fit][data-ldcv2-locale="en"][data-ldcv2-input-mode="gregorian"]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"],
+	[data-lunar-date-converter-v2][data-ldcv2-rs-portrait-fit][data-ldcv2-locale="zh"][data-ldcv2-input-mode="gregorian"]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+		--rs-textual-primary-size: var(--ldcv2-rs-portrait-fit-size);
 	}
 }
 

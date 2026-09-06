@@ -171,6 +171,63 @@ function applyRsComposition(root: HTMLElement, composition: ResultRsComposition 
 	root.removeAttribute("data-ldcv2-rs-composition");
 }
 
+function clearPortraitLunarSemanticFit(root: HTMLElement): void {
+	root.removeAttribute("data-ldcv2-rs-portrait-fit");
+	root.style.removeProperty("--ldcv2-rs-portrait-fit-size");
+}
+
+/**
+ * Mobile Portrait lunar result：semantic \\n 兩行不得再 soft-wrap。
+ * 最長語意行超出可用寬時，只做 Lunar-local font-size fit（不改 shared RS）。
+ */
+function applyPortraitLunarSemanticFit(
+	root: HTMLElement,
+	inputMode: InputMode,
+	rsLayout: ResultRsLayout | null,
+	invalid: boolean,
+): void {
+	clearPortraitLunarSemanticFit(root);
+	if (invalid || rsLayout !== "portrait" || inputMode !== "gregorian") {
+		return;
+	}
+
+	const primary = root.querySelector<HTMLElement>('[data-rs-value="primary"]');
+	if (!primary) {
+		return;
+	}
+
+	const raw = primary.textContent ?? "";
+	if (!raw.includes("\n") || raw.trim() === "?") {
+		return;
+	}
+
+	const lines = raw
+		.split("\n")
+		.map((line) => line.trim())
+		.filter((line) => line.length > 0);
+	if (lines.length < 2) {
+		return;
+	}
+
+	/* pre 已禁 soft-wrap；以實際 overflow 決定是否縮字 */
+	void primary.offsetWidth;
+	const available = primary.clientWidth;
+	const needed = primary.scrollWidth;
+	if (available <= 0 || needed <= available + 1) {
+		return;
+	}
+
+	const style = getComputedStyle(primary);
+	const baseSize = parseFloat(style.fontSize);
+	if (!(baseSize > 0)) {
+		return;
+	}
+
+	const fitted = Math.max(28, baseSize * ((available * 0.98) / needed));
+	root.style.setProperty("--ldcv2-rs-portrait-fit-size", `${fitted}px`);
+	root.setAttribute("data-ldcv2-rs-portrait-fit", "1");
+}
+
 function measurePrimaryTextWidth(root: HTMLElement, text: string): number {
 	const primary = root.querySelector<HTMLElement>('[data-rs-value="primary"]');
 	if (!primary) {
@@ -258,6 +315,8 @@ function dispatchResult(
 			},
 		}),
 	);
+
+	applyPortraitLunarSemanticFit(root, inputMode, rsLayout, invalid);
 }
 
 function applyInputModeUi(root: HTMLElement, mode: InputMode): void {
