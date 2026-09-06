@@ -35,6 +35,11 @@ export type DateSegments = {
 	 * inserts at this offset instead of overwriting / collapsing trailing digits.
 	 */
 	gapAt: { segment: SegmentKey; offset: number } | null;
+	/**
+	 * Continuous raw digit stream（BDC/DBD canonical）.
+	 * While true, digit inserts append via stream even if DOM caret is stale.
+	 */
+	preferStream: boolean;
 };
 
 export type SegmentKey = "year" | "month" | "day";
@@ -114,6 +119,7 @@ export function emptyDateSegments(): DateSegments {
 		openMonth: false,
 		openDay: false,
 		gapAt: null,
+		preferStream: true,
 	};
 }
 
@@ -130,8 +136,8 @@ export function isSegmentsComplete(segments: DateSegments): boolean {
 }
 
 function withSegmentFlags(
-	segments: Omit<DateSegments, "openMonth" | "openDay" | "gapAt"> &
-		Partial<Pick<DateSegments, "openMonth" | "openDay" | "gapAt">>,
+	segments: Omit<DateSegments, "openMonth" | "openDay" | "gapAt" | "preferStream"> &
+		Partial<Pick<DateSegments, "openMonth" | "openDay" | "gapAt" | "preferStream">>,
 ): DateSegments {
 	const openDay = Boolean(segments.openDay) || segments.day !== "";
 	const openMonth =
@@ -147,6 +153,7 @@ function withSegmentFlags(
 		openMonth,
 		openDay,
 		gapAt: segments.gapAt ?? null,
+		preferStream: segments.preferStream ?? false,
 	};
 }
 
@@ -218,6 +225,7 @@ function cloneSegments(segments: DateSegments): DateSegments {
 		gapAt: segments.gapAt
 			? { segment: segments.gapAt.segment, offset: segments.gapAt.offset }
 			: null,
+		preferStream: segments.preferStream,
 	};
 }
 
@@ -348,6 +356,7 @@ function insertDigitInSegment(
 	}
 
 	next[segment] = chars.join("").slice(0, maxLength);
+	next.preferStream = false;
 
 	if (segment === "month") {
 		next.openMonth = true;
@@ -375,6 +384,7 @@ function replaceSelectionWithDigit(
 			value.slice(0, start.offset) + digit + value.slice(end.offset);
 		next[start.segment] = replaced.slice(0, segmentMaxLength(start.segment));
 		next.gapAt = null;
+		next.preferStream = false;
 
 		if (start.segment === "month") {
 			next.openMonth = true;
@@ -452,6 +462,7 @@ function deleteSegmentRange(
 		return emptyDateSegments();
 	}
 
+	next.preferStream = false;
 	return withSegmentFlags(next);
 }
 
@@ -472,18 +483,22 @@ function deleteBackwardInSegment(
 
 		if (wasComplete && !isEndDelete) {
 			next.gapAt = { segment, offset: deleteIndex };
+			next.preferStream = false;
 		} else {
 			next.gapAt = null;
+			next.preferStream = Boolean(segments.preferStream && isEndDelete);
 		}
 	} else if (segment === "month") {
 		next.month = "";
 		next.openMonth = true;
 		next.gapAt = null;
+		next.preferStream = false;
 	} else if (segment === "day") {
 		next.day = "";
 		next.openDay = true;
 		next.openMonth = true;
 		next.gapAt = null;
+		next.preferStream = false;
 	}
 
 	if (isSegmentsEmpty(next)) {
@@ -527,6 +542,7 @@ function deleteForwardInSegment(
 		return emptyDateSegments();
 	}
 
+	next.preferStream = false;
 	return withSegmentFlags(next);
 }
 
@@ -560,14 +576,14 @@ export function segmentsFromPastedText(text: string): DateSegments {
  * Split month/day after a 4-digit year for continuous digit streams.
  *
  * Length rules (rest = digits after YYYY):
- * - 1: month only
- * - 2 (6 total): YYYY / M / D
- * - 3 (7 total): calendar-aware M/DD vs MM/D
+ * - 1: month only（若首碼為 1，等待第二碼再決定 10/11/12）
+ * - 2: 10/11/12／01–09 → month only；其餘 → M/D
+ * - 3 (7 total): calendar-aware M/DD vs MM/D（10–12 優先作 month）
  * - 4 (8 total): YYYY / MM / DD
  */
 export function splitMonthDayDigits(
 	rest: string,
-	year: number,
+	_year: number,
 ): { month: string; day: string } {
 	const digits = rest.slice(0, 4);
 
@@ -579,8 +595,17 @@ export function splitMonthDayDigits(
 		return { month: digits, day: "" };
 	}
 
-	// 6-digit stream: always one-digit month + one-digit day
+	// 6-digit stream（rest length 2）
 	if (digits.length === 2) {
+		const twoDigitMonth = Number(digits);
+		// 01–09／10–12：先完成 month，不把第二碼提前當 day
+		if (
+			(digits[0] === "0" && twoDigitMonth >= 1 && twoDigitMonth <= 9) ||
+			(twoDigitMonth >= 10 && twoDigitMonth <= 12)
+		) {
+			return { month: digits, day: "" };
+		}
+		// 13–19／2x–9x：一位月 + 一位日
 		return {
 			month: digits[0] ?? "",
 			day: digits[1] ?? "",
@@ -612,17 +637,13 @@ export function splitMonthDayDigits(
 		};
 	}
 
-	// first === "1" → prefer valid MM/D (10–12) when possible, else M/DD
+	/* first === "1"：優先 10–12 作 month（即使 day 尚不完整／無效） */
 	const twoDigitMonth = Number(digits.slice(0, 2));
-
 	if (twoDigitMonth >= 10 && twoDigitMonth <= 12) {
-		const month = digits.slice(0, 2);
-		const day = digits.slice(2);
-		const dayNum = Number(day);
-
-		if (dayNum >= 1 && dayNum <= daysInMonth(year, twoDigitMonth)) {
-			return { month, day };
-		}
+		return {
+			month: digits.slice(0, 2),
+			day: digits.slice(2),
+		};
 	}
 
 	return {
@@ -637,13 +658,13 @@ export function segmentsFromStreamDigits(digits: string): DateSegments {
 	const rest = value.slice(4);
 
 	if (!rest) {
-		return withSegmentFlags({ year, month: "", day: "" });
+		return withSegmentFlags({ year, month: "", day: "", preferStream: true });
 	}
 
 	const yearNumber = Number(year);
 	const { month, day } = splitMonthDayDigits(rest, yearNumber);
 
-	return withSegmentFlags({ year, month, day });
+	return withSegmentFlags({ year, month, day, preferStream: true });
 }
 
 export function applySegmentInputChange(
@@ -683,7 +704,7 @@ export function applySegmentInputChange(
 			};
 		}
 
-		if (forward) {
+		if (forward || segments.preferStream) {
 			const next = appendDigitForward(segments, data);
 			let activeSegment: SegmentKey = "year";
 
@@ -1054,6 +1075,7 @@ export function segmentsFromCalendarDate(date: CalendarDate): DateSegments {
 		year: String(date.year).padStart(4, "0"),
 		month: String(date.month).padStart(2, "0"),
 		day: String(date.day).padStart(2, "0"),
+		preferStream: false,
 	});
 }
 

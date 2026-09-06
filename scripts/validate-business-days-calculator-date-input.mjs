@@ -95,8 +95,8 @@ function assertTypedAndPasted(raw, expectedDisplay, label) {
 console.log("validate-business-days-calculator-date-input");
 
 // --- Pure numeric: paste + 逐鍵 parity（6 / 7 / 8 碼） ---
-assertTypedAndPasted("199011", "1990 / 01 / 01", "6-digit 199011");
-assertTypedAndPasted("202011", "2020 / 01 / 01", "6-digit 202011");
+assertTypedAndPasted("199011", "1990 / 11", "6-digit 199011 → month 11 waiting for day");
+assertTypedAndPasted("202011", "2020 / 11", "6-digit 202011 → month 11 waiting for day");
 assertTypedAndPasted("1950820", "1950 / 08 / 20", "7-digit 1950820");
 assertTypedAndPasted("1950102", "1950 / 10 / 02", "7-digit 1950102");
 assertTypedAndPasted("1950131", "1950 / 01 / 31", "7-digit 1950131");
@@ -131,6 +131,19 @@ function typeDigitsWithCaretLag(chars, lag) {
 			typed === "2026 / 07 / 04",
 			`202674 caret-lag=${lag} → 2026 / 07 / 04 (got ${typed})`,
 		);
+	}
+
+	/* Year-only intermittent repros：30× × lag 0–3 */
+	for (const year of ["1945", "2020", "1980", "2000"]) {
+		for (const lag of [0, 1, 2, 3]) {
+			for (let i = 0; i < 30; i += 1) {
+				const typed = typeDigitsWithCaretLag(year, lag);
+				assert(
+					formatSegmentsDisplay(typed) === year && typed.year === year,
+					`BDC year ${year} caret-lag=${lag} repeat=${i} (got ${formatSegmentsDisplay(typed)})`,
+				);
+			}
+		}
 	}
 
 	// 輸入 20267，停頓後再輸入 4（中間狀態 preferStream 仍在）
@@ -198,8 +211,8 @@ function typeDigitsWithCaretLag(chars, lag) {
 	);
 	const pasted6 = segmentsFromPastedText("199011");
 	assert(
-		isEntryCompleteForAutoFocus(pasted6, { fromPaste: true }) === true,
-		"paste 6-digit valid may auto-focus",
+		isEntryCompleteForAutoFocus(pasted6, { fromPaste: true }) === false,
+		"paste 6-digit month-11 waiting for day is not complete",
 	);
 }
 

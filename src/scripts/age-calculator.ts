@@ -676,13 +676,29 @@ function initAgeCalculator(root: HTMLElement): void {
 				? "clearAll"
 				: inputType;
 
-		const { segments, caret } = applySegmentInputChange(
+		let start = selectionStart;
+		let end = selectionEnd;
+		/* Continuous raw stream：DOM caret 可能落後；typing 時以 display 尾端為 SSOT */
+		if (
+			currentSegments.preferStream &&
+			resolvedInputType === "insertText" &&
+			start === end
+		) {
+			start = end = formatted.length;
+		}
+
+		const { segments, caret: engineCaret } = applySegmentInputChange(
 			currentSegments,
 			resolvedInputType,
 			data,
-			selectionStart,
-			selectionEnd,
+			start,
+			end,
 		);
+
+		let caret = engineCaret;
+		if (segments.preferStream && resolvedInputType === "insertText") {
+			caret = formatSegmentsDisplay(segments).length;
+		}
 
 		sharedSegments = segments;
 		syncAllDisplays(sharedSegments, source, caret);

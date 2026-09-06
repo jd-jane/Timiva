@@ -553,7 +553,6 @@ function deleteBackwardInSegment(
 	context: SegmentCaretContext,
 ): DateSegments {
 	const next = cloneSegments(segments);
-	next.preferStream = false;
 	const { segment, offset } = context;
 	const value = next[segment];
 
@@ -566,18 +565,23 @@ function deleteBackwardInSegment(
 
 		if (wasComplete && !isEndDelete) {
 			next.gapAt = { segment, offset: deleteIndex };
+			next.preferStream = false;
 		} else {
 			next.gapAt = null;
+			/* End-delete while continuous streaming：keep preferStream（Backspace 後續打） */
+			next.preferStream = Boolean(segments.preferStream && isEndDelete);
 		}
 	} else if (segment === "month") {
 		next.month = "";
 		next.openMonth = true;
 		next.gapAt = null;
+		next.preferStream = false;
 	} else if (segment === "day") {
 		next.day = "";
 		next.openDay = true;
 		next.openMonth = true;
 		next.gapAt = null;
+		next.preferStream = false;
 	}
 
 	if (isSegmentsEmpty(next)) {
@@ -709,14 +713,14 @@ export function parseDateRangePaste(
  * Split month/day after a 4-digit year for continuous digit streams.
  *
  * Length rules (rest = digits after YYYY):
- * - 1: month only
- * - 2 (6 total): YYYY / M / D
- * - 3 (7 total): calendar-aware M/DD vs MM/D
+ * - 1: month only（若首碼為 1，等待第二碼再決定 10/11/12）
+ * - 2: 10/11/12／01–09 → month only；其餘 → M/D
+ * - 3 (7 total): calendar-aware M/DD vs MM/D（10–12 優先作 month）
  * - 4 (8 total): YYYY / MM / DD
  */
 export function splitMonthDayDigits(
 	rest: string,
-	year: number,
+	_year: number,
 ): { month: string; day: string } {
 	const digits = rest.slice(0, 4);
 
@@ -728,8 +732,17 @@ export function splitMonthDayDigits(
 		return { month: digits, day: "" };
 	}
 
-	// 6-digit stream: always one-digit month + one-digit day
+	// 6-digit stream（rest length 2）
 	if (digits.length === 2) {
+		const twoDigitMonth = Number(digits);
+		// 01–09／10–12：先完成 month，不把第二碼提前當 day
+		if (
+			(digits[0] === "0" && twoDigitMonth >= 1 && twoDigitMonth <= 9) ||
+			(twoDigitMonth >= 10 && twoDigitMonth <= 12)
+		) {
+			return { month: digits, day: "" };
+		}
+		// 13–19／2x–9x：一位月 + 一位日
 		return {
 			month: digits[0] ?? "",
 			day: digits[1] ?? "",
@@ -761,17 +774,13 @@ export function splitMonthDayDigits(
 		};
 	}
 
-	// first === "1" → prefer valid MM/D (10–12) when possible, else M/DD
+	/* first === "1"：優先 10–12 作 month（即使 day 尚不完整／無效） */
 	const twoDigitMonth = Number(digits.slice(0, 2));
-
 	if (twoDigitMonth >= 10 && twoDigitMonth <= 12) {
-		const month = digits.slice(0, 2);
-		const day = digits.slice(2);
-		const dayNum = Number(day);
-
-		if (dayNum >= 1 && dayNum <= daysInMonth(year, twoDigitMonth)) {
-			return { month, day };
-		}
+		return {
+			month: digits.slice(0, 2),
+			day: digits.slice(2),
+		};
 	}
 
 	return {

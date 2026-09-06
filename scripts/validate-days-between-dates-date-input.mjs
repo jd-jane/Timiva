@@ -90,8 +90,9 @@ function assertTypedAndPasted(raw, expectedDisplay, label) {
 console.log("validate-days-between-dates-date-input");
 
 // --- Pure numeric: paste + 逐鍵 parity ---
-assertTypedAndPasted("199011", "1990 / 01 / 01", "6-digit 199011");
-assertTypedAndPasted("202011", "2020 / 01 / 01", "6-digit 202011");
+assertTypedAndPasted("199011", "1990 / 11", "6-digit 199011 → month 11 waiting for day");
+assertTypedAndPasted("202011", "2020 / 11", "6-digit 202011 → month 11 waiting for day");
+assertTypedAndPasted("202451", "2024 / 05 / 01", "6-digit 202451 → M/D when month not 01–12 ambiguous");
 assertTypedAndPasted("1950820", "1950 / 08 / 20", "7-digit 1950820");
 assertTypedAndPasted("1950102", "1950 / 10 / 02", "7-digit 1950102");
 assertTypedAndPasted("1950131", "1950 / 01 / 31", "7-digit 1950131");
@@ -192,12 +193,17 @@ assert(
 	"blur normalize",
 );
 
-// Paste complete may auto-focus even for 6-digit
+// Paste month-only 6-digit（10–12）is incomplete — not auto-focus complete
 {
 	const pasted6 = segmentsFromPastedText("199011");
 	assert(
-		isEntryCompleteForAutoFocus(pasted6, { fromPaste: true }) === true,
-		"paste 6-digit valid may auto-focus",
+		isEntryCompleteForAutoFocus(pasted6, { fromPaste: true }) === false,
+		"paste 6-digit month-11 waiting for day is not complete",
+	);
+	const pasted8 = segmentsFromPastedText("19901101");
+	assert(
+		isEntryCompleteForAutoFocus(pasted8, { fromPaste: true }) === true,
+		"paste 8-digit valid may auto-focus",
 	);
 }
 
@@ -455,6 +461,80 @@ assert(
 			css.includes("clamp(5.5rem, 27vw, 7rem)"),
 		"portrait 5-digit result scale CSS present",
 	);
+}
+
+/**
+ * Typing stability：preferStream + stale DOM caret 不得反向重排 digits。
+ * 對應真人快速輸入偶發 2020→220/0、1945→145/9。
+ */
+function typeDigitsWithCaretLag(chars, lag) {
+	let segments = emptyDateSegments();
+	for (const ch of chars) {
+		const display = formatSegmentsDisplay(segments);
+		const caret = Math.max(0, display.length - lag);
+		const result = applySegmentInputChange(segments, "insertText", ch, caret, caret);
+		segments = result.segments;
+	}
+	return segments;
+}
+
+{
+	const yearCases = ["1945", "2020", "1980", "2000"];
+	for (const year of yearCases) {
+		for (const lag of [0, 1, 2, 3]) {
+			for (let i = 0; i < 30; i += 1) {
+				const typed = typeDigitsWithCaretLag(year, lag);
+				assert(
+					formatSegmentsDisplay(typed) === year && typed.year === year,
+					`DBD year ${year} caret-lag=${lag} repeat=${i} (got ${formatSegmentsDisplay(typed)})`,
+				);
+				assert(typed.preferStream === true, `DBD ${year} lag=${lag} keeps preferStream`);
+			}
+		}
+	}
+
+	const paused = typeDigitsForward(emptyDateSegments(), "202");
+	assert(paused.preferStream === true, "202 mid keeps preferStream");
+	const afterStale = applySegmentInputChange(
+		paused,
+		"insertText",
+		"0",
+		Math.max(0, formatSegmentsDisplay(paused).length - 2),
+		Math.max(0, formatSegmentsDisplay(paused).length - 2),
+	);
+	assert(
+		formatSegmentsDisplay(afterStale.segments) === "2020",
+		`202 then 0 with stale caret → 2020 (got ${formatSegmentsDisplay(afterStale.segments)})`,
+	);
+
+	/* End-Backspace 必須保持 preferStream，續打不得跳 month */
+	{
+		let year = typeDigitsForward(emptyDateSegments(), "1945");
+		assert(year.preferStream === true, "1945 keeps preferStream");
+		const afterBs = applySegmentInputChange(
+			year,
+			"deleteContentBackward",
+			null,
+			formatSegmentsDisplay(year).length,
+			formatSegmentsDisplay(year).length,
+		);
+		assert(
+			formatSegmentsDisplay(afterBs.segments) === "194" &&
+				afterBs.segments.preferStream === true,
+			`end-backspace keeps stream (got ${formatSegmentsDisplay(afterBs.segments)} prefer=${afterBs.segments.preferStream})`,
+		);
+		const resumed = applySegmentInputChange(
+			afterBs.segments,
+			"insertText",
+			"5",
+			afterBs.caret,
+			afterBs.caret,
+		);
+		assert(
+			formatSegmentsDisplay(resumed.segments) === "1945",
+			`backspace then 5 → 1945 (got ${formatSegmentsDisplay(resumed.segments)})`,
+		);
+	}
 }
 
 console.log(`passed=${passed} failed=${failed}`);

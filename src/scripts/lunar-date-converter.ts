@@ -30,8 +30,12 @@ import {
 	shouldDeferInputWhileComposing,
 } from "../lib/lunarDateConverterGregorianInput.ts";
 import {
+	createLunarNumericFieldController,
 	evaluateLunarInput,
 	formatLunarInputDisplayForLocale,
+	isLunarNumericDraftText,
+	type LunarNumericFieldController,
+	type LunarNumericFieldSnapshot,
 } from "../lib/lunarDateConverterLunarInput.ts";
 import {
 	civilFromLunarInput,
@@ -53,7 +57,7 @@ import {
 	type LunarPickerAdapter,
 } from "../lib/lunarDateConverterLunarCalendarAdapter.ts";
 import { gregorianToLunar } from "../lib/lunar/index.ts";
-import type { CivilDate } from "../lib/lunar/lunarTypes.ts";
+import type { CivilDate, LunarDate } from "../lib/lunar/lunarTypes.ts";
 
 type Locale = "en" | "zh";
 
@@ -359,6 +363,7 @@ function initRoot(root: HTMLElement): void {
 	let gregorianCalendarAdapter: LunarCalendarAdapter | null = null;
 	let lunarPickerAdapter: LunarPickerAdapter | null = null;
 	let gregorianController: LunarGregorianDateController | null = null;
+	let lunarNumericController: LunarNumericFieldController | null = null;
 	const calendarListeners = new Set<() => void>();
 
 	const notifyCalendar = () => {
@@ -378,8 +383,74 @@ function initRoot(root: HTMLElement): void {
 		dispatchResult(root, actualCivil, inputMode, locale, invalid);
 	};
 
+	/** Editing draft：Result `?` + weekday clear；no field error. */
+	const syncDraftUnknownResult = () => {
+		fieldPhase = "draft-incomplete";
+		syncFieldError(root, fieldPhase);
+		syncCommittedResult(true);
+	};
+
+	/** Complete+valid lunar semantic field（blur／Calendar／AME／mode switch only）. */
+	const applyLunarCommittedFieldDisplay = (lunar: LunarDate) => {
+		const display = formatLunarInputDisplayForLocale(lunar, locale);
+		input.value = display;
+		lunarDraftText = display;
+		if (lunar.isLeapMonth) {
+			lunarNumericController?.clear();
+		} else {
+			lunarNumericController?.setLunar(lunar);
+		}
+	};
+
+	/**
+	 * Focused editing：committed semantic → numeric progressive representation.
+	 * Leap baseline preserved only while Y/M/D unchanged（leap never invented from digits）.
+	 */
+	let lunarEditLeapBaseline: LunarDate | null = null;
+
+	const resolveNumericLunar = (lunar: LunarDate): LunarDate => {
+		if (
+			lunarEditLeapBaseline?.isLeapMonth &&
+			lunarEditLeapBaseline.year === lunar.year &&
+			lunarEditLeapBaseline.month === lunar.month &&
+			lunarEditLeapBaseline.day === lunar.day
+		) {
+			return { ...lunar, isLeapMonth: true };
+		}
+		return { ...lunar, isLeapMonth: false };
+	};
+
+	const expandLunarCommittedToEditingDisplay = () => {
+		const lunarResult = gregorianToLunar(actualCivil);
+		if (!lunarResult.ok) {
+			return;
+		}
+		const lunar = lunarResult.value;
+		lunarEditLeapBaseline = lunar.isLeapMonth ? { ...lunar } : null;
+		if (!lunarNumericController) {
+			return;
+		}
+		lunarNumericController.setLunar(lunar);
+		const editing = lunarNumericController.getSnapshot();
+		input.value = editing.display;
+		lunarDraftText = editing.display;
+	};
+
+	const isLunarCommittedSemanticText = (text: string): boolean => {
+		const trimmed = text.trim();
+		if (!trimmed) {
+			return false;
+		}
+		if (isLunarNumericDraftText(trimmed)) {
+			return false;
+		}
+		const evaluated = evaluateLunarInput(trimmed, { commit: true });
+		return evaluated.status === "valid";
+	};
+
 	const repopulateInputFromActual = () => {
 		if (inputMode === "gregorian") {
+			lunarEditLeapBaseline = null;
 			gregorianController?.setDate(actualCivil);
 			const snap = gregorianController?.getSnapshot();
 			if (snap) {
@@ -390,82 +461,111 @@ function initRoot(root: HTMLElement): void {
 
 		const lunarResult = gregorianToLunar(actualCivil);
 		if (lunarResult.ok) {
-			input.value = formatLunarInputDisplayForLocale(lunarResult.value, locale);
-			lunarDraftText = input.value;
+			lunarEditLeapBaseline = lunarResult.value.isLeapMonth
+				? { ...lunarResult.value }
+				: null;
+			applyLunarCommittedFieldDisplay(lunarResult.value);
 		}
 	};
 
-	const commitGregorianSnapshot = (
-		snapshot: GregorianFieldSnapshot,
-		options: { commitAttempt: boolean },
-	) => {
+	const commitGregorianSnapshot = (snapshot: GregorianFieldSnapshot) => {
 		if (snapshot.status === "valid" && snapshot.date) {
-			if (options.commitAttempt) {
-				actualCivil = snapshot.date;
+			actualCivil = snapshot.date;
+			fieldPhase = "committed-valid";
+			syncFieldError(root, fieldPhase);
+			syncCommittedResult(false);
+			notifyCalendar();
+			return;
+		}
+
+		if (snapshot.status === "incomplete" || snapshot.status === "empty") {
+			syncDraftUnknownResult();
+			return;
+		}
+
+		fieldPhase = "draft-complete-invalid";
+		const invalidKind = classifyGregorianInvalid(snapshot.segments);
+		const pattern: FieldErrorPattern =
+			invalidKind === "out-of-range" ? "with-message" : "indicator-only";
+		syncFieldError(root, fieldPhase, {
+			pattern,
+			message: invalidKind === "out-of-range" ? copy.errorOutOfRange : "",
+		});
+		syncCommittedResult(true);
+	};
+
+	const commitLunarNumericSnapshot = (
+		snapshot: LunarNumericFieldSnapshot,
+		options: { normalizeField?: boolean } = {},
+	) => {
+		if (snapshot.status === "valid" && snapshot.lunar) {
+			const lunar = resolveNumericLunar(snapshot.lunar);
+			const civil = civilFromLunarInput(lunar);
+			if (civil) {
+				actualCivil = civil;
 				fieldPhase = "committed-valid";
+				if (options.normalizeField) {
+					applyLunarCommittedFieldDisplay(lunar);
+				}
 				syncFieldError(root, fieldPhase);
 				syncCommittedResult(false);
 				notifyCalendar();
 				return;
 			}
-
-			fieldPhase = "draft-incomplete";
-			syncFieldError(root, fieldPhase);
-			syncCommittedResult(false);
-			return;
 		}
 
 		if (snapshot.status === "incomplete" || snapshot.status === "empty") {
-			fieldPhase = "draft-incomplete";
-			syncFieldError(root, fieldPhase);
-			syncCommittedResult(false);
+			lunarEditLeapBaseline = null;
+			syncDraftUnknownResult();
 			return;
 		}
 
-		if (options.commitAttempt) {
-			fieldPhase = "draft-complete-invalid";
-			const invalidKind = classifyGregorianInvalid(snapshot.segments);
-			const pattern: FieldErrorPattern =
-				invalidKind === "out-of-range" ? "with-message" : "indicator-only";
-			syncFieldError(root, fieldPhase, {
-				pattern,
-				message: invalidKind === "out-of-range" ? copy.errorOutOfRange : "",
-			});
-			syncCommittedResult(true);
-			return;
-		}
-
-		fieldPhase = "draft-incomplete";
-		syncFieldError(root, fieldPhase);
-		syncCommittedResult(false);
+		lunarEditLeapBaseline = null;
+		fieldPhase = "draft-complete-invalid";
+		const code = snapshot.errorCode;
+		syncFieldError(root, fieldPhase, {
+			pattern: errorPresentationPattern("lunar", code),
+			message: errorMessage(copy, code),
+		});
+		syncCommittedResult(true);
 	};
 
-	const commitLunarText = (text: string, commitAttempt: boolean) => {
+	const commitLunarText = (
+		text: string,
+		options: { normalizeField?: boolean } = {},
+	) => {
 		lunarDraftText = text;
-		const evaluated = evaluateLunarInput(text, { commit: commitAttempt });
+		const evaluated = evaluateLunarInput(text, { commit: true });
 
 		if (evaluated.status === "valid" && evaluated.lunar) {
 			const civil = civilFromLunarInput(evaluated.lunar);
 			if (civil) {
 				actualCivil = civil;
 				fieldPhase = "committed-valid";
+				lunarEditLeapBaseline = evaluated.lunar.isLeapMonth
+					? { ...evaluated.lunar }
+					: null;
+				if (options.normalizeField) {
+					applyLunarCommittedFieldDisplay(evaluated.lunar);
+				} else if (!evaluated.lunar.isLeapMonth) {
+					lunarNumericController?.setLunar(evaluated.lunar);
+				} else {
+					lunarNumericController?.clear();
+				}
 				syncFieldError(root, fieldPhase);
 				syncCommittedResult(false);
+				notifyCalendar();
 				return;
 			}
 		}
 
-		if (
-			evaluated.status === "empty" ||
-			evaluated.status === "incomplete" ||
-			(!commitAttempt && evaluated.status === "invalid")
-		) {
-			fieldPhase = "draft-incomplete";
-			syncFieldError(root, fieldPhase);
-			syncCommittedResult(false);
+		if (evaluated.status === "empty" || evaluated.status === "incomplete") {
+			lunarEditLeapBaseline = null;
+			syncDraftUnknownResult();
 			return;
 		}
 
+		lunarEditLeapBaseline = null;
 		fieldPhase = "draft-complete-invalid";
 		const code = evaluated.errorCode;
 		syncFieldError(root, fieldPhase, {
@@ -502,6 +602,7 @@ function initRoot(root: HTMLElement): void {
 
 	/* —— Gregorian controller + calendar（Desktop only；AME 用 structured picker） —— */
 	gregorianController = createGregorianDateController();
+	lunarNumericController = createLunarNumericFieldController();
 
 	let ameApi: AdaptiveMobileEditorController<LdcAmeDraft> | null = null;
 
@@ -690,12 +791,25 @@ function initRoot(root: HTMLElement): void {
 		setCompositionActive(composition, false);
 	});
 
-	input.addEventListener("beforeinput", (event) => {
-		if (shouldDeferInputWhileComposing(composition)) {
+	input.addEventListener("focus", () => {
+		if (inputMode !== "lunar") {
 			return;
 		}
+		if (fieldPhase !== "committed-valid") {
+			return;
+		}
+		if (!isLunarCommittedSemanticText(input.value)) {
+			return;
+		}
+		expandLunarCommittedToEditingDisplay();
+		if (document.activeElement === input) {
+			const len = input.value.length;
+			input.setSelectionRange(len, len);
+		}
+	});
 
-		if (inputMode !== "gregorian") {
+	input.addEventListener("beforeinput", (event) => {
+		if (shouldDeferInputWhileComposing(composition)) {
 			return;
 		}
 
@@ -704,12 +818,52 @@ function initRoot(root: HTMLElement): void {
 		const selectionStart = input.selectionStart ?? 0;
 		const selectionEnd = input.selectionEnd ?? selectionStart;
 
+		if (inputMode === "gregorian") {
+			if (
+				inputType === "insertText" &&
+				inputEvent.data &&
+				!/^[\d/-]$/.test(inputEvent.data)
+			) {
+				event.preventDefault();
+				return;
+			}
+
+			if (
+				inputType === "insertText" ||
+				inputType === "deleteContentBackward" ||
+				inputType === "deleteContentForward"
+			) {
+				event.preventDefault();
+				if (!gregorianController) {
+					return;
+				}
+				const { snapshot, caret } = gregorianController.applyInputChange(
+					inputType,
+					inputEvent.data,
+					selectionStart,
+					selectionEnd,
+				);
+				input.value = snapshot.display;
+				commitGregorianSnapshot(snapshot);
+				if (document.activeElement === input) {
+					const len = input.value.length;
+					const next = Math.max(0, Math.min(caret, len));
+					input.setSelectionRange(next, next);
+				}
+			}
+			return;
+		}
+
+		/* Lunar numeric Smart Date path（digit／slash）；CJK／閏 stay on input event. */
+		if (!isLunarNumericDraftText(input.value) || !lunarNumericController) {
+			return;
+		}
+
 		if (
 			inputType === "insertText" &&
 			inputEvent.data &&
 			!/^[\d/-]$/.test(inputEvent.data)
 		) {
-			event.preventDefault();
 			return;
 		}
 
@@ -719,17 +873,16 @@ function initRoot(root: HTMLElement): void {
 			inputType === "deleteContentForward"
 		) {
 			event.preventDefault();
-			if (!gregorianController) {
-				return;
-			}
-			const { snapshot, caret } = gregorianController.applyInputChange(
+			const { snapshot, caret } = lunarNumericController.applyInputChange(
 				inputType,
 				inputEvent.data,
 				selectionStart,
 				selectionEnd,
 			);
 			input.value = snapshot.display;
-			commitGregorianSnapshot(snapshot, { commitAttempt: false });
+			lunarDraftText = snapshot.display;
+			/* Focused：Result 可更新；field 維持 numeric，blur 才 semantic. */
+			commitLunarNumericSnapshot(snapshot, { normalizeField: false });
 			if (document.activeElement === input) {
 				const len = input.value.length;
 				const next = Math.max(0, Math.min(caret, len));
@@ -742,7 +895,18 @@ function initRoot(root: HTMLElement): void {
 		if (inputMode !== "lunar") {
 			return;
 		}
-		commitLunarText(input.value, false);
+		if (isLunarNumericDraftText(input.value) && lunarNumericController) {
+			const current = lunarNumericController.getSnapshot();
+			if (current.display === input.value) {
+				return;
+			}
+			const { snapshot } = lunarNumericController.applyPaste(input.value);
+			input.value = snapshot.display;
+			lunarDraftText = snapshot.display;
+			commitLunarNumericSnapshot(snapshot, { normalizeField: false });
+			return;
+		}
+		commitLunarText(input.value, { normalizeField: false });
 	});
 
 	input.addEventListener("paste", (event) => {
@@ -759,10 +923,10 @@ function initRoot(root: HTMLElement): void {
 			if (snapshot.status === "valid") {
 				const committed = gregorianController.commitNormalize();
 				input.value = committed.normalizedDisplay;
-				commitGregorianSnapshot(committed, { commitAttempt: true });
+				commitGregorianSnapshot(committed);
 			} else {
 				input.value = snapshot.display;
-				commitGregorianSnapshot(snapshot, { commitAttempt: false });
+				commitGregorianSnapshot(snapshot);
 				if (document.activeElement === input) {
 					input.setSelectionRange(caret, caret);
 				}
@@ -770,18 +934,38 @@ function initRoot(root: HTMLElement): void {
 			return;
 		}
 
+		if (isLunarNumericDraftText(text) && lunarNumericController) {
+			const { snapshot, caret } = lunarNumericController.applyPaste(text);
+			input.value = snapshot.display;
+			lunarDraftText = snapshot.display;
+			commitLunarNumericSnapshot(snapshot, {
+				normalizeField: document.activeElement !== input,
+			});
+			if (document.activeElement === input) {
+				input.setSelectionRange(caret, caret);
+			}
+			return;
+		}
+
 		input.value = text;
-		commitLunarText(text, true);
+		commitLunarText(text, { normalizeField: document.activeElement !== input });
 	});
 
 	input.addEventListener("blur", () => {
 		if (inputMode === "gregorian" && gregorianController) {
 			const snapshot = gregorianController.commitNormalize();
 			input.value = snapshot.normalizedDisplay;
-			commitGregorianSnapshot(snapshot, { commitAttempt: true });
+			commitGregorianSnapshot(snapshot);
 			return;
 		}
-		commitLunarText(input.value, true);
+		if (isLunarNumericDraftText(input.value) && lunarNumericController) {
+			const snapshot = lunarNumericController.commitNormalize();
+			input.value = snapshot.normalizedDisplay;
+			lunarDraftText = snapshot.normalizedDisplay;
+			commitLunarNumericSnapshot(snapshot, { normalizeField: true });
+			return;
+		}
+		commitLunarText(input.value, { normalizeField: true });
 	});
 
 	input.addEventListener("keydown", (event) => {
@@ -789,13 +973,6 @@ function initRoot(root: HTMLElement): void {
 			return;
 		}
 		event.preventDefault();
-		if (inputMode === "gregorian" && gregorianController) {
-			const snapshot = gregorianController.commitNormalize();
-			input.value = snapshot.normalizedDisplay;
-			commitGregorianSnapshot(snapshot, { commitAttempt: true });
-		} else {
-			commitLunarText(input.value, true);
-		}
 		input.blur();
 	});
 
@@ -880,7 +1057,8 @@ function initRoot(root: HTMLElement): void {
 
 	const refreshResultForResponsiveState = () => {
 		layoutApi?.applyLayoutAttrs?.(document);
-		syncCommittedResult(fieldPhase === "draft-complete-invalid");
+		/* incomplete + complete-invalid both keep Result ?；do not restore last committed. */
+		syncCommittedResult(fieldPhase !== "committed-valid");
 	};
 	window.addEventListener("resize", refreshResultForResponsiveState);
 	window.addEventListener("orientationchange", refreshResultForResponsiveState);
@@ -910,6 +1088,7 @@ function initRoot(root: HTMLElement): void {
 			gregorianCalendarAdapter?.destroy();
 			lunarPickerAdapter?.destroy();
 			gregorianController?.destroy();
+			lunarNumericController?.destroy();
 			ameSessions.get(root)?.destroy();
 		},
 		{ once: true },

@@ -601,3 +601,18 @@
 		display: none;
 	}
 }
+
+/*
+ * Incomplete / invalid Result「?」：對齊 JEC Desktop primary 8.5rem（≈136px）。
+ * 只改「?」狀態，不連動正常日期 typography。
+ */
+[data-lunar-date-converter-v2]:is(
+		[data-ldcv2-field-phase="draft-incomplete"],
+		[data-ldcv2-field-phase="draft-complete-invalid"]
+	):is([data-ldcv2-locale="en"], [data-ldcv2-locale="zh"]):is(
+		[data-ldcv2-input-mode="gregorian"],
+		[data-ldcv2-input-mode="lunar"]
+	)
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"] {
+	--rs-textual-primary-size: 8.5rem;
+}

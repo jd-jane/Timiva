@@ -183,7 +183,7 @@ console.log("validate-date-calculator-date-input");
 // ---------------------------------------------------------------------------
 // Numeric inference
 // ---------------------------------------------------------------------------
-assertTypedAndPasted("199011", "1990 / 01 / 01", "6-digit 199011");
+assertTypedAndPasted("199011", "1990 / 11", "6-digit 199011 → month 11 waiting for day");
 assertTypedAndPasted("1950820", "1950 / 08 / 20", "7-digit 1950820");
 assertTypedAndPasted("1950102", "1950 / 10 / 02", "7-digit 1950102");
 assertTypedAndPasted("1950131", "1950 / 01 / 31", "7-digit 1950131");
@@ -237,17 +237,19 @@ assertParse("19000101", { year: 1900, month: 1, day: 1 }, "DC min 1900-01-01");
 
 {
 	const six = segmentsFromStreamDigits("199011");
-	assert(isEntryCompleteForCommit(six) === false, "6-digit stream not commit while typing");
+	assert(isEntryCompleteForCommit(six) === false, "6-digit month-only not commit while typing");
 	assert(
-		isEntryCompleteForCommit(six, { fromBlurOrEnter: true }) === true,
-		"6-digit blur／Enter may commit when valid",
+		isEntryCompleteForCommit(six, { fromBlurOrEnter: true }) === false,
+		"6-digit month-only still incomplete on blur",
 	);
 	assert(
-		isEntryCompleteForCommit(six, { fromPaste: true }) === true,
-		"6-digit paste complete may commit when valid",
+		isEntryCompleteForCommit(six, { fromPaste: true }) === false,
+		"6-digit month-only still incomplete on paste",
 	);
 	const normalized = formatSegmentsNormalized(normalizeSegmentsForBlur(six));
-	assert(normalized === "1990 / 01 / 01", "6-digit blur normalize");
+	assert(normalized === "1990 / 11", "6-digit blur keeps month 11 waiting for day");
+	const eight = segmentsFromStreamDigits("19900101");
+	assert(isEntryCompleteForCommit(eight, { fromPaste: true }) === true, "8-digit paste may commit");
 }
 
 // ---------------------------------------------------------------------------

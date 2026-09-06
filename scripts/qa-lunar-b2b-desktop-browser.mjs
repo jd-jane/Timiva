@@ -188,7 +188,21 @@ async function commitField(page) {
 
 async function fillLunar(page, text) {
 	const input = page.locator("[data-ldcv2-date-input]");
-	await input.fill(text);
+	await input.click();
+	/* Use paste path（full replace）— Playwright fill can race focus→semantic expand. */
+	await page.evaluate((t) => {
+		const el = document.querySelector("[data-ldcv2-date-input]");
+		if (!el) return;
+		const clip = new DataTransfer();
+		clip.setData("text/plain", t);
+		el.dispatchEvent(
+			new ClipboardEvent("paste", {
+				bubbles: true,
+				cancelable: true,
+				clipboardData: clip,
+			}),
+		);
+	}, text);
 	await input.press("Enter");
 }
 
@@ -329,7 +343,6 @@ const browser = await chromium.launch({ headless: true });
 	let r = await readResult(page);
 	assert(r.primary.startsWith("Lunar"), "EN initial: lunar result");
 	assert(r.input.includes(String(today.getFullYear())), "EN initial: today in field");
-	const committedBaseline = r.primary;
 
 	/* Continuous raw stream — per-keypress with simulated stale DOM caret */
 	await input.fill("");
@@ -345,26 +358,81 @@ const browser = await chromium.launch({ headless: true });
 		assert(snap.phase === "draft-incomplete", `EN 190 step ${digit} draft-incomplete`);
 	}
 	r = await readResult(page);
-	assert(r.primary === committedBaseline, "EN 190 steps: result unchanged until commit");
+	assert(r.primary === "?", "EN 190 steps: Result ? while incomplete");
 	assert(r.errorWrapHidden, "EN 190 steps: no error wrap");
+	assert(r.error.length === 0, "EN 190 steps: no error text");
+
+	/* Real keyboard：2→20→202→2020 must not desync to 220/0 */
+	await input.fill("");
+	await input.click();
+	const yearSteps = [];
+	for (const ch of "2020") {
+		await page.keyboard.type(ch, { delay: 15 });
+		yearSteps.push(
+			await page.evaluate(() => {
+				const el = document.querySelector("[data-ldcv2-date-input]");
+				return {
+					value: el?.value ?? "",
+					digits: (el?.value ?? "").replace(/\D/g, ""),
+					caret: el?.selectionStart ?? -1,
+				};
+			}),
+		);
+	}
+	assert(yearSteps[0].value === "2" && yearSteps[0].digits === "2", `EN real 2 (${yearSteps[0].value})`);
+	assert(yearSteps[1].value === "20" && yearSteps[1].digits === "20", `EN real 20 (${yearSteps[1].value})`);
+	assert(yearSteps[2].value === "202" && yearSteps[2].digits === "202", `EN real 202 (${yearSteps[2].value})`);
+	assert(
+		yearSteps[3].value === "2020" && yearSteps[3].digits === "2020",
+		`EN real 2020 (${yearSteps[3].value})`,
+	);
+	assert(!yearSteps.some((s) => /220/.test(s.value)), "EN real 2020 never renders 220/0");
+
+	/* Month wait：20241 → 202410/11/12；2024121；2024512 */
+	const monthCases = [
+		["20241", "2024 / 1", "?", true],
+		["202410", "2024 / 10", "?", true],
+		["202411", "2024 / 11", "?", true],
+		["202412", "2024 / 12", "?", true],
+		["2024121", "2024 / 12 / 1", null, false],
+		["2024512", "2024 / 5 / 12", null, false],
+	];
+	for (const [digits, expectedInput, primaryOrNull, expectIncomplete] of monthCases) {
+		await input.fill("");
+		await typeDigitsIntoField(page, digits);
+		r = await readResult(page);
+		assert(r.input === expectedInput, `EN month-wait ${digits} → ${expectedInput} (got ${r.input})`);
+		if (expectIncomplete) {
+			assert(r.primary === "?", `EN month-wait ${digits}: Result ?`);
+			assert(r.errorWrapHidden, `EN month-wait ${digits}: no error`);
+		} else {
+			assert(r.primary !== "?", `EN month-wait ${digits}: Result updates while focused`);
+			assert(!/^Lunar\b/i.test(r.input), `EN month-wait ${digits}: still numeric while focused`);
+		}
+		void primaryOrNull;
+	}
+	await commitField(page);
+	r = await readResult(page);
+	assert(r.input.includes("2024 / 05 / 12") || r.input.includes("2024 / 5 / 12"), `EN blur gregorian pad (${r.input})`);
 
 	/* Smart Date Input — continuous digits / paste parity / delete to empty */
 	await input.fill("");
-	await typeDigitsIntoField(page, "200011");
+	await typeDigitsIntoField(page, "20001");
 	r = await readResult(page);
-	assert(r.input === "2000 / 1 / 1", `EN type 200011 mid-stream (${r.input})`);
-	assert(r.errorWrapHidden, "EN 6-digit mid-stream: no error wrap");
-	assert(r.primary === committedBaseline, "EN 6-digit mid-stream: result unchanged until commit");
+	assert(r.input === "2000 / 1", `EN type 20001 incomplete mid-stream (${r.input})`);
+	assert(r.errorWrapHidden, "EN incomplete mid-stream: no error wrap");
+	assert(r.primary === "?", "EN incomplete mid-stream: Result ?");
 
 	await typeDigitsIntoField(page, "20001111");
 	r = await readResult(page);
 	assert(r.input === "2000 / 11 / 11", `EN type 20001111 (${r.input})`);
 	assert(r.errorWrapHidden, "EN 8-digit typing: no error wrap");
-	assert(r.primary === committedBaseline, "EN 8-digit typing: result unchanged until blur");
+	assert(r.primary.includes("Lunar"), "EN 8-digit typing: immediate Result (no blur)");
+	assert(!/^Lunar\b/i.test(r.input), "EN 8-digit focused field stays numeric");
 	await commitField(page);
 	r = await readResult(page);
 	assert(r.input.includes("2000 / 11 / 11"), "EN type 20001111 blur normalized");
-	assert(r.primary.includes("Lunar"), "EN type 20001111 blur updates result");
+	assert(r.primary.includes("Lunar"), "EN type 20001111 still valid after blur");
 
 	await input.fill("");
 	await typeDigitsSlow(page, "19991122", 0);
@@ -396,7 +464,7 @@ const browser = await chromium.launch({ headless: true });
 	r = await readResult(page);
 	assert(r.input === "", "EN select-all delete → empty");
 
-	/* incomplete gregorian draft — partial paste without blur commit */
+	/* incomplete gregorian draft — Result ? + no error */
 	await pasteIntoField(page, "2026 / 08 / 1");
 	const phase = await page.evaluate(() =>
 		document
@@ -404,7 +472,6 @@ const browser = await chromium.launch({ headless: true });
 			?.getAttribute("data-ldcv2-field-phase"),
 	);
 	r = await readResult(page);
-	const committedAfterInit = r.primary;
 	assert(
 		phase === "draft-incomplete" || phase === "committed-valid",
 		`EN greg partial paste phase (${phase})`,
@@ -412,7 +479,7 @@ const browser = await chromium.launch({ headless: true });
 	if (phase === "draft-incomplete") {
 		assert(r.errorWrapHidden, "EN greg incomplete: no error wrap");
 		assert(r.error.length === 0, "EN greg incomplete: no error text");
-		assert(r.primary === committedAfterInit, "EN greg incomplete: result unchanged");
+		assert(r.primary === "?", "EN greg incomplete: Result ?");
 	} else {
 		note("EN greg partial paste auto-normalized in headless; verified via lunar incomplete path");
 	}
@@ -461,6 +528,18 @@ const browser = await chromium.launch({ headless: true });
 	r = await readResult(page);
 	assert(r.primary === "Aug 17, 2026", "EN lunar→gregorian Aug 17, 2026");
 	assert(r.weekday === "Monday", "EN lunar result weekday");
+	assert(r.input === "Lunar 2026/7/5", `EN lunar committed field (${r.input})`);
+
+	/* focus again → numeric editing；blur → semantic */
+	await input.click();
+	r = await readResult(page);
+	assert(!/^Lunar\b/i.test(r.input), `EN lunar refocus → numeric (${r.input})`);
+	assert(/\d/.test(r.input), "EN lunar refocus has digits");
+	const primaryWhileFocused = r.primary;
+	await commitField(page);
+	r = await readResult(page);
+	assert(r.input === "Lunar 2026/7/5", `EN lunar blur → semantic again (${r.input})`);
+	assert(r.primary === primaryWhileFocused, "EN lunar focus/blur keeps actual date Result");
 
 	/* leap valid */
 	await fillLunar(page, "1963閏4月15");
@@ -469,14 +548,33 @@ const browser = await chromium.launch({ headless: true });
 	assert(r.primary !== "?", "EN leap: valid conversion");
 	assert(r.errorWrapHidden, "EN leap: no error wrap");
 	assert(r.error.length === 0, "EN leap: no error text");
+	assert(r.input === "Lunar 1963/Leap 4/15", `EN leap committed field (${r.input})`);
+	await input.click();
+	r = await readResult(page);
+	assert(!/^Lunar\b/i.test(r.input), `EN leap refocus drops Lunar prefix (${r.input})`);
+	await commitField(page);
+	r = await readResult(page);
+	assert(r.input === "Lunar 1963/Leap 4/15", "EN leap blur restores Leap semantic");
 
-	/* lunar incomplete draft keeps committed result */
-	const committedGreg = r.primary;
-	await page.locator("[data-ldcv2-date-input]").fill("1980/4/");
+	/* lunar incomplete draft → Result ? + no error */
+	await page.evaluate(() => {
+		const el = document.querySelector("[data-ldcv2-date-input]");
+		if (!el) return;
+		el.focus();
+		const clip = new DataTransfer();
+		clip.setData("text/plain", "1980/4/");
+		el.dispatchEvent(
+			new ClipboardEvent("paste", {
+				bubbles: true,
+				cancelable: true,
+				clipboardData: clip,
+			}),
+		);
+	});
 	r = await readResult(page);
 	assert(r.errorWrapHidden, "EN lunar incomplete: no error wrap");
 	assert(r.error.length === 0, "EN lunar incomplete: no error text");
-	assert(r.primary === committedGreg, "EN lunar incomplete: result unchanged");
+	assert(r.primary === "?", "EN lunar incomplete: Result ?");
 
 	/* Pattern B — invalid lunar day (muted ! + neutral explanation) */
 	await fillLunar(page, "1980/4/31");
@@ -494,17 +592,54 @@ const browser = await chromium.launch({ headless: true });
 	assert(r.error.length > 0, "EN lunar out of range: explanation shown");
 	assertNoDangerRed(r.errorTextColor, "EN lunar out of range: text color");
 
-	/* Pattern A — compact numeric (no parser yet; icon only) */
+	/* Owner compact digits — regular month, never invent leap */
+	await fillLunar(page, "2024512");
+	r = await readResult(page);
+	assert(r.primary !== "?", "EN compact 2024512 converts");
+	assert(r.errorWrapHidden, "EN compact 2024512: no error");
+	assert(r.input === "Lunar 2024/5/12", `EN compact 2024512 committed field (${r.input})`);
+
+	await fillLunar(page, "19630415");
+	r = await readResult(page);
+	assert(r.primary !== "?", "EN compact 19630415 converts as regular");
+	assert(!/Leap/i.test(r.input), "EN compact 19630415 field not leap-marked");
+	assert(r.input === "Lunar 1963/4/15", `EN compact 19630415 committed field (${r.input})`);
+
 	await fillLunar(page, "1980414");
 	r = await readResult(page);
-	assert(r.primary === "?", "EN compact 1980414 rejected");
-	assert(r.error.length === 0, "EN compact 1980414: no visible error text");
+	assert(r.primary !== "?", "EN compact 1980414 converts as regular");
+	assert(r.error.length === 0, "EN compact 1980414: no error text");
+	assert(r.input === "Lunar 1980/4/14", `EN compact 1980414 committed field (${r.input})`);
 
-	/* Pattern B — 潤 typo */
+	/* Pattern B — 潤 alias accepted；committed display uses 閏 only */
 	await fillLunar(page, "1963潤4月15");
 	r = await readResult(page);
-	assert(r.primary === "?", "EN 潤 typo rejected");
-	assert(r.error.length > 0, "EN 潤 typo: explanation shown");
+	assert(r.primary !== "?", "EN 潤 alias accepted as leap");
+	assert(r.error.length === 0, "EN 潤 alias: no error text");
+	assert(r.errorWrapHidden, "EN 潤 alias: no error wrap");
+	assert(/Leap/i.test(r.input) || /Leap/i.test(r.primary), "EN 潤 alias yields leap result");
+	assert(!/潤/.test(r.input), "EN field never keeps 潤");
+
+	/* Compact leap：1963閏415／1963潤415 */
+	await fillLunar(page, "1963閏415");
+	r = await readResult(page);
+	assert(r.primary !== "?", "EN compact 閏415 converts");
+	assert(r.error.length === 0, "EN compact 閏415: no error");
+	assert(/Leap/i.test(r.input) || /Leap/i.test(r.primary), "EN compact 閏415 is leap");
+	assert(r.input === "Lunar 1963/Leap 4/15", `EN compact 閏415 field (${r.input})`);
+
+	await fillLunar(page, "1963潤415");
+	r = await readResult(page);
+	assert(r.primary !== "?", "EN compact 潤415 converts");
+	assert(r.error.length === 0, "EN compact 潤415: no error");
+	assert(r.input === "Lunar 1963/Leap 4/15", `EN compact 潤415 field (${r.input})`);
+	assert(!/潤/.test(r.input), "EN compact 潤415 never keeps 潤");
+
+	await fillLunar(page, "2024閏415");
+	r = await readResult(page);
+	assert(r.primary === "?", "EN compact leap no-leap-year → ?");
+	assert(r.error.length > 0, "EN compact leap no-leap-year: explanation");
+	assertNoDangerRed(r.errorTextColor, "EN compact leap no-leap-year: text color");
 
 	/* switch preserves actualCivil */
 	await fillLunar(page, "2026/7/5");
@@ -513,11 +648,24 @@ const browser = await chromium.launch({ headless: true });
 	assert(r.input.includes("08 / 17"), "EN switch: gregorian field from actualCivil");
 	assert(r.primary.includes("Lunar 7/5"), "EN switch: lunar result from actualCivil");
 
-	/* draft discard on switch — no flicker to ? */
+	/* draft discard on switch — incomplete shows ? then switch restores committed */
 	await page.locator('[data-ldcv2-switch="lunar"]').click();
-	await page.locator("[data-ldcv2-date-input]").fill("1980/4/");
+	await page.evaluate(() => {
+		const el = document.querySelector("[data-ldcv2-date-input]");
+		if (!el) return;
+		el.focus();
+		const clip = new DataTransfer();
+		clip.setData("text/plain", "1980/4/");
+		el.dispatchEvent(
+			new ClipboardEvent("paste", {
+				bubbles: true,
+				cancelable: true,
+				clipboardData: clip,
+			}),
+		);
+	});
 	r = await readResult(page);
-	assert(r.primary === "Aug 17, 2026", "EN draft lunar incomplete keeps committed gregorian result");
+	assert(r.primary === "?", "EN draft lunar incomplete → Result ?");
 	await page.locator('[data-ldcv2-switch="gregorian"]').click();
 	r = await readResult(page);
 	assert(r.input.includes("08 / 17"), "EN switch discards draft, keeps committed");
@@ -547,7 +695,8 @@ const browser = await chromium.launch({ headless: true });
 	await page.locator('[data-ldcv2-switch="lunar"]').click();
 	let r = await readResult(page);
 	assert(
-		/[初十廿三]?[一二三四五六七八九十]+日/.test(r.input) || /初/.test(r.input),
+		/[初十廿三]?[一二三四五六七八九十]+日?/.test(r.input) ||
+			/初|廿|年/.test(r.input),
 		`ZH lunar field Chinese day on switch (${r.input})`,
 	);
 
@@ -555,6 +704,41 @@ const browser = await chromium.launch({ headless: true });
 	r = await readResult(page);
 	assert(r.primary.includes("2026"), "ZH lunar→gregorian");
 	assert(r.weekday.length > 0, "ZH lunar result weekday slot");
+	assert(
+		/年/.test(r.input) && /[正一二三四五六七八九十]+月/.test(r.input),
+		`ZH lunar complete → semantic field (${r.input})`,
+	);
+	assert(!/\d+\s*\/\s*\d+\s*\/\s*\d+/.test(r.input), "ZH lunar complete: not Gregorian-like Y/M/D");
+
+	await fillLunar(page, "1963閏4月15");
+	r = await readResult(page);
+	assert(/閏/.test(r.input), `ZH leap complete keeps 閏 (${r.input})`);
+	assert(r.primary !== "?", "ZH leap converts");
+	assert(!/\d+\s*\/\s*\d+\s*\/\s*\d+/.test(r.input), "ZH leap complete: not Gregorian-like Y/M/D");
+
+	await fillLunar(page, "1963潤4月15");
+	r = await readResult(page);
+	assert(r.primary !== "?", "ZH 潤 alias converts");
+	assert(r.error.length === 0, "ZH 潤 alias: no error");
+	assert(/閏/.test(r.input) && !/潤/.test(r.input), `ZH 潤 → committed 閏 (${r.input})`);
+	assert(r.input === "1963年閏四月十五", `ZH 潤 committed display (${r.input})`);
+
+	await fillLunar(page, "1963潤四月15");
+	r = await readResult(page);
+	assert(r.primary !== "?", "ZH 潤四月15 converts");
+	assert(r.input === "1963年閏四月十五", `ZH 潤四月15 committed (${r.input})`);
+
+	await fillLunar(page, "1963閏415");
+	r = await readResult(page);
+	assert(r.primary !== "?", "ZH compact 閏415 converts");
+	assert(r.error.length === 0, "ZH compact 閏415: no error");
+	assert(r.input === "1963年閏四月十五", `ZH compact 閏415 committed (${r.input})`);
+
+	await fillLunar(page, "1963潤415");
+	r = await readResult(page);
+	assert(r.primary !== "?", "ZH compact 潤415 converts");
+	assert(r.input === "1963年閏四月十五", `ZH compact 潤415 committed (${r.input})`);
+	assert(!/潤/.test(r.input), "ZH compact 潤415 never keeps 潤");
 
 	await page.locator('[data-ldcv2-switch="gregorian"]').click();
 	r = await readResult(page);

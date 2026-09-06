@@ -148,8 +148,12 @@ assertStreamDigits("1950131", "1950 / 1 / 31", "1950131 month 1 day 31");
 assertStreamValid("1950131", "1950131");
 assertStreamDigits("19500120", "1950 / 01 / 20", "19500120 month 01");
 assertStreamValid("19500120", "19500120");
-assertStreamDigits("199011", "1990 / 1 / 1", "199011 six-digit M/D");
-assertStreamValid("199011", "199011");
+assertStreamDigits("199011", "1990 / 11", "199011 six-digit waits month 11");
+assert(
+	parseBirthDateSegments(typeDigitsForward(emptyDateSegments(), "199011"), FIXED_TODAY) ===
+		null,
+	"199011 month-only is not a complete birth date",
+);
 assertStreamDigits("200055", "2000 / 5 / 5", "200055 single-digit month and day");
 assertStreamValid("200055", "200055");
 assertStreamDigits("2000131", "2000 / 1 / 31", "2000131 month 1 day 31");
@@ -172,9 +176,19 @@ assert(
 	"splitMonthDayDigits rejects month 13",
 );
 assert(
-	splitMonthDayDigits("11", 1990).month === "1" &&
-		splitMonthDayDigits("11", 1990).day === "1",
-	"six-digit rest always M/D",
+	splitMonthDayDigits("11", 1990).month === "11" &&
+		splitMonthDayDigits("11", 1990).day === "",
+	"six-digit rest 11 waits as month 11（not M/D）",
+);
+assert(
+	splitMonthDayDigits("51", 2024).month === "5" &&
+		splitMonthDayDigits("51", 2024).day === "1",
+	"six-digit rest 51 is M/D when month head not 0/1x-12",
+);
+assert(
+	splitMonthDayDigits("10", 2024).month === "10" &&
+		splitMonthDayDigits("10", 2024).day === "",
+	"six-digit rest 10 waits as month 10",
 );
 assert(
 	splitMonthDayDigits("1101", 1990).month === "11" &&
@@ -184,7 +198,7 @@ assert(
 
 // Mid-segment overwrite (collapsed caret and single-digit selection)
 {
-	const base = segmentsFromStreamDigits("19990104");
+	const base = { ...segmentsFromStreamDigits("19990104"), preferStream: false };
 
 	const yearThirdCollapsed = applySegmentInputChange(base, "insertText", "5", 2, 2);
 	assert(
@@ -317,7 +331,7 @@ assert(
 
 // Editing year digit should not shift month/day
 {
-	let segments = segmentsFromStreamDigits("19950812");
+	let segments = { ...segmentsFromStreamDigits("19950812"), preferStream: false };
 	const result = applySegmentInputChange(segments, "insertText", "0", 1, 1);
 	segments = result.segments;
 	assert(
@@ -605,6 +619,36 @@ assert(
 );
 
 assert(extractDateDigits("1995/08/12") === "19950812", "extract slashes");
+
+/**
+ * Typing stability：preferStream + stale DOM caret 不得反向重排 digits。
+ */
+function typeDigitsWithCaretLag(chars, lag) {
+	let segments = emptyDateSegments();
+	for (const ch of chars) {
+		const display = formatSegmentsDisplay(segments);
+		const caret = Math.max(0, display.length - lag);
+		const result = applySegmentInputChange(segments, "insertText", ch, caret, caret);
+		segments = result.segments;
+	}
+	return segments;
+}
+
+{
+	const yearCases = ["1945", "2020", "1980", "2000"];
+	for (const year of yearCases) {
+		for (const lag of [0, 1, 2, 3]) {
+			for (let i = 0; i < 30; i += 1) {
+				const typed = typeDigitsWithCaretLag(year, lag);
+				assert(
+					formatSegmentsDisplay(typed) === year && typed.year === year,
+					`Age year ${year} caret-lag=${lag} repeat=${i} (got ${formatSegmentsDisplay(typed)})`,
+				);
+				assert(typed.preferStream === true, `Age ${year} lag=${lag} keeps preferStream`);
+			}
+		}
+	}
+}
 
 console.log(`Results: ${passed} passed, ${failed} failed`);
 if (failed > 0) {

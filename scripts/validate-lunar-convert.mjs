@@ -13,6 +13,10 @@ import {
 	daysInLunarMonth,
 	getLunarYearInfo,
 	gregorianToLunar,
+	isGregorianLeapYear,
+	daysInGregorianMonth,
+	isValidCivilDate,
+	validatePublicGregorian,
 	LUNAR_DATASET_PROVENANCE,
 	LUNAR_DATASET_YEAR_MAX,
 	LUNAR_DATASET_YEAR_MIN,
@@ -267,6 +271,37 @@ for (let y = 1901; y <= 2099; y += 7) {
 	}
 }
 assert(denseOk > 100, `dense samples exercised (${denseOk})`);
+
+/* —— Gregorian leap-year civil（B2E boundary） —— */
+{
+	assert(isGregorianLeapYear(2000), "2000 is Gregorian leap year");
+	assert(!isGregorianLeapYear(1900), "1900 is not Gregorian leap year");
+	assert(!isGregorianLeapYear(2100), "2100 is not Gregorian leap year");
+	assert(isGregorianLeapYear(2024), "2024 is Gregorian leap year");
+	assertEq(daysInGregorianMonth(2000, 2), 29, "2000-02 has 29 days");
+	assertEq(daysInGregorianMonth(1900, 2), 28, "1900-02 has 28 days");
+	assert(isValidCivilDate({ year: 2000, month: 2, day: 29 }), "2000-02-29 valid civil");
+	assert(!isValidCivilDate({ year: 1900, month: 2, day: 29 }), "1900-02-29 invalid civil");
+	assert(!isValidCivilDate({ year: 2023, month: 2, day: 29 }), "2023-02-29 invalid civil");
+
+	const leapOk = validatePublicGregorian({ year: 2000, month: 2, day: 29 });
+	assert(leapOk.status === "valid", "public G 2000-02-29 accepted");
+	const nonLeap = validatePublicGregorian({ year: 2023, month: 2, day: 29 });
+	assert(nonLeap.status === "invalid", "public G 2023-02-29 rejected");
+
+	const g2000 = gregorianToLunar({ year: 2000, month: 2, day: 29 });
+	assert(g2000.ok, "G 2000-02-29 → lunar ok");
+	if (g2000.ok) {
+		const back = lunarToGregorian(g2000.value);
+		assert(
+			back.ok &&
+				back.value.year === 2000 &&
+				back.value.month === 2 &&
+				back.value.day === 29,
+			"L←G 2000-02-29 round-trip",
+		);
+	}
+}
 
 console.log(`Result: ${passed} passed, ${failed} failed`);
 if (failed > 0) process.exit(1);

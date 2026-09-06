@@ -193,12 +193,123 @@ assert(
 	const zhRegular = evaluateLunarInput("1980四月15日", { commit: true });
 	assertEq(zhRegular.status, "valid", "1980四月15日 valid");
 
-	const typo = evaluateLunarInput("1963潤4月15", { commit: true });
-	assertEq(typo.status, "invalid", "潤 typo rejected on commit");
-	assertEq(typo.errorCode, "unsupported-leap-typo", "潤 typo error code");
+	/* Owner alias：潤 → 閏 at parse boundary；committed display never keeps 潤 */
+	const aliasNum = evaluateLunarInput("1963潤4月15", { commit: true });
+	assertEq(aliasNum.status, "valid", "1963潤4月15 accepted as leap alias");
+	assertEq(aliasNum.lunar?.isLeapMonth, true, "1963潤4月15 is leap");
+	assertEq(
+		aliasNum.lunar,
+		evaluateLunarInput("1963閏4月15", { commit: true }).lunar,
+		"潤 alias matches 閏 parse",
+	);
+	assertEq(
+		formatLunarInputDisplayForLocale(aliasNum.lunar, "zh"),
+		"1963年閏四月十五",
+		"潤 input commits as 閏 display",
+	);
+	assert(
+		!formatLunarInputDisplayForLocale(aliasNum.lunar, "zh").includes("潤"),
+		"committed ZH display never keeps 潤",
+	);
+
+	const aliasZh = evaluateLunarInput("1963潤四月15", { commit: true });
+	assertEq(aliasZh.status, "valid", "1963潤四月15 accepted");
+	assertEq(aliasZh.lunar?.isLeapMonth, true, "1963潤四月15 is leap");
+
+	const aliasIncomplete = evaluateLunarInput("1963潤", { commit: true });
+	assertEq(aliasIncomplete.status, "incomplete", "1963潤 incomplete (not typo-error)");
+	assertEq(aliasIncomplete.errorCode, null, "1963潤 no error code");
+
+	const aliasInvalidLeap = evaluateLunarInput("2023潤4月15", { commit: true });
+	assertEq(aliasInvalidLeap.status, "invalid", "潤 + invalid leap year still invalid");
+	assertEq(
+		aliasInvalidLeap.errorCode,
+		"invalid-leap-month",
+		"潤 alias still uses invalid-leap-month (not unsupported-leap-typo)",
+	);
+
+	/* Owner compact leap：閏／潤 + digits，不強制「月」 */
+	const compactLeap = evaluateLunarInput("1963閏415", { commit: true });
+	assertEq(compactLeap.status, "valid", "1963閏415 valid leap");
+	assertEq(
+		compactLeap.lunar,
+		{ year: 1963, month: 4, day: 15, isLeapMonth: true },
+		"1963閏415 → leap 4/15",
+	);
+	assertEq(
+		formatLunarInputDisplayForLocale(compactLeap.lunar, "zh"),
+		"1963年閏四月十五",
+		"1963閏415 commits as 閏 display",
+	);
+
+	const compactAlias = evaluateLunarInput("1963潤415", { commit: true });
+	assertEq(compactAlias.status, "valid", "1963潤415 valid leap");
+	assertEq(compactAlias.lunar, compactLeap.lunar, "1963潤415 matches 閏415");
+	assertEq(
+		formatLunarInputDisplayForLocale(compactAlias.lunar, "zh"),
+		"1963年閏四月十五",
+		"1963潤415 commits as 閏 display",
+	);
+
+	assertEq(
+		evaluateLunarInput("1963閏", { commit: true }).status,
+		"incomplete",
+		"1963閏 incomplete",
+	);
+	assertEq(
+		evaluateLunarInput("1963閏4", { commit: true }).status,
+		"incomplete",
+		"1963閏4 incomplete",
+	);
+	assertEq(
+		evaluateLunarInput("1963潤4", { commit: true }).status,
+		"incomplete",
+		"1963潤4 incomplete",
+	);
+
+	const compactNoLeapYear = evaluateLunarInput("2024閏415", { commit: true });
+	assertEq(compactNoLeapYear.status, "invalid", "2024閏415 invalid (no leap)");
+	assertEq(
+		compactNoLeapYear.errorCode,
+		"invalid-leap-month",
+		"2024閏415 → invalid-leap-month not unrecognized-format",
+	);
+
+	const compactWrongLeap = evaluateLunarInput("1963閏515", { commit: true });
+	assertEq(compactWrongLeap.status, "invalid", "1963閏515 wrong leap month");
+	assertEq(
+		compactWrongLeap.errorCode,
+		"invalid-leap-month",
+		"1963閏515 → invalid-leap-month",
+	);
+
+	const compactBadDay = evaluateLunarInput("1963閏430", { commit: true });
+	assertEq(compactBadDay.status, "invalid", "1963閏430 day out of range");
+	assertEq(
+		compactBadDay.errorCode,
+		"invalid-lunar-day",
+		"1963閏430 → invalid-lunar-day not unrecognized-format",
+	);
 
 	const compact = evaluateLunarInput("1980414", { commit: true });
-	assertEq(compact.status, "invalid", "compact 1980414 not supported");
+	assertEq(compact.status, "valid", "compact 1980414 → regular 1980/4/14");
+	assertEq(
+		compact.lunar,
+		{ year: 1980, month: 4, day: 14, isLeapMonth: false },
+		"compact 1980414 never invents leap",
+	);
+
+	const ownerCompact = evaluateLunarInput("2024512", { commit: true });
+	assertEq(ownerCompact.status, "valid", "Owner: 2024512 → 2024/5/12");
+	assertEq(
+		ownerCompact.lunar,
+		{ year: 2024, month: 5, day: 12, isLeapMonth: false },
+		"2024512 regular month",
+	);
+
+	const regularApril = evaluateLunarInput("19630415", { commit: true });
+	assertEq(regularApril.status, "valid", "Owner: 19630415 → regular April 15");
+	assertEq(regularApril.lunar?.isLeapMonth, false, "19630415 never invents leap");
 
 	const incomplete = evaluateLunarInput("1980/4/", { commit: false });
 	assertEq(incomplete.status, "incomplete", "incomplete draft no error");
@@ -235,10 +346,66 @@ assert(
 	const lunar = gregorianToLunar(civil);
 	assert(lunar.ok, "lunar for repopulate");
 	const enField = formatLunarInputDisplayForLocale(lunar.value, "en");
+	assert(enField.startsWith("Lunar "), "EN lunar field uses Lunar prefix");
 	assert(enField.includes("2026"), "EN lunar field repopulate from actualCivil");
+	assert(!/^\d{4}\/\d/.test(enField), "EN committed field is not bare Y/M/D");
 	const zhField = formatLunarInputDisplayForLocale(lunar.value, "zh");
+	assert(zhField.includes("年"), "ZH committed field includes 年");
 	assert(zhField.includes("初五"), "ZH field repopulate uses Chinese day name (初五 for 7/5)");
+	assert(!/\d+\/\d+\/\d+/.test(zhField), "ZH field must not look like Gregorian Y/M/D");
 	assert(!/7\/5|7月5|月初5|月5日/.test(zhField), "ZH field must not use Arabic day digits");
+	assertEq(
+		formatLunarInputDisplayForLocale(
+			{ year: 2023, month: 1, day: 1, isLeapMonth: false },
+			"zh",
+		),
+		"2023年正月初一",
+		"Owner ZH regular committed display",
+	);
+	assertEq(
+		formatLunarInputDisplayForLocale(
+			{ year: 1963, month: 4, day: 15, isLeapMonth: true },
+			"zh",
+		),
+		"1963年閏四月十五",
+		"Owner ZH leap committed display",
+	);
+	assertEq(
+		formatLunarInputDisplayForLocale(
+			{ year: 2023, month: 1, day: 1, isLeapMonth: false },
+			"en",
+		),
+		"Lunar 2023/1/1",
+		"Owner EN regular committed display",
+	);
+	assertEq(
+		formatLunarInputDisplayForLocale(
+			{ year: 1963, month: 4, day: 15, isLeapMonth: true },
+			"en",
+		),
+		"Lunar 1963/Leap 4/15",
+		"Owner EN leap committed display",
+	);
+	assertEq(
+		evaluateLunarInput("2023年正月初一", { commit: true }).status,
+		"valid",
+		"Owner ZH regular re-parses",
+	);
+	assertEq(
+		evaluateLunarInput("1963年閏四月十五", { commit: true }).lunar?.isLeapMonth,
+		true,
+		"Owner ZH leap re-parses with 閏",
+	);
+	assertEq(
+		evaluateLunarInput("Lunar 2023/1/1", { commit: true }).status,
+		"valid",
+		"Owner EN regular re-parses",
+	);
+	assertEq(
+		evaluateLunarInput("Lunar 1963/Leap 4/15", { commit: true }).lunar?.isLeapMonth,
+		true,
+		"Owner EN leap re-parses with Leap month segment",
+	);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -303,15 +470,16 @@ function assertTypedAndPasted(raw, expectedDisplay, label) {
 		true,
 		"6-digit stream not complete while typing",
 	);
+	assertEq(formatSegmentsDisplay(mid6), "2000 / 11", "6-digit 200011 → month 11 waiting for day");
 	assertEq(
-		resolveFieldStatus(mid6) === "valid",
+		resolveFieldStatus(mid6) === "incomplete",
 		true,
-		"6-digit 200011 temporarily valid but not entry-complete",
+		"6-digit 200011 incomplete until day",
 	);
 	assertEq(
 		formatSegmentsNormalized(normalizeSegmentsForBlur(mid6)),
-		"2000 / 01 / 01",
-		"6-digit blur normalize (must not apply during typing)",
+		"2000 / 11",
+		"6-digit blur keeps month-only incomplete",
 	);
 	const mid7 = typeDigitsForward(emptyDateSegments(), "2000111");
 	assertEq(formatSegmentsDisplay(mid7), "2000 / 11 / 1", "7-digit 2000111 mid-stream display");
@@ -453,8 +621,14 @@ assert(
 		"beforeinput must not commitNormalize during typing",
 	);
 	assert(
-		/if \(options\.commitAttempt\) \{[\s\S]*actualCivil = snapshot\.date/.test(script),
-		"valid actualCivil only updates on commitAttempt",
+		/if \(snapshot\.status === "valid" && snapshot\.date\) \{[\s\S]*actualCivil = snapshot\.date/.test(
+			script,
+		),
+		"Gregorian complete valid writes actualCivil immediately",
+	);
+	assert(
+		!/commitAttempt/.test(script),
+		"Gregorian no longer gates commit on commitAttempt",
 	);
 }
 assert(/ldcv2-date-input/.test(astro), "single primary field");
@@ -527,6 +701,155 @@ assert(
 	),
 	"layout contract exposes desktop input composition gate",
 );
+
+/* -------------------------------------------------------------------------- */
+/* B2E — unified bidirectional input contract（Owner corrective）              */
+/* -------------------------------------------------------------------------- */
+assert(
+	!/commitAttempt/.test(executableScript),
+	"B2E corrective: Gregorian commitAttempt gate removed",
+);
+assert(
+	/createLunarNumericFieldController/.test(executableScript),
+	"B2E corrective: Lunar numeric Smart Date controller wired",
+);
+assert(
+	/syncDraftUnknownResult/.test(executableScript),
+	"B2E corrective: incomplete／editing → Result ? helper",
+);
+assert(
+	/if \(snapshot\.status === "valid" && snapshot\.date\) \{[\s\S]*actualCivil = snapshot\.date/.test(
+		executableScript,
+	),
+	"B2E corrective: Gregorian complete valid updates actualCivil immediately",
+);
+assert(
+	/commitLunarNumericSnapshot[\s\S]*if \(snapshot\.status === "valid" && snapshot\.lunar\) \{[\s\S]*actualCivil = civil/.test(
+		executableScript,
+	),
+	"B2E corrective: Lunar numeric complete valid updates actualCivil immediately",
+);
+assert(
+	/if \(evaluated\.status === "valid" && evaluated\.lunar\) \{[\s\S]*actualCivil = civil/.test(
+		executableScript,
+	),
+	"B2E corrective: Lunar explicit-format complete valid updates actualCivil",
+);
+assert(
+	/case "out-of-public-range":[\s\S]*case "invalid-leap-month":[\s\S]*case "invalid-lunar-day":[\s\S]*return "with-message"/.test(
+		executableScript,
+	),
+	"B2E: Lunar Pattern B codes locked (range / leap / day)",
+);
+assert(
+	!/evaluateLunarInput[\s\S]{0,200}unsupported-leap-typo/.test(
+		read("src/lib/lunarDateConverterLunarInput.ts"),
+	),
+	"B2E: 潤 is alias — evaluate must not emit unsupported-leap-typo",
+);
+assert(
+	/invalidKind === "out-of-range" \? "with-message" : "indicator-only"/.test(executableScript),
+	"B2E: Gregorian Pattern A/B classification locked",
+);
+{
+	const evalSrc = read("src/lib/lunarDateConverterEvaluate.ts");
+	assert(
+		/primaryText:\s*"\?"/.test(evalSrc) && /weekday:\s*null/.test(evalSrc),
+		"B2E: invalid Result is ? with weekday null",
+	);
+}
+{
+	const compact = evaluateLunarInput("1980414", { commit: true });
+	assertEq(compact.status, "valid", "B2E corrective: compact 1980414 supported as regular");
+	assertEq(compact.lunar?.isLeapMonth, false, "B2E corrective: compact never invents leap");
+	const ownerA = evaluateLunarInput("2024512", { commit: true });
+	assertEq(ownerA.status, "valid", "B2E corrective: 2024512 valid");
+	const ownerB = evaluateLunarInput("19630415", { commit: true });
+	assertEq(ownerB.status, "valid", "B2E corrective: 19630415 valid regular");
+	assertEq(ownerB.lunar?.isLeapMonth, false, "B2E corrective: 19630415 not leap");
+}
+assert(
+	/normalizeField:\s*false/.test(executableScript) &&
+		/normalizeField:\s*true/.test(executableScript),
+	"B2E lifecycle: lunar normalizeField false while focused / true on blur",
+);
+assert(
+	/expandLunarCommittedToEditingDisplay/.test(executableScript),
+	"B2E lifecycle: focus expands committed semantic → numeric editing",
+);
+assert(
+	/addEventListener\("focus"/.test(executableScript),
+	"B2E lifecycle: focus listener present",
+);
+assert(
+	/formatLunarInputDisplayForLocale\(lunar,\s*locale\)/.test(executableScript),
+	"B2E committed-display: field uses formatLunarInputDisplayForLocale",
+);
+{
+	const leapDisplay = formatLunarInputDisplayForLocale(
+		{ year: 1963, month: 4, day: 15, isLeapMonth: true },
+		"en",
+	);
+	assertEq(leapDisplay, "Lunar 1963/Leap 4/15", "B2E: EN leap committed = Lunar Y/Leap M/D");
+	assert(!/\(leap\)/i.test(leapDisplay), "B2E: EN committed display does not use (leap) suffix");
+	const reparse = evaluateLunarInput(leapDisplay, { commit: true });
+	assertEq(reparse.status, "valid", "B2E: EN leap committed display re-parses");
+	assertEq(reparse.lunar?.isLeapMonth, true, "B2E: EN Leap month segment parses as leap");
+	const regularDisplay = formatLunarInputDisplayForLocale(
+		{ year: 2023, month: 1, day: 1, isLeapMonth: false },
+		"en",
+	);
+	assertEq(regularDisplay, "Lunar 2023/1/1", "B2E: EN regular committed = Lunar Y/M/D");
+	assertEq(
+		evaluateLunarInput(regularDisplay, { commit: true }).status,
+		"valid",
+		"B2E: EN regular committed re-parses",
+	);
+}
+assert(
+	/syncCommittedResult\(fieldPhase !== "committed-valid"\)/.test(executableScript),
+	"B2E corrective: responsive refresh keeps Result ? for incomplete + invalid",
+);
+assert(
+	!/syncCommittedResult\(fieldPhase === "draft-complete-invalid"\)/.test(executableScript),
+	"B2E corrective: incomplete must not restore last committed Result on resize",
+);
+assertEq(
+	resolveFieldStatus({ year: "2000", month: "02", day: "29" }),
+	"valid",
+	"B2E: Gregorian leap-day 2000-02-29 is valid field status",
+);
+assertEq(
+	resolveFieldStatus({ year: "2023", month: "02", day: "29" }),
+	"invalid",
+	"B2E: non-leap Feb 29 is invalid field status",
+);
+assertEq(
+	classifyGregorianInvalid({ year: "2023", month: "02", day: "29" }),
+	"invalid-date",
+	"B2E: non-leap Feb 29 → Pattern A invalid-date",
+);
+assertEq(
+	classifyGregorianInvalid({ year: "2100", month: "01", day: "01" }),
+	"out-of-range",
+	"B2E: G 2100 → Pattern B out-of-range",
+);
+{
+	const leapCivil = lunarToGregorian({
+		year: 1963,
+		month: 4,
+		day: 15,
+		isLeapMonth: true,
+	});
+	assert(leapCivil.ok, "B2E: leap lunar 1963-閏4-15 converts");
+	if (leapCivil.ok) {
+		const en = deriveResultPresentation(leapCivil.value, "gregorian", "en");
+		const zh = deriveResultPresentation(leapCivil.value, "gregorian", "zh");
+		assert(/leap|Lunar/i.test(en.primaryText), "B2E: EN leap Result mentions lunar");
+		assert(zh.primaryText.includes("\n"), "B2E: ZH leap Result stays two-line");
+		assert(zh.weekday != null, "B2E: ZH leap Result keeps weekday");
+	}
+}
 
 /* -------------------------------------------------------------------------- */
 /* Summary                                                                     */
