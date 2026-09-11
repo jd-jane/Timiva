@@ -1281,7 +1281,6 @@ export const en = {
       ],
     },
   },
-  /* B0 scaffold only — no FAQ / calculation / input copy yet */
   taiwanAnnualLeaveCalculator: {
     kicker: "Taiwan Annual Leave Calculator",
     relatedToolsDrawerAriaLabel: "Related tools drawer",
@@ -1291,6 +1290,72 @@ export const en = {
     resultPlaceholder: "?",
     resultAriaLabel: "Annual leave result placeholder",
     mobilePrimaryControlPlaceholderAriaLabel: "Primary control placeholder",
+    about: {
+      heading: "About Taiwan Annual Leave Calculator",
+      body: "Enter your start date to estimate your current annual leave days under Taiwan’s anniversary-based or calendar-year-based rules. Results follow Taiwan’s current statutory special leave standards; your company’s policy and employment agreement may still differ.",
+    },
+    howTo: {
+      heading: "How to use Taiwan Annual Leave Calculator",
+      steps: [
+        "Enter your hire / start date.",
+        "Choose anniversary-based or calendar-year-based leave.",
+        "See your current leave days, tenure, and next-stage details.",
+      ],
+      note: "Timiva remembers your last start date and leave method, then recalculates using today’s date the next time you open the tool.",
+    },
+    commonUses: {
+      heading: "Common uses",
+      items: [
+        "Check annual leave days",
+        "Tenure since hire",
+        "Anniversary-based leave",
+        "Calendar-year leave",
+      ],
+    },
+    faq: {
+      heading: "Taiwan Annual Leave Calculator FAQ",
+      items: [
+        {
+          question: "How are annual leave days calculated?",
+          answer:
+            "From your start date and years of service. Under current Taiwan rules with the same employer or business entity: 3 days after 6 months; 7 days after 1 year; 10 after 2 years; 14 after 3 years; 15 after 5 years; then 1 extra day each year after 10 years, up to 30 days.",
+        },
+        {
+          question: "What is the difference between anniversary-based and calendar-year leave?",
+          answer:
+            "Anniversary-based leave uses your hire date as the yearly starting point. Calendar-year leave uses 1 January–31 December. Calendar-year leave may prorate statutory days across year boundaries, but the total must not fall below the legal minimum.",
+        },
+        {
+          question: "Why can calendar-year results show fractions like 3.5 or 6.5 days?",
+          answer:
+            "Calendar-year leave may prorate leave that spans two years. In a Ministry of Labor example, 7 days prorated over half a year is 3.5 days, plus an existing 3 days, for 6.5 days in that year. Employers and employees may also agree how to handle fractional days.",
+        },
+        {
+          question: "Why might my company’s leave differ from this estimate?",
+          answer:
+            "Your company may use a different leave method, handle fractional days differently, or grant more leave than the legal minimum. This tool gives a reference based on current rules and the leave method you select; your actual days follow your company policy and employment agreement.",
+        },
+        {
+          question: "Do I get annual leave before six months of service?",
+          answer:
+            "Under the current statutory standard, the first 3 days begin after six months, so leave before six months is 0 days. If your company offers a more generous policy, follow that policy.",
+        },
+      ],
+    },
+    legal: {
+      heading: "Sources",
+      body: "This tool estimates leave under Taiwan’s Labor Standards Act special leave rules. Actual leave still follows your employment contract, company policy, and employer–employee agreement.",
+      sources: [
+        {
+          label: "Ministry of Labor annual leave calculator",
+          href: "https://calcr2.mol.gov.tw/RestDays",
+        },
+        {
+          label: "Ministry of Labor guidance on annual leave (calendar-year and related)",
+          href: "https://www.mol.gov.tw/1607/28690/2282/2284/2292/81173/post",
+        },
+      ],
+    },
   },
 } as const;
 

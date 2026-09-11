@@ -1,12 +1,17 @@
 ---
 /**
- * Taiwan Annual Leave Calculator V2 — ToolPageFrame B0 scaffold.
- * B0 only：route／Frame shell／first-screen＋lower／drawer 容器。
- * 不做 B1A content、B1B 靜態畫面、B2 互動／計算。
+ * Taiwan Annual Leave Calculator V2 — ToolPageFrame adopter.
+ * B0: shell scaffold.
+ * B1A: lower content + Related Tools + FAQ JSON-LD.
+ * 不做 B1B 靜態畫面、B2 互動／計算／LocalStorage。
  */
+import RelatedToolRow from "../../RelatedToolRow.astro";
 import ToolPageFrame from "../shared/ToolPageFrame.astro";
-import { type Locale } from "../../../i18n/config";
+import { catalogIconMap } from "../../../lib/catalogIcons";
+import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
+import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getMessages } from "../../../i18n/messages";
+import { getCatalogTool, type CatalogToolId } from "../../../data/toolsCatalog";
 
 interface Props {
 	locale?: Locale;
@@ -15,12 +20,40 @@ interface Props {
 const { locale = "en" } = Astro.props;
 const messages = getMessages(locale);
 const m = messages.taiwanAnnualLeaveCalculator;
+const faqSchema = buildFaqPageJsonLd(m.faq.items);
+
+/** Tool-local outbound only — exactly 2；不改 toolsCatalog、無 featured padding。 */
+const declaredRelatedIds = [
+	"date-range",
+	"business-days-calculator",
+] as const satisfies readonly CatalogToolId[];
+
+const toolCopy: Record<
+	(typeof declaredRelatedIds)[number],
+	{ title: string; relatedDescription: string }
+> = {
+	"date-range": messages.tools.dateRange,
+	"business-days-calculator": messages.tools.businessDaysCalculator,
+};
+
+const relatedToolItems = declaredRelatedIds
+	.map((id) => getCatalogTool(id))
+	.filter((tool): tool is NonNullable<typeof tool> => Boolean(tool?.available))
+	.map((tool) => {
+		const id = tool.id as (typeof declaredRelatedIds)[number];
+		return {
+			href: getLocalizedPath(locale, `/${tool.slug}/`),
+			name: toolCopy[id].title,
+			description: toolCopy[id].relatedDescription,
+			icon: catalogIconMap[tool.id],
+		};
+	});
 ---
 
 <div
 	data-taiwan-annual-leave-calculator-v2
 	data-talc-locale={locale === "zh" ? "zh" : "en"}
-	data-talc-phase="b0-scaffold"
+	data-talc-phase="b1a-lower-content"
 >
 	<ToolPageFrame
 		locale={locale}
@@ -32,7 +65,7 @@ const m = messages.taiwanAnnualLeaveCalculator;
 		{/* 第一屏 H1：不放 short description */}
 		<Fragment slot="title">{m.kicker}</Fragment>
 
-		{/* 結果區結構 placeholder：非正式 ResultSummary／正式視覺 */}
+		{/* 結果區結構 placeholder：非正式 ResultSummary／正式視覺（B1B） */}
 		<div
 			slot="result"
 			class="talc-result-placeholder"
@@ -44,7 +77,7 @@ const m = messages.taiwanAnnualLeaveCalculator;
 
 		{/*
 		  Frame adopter contract 需要 mobilePrimaryControl。
-		  B0：disabled baseline（非 enabled no-op）。
+		  維持 B0 disabled baseline（非 enabled no-op）。
 		*/}
 		<button
 			slot="mobilePrimaryControl"
@@ -56,10 +89,134 @@ const m = messages.taiwanAnnualLeaveCalculator;
 		>
 		</button>
 
-		{/* Drawer Related 容器由 Frame 提供；B0 不放正式 Related 列 */}
-		<Fragment slot="drawerRelated" />
+		<Fragment slot="drawerRelated">
+			{
+				relatedToolItems.map((tool) => (
+					<RelatedToolRow
+						href={tool.href}
+						name={tool.name}
+						description={tool.description}
+						icon={tool.icon}
+					/>
+				))
+			}
+		</Fragment>
 
-		{/* Lower content 容器由 Frame 提供；B0 不放 About／FAQ 等 */}
-		<Fragment slot="lowerContent" />
+		<Fragment slot="lowerRelated">
+			{
+				relatedToolItems.map((tool) => (
+					<RelatedToolRow
+						href={tool.href}
+						name={tool.name}
+						description={tool.description}
+						icon={tool.icon}
+					/>
+				))
+			}
+		</Fragment>
+
+		<Fragment slot="lowerContent">
+			{/* About */}
+			<section class="pb-12" aria-labelledby="talc-about-heading">
+				<h2 id="talc-about-heading" class="mb-2 text-lg font-semibold text-white">
+					{m.about.heading}
+				</h2>
+				<p class="text-sm leading-relaxed text-slate-400">{m.about.body}</p>
+			</section>
+
+			{/* How to use */}
+			<section class="pb-12" aria-labelledby="talc-howto-heading">
+				<h2 id="talc-howto-heading" class="mb-2 text-lg font-semibold text-white">
+					{m.howTo.heading}
+				</h2>
+				<ol class="list-decimal space-y-2 pl-5 text-sm leading-relaxed text-slate-400">
+					{m.howTo.steps.map((step) => <li>{step}</li>)}
+				</ol>
+				<p class="mt-4 text-sm leading-relaxed text-slate-400">{m.howTo.note}</p>
+			</section>
+
+			{/* Common uses / tags（非互動） */}
+			<section class="pb-12" aria-labelledby="talc-tags-heading">
+				<h2 id="talc-tags-heading" class="mb-4 text-lg font-semibold text-white">
+					{m.commonUses.heading}
+				</h2>
+				<ul class="tool-keyword-list" role="list">
+					{m.commonUses.items.map((item) => <li class="tool-keyword-chip">{item}</li>)}
+				</ul>
+			</section>
+
+			{/* FAQ */}
+			<section class="pb-12" aria-labelledby="talc-faq-heading">
+				<h2 id="talc-faq-heading" class="mb-4 text-lg font-semibold text-white">
+					{m.faq.heading}
+				</h2>
+				<div class="border-t border-white/20">
+					{
+						m.faq.items.map((item) => (
+							<details class="group border-b border-white/20 py-4">
+								<summary class="flex list-none items-center justify-between gap-4 font-medium text-white [&::-webkit-details-marker]:hidden">
+									<span>{item.question}</span>
+									<span class="relative flex h-4 w-4 shrink-0 items-center justify-center text-slate-400">
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 16 16"
+											fill="none"
+											class="h-4 w-4 group-open:hidden"
+											aria-hidden="true"
+										>
+											<path
+												d="M8 3.5v9M3.5 8h9"
+												stroke="currentColor"
+												stroke-width="1.5"
+												stroke-linecap="round"></path>
+										</svg>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 16 16"
+											fill="none"
+											class="hidden h-4 w-4 group-open:block"
+											aria-hidden="true"
+										>
+											<path
+												d="M3.5 8h9"
+												stroke="currentColor"
+												stroke-width="1.5"
+												stroke-linecap="round"></path>
+										</svg>
+									</span>
+								</summary>
+								<p class="mt-3 text-sm leading-relaxed text-slate-300">{item.answer}</p>
+							</details>
+						))
+					}
+				</div>
+			</section>
+
+			{/* Legal / official sources（FAQ 後；輕量） */}
+			<section aria-labelledby="talc-legal-heading">
+				<h2 id="talc-legal-heading" class="mb-2 text-lg font-semibold text-white">
+					{m.legal.heading}
+				</h2>
+				<p class="text-sm leading-relaxed text-slate-400">{m.legal.body}</p>
+				<ul class="mt-3 space-y-2 text-sm leading-relaxed text-slate-400">
+					{
+						m.legal.sources.map((source) => (
+							<li>
+								<a
+									href={source.href}
+									class="text-slate-300 underline decoration-white/20 underline-offset-2 transition-colors hover:text-white hover:decoration-white/40"
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									{source.label}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+		</Fragment>
 	</ToolPageFrame>
+
+	<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 </div>
