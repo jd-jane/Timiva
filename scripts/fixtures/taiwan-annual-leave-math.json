@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "tool": "taiwan-annual-leave-calculator",
+    "batch": "B2A",
+    "notes": "Anniversary fixtures: Labor Standards Act tiers. Calendar-year: RestDays (calcr2.mol.gov.tw) 當年度特休日數."
+  },
+  "rounding": {
+    "id": "restDaysRound",
+    "source": "RestDays rest_days.js",
+    "expression": "Math.ceil(Math.floor(x * 100) / 10) / 10",
+    "samples": [
+      { "input": 5.653225806451613, "official": 5.7 },
+      { "input": 6.5, "official": 6.5 },
+      { "input": 6.8, "official": 6.8 },
+      { "input": 4.4, "official": 4.4 },
+      { "input": 3, "official": 3 }
+    ]
+  },
+  "anniversary": [
+    {
+      "id": "anniv-lt6m",
+      "hire": { "year": 2026, "month": 5, "day": 1 },
+      "asOf": { "year": 2026, "month": 9, "day": 11 },
+      "rawDays": 0,
+      "officialDays": 0,
+      "display": "0",
+      "nextDays": 3
+    },
+    {
+      "id": "anniv-6m",
+      "hire": { "year": 2026, "month": 3, "day": 11 },
+      "asOf": { "year": 2026, "month": 9, "day": 11 },
+      "rawDays": 3,
+      "officialDays": 3,
+      "display": "3",
+      "nextDays": 7
+    },
+    {
+      "id": "anniv-1y",
+      "hire": { "year": 2025, "month": 9, "day": 11 },
+      "asOf": { "year": 2026, "month": 9, "day": 11 },
+      "rawDays": 7,
+      "officialDays": 7,
+      "display": "7",
+      "nextDays": 10
+    },
+    {
+      "id": "anniv-2y",
+      "hire": { "year": 2024, "month": 9, "day": 11 },
+      "asOf": { "year": 2026, "month": 9, "day": 11 },
+      "rawDays": 10,
+      "officialDays": 10,
+      "display": "10",
+      "nextDays": 14
+    },
+    {
+      "id": "anniv-3y",
+      "hire": { "year": 2023, "month": 9, "day": 11 },
+      "asOf": { "year": 2026, "month": 9, "day": 11 },
+      "rawDays": 14,
+      "officialDays": 14,
+      "display": "14",
+      "nextDays": 15
+    },
+    {
+      "id": "anniv-5y",
+      "hire": { "year": 2021, "month": 9, "day": 11 },
+      "asOf": { "year": 2026, "month": 9, "day": 11 },
+      "rawDays": 15,
+      "officialDays": 15,
+      "display": "15",
+      "nextDays": 16
+    },
+    {
+      "id": "anniv-10y",
+      "hire": { "year": 2016, "month": 9, "day": 11 },
+      "asOf": { "year": 2026, "month": 9, "day": 11 },
+      "rawDays": 16,
+      "officialDays": 16,
+      "display": "16",
+      "nextDays": 17
+    },
+    {
+      "id": "anniv-10y-plus1",
+      "hire": { "year": 2015, "month": 9, "day": 11 },
+      "asOf": { "year": 2026, "month": 9, "day": 11 },
+      "rawDays": 17,
+      "officialDays": 17,
+      "display": "17",
+      "nextDays": 18
+    },
+    {
+      "id": "anniv-30-cap",
+      "hire": { "year": 2002, "month": 9, "day": 11 },
+      "asOf": { "year": 2026, "month": 9, "day": 11 },
+      "rawDays": 30,
+      "officialDays": 30,
+      "display": "30",
+      "nextDays": null
+    },
+    {
+      "id": "anniv-leap-hire",
+      "hire": { "year": 2020, "month": 2, "day": 29 },
+      "asOf": { "year": 2026, "month": 9, "day": 11 },
+      "rawDays": 15,
+      "officialDays": 15,
+      "display": "15",
+      "nextDays": 16
+    }
+  ],
+  "calendarYear": [
+    {
+      "id": "cal-1-1-hire-year",
+      "hire": { "year": 2022, "month": 1, "day": 1 },
+      "leaveYear": 2022,
+      "rawDays": 10,
+      "officialDays": 3,
+      "display": "3",
+      "notes": "足年對齊：內部分段 amt=10；RestDays UI 顯示級距 3",
+      "source": "RestDays"
+    },
+    {
+      "id": "cal-1-1-next-year",
+      "hire": { "year": 2022, "month": 1, "day": 1 },
+      "leaveYear": 2023,
+      "rawDays": 10,
+      "officialDays": 7,
+      "display": "7",
+      "notes": "足年對齊：內部分段 amt=10；RestDays UI 顯示級距 7",
+      "source": "RestDays"
+    },
+    {
+      "id": "cal-3-15",
+      "hire": { "year": 2022, "month": 3, "day": 15 },
+      "leaveYear": 2023,
+      "rawDays": 6.8,
+      "officialDays": 6.8,
+      "display": "6.8",
+      "source": "RestDays feasibility"
+    },
+    {
+      "id": "cal-7-1-next",
+      "hire": { "year": 2022, "month": 7, "day": 1 },
+      "leaveYear": 2023,
+      "rawDays": 6.5,
+      "officialDays": 6.5,
+      "display": "6.5",
+      "source": "RestDays / MOL"
+    },
+    {
+      "id": "cal-7-1-year-after",
+      "hire": { "year": 2022, "month": 7, "day": 1 },
+      "leaveYear": 2024,
+      "rawDays": 8.5,
+      "officialDays": 8.5,
+      "display": "8.5",
+      "source": "RestDays / MOL"
+    },
+    {
+      "id": "cal-10-20",
+      "hire": { "year": 2022, "month": 10, "day": 20 },
+      "leaveYear": 2023,
+      "rawDays": 4.4,
+      "officialDays": 4.4,
+      "display": "4.4",
+      "source": "RestDays feasibility"
+    },
+    {
+      "id": "cal-2-29-next",
+      "hire": { "year": 2020, "month": 2, "day": 29 },
+      "leaveYear": 2021,
+      "rawDays": 6.8,
+      "officialDays": 6.8,
+      "display": "6.8",
+      "source": "RestDays feasibility"
+    },
+    {
+      "id": "cal-2-29-plus2",
+      "hire": { "year": 2020, "month": 2, "day": 29 },
+      "leaveYear": 2022,
+      "rawDays": 9.5,
+      "officialDays": 9.5,
+      "display": "9.5",
+      "source": "RestDays feasibility"
+    }
+  ]
+}
