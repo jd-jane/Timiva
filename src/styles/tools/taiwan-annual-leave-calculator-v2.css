@@ -1,0 +1,379 @@
+/**
+ * Taiwan Annual Leave Calculator V2 — tool-local composition（B1B static）。
+ * Owns: date pill、leave-system segmented、support／tip／info／formula、mobile-ymd preview。
+ * Does NOT own: ToolPageFrame／.tpf-*、ResultSummary internals、shared baselines。
+ */
+
+/* -------------------------------------------------------------------------- */
+/* Result meta（definition／support／tip／formula）                              */
+/* -------------------------------------------------------------------------- */
+
+[data-taiwan-annual-leave-calculator-v2] .talc-result-host {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+}
+
+/*
+ * 主結果字級：對齊 DBD「0」（token only；不選 .rs-*）。
+ * Critical path 另有 Astro is:inline，避免 shared 5rem 先 paint。
+ */
+[data-taiwan-annual-leave-calculator-v2]
+	[data-result-summary][data-rs-content="textual"],
+[data-taiwan-annual-leave-calculator-v2]
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+[data-taiwan-annual-leave-calculator-v2]
+	[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+	--rs-textual-primary-size: clamp(7.5rem, 38vw, 10.5rem);
+}
+
+@media (min-width: 768px) {
+	[data-taiwan-annual-leave-calculator-v2]
+		[data-result-summary][data-rs-content="textual"],
+	[data-taiwan-annual-leave-calculator-v2]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+	[data-taiwan-annual-leave-calculator-v2]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+		--rs-textual-primary-size: 13rem;
+	}
+}
+
+@media (max-width: 767px) and (orientation: landscape) {
+	[data-taiwan-annual-leave-calculator-v2]
+		[data-result-summary][data-rs-content="textual"],
+	[data-taiwan-annual-leave-calculator-v2]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+	[data-taiwan-annual-leave-calculator-v2]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"],
+	[data-taiwan-annual-leave-calculator-v2]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+		--rs-textual-primary-size: 5rem;
+	}
+}
+
+/* 定義層：對齊 DBD `.preview-tool-result-label`（主數字正下方 unit） */
+[data-taiwan-annual-leave-calculator-v2] .talc-definition-row {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.375rem;
+	max-width: min(100%, 28rem);
+	margin-top: 0.375rem;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-definition-row[hidden] {
+	display: none;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-definition {
+	margin: 0;
+	color: rgb(148 163 184);
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1rem;
+	text-align: center;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-info {
+	display: inline-grid;
+	flex-shrink: 0;
+	place-items: center;
+	width: 1rem;
+	height: 1rem;
+	margin: 0;
+	padding: 0;
+	border: 1px solid rgb(255 255 255 / 0.28);
+	border-radius: 9999px;
+	background: transparent;
+	color: rgb(148 163 184);
+	font-size: 0.5625rem;
+	font-weight: 600;
+	line-height: 1;
+	font-style: normal;
+	opacity: 0.92;
+	cursor: default;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-result-meta {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+	width: 100%;
+	max-width: 28rem;
+	text-align: center;
+}
+
+@media (min-width: 768px) {
+	[data-taiwan-annual-leave-calculator-v2] .talc-definition {
+		font-size: 0.875rem;
+		line-height: 1.25rem;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-info {
+		width: 1.125rem;
+		height: 1.125rem;
+		font-size: 0.625rem;
+	}
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-support {
+	margin: 0;
+	color: rgb(148 163 184);
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.45;
+	white-space: pre-line;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-tip {
+	margin: 0.25rem 0 0;
+	max-width: 24rem;
+	color: rgb(148 163 184 / 0.88);
+	font-size: 0.8125rem;
+	font-weight: 400;
+	line-height: 1.45;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-formula {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 22rem;
+	margin-top: 0.75rem;
+	padding: 0.875rem 1rem;
+	border: 1px solid rgb(255 255 255 / 0.1);
+	border-radius: 0.75rem;
+	background: rgb(255 255 255 / 0.03);
+	text-align: left;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-formula__heading {
+	margin: 0 0 0.5rem;
+	color: rgb(226 232 240);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-formula__lines {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	color: rgb(148 163 184);
+	font-size: 0.8125rem;
+	font-weight: 400;
+	line-height: 1.5;
+	font-variant-numeric: tabular-nums;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Desktop controls cluster                                                   */
+/* -------------------------------------------------------------------------- */
+
+[data-taiwan-annual-leave-calculator-v2] .talc-desktop-cluster {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.75rem;
+	width: 100%;
+	max-width: min(100%, 420px);
+	/* 對齊 Hours／Lunar／JEC：result group → desktop inputs */
+	margin-top: 2.5rem;
+	margin-inline: auto;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-date-pill {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+	height: 3.25rem;
+	min-height: 3.25rem;
+	padding: 0.75rem 1.125rem 0.75rem 1.25rem;
+	border-radius: 9999px;
+	background: rgb(255 255 255 / 0.06);
+	border: 1px solid rgb(255 255 255 / 0.12);
+	backdrop-filter: blur(10px);
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-date-value {
+	flex: 1;
+	min-width: 0;
+	margin: 0;
+	border: 0;
+	background: transparent;
+	color: rgb(248 250 252 / 0.92);
+	font: inherit;
+	font-size: 0.9375rem;
+	font-weight: 500;
+	line-height: 1.35;
+	letter-spacing: 0.01em;
+	font-variant-numeric: tabular-nums;
+	text-align: start;
+	opacity: 0.92;
+	cursor: default;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-date-value:disabled {
+	opacity: 0.92;
+	-webkit-text-fill-color: rgb(248 250 252 / 0.92);
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-date-value::placeholder {
+	color: rgb(244 243 248 / 0.48);
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-calendar-icon {
+	display: grid;
+	flex-shrink: 0;
+	margin-left: auto;
+	place-items: center;
+	width: 2rem;
+	height: 2rem;
+	padding: 0;
+	border: 0;
+	border-radius: 9999px;
+	color: rgb(220 218 240 / 0.9);
+	background: rgb(255 255 255 / 0.05);
+	opacity: 0.92;
+	cursor: default;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-calendar-icon svg {
+	width: 1.125rem;
+	height: 1.125rem;
+}
+
+/* Leave system：視覺對齊 DC direction options；disabled static */
+[data-taiwan-annual-leave-calculator-v2] .talc-leave-system {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: stretch;
+	gap: 0.5rem;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-leave-option {
+	box-sizing: border-box;
+	display: inline-flex;
+	min-width: 6.75rem;
+	height: 2.5rem;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	padding: 0 0.875rem;
+	border-radius: 9999px;
+	border: 1px solid rgb(255 255 255 / 0.14);
+	background: rgb(255 255 255 / 0.04);
+	color: rgb(203 213 225 / 0.88);
+	font: inherit;
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1;
+	letter-spacing: 0.01em;
+	white-space: nowrap;
+	opacity: 0.92;
+	cursor: default;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-leave-option.is-active {
+	border-color: rgb(255 255 255 / 0.22);
+	background: rgb(255 255 255 / 0.12);
+	color: rgb(248 250 252);
+	-webkit-backdrop-filter: blur(8px);
+	backdrop-filter: blur(8px);
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-reset {
+	margin-top: 0.125rem;
+	opacity: 0.92;
+	cursor: default;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-reset:disabled {
+	opacity: 0.72;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Mobile YMD sheet preview（fixture only；非正式 first-screen）                */
+/* -------------------------------------------------------------------------- */
+
+[data-taiwan-annual-leave-calculator-v2] .talc-ymd-preview {
+	display: none;
+	box-sizing: border-box;
+	width: min(100%, 24rem);
+	margin: 1rem auto 0;
+	padding: 1rem 1rem 1.125rem;
+	border: 1px solid rgb(255 255 255 / 0.12);
+	border-radius: 1.25rem 1.25rem 0.75rem 0.75rem;
+	background: rgb(15 23 42 / 0.72);
+	backdrop-filter: blur(12px);
+	text-align: left;
+}
+
+[data-taiwan-annual-leave-calculator-v2][data-talc-fixture="mobile-ymd"]
+	.talc-ymd-preview:not([hidden]) {
+	display: block;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-ymd-preview__note {
+	margin: 0 0 0.5rem;
+	color: rgb(148 163 184 / 0.9);
+	font-size: 0.6875rem;
+	line-height: 1.35;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-ymd-preview__title {
+	margin: 0 0 0.75rem;
+	color: rgb(248 250 252);
+	font-size: 0.9375rem;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-ymd-fields {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.5rem;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-ymd-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.375rem;
+	min-width: 0;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-ymd-field__label {
+	color: rgb(148 163 184);
+	font-size: 0.75rem;
+	font-weight: 500;
+	line-height: 1.2;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-ymd-field__shell {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	min-height: 2.75rem;
+	padding: 0.5rem 0.375rem;
+	border-radius: 0.75rem;
+	border: 1px solid rgb(255 255 255 / 0.12);
+	background: rgb(255 255 255 / 0.06);
+	color: rgb(248 250 252 / 0.92);
+	font-size: 0.9375rem;
+	font-weight: 500;
+	font-variant-numeric: tabular-nums;
+	opacity: 0.92;
+}
+
+@media (min-width: 768px) and (hover: hover) {
+	[data-taiwan-annual-leave-calculator-v2][data-talc-fixture="mobile-ymd"]
+		.talc-ymd-preview:not([hidden]) {
+		margin-top: 1.25rem;
+	}
+}

@@ -1,17 +1,17 @@
 ---
 /**
  * Taiwan Annual Leave Calculator V2 — ToolPageFrame adopter.
- * B0: shell scaffold.
- * B1A: lower content + Related Tools + FAQ JSON-LD.
- * 不做 B1B 靜態畫面、B2 互動／計算／LocalStorage。
+ * B0: shell · B1A: lower content · B1B: upper static visual（無計算／互動）。
  */
 import RelatedToolRow from "../../RelatedToolRow.astro";
+import ResultSummary from "../shared/ResultSummary.astro";
 import ToolPageFrame from "../shared/ToolPageFrame.astro";
 import { catalogIconMap } from "../../../lib/catalogIcons";
 import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getMessages } from "../../../i18n/messages";
 import { getCatalogTool, type CatalogToolId } from "../../../data/toolsCatalog";
+import "../../../styles/tools/taiwan-annual-leave-calculator-v2.css";
 
 interface Props {
 	locale?: Locale;
@@ -22,7 +22,7 @@ const messages = getMessages(locale);
 const m = messages.taiwanAnnualLeaveCalculator;
 const faqSchema = buildFaqPageJsonLd(m.faq.items);
 
-/** Tool-local outbound only — exactly 2；不改 toolsCatalog、無 featured padding。 */
+/** Tool-local outbound only — exactly 2；不改 toolsCatalog。 */
 const declaredRelatedIds = [
 	"date-range",
 	"business-days-calculator",
@@ -48,12 +48,41 @@ const relatedToolItems = declaredRelatedIds
 			icon: catalogIconMap[tool.id],
 		};
 	});
+
+/*
+  B1B：靜態建置 bake = initial（?）。
+  Owner visual 以 ?talcFixture= 由同步 bootstrap 切態（同 DC／Hours pattern）。
+*/
+const rsPrimary = {
+	text: m.resultPlaceholder,
+	ariaLabel: m.resultAriaLabel,
+};
+const ymdYear = "2022";
+const ymdMonth = "09";
+const ymdDay = "15";
 ---
 
 <div
 	data-taiwan-annual-leave-calculator-v2
 	data-talc-locale={locale === "zh" ? "zh" : "en"}
-	data-talc-phase="b1a-lower-content"
+	data-talc-phase="b1b-static-visual"
+	data-talc-fixture="initial"
+	data-talc-fx-initial-primary={m.resultPlaceholder}
+	data-talc-fx-initial-definition={m.definitionAnniversary}
+	data-talc-fx-initial-support={m.resultInitialSupport}
+	data-talc-fx-anniversary-primary={m.fixtureAnniversaryPrimary}
+	data-talc-fx-anniversary-definition={m.definitionAnniversary}
+	data-talc-fx-anniversary-support={m.fixtureAnniversarySupport}
+	data-talc-fx-anniversary-date={m.fixtureAnniversaryDateValue}
+	data-talc-fx-calendar-primary={m.fixtureCalendarPrimary}
+	data-talc-fx-calendar-definition={m.definitionCalendarYear}
+	data-talc-fx-calendar-support={m.fixtureCalendarSupport}
+	data-talc-fx-calendar-date={m.fixtureCalendarDateValue}
+	data-talc-fx-max-primary={m.fixtureMaxPrimary}
+	data-talc-fx-max-definition={m.definitionAnniversary}
+	data-talc-fx-max-support={m.fixtureMaxSupport}
+	data-talc-fx-max-date={m.fixtureMaxDateValue}
+	data-talc-fx-capsule-empty={m.capsulePlaceholder}
 >
 	<ToolPageFrame
 		locale={locale}
@@ -65,28 +94,202 @@ const relatedToolItems = declaredRelatedIds
 		{/* 第一屏 H1：不放 short description */}
 		<Fragment slot="title">{m.kicker}</Fragment>
 
-		{/* 結果區結構 placeholder：非正式 ResultSummary／正式視覺（B1B） */}
+		<div slot="result" class="talc-result-host">
+			{/*
+			  ResultSummary：主結果 primary（SSR = ?）。
+			  定義／support／tip／formula 為 tool-local；fixture bootstrap 切態。
+			  主結果字級：blocking inline 對齊 DBD「0」（避免 shared 5rem 先 paint）。
+			*/}
+			<style is:inline>
+				[data-taiwan-annual-leave-calculator-v2]
+					[data-result-summary][data-rs-content="textual"],
+				[data-taiwan-annual-leave-calculator-v2]
+					[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+				[data-taiwan-annual-leave-calculator-v2]
+					[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+					--rs-textual-primary-size: clamp(7.5rem, 38vw, 10.5rem);
+				}
+				@media (min-width: 768px) {
+					[data-taiwan-annual-leave-calculator-v2]
+						[data-result-summary][data-rs-content="textual"],
+					[data-taiwan-annual-leave-calculator-v2]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+					[data-taiwan-annual-leave-calculator-v2]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+						--rs-textual-primary-size: 13rem;
+					}
+				}
+				@media (max-width: 767px) and (orientation: landscape) {
+					[data-taiwan-annual-leave-calculator-v2]
+						[data-result-summary][data-rs-content="textual"],
+					[data-taiwan-annual-leave-calculator-v2]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+					[data-taiwan-annual-leave-calculator-v2]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"],
+					[data-taiwan-annual-leave-calculator-v2]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+						--rs-textual-primary-size: 5rem;
+					}
+				}
+			</style>
+			<ResultSummary
+				content="textual"
+				layout="desktop"
+				variant="spacious"
+				ariaLabel={m.resultsLabel}
+				primary={rsPrimary}
+				weekday={null}
+				support={null}
+				class="talc-result-summary"
+			/>
+
+			{/*
+			  第二層定義：對齊 DBD「天」unit label（主數字正下方、較小字級）。
+			  不放進 support divider 內，避免被誤讀成次要層。
+			  SSR bake = initial（定義＋一行說明）；其他 fixture 由 bootstrap 切態。
+			*/}
+			<div class="talc-definition-row" data-talc-definition-row>
+				<p class="talc-definition" data-talc-definition>{m.definitionAnniversary}</p>
+				<button
+					type="button"
+					class="talc-info"
+					data-talc-info
+					hidden
+					disabled
+					aria-disabled="true"
+					aria-label={m.infoAriaLabel}
+				>
+					i
+				</button>
+			</div>
+
+			<div
+				class="talc-result-meta tool-textual-result-support-divider"
+				data-talc-meta
+			>
+				<p class="talc-support" data-talc-support>{m.resultInitialSupport}</p>
+				<p class="talc-tip" data-talc-tip hidden>{m.calendarYearTip}</p>
+				<div class="talc-formula" data-talc-formula hidden>
+					<p class="talc-formula__heading">{m.formulaHeading}</p>
+					<ul class="talc-formula__lines">
+						{m.fixtureCalendarFormulaLines.map((line) => <li>{line}</li>)}
+					</ul>
+				</div>
+			</div>
+
+			{/* mobile-ymd：Bottom Sheet 內 YMD 預覽（非正式 first-screen） */}
+			<div class="talc-ymd-preview" data-talc-ymd-preview hidden>
+				<p class="talc-ymd-preview__note">{m.mobileYmdPreviewNote}</p>
+				<p class="talc-ymd-preview__title">{m.mobileYmdSheetTitle}</p>
+				<div class="talc-ymd-fields" role="group" aria-label={m.hireDateLabel}>
+					<div class="talc-ymd-field">
+						<span class="talc-ymd-field__label">{m.ameYearLabel}</span>
+						<span class="talc-ymd-field__shell">{ymdYear}</span>
+					</div>
+					<div class="talc-ymd-field">
+						<span class="talc-ymd-field__label">{m.ameMonthLabel}</span>
+						<span class="talc-ymd-field__shell">{ymdMonth}</span>
+					</div>
+					<div class="talc-ymd-field">
+						<span class="talc-ymd-field__label">{m.ameDayLabel}</span>
+						<span class="talc-ymd-field__shell">{ymdDay}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		{/* Desktop：date pill → leave system → Reset（全部 disabled static） */}
 		<div
-			slot="result"
-			class="talc-result-placeholder"
-			role="status"
-			aria-label={m.resultAriaLabel}
+			slot="desktopControls"
+			class="talc-desktop-cluster tool-standard-pill-field-cluster"
+			aria-label={m.upperControlsAriaLabel}
 		>
-			<span class="talc-result-placeholder__value">{m.resultPlaceholder}</span>
+			<div class="talc-date-pill tool-standard-pill-field">
+				<input
+					type="text"
+					class="talc-date-value"
+					data-talc-date-value
+					value=""
+					placeholder={m.hireDatePlaceholder}
+					aria-label={m.hireDateLabel}
+					disabled
+					readonly
+					tabindex="-1"
+				/>
+				<button
+					type="button"
+					class="talc-calendar-icon"
+					disabled
+					aria-disabled="true"
+					aria-label={m.openCalendarAriaLabel}
+					tabindex="-1"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="1.5"
+						aria-hidden="true"
+					>
+						<rect x="3" y="5" width="18" height="16" rx="3"></rect>
+						<path d="M8 3v4M16 3v4M7 11h10" stroke-linecap="round"></path>
+					</svg>
+				</button>
+			</div>
+
+			<div
+				class="talc-leave-system"
+				role="group"
+				aria-label={m.leaveSystemGroupAriaLabel}
+			>
+				<button
+					type="button"
+					class="talc-leave-option is-active"
+					data-talc-leave="anniversary"
+					disabled
+					aria-disabled="true"
+					aria-pressed="true"
+				>
+					{m.anniversaryLabel}
+				</button>
+				<button
+					type="button"
+					class="talc-leave-option"
+					data-talc-leave="calendar-year"
+					disabled
+					aria-disabled="true"
+					aria-pressed="false"
+				>
+					{m.calendarYearLabel}
+				</button>
+			</div>
+
+			<button
+				type="button"
+				class="tool-text-action--muted talc-reset"
+				disabled
+				aria-disabled="true"
+				tabindex="-1"
+			>
+				{m.resetLabel}
+			</button>
 		</div>
 
 		{/*
-		  Frame adopter contract 需要 mobilePrimaryControl。
-		  維持 B0 disabled baseline（非 enabled no-op）。
+		  手機第一屏：capsule only（未來開 Bottom Sheet／AME）。
+		  disabled baseline；非正式 YMD 常駐 first-screen。
 		*/}
 		<button
 			slot="mobilePrimaryControl"
 			type="button"
 			class="preview-tool-control-btn tool-primary-entry-capsule"
+			data-talc-capsule
 			disabled
 			aria-disabled="true"
 			aria-label={m.mobilePrimaryControlPlaceholderAriaLabel}
 		>
+			{m.capsulePlaceholder}
 		</button>
 
 		<Fragment slot="drawerRelated">
@@ -116,7 +319,6 @@ const relatedToolItems = declaredRelatedIds
 		</Fragment>
 
 		<Fragment slot="lowerContent">
-			{/* About */}
 			<section class="pb-12" aria-labelledby="talc-about-heading">
 				<h2 id="talc-about-heading" class="mb-2 text-lg font-semibold text-white">
 					{m.about.heading}
@@ -124,7 +326,6 @@ const relatedToolItems = declaredRelatedIds
 				<p class="text-sm leading-relaxed text-slate-400">{m.about.body}</p>
 			</section>
 
-			{/* How to use */}
 			<section class="pb-12" aria-labelledby="talc-howto-heading">
 				<h2 id="talc-howto-heading" class="mb-2 text-lg font-semibold text-white">
 					{m.howTo.heading}
@@ -135,7 +336,6 @@ const relatedToolItems = declaredRelatedIds
 				<p class="mt-4 text-sm leading-relaxed text-slate-400">{m.howTo.note}</p>
 			</section>
 
-			{/* Common uses / tags（非互動） */}
 			<section class="pb-12" aria-labelledby="talc-tags-heading">
 				<h2 id="talc-tags-heading" class="mb-4 text-lg font-semibold text-white">
 					{m.commonUses.heading}
@@ -145,7 +345,6 @@ const relatedToolItems = declaredRelatedIds
 				</ul>
 			</section>
 
-			{/* FAQ */}
 			<section class="pb-12" aria-labelledby="talc-faq-heading">
 				<h2 id="talc-faq-heading" class="mb-4 text-lg font-semibold text-white">
 					{m.faq.heading}
@@ -192,7 +391,6 @@ const relatedToolItems = declaredRelatedIds
 				</div>
 			</section>
 
-			{/* Legal / official sources（FAQ 後；輕量） */}
 			<section aria-labelledby="talc-legal-heading">
 				<h2 id="talc-legal-heading" class="mb-2 text-lg font-semibold text-white">
 					{m.legal.heading}
@@ -217,6 +415,129 @@ const relatedToolItems = declaredRelatedIds
 			</section>
 		</Fragment>
 	</ToolPageFrame>
+
+	{/*
+	  Fixture bootstrap 必須在 ToolPageFrame 之後：
+	  靜態建置下 Astro.url 無 query；且 meta／desktopControls／capsule
+	  都在 Frame slots 內，腳本需等整段 DOM 解析完再跑。
+	*/}
+	<script is:inline>
+		(function () {
+			var root = document.querySelector("[data-taiwan-annual-leave-calculator-v2]");
+			if (!root) return;
+
+			var allowed = {
+				initial: true,
+				anniversary: true,
+				"calendar-year": true,
+				"calendar-year-formula": true,
+				max: true,
+				"mobile-ymd": true,
+			};
+
+			var fixture = "initial";
+			try {
+				var raw = new URLSearchParams(location.search).get("talcFixture") || "initial";
+				if (allowed[raw]) fixture = raw;
+			} catch (_) {
+				/* ignore */
+			}
+
+			root.setAttribute("data-talc-fixture", fixture);
+
+			var primaryEl = root.querySelector('[data-rs-value="primary"]');
+			var liveEl = root.querySelector("[data-result-summary] [aria-live]");
+			var definitionRowEl = root.querySelector("[data-talc-definition-row]");
+			var metaEl = root.querySelector("[data-talc-meta]");
+			var definitionEl = root.querySelector("[data-talc-definition]");
+			var infoEl = root.querySelector("[data-talc-info]");
+			var supportEl = root.querySelector("[data-talc-support]");
+			var tipEl = root.querySelector("[data-talc-tip]");
+			var formulaEl = root.querySelector("[data-talc-formula]");
+			var ymdEl = root.querySelector("[data-talc-ymd-preview]");
+			var dateInput = root.querySelector("[data-talc-date-value]");
+			var anniversaryBtn = root.querySelector('[data-talc-leave="anniversary"]');
+			var calendarBtn = root.querySelector('[data-talc-leave="calendar-year"]');
+			var capsule = root.querySelector("[data-talc-capsule]");
+
+			function setLeave(isAnniversary) {
+				if (anniversaryBtn) {
+					anniversaryBtn.classList.toggle("is-active", isAnniversary);
+					anniversaryBtn.setAttribute("aria-pressed", isAnniversary ? "true" : "false");
+				}
+				if (calendarBtn) {
+					calendarBtn.classList.toggle("is-active", !isAnniversary);
+					calendarBtn.setAttribute("aria-pressed", !isAnniversary ? "true" : "false");
+				}
+			}
+
+			function setPrimary(text) {
+				if (primaryEl && text) primaryEl.textContent = text;
+				if (liveEl && text) liveEl.textContent = text;
+			}
+
+			function setDate(value) {
+				if (dateInput) dateInput.value = value || "";
+				if (capsule) {
+					var empty = root.getAttribute("data-talc-fx-capsule-empty") || "";
+					capsule.textContent = value || empty;
+				}
+			}
+
+			var primary = root.getAttribute("data-talc-fx-initial-primary") || "?";
+			var definition = root.getAttribute("data-talc-fx-initial-definition") || "";
+			var support = root.getAttribute("data-talc-fx-initial-support") || "";
+			var dateValue = "";
+			var showMeta = true;
+			var showInfo = false;
+			var showTip = false;
+			var showFormula = false;
+			var showYmd = fixture === "mobile-ymd";
+			var isAnniversary = true;
+
+			if (fixture === "anniversary") {
+				primary = root.getAttribute("data-talc-fx-anniversary-primary") || primary;
+				definition = root.getAttribute("data-talc-fx-anniversary-definition") || "";
+				support = root.getAttribute("data-talc-fx-anniversary-support") || "";
+				dateValue = root.getAttribute("data-talc-fx-anniversary-date") || "";
+				showMeta = true;
+				isAnniversary = true;
+			} else if (fixture === "calendar-year" || fixture === "calendar-year-formula") {
+				primary = root.getAttribute("data-talc-fx-calendar-primary") || primary;
+				definition = root.getAttribute("data-talc-fx-calendar-definition") || "";
+				support = root.getAttribute("data-talc-fx-calendar-support") || "";
+				dateValue = root.getAttribute("data-talc-fx-calendar-date") || "";
+				showMeta = true;
+				showInfo = true;
+				showTip = true;
+				showFormula = fixture === "calendar-year-formula";
+				isAnniversary = false;
+			} else if (fixture === "max") {
+				primary = root.getAttribute("data-talc-fx-max-primary") || primary;
+				definition = root.getAttribute("data-talc-fx-max-definition") || "";
+				support = root.getAttribute("data-talc-fx-max-support") || "";
+				dateValue = root.getAttribute("data-talc-fx-max-date") || "";
+				showMeta = true;
+				isAnniversary = true;
+			} else if (fixture === "mobile-ymd") {
+				/* YMD sheet preview：不顯示 result meta */
+				showMeta = false;
+			}
+
+			setPrimary(primary);
+			setDate(dateValue);
+			setLeave(isAnniversary);
+
+			if (definitionRowEl) definitionRowEl.hidden = !showMeta;
+			if (metaEl) metaEl.hidden = !showMeta;
+			if (definitionEl) definitionEl.textContent = definition;
+			if (supportEl) supportEl.textContent = support;
+			if (infoEl) infoEl.hidden = !showInfo;
+			if (tipEl) tipEl.hidden = !showTip;
+			if (formulaEl) formulaEl.hidden = !showFormula;
+			if (ymdEl) ymdEl.hidden = !showYmd;
+		})();
+	</script>
 
 	<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 </div>
