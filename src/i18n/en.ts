@@ -60,6 +60,11 @@ export const en = {
       description:
         "Convert between Gregorian and lunar calendar dates. Simple date conversion without almanac extras.",
     },
+    taiwanAnnualLeaveCalculator: {
+      title: "Taiwan Annual Leave Calculator | Timiva",
+      description:
+        "Enter your start date to see how many annual leave days you have.",
+    },
     privacy: {
       title: "Privacy Policy — Timiva",
       description: "How Timiva handles your data and privacy.",
@@ -1275,6 +1280,17 @@ export const en = {
         },
       ],
     },
+  },
+  /* B0 scaffold only — no FAQ / calculation / input copy yet */
+  taiwanAnnualLeaveCalculator: {
+    kicker: "Taiwan Annual Leave Calculator",
+    relatedToolsDrawerAriaLabel: "Related tools drawer",
+    toggleRelatedToolsDrawerAriaLabel: "Toggle related tools drawer",
+    relatedToolsHeading: "You may also need",
+    mobileControlsAriaLabel: "Taiwan annual leave calculator controls",
+    resultPlaceholder: "?",
+    resultAriaLabel: "Annual leave result placeholder",
+    mobilePrimaryControlPlaceholderAriaLabel: "Primary control placeholder",
   },
 } as const;
 

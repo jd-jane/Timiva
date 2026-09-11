@@ -61,6 +61,10 @@ export const zh: Messages = {
       title: "國曆農曆轉換｜Timiva",
       description: "在西曆與農曆日期之間換算。簡單日期轉換，不含農民曆宜忌等內容。",
     },
+    taiwanAnnualLeaveCalculator: {
+      title: "特休天數試算｜Timiva",
+      description: "輸入到職日期，看看你現在有幾天特休。",
+    },
     privacy: {
       title: "隱私權政策 — Timiva",
       description: "Timiva 如何處理您的資料與隱私。",
@@ -1221,5 +1225,16 @@ export const zh: Messages = {
         },
       ],
     },
+  },
+  /* B0 scaffold only — 尚無 FAQ／計算／輸入文案 */
+  taiwanAnnualLeaveCalculator: {
+    kicker: "特休天數試算",
+    relatedToolsDrawerAriaLabel: "相關工具側欄",
+    toggleRelatedToolsDrawerAriaLabel: "開啟或關閉相關工具側欄",
+    relatedToolsHeading: "你可能也會需要",
+    mobileControlsAriaLabel: "特休天數試算控制項",
+    resultPlaceholder: "?",
+    resultAriaLabel: "特休結果預留區",
+    mobilePrimaryControlPlaceholderAriaLabel: "主要控制預留（尚未啟用）",
   },
 };

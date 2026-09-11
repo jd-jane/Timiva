@@ -22,6 +22,7 @@ export const routePaths = {
   hoursCalculator: "/hours-calculator/",
   japaneseEraConverter: "/japanese-era-converter/",
   lunarDateConverter: "/lunar-date-converter/",
+  taiwanAnnualLeaveCalculator: "/taiwan-annual-leave-calculator/",
   allTools: "/tools/",
   privacy: "/privacy/",
   terms: "/terms/",

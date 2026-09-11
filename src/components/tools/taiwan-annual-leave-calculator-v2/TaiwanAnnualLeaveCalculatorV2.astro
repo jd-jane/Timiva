@@ -1,0 +1,65 @@
+---
+/**
+ * Taiwan Annual Leave Calculator V2 — ToolPageFrame B0 scaffold.
+ * B0 only：route／Frame shell／first-screen＋lower／drawer 容器。
+ * 不做 B1A content、B1B 靜態畫面、B2 互動／計算。
+ */
+import ToolPageFrame from "../shared/ToolPageFrame.astro";
+import { type Locale } from "../../../i18n/config";
+import { getMessages } from "../../../i18n/messages";
+
+interface Props {
+	locale?: Locale;
+}
+
+const { locale = "en" } = Astro.props;
+const messages = getMessages(locale);
+const m = messages.taiwanAnnualLeaveCalculator;
+---
+
+<div
+	data-taiwan-annual-leave-calculator-v2
+	data-talc-locale={locale === "zh" ? "zh" : "en"}
+	data-talc-phase="b0-scaffold"
+>
+	<ToolPageFrame
+		locale={locale}
+		relatedDrawerAriaLabel={m.relatedToolsDrawerAriaLabel}
+		toggleRelatedDrawerAriaLabel={m.toggleRelatedToolsDrawerAriaLabel}
+		relatedHeading={m.relatedToolsHeading}
+		mobileControlsAriaLabel={m.mobileControlsAriaLabel}
+	>
+		{/* 第一屏 H1：不放 short description */}
+		<Fragment slot="title">{m.kicker}</Fragment>
+
+		{/* 結果區結構 placeholder：非正式 ResultSummary／正式視覺 */}
+		<div
+			slot="result"
+			class="talc-result-placeholder"
+			role="status"
+			aria-label={m.resultAriaLabel}
+		>
+			<span class="talc-result-placeholder__value">{m.resultPlaceholder}</span>
+		</div>
+
+		{/*
+		  Frame adopter contract 需要 mobilePrimaryControl。
+		  B0：disabled baseline（非 enabled no-op）。
+		*/}
+		<button
+			slot="mobilePrimaryControl"
+			type="button"
+			class="preview-tool-control-btn tool-primary-entry-capsule"
+			disabled
+			aria-disabled="true"
+			aria-label={m.mobilePrimaryControlPlaceholderAriaLabel}
+		>
+		</button>
+
+		{/* Drawer Related 容器由 Frame 提供；B0 不放正式 Related 列 */}
+		<Fragment slot="drawerRelated" />
+
+		{/* Lower content 容器由 Frame 提供；B0 不放 About／FAQ 等 */}
+		<Fragment slot="lowerContent" />
+	</ToolPageFrame>
+</div>

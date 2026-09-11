@@ -1,0 +1,25 @@
+---
+import "../../../styles/tools/timiva-tokens.css";
+import "../../../styles/tools/tool-design-system.css";
+import "../../../styles/tools/tool-result-v2-baseline.css";
+import "../../../styles/tools/tool-overlay-v2-baseline.css";
+import "../../../styles/tools/tool-drawer-v2-baseline.css";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import TaiwanAnnualLeaveCalculatorV2 from "../../../components/tools/taiwan-annual-leave-calculator-v2/TaiwanAnnualLeaveCalculatorV2.astro";
+import { getTaiwanAnnualLeaveCalculatorRouteMeta } from "../../../lib/taiwanAnnualLeaveCalculatorRouteMeta";
+import { type Locale } from "../../../i18n/config";
+
+const locale: Locale = "en";
+const routeMeta = getTaiwanAnnualLeaveCalculatorRouteMeta(locale);
+---
+
+<BaseLayout
+	title={routeMeta.title}
+	description={routeMeta.description}
+	canonicalUrl={routeMeta.canonicalUrl}
+	alternateUrls={routeMeta.alternateUrls}
+	headerVariant="inner"
+	locale={locale}
+>
+	<TaiwanAnnualLeaveCalculatorV2 locale={locale} />
+</BaseLayout>
