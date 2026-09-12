@@ -1,8 +1,8 @@
 # Taiwan Annual Leave Calculator / 特休天數試算 — README
 
 > 建立日期：2026-09-11
-> 更新日期：2026-09-11（B1B static visual）
-> 狀態：**B1B static visual（local）** · B0 `8fadeb4` · B1A `9976e62` · Not Link Integrated · Not deployed
+> 更新日期：2026-09-11（B2B Desktop interaction）
+> 狀態：**B2B Desktop live（local）** · B0 `8fadeb4` · B1A `9976e62` · B1B `62e1371` · B2A `5905afa` · Not Link Integrated · Not deployed
 > Canonical product spec：`docs/tools/taiwan-annual-leave-calculator/product-spec.md`
 > Phase：V1.6 Taiwan Local Tools · 第一支
 
@@ -31,24 +31,23 @@ ZH：特休天數試算
 
 ---
 
-## 3. B1B Owner visual fixtures
+## 3. B2B Desktop（本輪）
 
-Production default：**initial**（主結果 `?`）。
-用 query 切 static 態（無計算／無互動）：
+- Smart Date Input（tool-local；`date-input.md`）
+- Shared DesktopCalendar（`popover-compact`）
+- 週年制／曆年制 live、Reset、info inline formula
+- LocalStorage key：`timiva:talc:v1`（EN／ZH 共用；只存 hireDate + leaveSystem）
+- Math SSOT：`taiwanAnnualLeaveMath.ts`（主結果 `primaryDisplay`；禁用 `rawDays`）
+- `?talcFixture=` **不再**影響 production live
 
-| Fixture | URL |
-|---|---|
-| initial（default） | `/…/taiwan-annual-leave-calculator/` |
-| anniversary（14 天＋下一階段） | `?talcFixture=anniversary` |
-| calendar-year（6.5 天＋tip；formula 收合） | `?talcFixture=calendar-year` |
-| calendar-year-formula | `?talcFixture=calendar-year-formula` |
-| max（30 天；已達最高；無下一階段） | `?talcFixture=max` |
-| mobile-ymd（Bottom Sheet 內 YMD 預覽） | `?talcFixture=mobile-ymd` |
+Mobile capsule／AME：**仍 disabled**（B2C）
 
-Mobile 正式結構：first-screen **capsule** → 未來 Bottom Sheet／AME → sheet 內 YMD。
-`mobile-ymd` **不是** first-screen 常駐三欄。
+Validators：
 
-Controls（segmented／Reset／info／capsule／date）：**disabled static**；非 enabled no-op。
+```bash
+node --experimental-strip-types scripts/validate-taiwan-annual-leave-math.mjs
+node --experimental-strip-types scripts/validate-taiwan-annual-leave-desktop.mjs
+```
 
 ---
 
@@ -58,27 +57,17 @@ Controls（segmented／Reset／info／capsule／date）：**disabled static**；
 |---|---|
 | Category | Important Dates／重要日子 |
 | Catalog | **尚未寫入** `toolsCatalog` |
-| Related（tool-local · exactly 2） | Date Range → Business Days |
-| ToolAdSlot | disabled |
+| Link Integration | **尚未** |
+| Related（tool-local） | Date Range、Business Days |
 
 ---
 
-## 5. 批次狀態
+## 5. 不做（本輪）
 
 ```text
-B0 PASS · 8fadeb4
-B1A PASS · 9976e62
-B1B static visual · local（待 Owner visual gate）
-B2+／MOL fixtures／Link Integration · 尚未開始
-```
-
----
-
-## 6. Protected boundary
-
-```text
-不修改 Header／Footer／BaseLayout／ToolPageFrame／shared ResultSummary baseline
-不修改 toolsCatalog／既有工具
-不做計算／parsing／切換／LocalStorage
-不 commit／push／deploy 除非 Owner 明示
+Mobile AME / Bottom Sheet / YMD live
+toolsCatalog / Home / inbound Related
+Link Integration
+shared / locked baseline 修改
+commit / push / deploy（需 Owner）
 ```
