@@ -463,20 +463,23 @@ Task prompt 告訴你本輪意圖；不能單獨告訴你這算不算對。
 
 ```text
 「canonical design rule 被宣告」≠「canonical design rule 已實際生效」
+Source / Declared 正確 ≠ Rendered / Computed 正確
+Validator PASS ≠ Design Assistant PASS
 ```
 
-凡 review item 具有明確 **canonical geometry**，且該 geometry 對 Design System Gate / Foundation Gate / Release Regression 的 PASS 有實質影響，**不得**只靠下列任一項判 PASS：
+凡 review item 具有明確 **canonical geometry** 或 **canonical visual token**（含 color／fill／stroke／icon size），且該項對 Design System Gate / Foundation Gate / Interaction Drift / Release Regression 的 PASS 有實質影響，**不得**只靠下列任一項判 PASS：
 
 ```text
 CSS declaration 存在
 class / token 存在
 validator PASS
 markup 看起來正確
+source assert 通過
 ```
 
-必須驗證 **browser 最終 rendered result**。
+必須驗證 **browser 最終 rendered / computed result**（必要時含 hard reload 後的實際 stylesheet）。
 
-#### 適用的 geometry（非完整 CSS 清單）
+#### 適用的 geometry / visual tokens（非完整 CSS 清單）
 
 僅在 contract 明確、且會影響 Gate 判斷時啟用。例如：
 
@@ -489,24 +492,28 @@ responsive width mode（fixed Standard／Wide／content-driven 等）
 portrait / landscape geometry
 visible / hidden breakpoint behavior
 visible shell（border / background / radius — 當 shell 為 contract）
+canonical icon color / fill / stroke / size（例：invalid ! muted slate）
 ```
 
 **不做**無限量測：細小 decoration、非本輪 contract 的 property，不要求逐項量測。
 
 #### 四層 Evidence（Expected / Declared / Rendered / Visual）
 
-對每個「用作 PASS 依據」的 canonical geometry item，至少取得：
+對每個「用作 PASS 依據」的 canonical geometry／visual token item，至少取得：
 
 | 層 | 回答 | 說明 |
 |---|---|---|
 | **A. Expected** | contract 目標／允許範圍 | 引用 canonical docs／Owner decision；例：Desktop Standard Primary Field 在 viewport 足夠時 = 420px；Portrait Primary Capsule = 320×56；Landscape Primary Capsule = content-driven，min-width ≥88px、min-height 32px（數值以 canonical 為準，此處僅示意） |
 | **B. Declared** | CSS／token／class／contract 來源 | **只是 evidence 之一**，不可單獨決定 PASS |
-| **C. Computed / Rendered** | computed style + `getBoundingClientRect()`（或等效） | 含實際 responsive mode；必要時查 parent layout context（§5.5.1） |
-| **D. Visual** | browser screenshot／browser review | 確認 rendered geometry 與 composition 一致 |
+| **C. Computed / Rendered** | computed style + `getBoundingClientRect()`（或等效） | 含實際 responsive mode；必要時查 parent layout context（§5.5.1）；**icon／color 必須量測實際 `color`／`fill`／`stroke`** |
+| **D. Visual** | browser screenshot／browser review | 確認 rendered geometry／color 與 composition 一致 |
 
 ```text
-四層無矛盾 → 才可判 PASS（就該 geometry item 而言）
+四層無矛盾 → 才可判 PASS（就該 item 而言）
 任一層顯示 contract 未生效 → 不得因 Declared／validator 漂亮而判 PASS
+Declared／source 正確，但 Computed／Rendered／Visual 不一致
+  → BLOCK（假 PASS；常見於 stale hashed CSS／cache／未 rebuild preview）
+Validator PASS 不可取代 rendered visual confirmation
 ```
 
 #### 建議精簡 evidence 格式
@@ -625,7 +632,8 @@ Canonical reference
 至少確認：
 
 ```text
-icon style / color
+icon style / color（必須有 computed `color`／`fill`／`stroke`；不可只看 source）
+icon size（computed）
 border / background
 supporting text（有無、語意、placement）
 visibility / placement
@@ -633,12 +641,18 @@ EN / ZH
 是否與同類 production tools 一致（DC / JEC / Age 等 — **comparator only**；須另有 canonical 追溯）
 ```
 
+```text
+Declared／source 正確但 browser computed 仍為 amber／wrong token
+  → BLOCK（假 PASS；常因 stale hashed CSS／未 rebuild／cache）
+Validator／source assert PASS 不可取代本節 rendered confirmation
+```
+
 #### Field-level error 專用
 
 Canonical：**`design-system.md` §9.2、§11.2** · **`date-input.md` §11** · JEC Desktop inline invalid production（comparator；canonical 仍以 standards／decision 為準）。
 
 ```text
-Pattern A — Invalid Indicator only：muted canonical !；不顯示可見錯誤文字；不用 danger red
+Pattern A — Invalid Indicator only：muted canonical !；不顯示可見錯誤文字；不用 danger red／amber／yellow
 Pattern B — Invalid Indicator + Supporting Message：muted ! + neutral explanation（JEC inline values）；僅在規則需解釋時
 ```
 
@@ -983,7 +997,7 @@ AME integration（若適用）
 mobile portrait / mobile landscape
 ```
 
-**Interaction / Error State Gate（§5.6）：** 若本 batch 新增或修改 interaction state，**必須**獨立執行 §5.6 review；implementation validator／browser QA／geometry evidence **不得**代替 Design Assistant PASS。Field-level error 須對照 Pattern A／B 與 canonical comparator（DC / JEC）。
+**Interaction / Error State Gate（§5.6）：** 若本 batch 新增或修改 interaction state，**必須**獨立執行 §5.6 review；implementation validator／browser QA／geometry evidence **不得**代替 Design Assistant PASS。Field-level error 須對照 Pattern A／B 與 canonical comparator（DC / JEC）。**Baseline color／icon review 必須同時確認 source + rendered computed；source 正確但 computed 不一致 → BLOCK。**
 
 **§5.0 特別提醒（B2）：**
 
