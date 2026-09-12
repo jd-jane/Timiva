@@ -1,11 +1,13 @@
 ---
 /**
  * Taiwan Annual Leave Calculator V2 — ToolPageFrame adopter.
- * B0: shell · B1A: lower content · B1B: upper static visual（無計算／互動）。
+ * B0 shell · B1A lower · B1B static visual · B2B Desktop interaction（本輪）.
+ * Mobile capsule／AME：仍 disabled（B2C）.
  */
 import RelatedToolRow from "../../RelatedToolRow.astro";
 import ResultSummary from "../shared/ResultSummary.astro";
 import ToolPageFrame from "../shared/ToolPageFrame.astro";
+import DesktopCalendar from "../shared/DesktopCalendar.astro";
 import { catalogIconMap } from "../../../lib/catalogIcons";
 import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
@@ -21,6 +23,8 @@ const { locale = "en" } = Astro.props;
 const messages = getMessages(locale);
 const m = messages.taiwanAnnualLeaveCalculator;
 const faqSchema = buildFaqPageJsonLd(m.faq.items);
+const mathLocale = locale === "zh" ? "zh" : "en";
+const intlLocale = locale === "zh" ? "zh-TW" : "en-US";
 
 /** Tool-local outbound only — exactly 2；不改 toolsCatalog。 */
 const declaredRelatedIds = [
@@ -49,40 +53,41 @@ const relatedToolItems = declaredRelatedIds
 		};
 	});
 
-/*
-  B1B：靜態建置 bake = initial（?）。
-  Owner visual 以 ?talcFixture= 由同步 bootstrap 切態（同 DC／Hours pattern）。
-*/
 const rsPrimary = {
 	text: m.resultPlaceholder,
 	ariaLabel: m.resultAriaLabel,
 };
-const ymdYear = "2022";
-const ymdMonth = "09";
-const ymdDay = "15";
+
+const clientI18n = {
+	locale: mathLocale,
+	intlLocale,
+	resultPlaceholder: m.resultPlaceholder,
+	resultAriaLabel: m.resultAriaLabel,
+	definitionAnniversary: m.definitionAnniversary,
+	resultInitialSupport: m.resultInitialSupport,
+	calendarYearTip: m.calendarYearTip,
+	formulaHeading: m.formulaHeading,
+	infoAriaLabel: m.infoAriaLabel,
+	invalidHireDate: m.invalidHireDate,
+	openCalendarAriaLabel: m.openCalendarAriaLabel,
+	calendarLabel: m.calendarLabel,
+	previousMonth: m.previousMonth,
+	nextMonth: m.nextMonth,
+	monthFieldLabel: m.monthFieldLabel,
+	yearFieldLabel: m.yearFieldLabel,
+	weekdays: m.weekdays,
+	supportHireTenure: m.supportHireTenure,
+	supportNextStage: m.supportNextStage,
+	supportNextStageCalendarYear: m.supportNextStageCalendarYear,
+	supportMaxReached: m.supportMaxReached,
+};
 ---
 
 <div
 	data-taiwan-annual-leave-calculator-v2
-	data-talc-locale={locale === "zh" ? "zh" : "en"}
-	data-talc-phase="b1b-static-visual"
-	data-talc-fixture="initial"
-	data-talc-fx-initial-primary={m.resultPlaceholder}
-	data-talc-fx-initial-definition={m.definitionAnniversary}
-	data-talc-fx-initial-support={m.resultInitialSupport}
-	data-talc-fx-anniversary-primary={m.fixtureAnniversaryPrimary}
-	data-talc-fx-anniversary-definition={m.definitionAnniversary}
-	data-talc-fx-anniversary-support={m.fixtureAnniversarySupport}
-	data-talc-fx-anniversary-date={m.fixtureAnniversaryDateValue}
-	data-talc-fx-calendar-primary={m.fixtureCalendarPrimary}
-	data-talc-fx-calendar-definition={m.definitionCalendarYear}
-	data-talc-fx-calendar-support={m.fixtureCalendarSupport}
-	data-talc-fx-calendar-date={m.fixtureCalendarDateValue}
-	data-talc-fx-max-primary={m.fixtureMaxPrimary}
-	data-talc-fx-max-definition={m.definitionAnniversary}
-	data-talc-fx-max-support={m.fixtureMaxSupport}
-	data-talc-fx-max-date={m.fixtureMaxDateValue}
-	data-talc-fx-capsule-empty={m.capsulePlaceholder}
+	data-talc-locale={mathLocale}
+	data-talc-phase="b2b-desktop"
+	data-talc-client-i18n={JSON.stringify(clientI18n)}
 >
 	<ToolPageFrame
 		locale={locale}
@@ -96,9 +101,8 @@ const ymdDay = "15";
 
 		<div slot="result" class="talc-result-host">
 			{/*
-			  ResultSummary：主結果 primary（SSR = ?）。
-			  定義／support／tip／formula 為 tool-local；fixture bootstrap 切態。
-			  主結果字級：blocking inline 對齊 DBD「0」（避免 shared 5rem 先 paint）。
+			  ResultSummary：主結果 primary（SSR = ?；live 由 script 用 primaryDisplay）。
+			  主結果字級：blocking inline 對齊 DBD「0」。
 			*/}
 			<style is:inline>
 				[data-taiwan-annual-leave-calculator-v2]
@@ -144,9 +148,8 @@ const ymdDay = "15";
 			/>
 
 			{/*
-			  第二層定義：對齊 DBD「天」unit label（主數字正下方、較小字級）。
-			  不放進 support divider 內，避免被誤讀成次要層。
-			  SSR bake = initial（定義＋一行說明）；其他 fixture 由 bootstrap 切態。
+			  第二層定義：週年／曆年統一「特休天數」。
+			  ⓘ 展開區在定義下方、divider 上方。
 			*/}
 			<div class="talc-definition-row" data-talc-definition-row>
 				<p class="talc-definition" data-talc-definition>{m.definitionAnniversary}</p>
@@ -156,7 +159,8 @@ const ymdDay = "15";
 					data-talc-info
 					hidden
 					disabled
-					aria-disabled="true"
+					aria-expanded="false"
+					aria-controls="talc-info-panel"
 					aria-label={m.infoAriaLabel}
 				>
 					i
@@ -164,47 +168,36 @@ const ymdDay = "15";
 			</div>
 
 			<div
+				class="talc-info-panel"
+				id="talc-info-panel"
+				data-talc-info-panel
+				aria-hidden="true"
+				inert
+			>
+				<div class="talc-info-panel__inner">
+					<div class="talc-formula" data-talc-formula>
+						<p class="talc-formula__heading">{m.formulaHeading}</p>
+						<ul class="talc-formula__lines" data-talc-formula-lines></ul>
+						<p class="talc-tip" data-talc-tip>{m.calendarYearTip}</p>
+					</div>
+				</div>
+			</div>
+
+			<div
 				class="talc-result-meta tool-textual-result-support-divider"
 				data-talc-meta
 			>
 				<p class="talc-support" data-talc-support>{m.resultInitialSupport}</p>
-				<p class="talc-tip" data-talc-tip hidden>{m.calendarYearTip}</p>
-				<div class="talc-formula" data-talc-formula hidden>
-					<p class="talc-formula__heading">{m.formulaHeading}</p>
-					<ul class="talc-formula__lines">
-						{m.fixtureCalendarFormulaLines.map((line) => <li>{line}</li>)}
-					</ul>
-				</div>
-			</div>
-
-			{/* mobile-ymd：Bottom Sheet 內 YMD 預覽（非正式 first-screen） */}
-			<div class="talc-ymd-preview" data-talc-ymd-preview hidden>
-				<p class="talc-ymd-preview__note">{m.mobileYmdPreviewNote}</p>
-				<p class="talc-ymd-preview__title">{m.mobileYmdSheetTitle}</p>
-				<div class="talc-ymd-fields" role="group" aria-label={m.hireDateLabel}>
-					<div class="talc-ymd-field">
-						<span class="talc-ymd-field__label">{m.ameYearLabel}</span>
-						<span class="talc-ymd-field__shell">{ymdYear}</span>
-					</div>
-					<div class="talc-ymd-field">
-						<span class="talc-ymd-field__label">{m.ameMonthLabel}</span>
-						<span class="talc-ymd-field__shell">{ymdMonth}</span>
-					</div>
-					<div class="talc-ymd-field">
-						<span class="talc-ymd-field__label">{m.ameDayLabel}</span>
-						<span class="talc-ymd-field__shell">{ymdDay}</span>
-					</div>
-				</div>
 			</div>
 		</div>
 
-		{/* Desktop：date pill → leave system → Reset（全部 disabled static） */}
+		{/* Desktop：Smart Date + leave system + Reset */}
 		<div
 			slot="desktopControls"
 			class="talc-desktop-cluster tool-standard-pill-field-cluster"
 			aria-label={m.upperControlsAriaLabel}
 		>
-			<div class="talc-date-pill tool-standard-pill-field">
+			<div class="talc-date-pill tool-standard-pill-field" data-talc-date-pill>
 				<input
 					type="text"
 					class="talc-date-value"
@@ -212,17 +205,33 @@ const ymdDay = "15";
 					value=""
 					placeholder={m.hireDatePlaceholder}
 					aria-label={m.hireDateLabel}
-					disabled
-					readonly
-					tabindex="-1"
+					inputmode="numeric"
+					autocomplete="off"
+					spellcheck="false"
 				/>
+				<span
+					class="talc-date-invalid-icon"
+					data-talc-date-invalid
+					hidden
+					aria-label={m.invalidHireDate}
+				>
+					<svg viewBox="0 0 16 16" aria-hidden="true">
+						<path
+							fill="currentColor"
+							d="M8 1.75 14.25 14.25H1.75L8 1.75z"></path>
+						<path
+							fill="#0f172a"
+							d="M8 5.75a.75.75 0 0 1 .75.75v3.25a.75.75 0 0 1-1.5 0V6.5A.75.75 0 0 1 8 5.75zm0 6.5a.875.875 0 1 1 0 1.75A.875.875 0 0 1 8 12.25z"
+						></path>
+					</svg>
+				</span>
 				<button
 					type="button"
 					class="talc-calendar-icon"
-					disabled
-					aria-disabled="true"
+					data-talc-calendar-toggle
+					aria-expanded="false"
+					aria-controls="talc-calendar-popover"
 					aria-label={m.openCalendarAriaLabel}
-					tabindex="-1"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -247,8 +256,6 @@ const ymdDay = "15";
 					type="button"
 					class="talc-leave-option is-active"
 					data-talc-leave="anniversary"
-					disabled
-					aria-disabled="true"
 					aria-pressed="true"
 				>
 					{m.anniversaryLabel}
@@ -257,27 +264,19 @@ const ymdDay = "15";
 					type="button"
 					class="talc-leave-option"
 					data-talc-leave="calendar-year"
-					disabled
-					aria-disabled="true"
 					aria-pressed="false"
 				>
 					{m.calendarYearLabel}
 				</button>
 			</div>
 
-			<button
-				type="button"
-				class="tool-text-action--muted talc-reset"
-				disabled
-				aria-disabled="true"
-				tabindex="-1"
-			>
+			<button type="button" class="tool-text-action--muted talc-reset" data-talc-reset>
 				{m.resetLabel}
 			</button>
 		</div>
 
 		{/*
-		  手機第一屏：capsule only（未來開 Bottom Sheet／AME）。
+		  手機第一屏：capsule only（B2C 再啟用）。
 		  disabled baseline；非正式 YMD 常駐 first-screen。
 		*/}
 		<button
@@ -416,128 +415,21 @@ const ymdDay = "15";
 		</Fragment>
 	</ToolPageFrame>
 
-	{/*
-	  Fixture bootstrap 必須在 ToolPageFrame 之後：
-	  靜態建置下 Astro.url 無 query；且 meta／desktopControls／capsule
-	  都在 Frame slots 內，腳本需等整段 DOM 解析完再跑。
-	*/}
-	<script is:inline>
-		(function () {
-			var root = document.querySelector("[data-taiwan-annual-leave-calculator-v2]");
-			if (!root) return;
-
-			var allowed = {
-				initial: true,
-				anniversary: true,
-				"calendar-year": true,
-				"calendar-year-formula": true,
-				max: true,
-				"mobile-ymd": true,
-			};
-
-			var fixture = "initial";
-			try {
-				var raw = new URLSearchParams(location.search).get("talcFixture") || "initial";
-				if (allowed[raw]) fixture = raw;
-			} catch (_) {
-				/* ignore */
-			}
-
-			root.setAttribute("data-talc-fixture", fixture);
-
-			var primaryEl = root.querySelector('[data-rs-value="primary"]');
-			var liveEl = root.querySelector("[data-result-summary] [aria-live]");
-			var definitionRowEl = root.querySelector("[data-talc-definition-row]");
-			var metaEl = root.querySelector("[data-talc-meta]");
-			var definitionEl = root.querySelector("[data-talc-definition]");
-			var infoEl = root.querySelector("[data-talc-info]");
-			var supportEl = root.querySelector("[data-talc-support]");
-			var tipEl = root.querySelector("[data-talc-tip]");
-			var formulaEl = root.querySelector("[data-talc-formula]");
-			var ymdEl = root.querySelector("[data-talc-ymd-preview]");
-			var dateInput = root.querySelector("[data-talc-date-value]");
-			var anniversaryBtn = root.querySelector('[data-talc-leave="anniversary"]');
-			var calendarBtn = root.querySelector('[data-talc-leave="calendar-year"]');
-			var capsule = root.querySelector("[data-talc-capsule]");
-
-			function setLeave(isAnniversary) {
-				if (anniversaryBtn) {
-					anniversaryBtn.classList.toggle("is-active", isAnniversary);
-					anniversaryBtn.setAttribute("aria-pressed", isAnniversary ? "true" : "false");
-				}
-				if (calendarBtn) {
-					calendarBtn.classList.toggle("is-active", !isAnniversary);
-					calendarBtn.setAttribute("aria-pressed", !isAnniversary ? "true" : "false");
-				}
-			}
-
-			function setPrimary(text) {
-				if (primaryEl && text) primaryEl.textContent = text;
-				if (liveEl && text) liveEl.textContent = text;
-			}
-
-			function setDate(value) {
-				if (dateInput) dateInput.value = value || "";
-				if (capsule) {
-					var empty = root.getAttribute("data-talc-fx-capsule-empty") || "";
-					capsule.textContent = value || empty;
-				}
-			}
-
-			var primary = root.getAttribute("data-talc-fx-initial-primary") || "?";
-			var definition = root.getAttribute("data-talc-fx-initial-definition") || "";
-			var support = root.getAttribute("data-talc-fx-initial-support") || "";
-			var dateValue = "";
-			var showMeta = true;
-			var showInfo = false;
-			var showTip = false;
-			var showFormula = false;
-			var showYmd = fixture === "mobile-ymd";
-			var isAnniversary = true;
-
-			if (fixture === "anniversary") {
-				primary = root.getAttribute("data-talc-fx-anniversary-primary") || primary;
-				definition = root.getAttribute("data-talc-fx-anniversary-definition") || "";
-				support = root.getAttribute("data-talc-fx-anniversary-support") || "";
-				dateValue = root.getAttribute("data-talc-fx-anniversary-date") || "";
-				showMeta = true;
-				isAnniversary = true;
-			} else if (fixture === "calendar-year" || fixture === "calendar-year-formula") {
-				primary = root.getAttribute("data-talc-fx-calendar-primary") || primary;
-				definition = root.getAttribute("data-talc-fx-calendar-definition") || "";
-				support = root.getAttribute("data-talc-fx-calendar-support") || "";
-				dateValue = root.getAttribute("data-talc-fx-calendar-date") || "";
-				showMeta = true;
-				showInfo = true;
-				showTip = true;
-				showFormula = fixture === "calendar-year-formula";
-				isAnniversary = false;
-			} else if (fixture === "max") {
-				primary = root.getAttribute("data-talc-fx-max-primary") || primary;
-				definition = root.getAttribute("data-talc-fx-max-definition") || "";
-				support = root.getAttribute("data-talc-fx-max-support") || "";
-				dateValue = root.getAttribute("data-talc-fx-max-date") || "";
-				showMeta = true;
-				isAnniversary = true;
-			} else if (fixture === "mobile-ymd") {
-				/* YMD sheet preview：不顯示 result meta */
-				showMeta = false;
-			}
-
-			setPrimary(primary);
-			setDate(dateValue);
-			setLeave(isAnniversary);
-
-			if (definitionRowEl) definitionRowEl.hidden = !showMeta;
-			if (metaEl) metaEl.hidden = !showMeta;
-			if (definitionEl) definitionEl.textContent = definition;
-			if (supportEl) supportEl.textContent = support;
-			if (infoEl) infoEl.hidden = !showInfo;
-			if (tipEl) tipEl.hidden = !showTip;
-			if (formulaEl) formulaEl.hidden = !showFormula;
-			if (ymdEl) ymdEl.hidden = !showYmd;
-		})();
-	</script>
-
-	<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+	{/* Shared DesktopCalendar — popover-compact；tool 只做 trigger／anchor */}
+	<DesktopCalendar
+		variant="popover-compact"
+		idPrefix="talc-calendar-popover"
+		weekdays={[...m.weekdays]}
+		labels={{
+			calendar: m.calendarLabel,
+			previousMonth: m.previousMonth,
+			nextMonth: m.nextMonth,
+			month: m.monthFieldLabel,
+			year: m.yearFieldLabel,
+		}}
+	/>
 </div>
+
+<script>
+	import "../../../scripts/taiwan-annual-leave-calculator";
+</script>

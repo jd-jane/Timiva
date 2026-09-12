@@ -243,17 +243,28 @@ export type AnniversaryResult = {
 	formulaLines: string[];
 };
 
-export function evaluateAnniversary(hire: CivilDate, asOf: CivilDate): AnniversaryResult {
+export function evaluateAnniversary(
+	hire: CivilDate,
+	asOf: CivilDate,
+	locale: MathLocale = "zh",
+): AnniversaryResult {
 	if (compareCivil(hire, asOf) > 0) {
 		throw new Error("hire date after asOf");
 	}
 	const tenure = seniorityParts(hire, asOf);
 	const officialDays = statutoryDaysForTenure(tenure);
 	const next = nextAnniversaryTier(hire, asOf, officialDays);
-	const formulaLines = [
-		`週年制 · 年資 ${formatTenureZh(tenure)}`,
-		`法定級距 ${formatLeaveDisplay(officialDays)} 天`,
-	];
+	const unit = dayUnit(locale);
+	const formulaLines =
+		locale === "zh"
+			? [
+					`週年制 · 年資 ${formatTenureZh(tenure)}`,
+					`法定級距 ${formatLeaveDisplay(officialDays)} ${unit}`,
+				]
+			: [
+					`Anniversary · tenure ${formatTenureEn(tenure)}`,
+					`Statutory tier ${formatLeaveDisplay(officialDays)} ${unit}`,
+				];
 	return {
 		rawDays: officialDays,
 		officialDays,
@@ -263,6 +274,16 @@ export function evaluateAnniversary(hire: CivilDate, asOf: CivilDate): Anniversa
 		isMax: officialDays >= 30,
 		formulaLines,
 	};
+}
+
+function formatTenureEn(t: Tenure): string {
+	const parts: string[] = [];
+	if (t.years > 0) parts.push(`${t.years} year${t.years === 1 ? "" : "s"}`);
+	if (t.months > 0) parts.push(`${t.months} month${t.months === 1 ? "" : "s"}`);
+	if (t.days > 0 || parts.length === 0) {
+		parts.push(`${t.days} day${t.days === 1 ? "" : "s"}`);
+	}
+	return parts.join(" ");
 }
 
 export type CalendarYearResult = {
@@ -289,7 +310,11 @@ export type CalendarYearResult = {
  * 對齊 RestDays Caculate_calendardate(leaveYear/1/1)。
  * 給假年 = leaveYear；假設全年在職。
  */
-export function evaluateCalendarYear(hire: CivilDate, leaveYear: number): CalendarYearResult {
+export function evaluateCalendarYear(
+	hire: CivilDate,
+	leaveYear: number,
+	locale: MathLocale = "zh",
+): CalendarYearResult {
 	const enddate: CivilDate = { year: leaveYear, month: 1, day: 1 };
 	const end_date = new Date(leaveYear, 0, 1);
 
@@ -417,7 +442,7 @@ export function evaluateCalendarYear(hire: CivilDate, leaveYear: number): Calend
 		}
 	}
 
-	const formulaLines = buildCalendarFormulaLines(formulaExpression, officialDays);
+	const formulaLines = buildCalendarFormulaLines(formulaExpression, officialDays, locale);
 
 	return {
 		rawDays,
@@ -435,17 +460,49 @@ export function evaluateCalendarYear(hire: CivilDate, leaveYear: number): Calend
 	};
 }
 
-function buildCalendarFormulaLines(expression: string, official: number): string[] {
+export function formatTenureDisplay(tenure: Tenure, locale: MathLocale): string {
+	return locale === "zh" ? formatTenureZh(tenure) : formatTenureEn(tenure);
+}
+
+export function formatCivilDateSlash(date: CivilDate): string {
+	const m = String(date.month).padStart(2, "0");
+	const d = String(date.day).padStart(2, "0");
+	return `${date.year}/${m}/${d}`;
+}
+
+export type MathLocale = "en" | "zh";
+
+function dayUnit(locale: MathLocale): string {
+	return locale === "zh" ? "天" : "days";
+}
+
+function buildCalendarFormulaLines(
+	expression: string,
+	official: number,
+	locale: MathLocale,
+): string[] {
 	const body = expression.replace(/^計算公式 = /, "").trim();
-	if (body === "3") return ["3 天"];
-	if (/^\d+(\.\d+)?$/.test(body)) return [`${formatLeaveDisplay(official)} 天`];
-	return [body, `＝ ${formatLeaveDisplay(official)} 天`];
+	const unit = dayUnit(locale);
+	const eq = locale === "zh" ? "＝" : "=";
+	const days = formatLeaveDisplay(official);
+	/* 1/1 足年／無比例拆分：說明文案；天數取 official，不寫死 */
+	if (body === "3" || /^\d+(\.\d+)?$/.test(body)) {
+		if (locale === "zh") {
+			return [`到職日為 1 月 1 日，本年度無需按比例拆分，適用 ${days} 天。`];
+		}
+		return [
+			`Because the hire date is January 1, no proration is needed this year; ${days} days apply.`,
+		];
+	}
+	/* UI：比例公式與結果同一行 */
+	return [`${body}${eq} ${days} ${unit}`];
 }
 
 export type EvaluateInput = {
 	hire: CivilDate;
 	asOf: CivilDate;
 	leaveSystem: LeaveSystem;
+	locale?: MathLocale;
 };
 
 /**
@@ -486,8 +543,9 @@ export type EvaluateResult =
 
 export function evaluateTaiwanAnnualLeave(input: EvaluateInput): EvaluateResult {
 	const { hire, asOf, leaveSystem } = input;
+	const locale = input.locale ?? "zh";
 	if (leaveSystem === "anniversary") {
-		const r = evaluateAnniversary(hire, asOf);
+		const r = evaluateAnniversary(hire, asOf, locale);
 		return {
 			status: "anniversary",
 			primaryDisplay: r.display,
@@ -500,7 +558,7 @@ export function evaluateTaiwanAnnualLeave(input: EvaluateInput): EvaluateResult 
 		};
 	}
 	const leaveYear = asOf.year;
-	const r = evaluateCalendarYear(hire, leaveYear);
+	const r = evaluateCalendarYear(hire, leaveYear, locale);
 	return {
 		status: "calendar-year",
 		primaryDisplay: r.display,
