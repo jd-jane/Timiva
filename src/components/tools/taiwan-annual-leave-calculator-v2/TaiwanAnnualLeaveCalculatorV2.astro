@@ -28,32 +28,38 @@ const faqSchema = buildFaqPageJsonLd(m.faq.items);
 const mathLocale = locale === "zh" ? "zh" : "en";
 const intlLocale = locale === "zh" ? "zh-TW" : "en-US";
 
-/** Tool-local outbound only — exactly 2；不改 toolsCatalog。 */
-const declaredRelatedIds = [
-	"date-range",
-	"business-days-calculator",
-] as const satisfies readonly CatalogToolId[];
+/** Catalog-declared outbound only — no getRelatedTools featured padding. */
+const talcCatalog = getCatalogTool("taiwan-annual-leave-calculator");
+const declaredRelatedIds = (talcCatalog?.relatedIds ?? []) as CatalogToolId[];
 
 const toolCopy: Record<
-	(typeof declaredRelatedIds)[number],
+	CatalogToolId,
 	{ title: string; relatedDescription: string }
 > = {
+	"event-countdown": messages.tools.eventCountdown,
 	"date-range": messages.tools.dateRange,
+	"countdown-timer": messages.tools.countdownTimer,
+	"year-progress": messages.tools.yearProgress,
+	"age-calculator": messages.tools.ageCalculator,
+	"days-between-dates": messages.tools.daysBetweenDates,
 	"business-days-calculator": messages.tools.businessDaysCalculator,
+	"life-progress": messages.tools.lifeProgress,
+	"date-calculator": messages.tools.dateCalculator,
+	"hours-calculator": messages.tools.hoursCalculator,
+	"japanese-era-converter": messages.tools.japaneseEraConverter,
+	"lunar-date-converter": messages.tools.lunarDateConverter,
+	"taiwan-annual-leave-calculator": messages.tools.taiwanAnnualLeaveCalculator,
 };
 
 const relatedToolItems = declaredRelatedIds
 	.map((id) => getCatalogTool(id))
 	.filter((tool): tool is NonNullable<typeof tool> => Boolean(tool?.available))
-	.map((tool) => {
-		const id = tool.id as (typeof declaredRelatedIds)[number];
-		return {
-			href: getLocalizedPath(locale, `/${tool.slug}/`),
-			name: toolCopy[id].title,
-			description: toolCopy[id].relatedDescription,
-			icon: catalogIconMap[tool.id],
-		};
-	});
+	.map((tool) => ({
+		href: getLocalizedPath(locale, `/${tool.slug}/`),
+		name: toolCopy[tool.id].title,
+		description: toolCopy[tool.id].relatedDescription,
+		icon: catalogIconMap[tool.id],
+	}));
 
 const rsPrimary = {
 	text: m.resultPlaceholder,

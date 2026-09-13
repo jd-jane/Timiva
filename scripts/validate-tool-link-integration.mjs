@@ -21,6 +21,7 @@ const PRODUCTION_TOOL_IDS = [
 	"hours-calculator",
 	"japanese-era-converter",
 	"lunar-date-converter",
+	"taiwan-annual-leave-calculator",
 	"countdown-timer",
 	"year-progress",
 	"age-calculator",
@@ -33,7 +34,7 @@ const APPROVED_RELATED_IDS = {
 	"business-days-calculator": [
 		"days-between-dates",
 		"date-range",
-		"hours-calculator",
+		"taiwan-annual-leave-calculator",
 	],
 	"date-calculator": [
 		"days-between-dates",
@@ -51,6 +52,7 @@ const APPROVED_RELATED_IDS = {
 		"lunar-date-converter",
 	],
 	"lunar-date-converter": ["japanese-era-converter", "age-calculator"],
+	"taiwan-annual-leave-calculator": ["date-range", "business-days-calculator"],
 	"countdown-timer": ["event-countdown", "date-range", "year-progress"],
 	"year-progress": ["event-countdown", "date-range", "age-calculator"],
 	"age-calculator": ["date-range", "days-between-dates", "japanese-era-converter"],
@@ -65,6 +67,7 @@ const DATES_EVENTS_ORDER = [
 	"hours-calculator",
 	"japanese-era-converter",
 	"lunar-date-converter",
+	"taiwan-annual-leave-calculator",
 	"age-calculator",
 ];
 
@@ -319,6 +322,28 @@ assert(
 	"lunar-date-converter slug is lunar-date-converter",
 );
 
+const talcEntries = catalogTools.filter(
+	(tool) => tool.id === "taiwan-annual-leave-calculator",
+);
+assert(
+	talcEntries.length === 1,
+	"exactly one taiwan-annual-leave-calculator catalog entry",
+);
+
+const taiwanAnnualLeaveCalculator = talcEntries[0];
+assert(
+	taiwanAnnualLeaveCalculator?.available === true,
+	"taiwan-annual-leave-calculator.available === true",
+);
+assert(
+	taiwanAnnualLeaveCalculator?.featured === false,
+	"taiwan-annual-leave-calculator.featured === false",
+);
+assert(
+	taiwanAnnualLeaveCalculator?.slug === "taiwan-annual-leave-calculator",
+	"taiwan-annual-leave-calculator slug is taiwan-annual-leave-calculator",
+);
+
 for (const id of PRODUCTION_TOOL_IDS) {
 	const tool = catalogTools.find((entry) => entry.id === id);
 	assert(tool?.available === true, `${id} is available`);
@@ -330,7 +355,7 @@ const datesEventsOrder = catalogTools
 	.filter((id) => DATES_EVENTS_ORDER.includes(id));
 assert(
 	JSON.stringify(datesEventsOrder) === JSON.stringify(DATES_EVENTS_ORDER),
-	"dates-events available order is event-countdown → date-range → days-between-dates → business-days-calculator → date-calculator → hours-calculator → japanese-era-converter → lunar-date-converter → age-calculator",
+	"dates-events available order is event-countdown → date-range → days-between-dates → business-days-calculator → date-calculator → hours-calculator → japanese-era-converter → lunar-date-converter → taiwan-annual-leave-calculator → age-calculator",
 );
 
 for (const [toolId, expectedIds] of Object.entries(APPROVED_RELATED_IDS)) {
@@ -443,8 +468,10 @@ assert(
 	"days-between-dates relatedIds no longer include age-calculator",
 );
 assert(
-	APPROVED_RELATED_IDS["business-days-calculator"].includes("hours-calculator"),
-	"business-days-calculator relatedIds include hours-calculator",
+	APPROVED_RELATED_IDS["business-days-calculator"].includes(
+		"taiwan-annual-leave-calculator",
+	),
+	"business-days-calculator relatedIds include taiwan-annual-leave-calculator",
 );
 assert(
 	!APPROVED_RELATED_IDS["business-days-calculator"].includes("date-calculator"),
@@ -509,6 +536,28 @@ assert(
 assert(
 	!APPROVED_RELATED_IDS["lunar-date-converter"].includes("date-calculator"),
 	"lunar-date-converter relatedIds do not include date-calculator",
+);
+assert(
+	JSON.stringify(APPROVED_RELATED_IDS["taiwan-annual-leave-calculator"]) ===
+		JSON.stringify(["date-range", "business-days-calculator"]),
+	"taiwan-annual-leave-calculator outbound relatedIds are date-range → business-days-calculator",
+);
+assert(
+	APPROVED_RELATED_IDS["taiwan-annual-leave-calculator"].length === 2,
+	"taiwan-annual-leave-calculator relatedIds length is 2 (no featured padding required)",
+);
+assert(
+	JSON.stringify(APPROVED_RELATED_IDS["business-days-calculator"]) ===
+		JSON.stringify([
+			"days-between-dates",
+			"date-range",
+			"taiwan-annual-leave-calculator",
+		]),
+	"business-days-calculator inbound relatedIds are DBD → date-range → TALC",
+);
+assert(
+	!APPROVED_RELATED_IDS["business-days-calculator"].includes("hours-calculator"),
+	"business-days-calculator relatedIds no longer include hours-calculator",
 );
 assert(
 	JSON.stringify(APPROVED_RELATED_IDS["age-calculator"]) ===
@@ -609,6 +658,10 @@ assert(
 	!featuredTools.some((tool) => tool.id === "lunar-date-converter"),
 	"Home featured tools do not include Lunar Date Converter",
 );
+assert(
+	!featuredTools.some((tool) => tool.id === "taiwan-annual-leave-calculator"),
+	"Home featured tools do not include Taiwan Annual Leave Calculator",
+);
 
 const homeAgeCalculator = featuredTools[1];
 assert(homeAgeCalculator?.id === "age-calculator", "Home second tool is age-calculator");
@@ -650,6 +703,10 @@ assert(
 	catalogIconMap["lunar-date-converter"] === "calendar",
 	"catalog lunar-date-converter uses calendar icon",
 );
+assert(
+	catalogIconMap["taiwan-annual-leave-calculator"] === "calendar",
+	"catalog taiwan-annual-leave-calculator uses calendar icon",
+);
 assert(en.tools.dateCalculator.title === "Date Calculator", "EN tools.dateCalculator exists");
 assert(zh.tools.dateCalculator.title === "日期加減計算", "ZH tools.dateCalculator exists");
 assert(en.tools.hoursCalculator.title === "Hours Calculator", "EN tools.hoursCalculator exists");
@@ -674,6 +731,22 @@ assert(
 assert(
 	Boolean(zh.tools.lunarDateConverter.relatedDescription),
 	"ZH tools.lunarDateConverter relatedDescription exists",
+);
+assert(
+	en.tools.taiwanAnnualLeaveCalculator.title === "Taiwan Annual Leave Calculator",
+	"EN tools.taiwanAnnualLeaveCalculator exists",
+);
+assert(
+	zh.tools.taiwanAnnualLeaveCalculator.title === "特休天數試算",
+	"ZH tools.taiwanAnnualLeaveCalculator exists",
+);
+assert(
+	Boolean(en.tools.taiwanAnnualLeaveCalculator.relatedDescription),
+	"EN tools.taiwanAnnualLeaveCalculator relatedDescription exists",
+);
+assert(
+	Boolean(zh.tools.taiwanAnnualLeaveCalculator.relatedDescription),
+	"ZH tools.taiwanAnnualLeaveCalculator relatedDescription exists",
 );
 
 assert(
@@ -840,6 +913,12 @@ for (const relativePath of PRODUCTION_RELATED_COMPONENTS) {
 		source.includes('"lunar-date-converter": messages.tools.lunarDateConverter'),
 		`${relativePath} maps lunar-date-converter copy`,
 	);
+	assert(
+		source.includes(
+			'"taiwan-annual-leave-calculator": messages.tools.taiwanAnnualLeaveCalculator',
+		),
+		`${relativePath} maps taiwan-annual-leave-calculator copy`,
+	);
 }
 
 const japaneseEraSource = readSource(
@@ -872,6 +951,18 @@ assert(
 	"Lunar Date Converter reads declared relatedIds from catalog",
 );
 
+const talcSource = readSource(
+	"src/components/tools/taiwan-annual-leave-calculator-v2/TaiwanAnnualLeaveCalculatorV2.astro",
+);
+assert(
+	!talcSource.includes("getRelatedTools("),
+	"Taiwan Annual Leave Calculator does not use getRelatedTools padding",
+);
+assert(
+	talcSource.includes('getCatalogTool("taiwan-annual-leave-calculator")'),
+	"Taiwan Annual Leave Calculator reads declared relatedIds from catalog",
+);
+
 // --- Built output ---
 const builtPages = [
 	{
@@ -884,6 +975,7 @@ const builtPages = [
 			"/en/hours-calculator/",
 			"/en/japanese-era-converter/",
 			"/en/lunar-date-converter/",
+			"/en/taiwan-annual-leave-calculator/",
 		],
 		datesEventsOrder: [
 			"/en/event-countdown/",
@@ -894,6 +986,7 @@ const builtPages = [
 			"/en/hours-calculator/",
 			"/en/japanese-era-converter/",
 			"/en/lunar-date-converter/",
+			"/en/taiwan-annual-leave-calculator/",
 			"/en/age-calculator/",
 		],
 	},
@@ -907,6 +1000,7 @@ const builtPages = [
 			"/zh/hours-calculator/",
 			"/zh/japanese-era-converter/",
 			"/zh/lunar-date-converter/",
+			"/zh/taiwan-annual-leave-calculator/",
 		],
 		datesEventsOrder: [
 			"/zh/event-countdown/",
@@ -917,6 +1011,7 @@ const builtPages = [
 			"/zh/hours-calculator/",
 			"/zh/japanese-era-converter/",
 			"/zh/lunar-date-converter/",
+			"/zh/taiwan-annual-leave-calculator/",
 			"/zh/age-calculator/",
 		],
 	},
@@ -964,14 +1059,22 @@ const builtPages = [
 		path: "en/business-days-calculator/index.html",
 		locale: "en",
 		selfSlug: "business-days-calculator",
-		related: ["days-between-dates", "date-range-calculator", "hours-calculator"],
+		related: [
+			"days-between-dates",
+			"date-range-calculator",
+			"taiwan-annual-leave-calculator",
+		],
 		relatedAttr: "data-bdcv2-related-tools",
 	},
 	{
 		path: "zh/business-days-calculator/index.html",
 		locale: "zh",
 		selfSlug: "business-days-calculator",
-		related: ["days-between-dates", "date-range-calculator", "hours-calculator"],
+		related: [
+			"days-between-dates",
+			"date-range-calculator",
+			"taiwan-annual-leave-calculator",
+		],
 		relatedAttr: "data-bdcv2-related-tools",
 	},
 	{
@@ -1068,6 +1171,20 @@ const builtPages = [
 		related: ["japanese-era-converter", "age-calculator"],
 		relatedAttr: "data-tpf-lower-related",
 	},
+	{
+		path: "en/taiwan-annual-leave-calculator/index.html",
+		locale: "en",
+		selfSlug: "taiwan-annual-leave-calculator",
+		related: ["date-range-calculator", "business-days-calculator"],
+		relatedAttr: "data-tpf-lower-related",
+	},
+	{
+		path: "zh/taiwan-annual-leave-calculator/index.html",
+		locale: "zh",
+		selfSlug: "taiwan-annual-leave-calculator",
+		related: ["date-range-calculator", "business-days-calculator"],
+		relatedAttr: "data-tpf-lower-related",
+	},
 ];
 
 for (const page of builtPages) {
@@ -1093,7 +1210,7 @@ for (const page of builtPages) {
 				positions.every(
 					(position, index) => index === 0 || positions[index - 1] < position,
 				),
-				`${page.path} dates-events order is EC → DRC → DBD → BDC → DC → Hours → JEC → Lunar → AC`,
+				`${page.path} dates-events order is EC → DRC → DBD → BDC → DC → Hours → JEC → Lunar → TALC → AC`,
 			);
 		}
 		continue;
@@ -1199,12 +1316,16 @@ for (const page of builtPages) {
 		assert(
 			relatedHrefs.includes(`${localePrefix}/days-between-dates/`) &&
 				relatedHrefs.includes(`${localePrefix}/date-range-calculator/`) &&
-				relatedHrefs.includes(`${localePrefix}/hours-calculator/`),
-			`${page.path} related section is Days Between Dates → Date Range → Hours Calculator`,
+				relatedHrefs.includes(`${localePrefix}/taiwan-annual-leave-calculator/`),
+			`${page.path} related section is Days Between Dates → Date Range → Taiwan Annual Leave Calculator`,
 		);
 		assert(
 			!relatedHrefs.some((href) => href.endsWith("/date-calculator/")),
 			`${page.path} related section no longer links to date-calculator`,
+		);
+		assert(
+			!relatedHrefs.some((href) => href.endsWith("/hours-calculator/")),
+			`${page.path} related section no longer links to hours-calculator`,
 		);
 		assert(
 			!relatedHrefs.some((href) => href.endsWith("/event-countdown/")),
@@ -1271,6 +1392,22 @@ for (const page of builtPages) {
 		);
 	}
 
+	if (page.selfSlug === "taiwan-annual-leave-calculator") {
+		assert(
+			relatedHrefs.length === 2,
+			`${page.path} related section has exactly two links`,
+		);
+		assert(
+			relatedHrefs.includes(`${localePrefix}/date-range-calculator/`) &&
+				relatedHrefs.includes(`${localePrefix}/business-days-calculator/`),
+			`${page.path} related section is Date Range → Business Days Calculator`,
+		);
+		assert(
+			!relatedHrefs.some((href) => href.endsWith("/event-countdown/")),
+			`${page.path} related section does not include event-countdown featured padding`,
+		);
+	}
+
 	if (
 		page.selfSlug === "event-countdown" ||
 		page.selfSlug === "countdown-timer" ||
@@ -1293,6 +1430,7 @@ for (const homePage of ["en/index.html", "zh/index.html"]) {
 	const hoursHref = `/${locale}/hours-calculator/`;
 	const jecHref = `/${locale}/japanese-era-converter/`;
 	const lunarHref = `/${locale}/lunar-date-converter/`;
+	const talcHref = `/${locale}/taiwan-annual-leave-calculator/`;
 
 	assert(
 		countHref(html, acHref) >= 1,
@@ -1321,6 +1459,10 @@ for (const homePage of ["en/index.html", "zh/index.html"]) {
 	assert(
 		countHref(html, lunarHref) === 0,
 		`${homePage} does not contain Lunar Date Converter featured link`,
+	);
+	assert(
+		countHref(html, talcHref) === 0,
+		`${homePage} does not contain Taiwan Annual Leave Calculator featured link`,
 	);
 	assert(!html.includes("life-progress"), `${homePage} does not link to life-progress slug`);
 	assert(

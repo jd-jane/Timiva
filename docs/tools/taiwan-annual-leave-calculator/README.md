@@ -1,8 +1,8 @@
 # Taiwan Annual Leave Calculator / 特休天數試算 — README
 
 > 建立日期：2026-09-11
-> 更新日期：2026-09-13（B2C Landscape first-screen＋Mobile ⓘ）
-> 狀態：**B2C Mobile live（local）** · B0 `8fadeb4` · B1A `9976e62` · B1B `62e1371` · B2A `5905afa` · B2B Desktop · Not Link Integrated · Not deployed
+> 更新日期：2026-09-13（B2D Catalog / Link Integration）
+> 狀態：**Site integration complete（local）** · B0 `8fadeb4` · B1A `9976e62` · B1B `62e1371` · B2A `5905afa` · B2B Desktop · B2C `99857b1` · B2D ready · Not deployed
 > Canonical product spec：`docs/tools/taiwan-annual-leave-calculator/product-spec.md`
 > Phase：V1.6 Taiwan Local Tools · 第一支
 
@@ -70,19 +70,22 @@ node --experimental-strip-types scripts/validate-taiwan-annual-leave-mobile.mjs
 
 | 項目 | 內容 |
 |---|---|
-| Category | Important Dates／重要日子 |
-| Catalog | **尚未寫入** `toolsCatalog` |
-| Link Integration | **尚未** |
-| Related（tool-local） | Date Range、Business Days |
+| Category | Important Dates／重要日子（`dates-events`） |
+| Catalog | `toolsCatalog` · `available: true` · `featured: false` |
+| Home Featured | **不加入**（維持 4 卡） |
+| All Tools | EN／ZH 由 catalog 自動接入 |
+| Outbound Related | `date-range` → `business-days-calculator`（catalog；恰 2） |
+| Inbound Related | `business-days-calculator` 以 TALC 替換 `hours-calculator` |
+| `date-range` Related | **不變** |
 
 ---
 
 ## 6. 不做（本輪）
 
 ```text
-toolsCatalog / Home / inbound Related
-Link Integration
+Home Featured 變更
+date-range inbound Related
 shared / locked baseline 修改
 其他 V1.6 工具
-commit / push / deploy（需 Owner）
+push / deploy（需 Owner）
 ```

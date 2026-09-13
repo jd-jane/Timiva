@@ -293,6 +293,13 @@ export const en = {
       compactDescription: "Convert Gregorian and lunar dates.",
       relatedDescription: "Convert Gregorian and lunar dates.",
     },
+    taiwanAnnualLeaveCalculator: {
+      title: "Taiwan Annual Leave Calculator",
+      description:
+        "Enter your start date to estimate statutory annual leave under anniversary-based or calendar-year rules.",
+      compactDescription: "Estimate statutory annual leave.",
+      relatedDescription: "Estimate annual leave from hire date.",
+    },
     lifeProgress: {
       title: "Life Progress Bar",
       description:

@@ -273,6 +273,12 @@ export const zh: Messages = {
       compactDescription: "國曆與農曆日期換算。",
       relatedDescription: "國曆與農曆日期換算。",
     },
+    taiwanAnnualLeaveCalculator: {
+      title: "特休天數試算",
+      description: "輸入到職日期，依週年制或曆年制試算目前的特休天數。",
+      compactDescription: "試算法定特休天數。",
+      relatedDescription: "依到職日期試算特休。",
+    },
     lifeProgress: {
       title: "人生進度條",
       description: "把一年、人生或目標期限變成清楚的時間進度。",

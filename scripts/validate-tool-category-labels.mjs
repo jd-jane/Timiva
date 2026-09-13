@@ -53,6 +53,7 @@ const EXPECTED_CATEGORY_ASSIGNMENTS = {
 	"hours-calculator": "dates-events",
 	"japanese-era-converter": "dates-events",
 	"lunar-date-converter": "dates-events",
+	"taiwan-annual-leave-calculator": "dates-events",
 	"life-progress": "momentum",
 };
 
@@ -63,7 +64,7 @@ const EXPECTED_RELATED_IDS = {
 	"business-days-calculator": [
 		"days-between-dates",
 		"date-range",
-		"hours-calculator",
+		"taiwan-annual-leave-calculator",
 	],
 	"countdown-timer": ["event-countdown", "date-range", "year-progress"],
 	"year-progress": ["event-countdown", "date-range", "age-calculator"],
@@ -84,6 +85,7 @@ const EXPECTED_RELATED_IDS = {
 		"lunar-date-converter",
 	],
 	"lunar-date-converter": ["japanese-era-converter", "age-calculator"],
+	"taiwan-annual-leave-calculator": ["date-range", "business-days-calculator"],
 };
 
 const DATES_EVENTS_ORDER = [
@@ -95,6 +97,7 @@ const DATES_EVENTS_ORDER = [
 	"hours-calculator",
 	"japanese-era-converter",
 	"lunar-date-converter",
+	"taiwan-annual-leave-calculator",
 	"age-calculator",
 ];
 
@@ -217,7 +220,7 @@ assert(
 	JSON.stringify(categoryIds) === JSON.stringify(STABLE_CATEGORY_IDS),
 	"toolCategories ids remain dates-events → productivity → body-flow → momentum",
 );
-assert(catalogTools.length === 12, "catalogTools has 12 entries");
+assert(catalogTools.length === 13, "catalogTools has 13 entries");
 
 for (const [toolId, categoryId] of Object.entries(EXPECTED_CATEGORY_ASSIGNMENTS)) {
 	const tool = catalogTools.find((entry) => entry.id === toolId);
@@ -262,7 +265,7 @@ assert(
 );
 
 const availableCount = catalogTools.filter((tool) => tool.available).length;
-assert(availableCount === 11, "available production tool count is 11");
+assert(availableCount === 12, "available production tool count is 12");
 assert(
 	catalogTools.find((tool) => tool.id === "date-calculator")?.available === true,
 	"date-calculator is available",
