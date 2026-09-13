@@ -382,6 +382,18 @@ ZH 兩行農曆 + weekday 的組合必須有獨立 rendered evidence
 缺該格 → INCOMPLETE EVIDENCE（不得整體 Result PASS）
 ```
 
+**Date-type primary（完整日期）· ZH Mobile Landscape：**
+
+```text
+canonical：docs/standards/date-input.md §14 · design-system.md §10.2.1
+完整日期必須單行；weekday 固定次行；不得拆成「年」／「月日」多行片段
+只看 EN landscape 同列 ≠ 可宣稱 ZH date-type landscape PASS
+必須有 rendered／computed layout evidence（含至少一組長日期）
+不得只靠 source／validator PASS
+EN／Portrait／Desktop／Initial「?」不得被本規則改動
+缺證 → INCOMPLETE EVIDENCE
+```
+
 ```text
 screenshots／QA 覆蓋風險與必要格，不是覆蓋「看起來差不多」的推論
 ```
@@ -949,6 +961,7 @@ baseline 穩定後可降低 review 重量（checklist + validator + spot visual�
 Tool Title（design-system.md §4.1）
 Tool Title → Result gap（layout-system.md §6.0.1 A1；DRC compact exception 見 decision-log）
 Primary Result typography（design-system.md §9；B3 textual primary）
+Date-type primary · ZH Mobile Landscape（date-input.md §14；design-system.md §10.2.1）
 Supporting Result Text
 Textual Result Support Divider
 Standard Pill Field

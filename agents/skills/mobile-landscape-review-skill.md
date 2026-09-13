@@ -70,6 +70,10 @@ Bottom Control 是否不貼 Footer
 AME：真機 Mobile Landscape Full-screen（hover:none gate）與
      Constrained Viewport Full-screen（max-w 767 + hover:hover + landscape + max-h 700）
      是兩條獨立 presentation；不得把 Constrained 稱為 Mobile Landscape
+若主結果為完整日期（ZH）：完整日期必須單行；weekday 在下一行
+  （canonical：docs/standards/date-input.md §14；design-system.md §10.2.1）
+  必須有 rendered／computed evidence；不得只靠 source／validator
+  至少含較長日期案例；EN 同列設計不得被本規則改壞
 ```
 
 ---

@@ -525,6 +525,9 @@ QA 必須確認：
 [ ] 手機橫式沒有套用桌機 inline input（除非 product spec 明確指定）
 [ ] 手機橫式結果區與按鈕可完整呈現在第一屏內
 [ ] 手機橫式按鈕尺寸與樣式未因單一工具任意縮小或變形
+[ ] 若主結果為完整日期（date-type primary）：ZH Mobile Landscape 完整日期單行、weekday 次行（見 date-input.md §14）
+[ ] 同上：至少測一組長日期；必須有 rendered／computed layout evidence（不得只靠 source／validator）
+[ ] 同上：EN Landscape／Portrait／Desktop／Initial「?」無本規則造成的 regression
 [ ] 手機直式 bottom sheet 內容為上下排列
 [ ] 手機橫式 bottom sheet 內容為一列兩欄 compact 版面（非直式 sheet 直接壓扁）
 [ ] bottom sheet 開啟時，背景結果內容區整組縮放

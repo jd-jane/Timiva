@@ -502,6 +502,21 @@ Numeric ResultSummary digit ladder 已 canonical，不重開
 Batch 1 = docs only；shared CSS default 實作留 Batch 2（result-summary.css）
 ```
 
+### 10.2.1 Date-type primary result · ZH Mobile Landscape
+
+完整日期型主結果（例：`2025 年 12 月 12 日`）在 **ZH + Mobile Landscape** 的排版契約：
+
+```text
+第一行：完整日期（必須單行；不得拆成「年」／「月日」多行片段）
+第二行：weekday
+EN：不套用；空間足夠時可維持 date + weekday 同列
+不擴張到一般文字型／數值型 ResultSummary
+Desktop／Portrait／Initial「?」不因本規則改動
+```
+
+權威細節與 QA：[`date-input.md`](date-input.md) §14。
+本節只做 ResultSummary textual 交叉引用；不在此重複完整 checklist。
+
 ### 10.3 Supporting Result Text
 
 ```text

@@ -1,9 +1,10 @@
 # Timiva Date Input Interaction Standard
 
-> 更新日期：2026-07-11
+> 更新日期：2026-09-13
 > 定位：日期輸入互動標準與 Age Calculator 實機測試沉澱
 > 這不是要求所有日期欄位都使用同一種 input。
 > 這份文件特別用於「採用快速日期輸入作為主要互動」的工具。若工具特性是快速計算，且 Owner 決定不以 calendar picker 作為主要輸入，就應優先沿用本文件的 Smart Date Input 規則。
+> 2026-09-13：新增 §14 日期型主結果（ZH Mobile Landscape）canonical 排版規則（Date Calculator production evidence）。
 
 ---
 
@@ -520,7 +521,72 @@ keyboard-open composition 需真機驗證，emulation 不足以單獨定案
 
 ---
 
-## 14. QA checklist
+## 14. 日期型主結果排版（ZH Mobile Landscape）
+
+> Canonical rule（2026-09-13）。Production evidence：Date Calculator ZH Mobile Landscape PASS；Lunar 曾遇相同繁中日期換行問題。
+
+### 14.1 適用
+
+```text
+語系：繁體中文（ZH）
+Viewport：Mobile Landscape（layout-system.md §6.0.3 gate；含 hover: none）
+主結果型別：完整日期（date-type primary result）
+例：ResultSummary textual · primary =「2025 年 12 月 12 日」類完整日期字串
+```
+
+### 14.2 不適用
+
+```text
+EN（任何 viewport）
+Desktop／Mobile Portrait（任何語系）
+一般文字型／數值型 ResultSummary（非完整日期主結果）
+Initial「?」等非日期主結果狀態
+```
+
+### 14.3 排版契約
+
+```text
+第一行：完整日期（單一結果群組）
+  例：2025 年 12 月 12 日
+第二行：weekday
+  例：星期五
+
+完整日期不得拆成多行片段（禁止「2025 年」／「12 月 12 日」分列）。
+日期本體視為完整結果群組；必要時使用 nowrap／segment grouping／NBSP 等既有安全方式維持單行。
+不得硬套 EN「日期 + weekday 同列」到 ZH Mobile Landscape。
+```
+
+### 14.4 EN／其他 viewport
+
+```text
+EN Mobile Landscape：若空間足夠，可維持 date + weekday 同列（shared textual landscape 預設）。
+EN／Portrait／Desktop：不因本規則被改動。
+Portrait ZH 若另有受控兩行日期（年／月日）規則，屬 Portrait-only；不得套用到 Landscape。
+```
+
+### 14.5 QA（必測）
+
+```text
+[ ] ZH Mobile Landscape：完整日期結果存在時，rendered／computed layout 確認日期單行
+[ ] ZH Mobile Landscape：weekday 在日期下一行（不並排）
+[ ] 至少含一組長日期案例（例：2200 年 12 月 31 日 或同等長度）
+[ ] 主要操作 capsule 仍在第一屏可見
+[ ] EN Mobile Landscape：date + weekday 同列無 regression（若該工具適用）
+[ ] Desktop／Portrait／Initial「?」未被本規則改動
+[ ] 不得只靠 source／validator 判定 PASS；必須有 browser rendered／computed evidence
+```
+
+權威交叉引用：
+
+```text
+docs/standards/design-system.md §10.2.1（ResultSummary textual 交叉引用）
+docs/workflow/tool-page-qa.md（日期型結果 landscape QA）
+layout-system.md §6.0.3（Mobile Landscape gate）
+```
+
+---
+
+## 15. QA checklist
 
 ```text
 [ ] Desktop EN / ZH
@@ -555,16 +621,18 @@ keyboard-open composition 需真機驗證，emulation 不足以單獨定案
 [ ] 雙日期欄位不會互相吃掉 segment
 [ ] 若有跨欄 auto-advance，是否由工具規格明確定義
 [ ] Days Between Dates 類工具是否可直接引用本文件作為 input behavior baseline
+[ ] 若主結果為完整日期：§14 ZH Mobile Landscape 日期單行＋weekday 次行（含長日期＋rendered evidence）
 ```
 
 ---
 
-## 15. 未來使用規則
+## 16. 未來使用規則
 
 ```text
 新工具若採用相同日期輸入模式，應先閱讀本文件。
 Days Between Dates 可直接以本文件作為快速日期輸入 baseline。
 若下一個日期工具採用 fast input，task brief 應明確引用 docs/standards/date-input.md。
+若主結果為完整日期，ZH Mobile Landscape 必須遵守 §14；不得再硬套 EN 同列 weekday。
 Calendar / native picker 是否加入，應由工具特性決定，不應自動成為所有日期工具的主互動。
 本文件先作為互動標準，不代表現在就要抽 shared component。
 不要一開始就抽共用 component。
@@ -582,5 +650,6 @@ docs/tools/age-calculator/product-spec.md
 docs/tools/age-calculator/README.md
 docs/standards/mobile-sheet.md
 docs/standards/interactive-controls.md
+docs/standards/design-system.md §10.2.1
 docs/workflow/tool-page-qa.md
 ```
