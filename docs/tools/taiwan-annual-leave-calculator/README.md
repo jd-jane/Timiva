@@ -1,8 +1,8 @@
 # Taiwan Annual Leave Calculator / 特休天數試算 — README
 
 > 建立日期：2026-09-11
-> 更新日期：2026-09-13（Final Release / Close-out）
-> 狀態：**Production Ready** · V1.6 第一支完成 · Desktop／Mobile／Catalog complete · Not yet pushed／deployed
+> 更新日期：2026-09-13（Production Complete／Deployed）
+> 狀態：**Production Complete／Deployed** · V1.6 第一支上線 · Owner Production QA＝PASS · HEAD：`e1d0634`
 > Canonical product spec：`docs/tools/taiwan-annual-leave-calculator/product-spec.md`
 > Phase：V1.6 Taiwan Local Tools · 第一支
 
@@ -34,14 +34,23 @@ ZH：特休天數試算
 ## 3. Release status
 
 ```text
-B0 scaffold → B1A content → B1B static UI → B2A math → B2B Desktop → B2C Mobile → B2D Catalog／Links
-Final Release checks：PASS（local）
-Owner Review：Desktop／Mobile／Catalog PASS
-Targeted Release Review：四代理人 PASS · Ready to Ship YES
-Push／deploy：等待 Owner
+B0 → B1A → B1B → B2A → B2B Desktop → B2C Mobile → B2D Catalog／Links
+Final Release：PASS · Ready to Ship YES
+Push：e1d0634 → origin/main
+Deploy：Cloudflare Pages auto-deploy（Retry 後成功）
+Owner Production QA：PASS
+Production HEAD：e1d0634
 ```
 
-Key local commits（摘要）：
+Deploy note：
+
+```text
+首次 Cloudflare auto-deploy 於 initialize 暫時失敗（未進 clone／build）。
+Retry 同一 commit e1d0634 後部署成功。
+判定為 deployment-side transient failure，非程式 build regression。
+```
+
+Key commits（摘要）：
 
 ```text
 8fadeb4 feat: scaffold Taiwan Annual Leave Calculator
@@ -51,6 +60,8 @@ Key local commits（摘要）：
 77e51d4 feat: complete annual leave desktop interactions
 99857b1 feat: complete annual leave mobile interactions
 0751f42 feat: integrate taiwan annual leave catalog links
+2bca51b fix: emit annual leave FAQ JSON-LD
+e1d0634 docs: close annual leave calculator release
 ```
 
 ---
@@ -104,13 +115,11 @@ node --experimental-strip-types scripts/validate-taiwan-annual-leave-mobile.mjs
 
 ---
 
-## 7. 不做（本工具收尾邊界）
+## 7. 邊界
 
 ```text
-Home Featured 變更
-date-range inbound Related
-shared / locked baseline 修改
+Home Featured 不變
+date-range inbound Related 不變
 下一支 V1.6 工具（民國西元／年歲對照）— 尚未開始
-Year Progress 2.0 順位變更
-push / deploy（需 Owner）
+Year Progress 2.0 順位不變（V1.6 後）
 ```

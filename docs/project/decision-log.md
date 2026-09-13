@@ -5,6 +5,44 @@
 
 ---
 
+## 2026-09-13 — TALC Production Complete／Deployed · V1.6 第一支上線
+
+### 背景
+
+```text
+特休天數試算／Taiwan Annual Leave Calculator（V1.6 第一支）
+已 push 至 origin/main（e1d0634）並完成 Cloudflare Pages 部署。
+Owner Production QA＝PASS。
+```
+
+### 決策
+
+```text
+1. TALC＝Production Complete／Deployed。
+   Production HEAD：e1d0634
+   Routes：/en/taiwan-annual-leave-calculator/ · /zh/taiwan-annual-leave-calculator/
+   Owner Production QA：PASS（EN／ZH · Desktop／Mobile Portrait／Landscape ·
+     週年制／曆年制 · ⓘ · Numeric Keypad · Reset／Done · All Tools · Related · Home Featured）
+2. Home Featured 維持 4 張；TALC 不加入 Featured。
+3. V1.6 第一支正式完成並上線；下一支仍為「民國西元／年歲對照」（尚未開始）。
+4. Year Progress 2.0 順位不變（V1.6 之後；非 V1.6 scope）。
+5. Deploy note：首次 Cloudflare auto-deploy 於 initialize 暫時失敗（未進 clone／build）；
+   Retry 同一 commit e1d0634 後成功。判定為 deployment-side transient failure，
+   非程式 build regression。
+6. main＝origin/main＝e1d0634。
+```
+
+### 影響
+
+```text
+docs/project/current-status.md
+docs/project/decision-log.md
+docs/core/roadmap.md
+docs/tools/taiwan-annual-leave-calculator/README.md
+```
+
+---
+
 ## 2026-09-13 — TALC Production Ready · V1.6 第一支完成
 
 ### 背景
@@ -12,13 +50,14 @@
 ```text
 特休天數試算／Taiwan Annual Leave Calculator（V1.6 第一支）
 B2B Desktop、B2C Mobile、B2D Catalog／Link Integration 均完成並通過 Owner Review。
-Final Release checks＋四代理人 review 無 Blocking；尚未 push／deploy。
+Final Release checks＋四代理人 review 無 Blocking；當時尚未 push／deploy
+（後續已由 Production Complete／Deployed entry 取代）。
 ```
 
 ### 決策
 
 ```text
-1. TALC＝Production Ready（local release readiness；非已 deploy 的 Production Complete）。
+1. TALC＝Production Ready（local release readiness；當時尚未 deploy）。
 2. V1.6 第一支工具完成：Desktop／Mobile／Catalog integration complete。
 3. Home Featured 維持 4 張；TALC 不加入 Featured。
 4. Outbound Related：date-range → business-days-calculator（exactly 2）。
@@ -26,7 +65,7 @@ Final Release checks＋四代理人 review 無 Blocking；尚未 push／deploy�
 6. All Tools dates-events：… → Lunar → taiwan-annual-leave-calculator → Age。
 7. 下一支 V1.6 工具＝民國西元／年歲對照（尚未開始；不提前宣稱已開始）。
 8. Year Progress 2.0 順位不變（V1.6 之後；非 V1.6 scope）。
-9. push／deploy 仍需 Owner 另授權。
+9. push／deploy 仍需 Owner 另授權（其後已完成；見上方 Deployed entry）。
 ```
 
 ### 影響

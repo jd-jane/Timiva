@@ -2,7 +2,7 @@
 
 > 用途：每次開新討論串、給 Cursor 任務、或請 ChatGPT 判斷專案狀態時的主要事實來源。
 > 更新日期：2026-09-13
-> 狀態來源：**V1.6 Taiwan Local Tools in progress。** 特休天數試算／Taiwan Annual Leave Calculator（V1.6 第一支）＝**Production Ready**（Desktop／Mobile／Catalog complete；local HEAD 含 `0751f42`＋release close-out；**尚未 push／deploy**）。All Tools dates-events＝…→JEC→Lunar→**TALC**→Age；TALC Related＝Date Range＋Business Days（exactly 2）；BDC Related＝DBD→Date Range→**TALC**；Date Range Related 不變；Home Featured 不含 TALC。下一支：**民國西元／年歲對照**（尚未開始）。Year Progress 2.0 順位不變（V1.6 後）。V1.5＝closed／Production Complete（Lunar `35dadef` 仍為 origin/main production HEAD 至 Owner push 前）。Pet Age＝deferred。Protected HEAD 既有 Validation drift（MSB CSS、BDC、DRC、preview／404 sitemap count 等）保留紀錄。
+> 狀態來源：**V1.6 Taiwan Local Tools in progress。** 特休天數試算／Taiwan Annual Leave Calculator（V1.6 第一支）＝**Production Complete／Deployed**（Production HEAD：`e1d0634`；Owner Production QA＝PASS）。All Tools dates-events＝…→JEC→Lunar→**TALC**→Age；TALC Related＝Date Range＋Business Days（exactly 2）；BDC Related＝DBD→Date Range→**TALC**；Date Range Related 不變；Home Featured 不含 TALC。下一支：**民國西元／年歲對照**（尚未開始）。Year Progress 2.0 順位不變（V1.6 後）。V1.5＝closed／Production Complete。Pet Age＝deferred。`main = origin/main`＝`e1d0634`（TALC production）。Protected HEAD 既有 Validation drift（MSB CSS、BDC、DRC、preview／404 sitemap count 等）保留紀錄。
 ---
 
 ## 1. Project snapshot
@@ -20,7 +20,7 @@
 | Business model | Search traffic + future Google AdSense |
 | Maintenance direction | Pure frontend first, low maintenance |
 | Owner phase | Phase A：Owner 主導確認期 |
-| Current session status | **V1.6 in progress。** TALC＝**Production Ready**（等待 Owner push／deploy）。Next tool：**民國西元／年歲對照**（尚未開始）。origin/main production HEAD：`35dadef`；local `main` ahead（含 TALC chain）。Home Featured 維持 4 張（不含 TALC）。Pet Age：deferred。 |
+| Current session status | **V1.6 in progress。** TALC＝**Production Complete／Deployed**（HEAD：`e1d0634`；Owner Production QA＝PASS）。Next tool：**民國西元／年歲對照**（尚未開始）。`main = origin/main`＝`e1d0634`。Home Featured 維持 4 張（不含 TALC）。Pet Age：deferred。 |
 
 ### 1.1 Current work tracks（2026-08-05）
 
@@ -122,10 +122,10 @@ Cloudflare Pages：main push auto-deploy（未 manual deploy）
 Docs：docs/tools/lunar-date-converter/README.md · product-spec.md
 ```
 
-**Taiwan Annual Leave Calculator／特休天數試算（Timiva · V1.6 第一支 · Production Ready）：**
+**Taiwan Annual Leave Calculator／特休天數試算（Timiva · V1.6 第一支 · Production Complete）：**
 
 ```text
-Status：PRODUCTION READY（local release readiness）· 尚未 push／deploy
+Status：PRODUCTION COMPLETE／DEPLOYED · Owner Production QA＝PASS
 Routes：/en/taiwan-annual-leave-calculator/ · /zh/taiwan-annual-leave-calculator/
 EN／ZH：Taiwan Annual Leave Calculator／特休天數試算
 Category：Important Dates／重要日子
@@ -137,10 +137,14 @@ Home Featured：不含 TALC（維持 4 張）
 All Tools dates-events：… → Lunar → taiwan-annual-leave-calculator → Age
 Outbound Related：date-range → business-days-calculator（exactly 2）
 Inbound：僅 Business Days（DBD → date-range → TALC）；Date Range Related 不變
-Key local commits：
+Production HEAD：e1d0634 docs: close annual leave calculator release
+Key commits：
   8fadeb4 scaffold · 9976e62 content · 62e1371 static UI · 5905afa math
   77e51d4 Desktop · 99857b1 Mobile · 0751f42 Catalog／Links
-Final Release：checks PASS · 四代理人 PASS · Ready to Ship YES
+  2bca51b FAQ JSON-LD · e1d0634 release close-out docs
+Deploy note：首次 Cloudflare auto-deploy 於 initialize 暫時失敗（未進 clone／build）；
+  Retry 同一 commit e1d0634 後成功。判定為 deployment-side transient failure，非程式 build regression。
+Cloudflare Pages：main push auto-deploy（未 manual deploy）
 Docs：docs/tools/taiwan-annual-leave-calculator/README.md · product-spec.md
 ```
 
@@ -152,11 +156,12 @@ V1.5 Search Foundation：closed／Production Complete
   Pet Age Calculator：deferred／future candidate（不屬於 V1.5）
 Current phase：V1.6 Taiwan Local Tools（in progress）
 V1.6 scope（固定兩支；不加第三支）：
-  1. 特休試算／TALC＝Production Ready（等待 Owner push／deploy）
+  1. 特休試算／TALC＝Production Complete／Deployed（HEAD：e1d0634）
   2. 民國西元／年歲對照＝Next（尚未開始）
 不納入 V1.6：Pet Age、Japanese Era、Lunar、Year Progress 2.0
 V1.6 後已知方向：Year Progress 2.0（非 V1.6 scope）
-origin/main production HEAD：35dadef（至 Owner push 前）
+Repo production HEAD：e1d0634
+main = origin/main
 ```
 
 **Adaptive Mobile Editor／Legacy MSB（shared · on production with DC release chain）：**
@@ -303,7 +308,7 @@ Age Calculator Desktop calendar：已由 Shared DesktopCalendar Phase D 取代�
 四大分類顯示名稱：已上線（Production HEAD：0fe3e1f；Owner Production Verification PASS）
 V1.5 Search Foundation：Production Complete／closed（含 Lunar）
 Current phase：V1.6 Taiwan Local Tools（in progress）
-TALC／特休天數試算：Production Ready（等待 Owner push／deploy）
+TALC／特休天數試算：Production Complete／Deployed（HEAD：e1d0634；Owner Production QA＝PASS）
 Next tool：民國西元／年歲對照（尚未開始）
 Pet Age Calculator：deferred（不屬於 V1.5；不移入 V1.6）
 Date Calculator／日期加減計算：已正式上線（當次 Production HEAD：df2d82b）；catalog available:true；Home Featured 不含 DC
@@ -902,7 +907,7 @@ Hours Calculator：已正式上線（當次 Production HEAD：fd2ed68）
 Japanese Era Converter：已正式上線（當次 Production HEAD：43796cb）
 Lunar Date Converter：Production Complete（HEAD：35dadef）
 V1.5 closed → Current phase：V1.6 Taiwan Local Tools（in progress）
-TALC／特休天數試算：Production Ready（等待 Owner push／deploy）
+TALC／特休天數試算：Production Complete／Deployed（HEAD：e1d0634；Owner Production QA＝PASS）
 Next tool：民國西元／年歲對照（尚未開始）
 Pet Age：deferred
 ```
@@ -1393,10 +1398,10 @@ Date Calculator：已正式上線；當次 deployed HEAD：df2d82b；Owner Produ
 Home Featured 維持 4 張（不含 BDC／DC／Hours／JEC／Lunar／TALC）
 V1.5 Search Foundation：Production Complete／closed
 Current phase：V1.6 Taiwan Local Tools（in progress）
-TALC／特休天數試算：Production Ready（等待 Owner push／deploy）
+TALC／特休天數試算：Production Complete／Deployed（HEAD：e1d0634；Owner Production QA＝PASS）
 Next tool：民國西元／年歲對照（尚未開始）
 Japanese Era Converter：已正式上線；當次 Production HEAD：43796cb；Owner Production QA＝PASS
-Lunar Date Converter：Production Complete；origin/main HEAD：35dadef
+Lunar Date Converter：Production Complete；當次 corrective HEAD：35dadef
 Pet Age：deferred
 ```
 
@@ -1425,9 +1430,9 @@ Recommended order:
 
 ```text
 1. Product development：V1.6 Taiwan Local Tools
-   TALC／特休試算：Production Ready → Owner push／deploy
+   TALC／特休試算：Production Complete／Deployed（HEAD：e1d0634）
    Next tool：民國西元／年歲對照（尚未開始）
-   （V1.5 closed · Lunar Production Complete · origin/main：35dadef）
+   （V1.5 closed · Lunar Production Complete）
    （Pet Age：deferred · 不移入 V1.6）
    （V1.6 後方向：Year Progress 2.0 · 非本階段 scope）
 2. Open Graph / Twitter Card（deferred SEO growth）
@@ -1534,10 +1539,10 @@ Create an implementation plan only. Do not edit files yet.
 
 Timiva V1 已在正式網域 https://timiva.app 提供服務。
 
-已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2、Year Progress V2、Age Calculator V2、Days Between Dates V2、Business Days Calculator V2、Date Calculator V2、Hours Calculator V2、Japanese Era Converter V2、**Lunar Date Converter V2（第十一 · Production Complete · HEAD：`35dadef`）**。
+已部署：Home、Event Countdown V2、Date Range Calculator V2、Countdown Timer V2、Year Progress V2、Age Calculator V2、Days Between Dates V2、Business Days Calculator V2、Date Calculator V2、Hours Calculator V2、Japanese Era Converter V2、Lunar Date Converter V2、**特休天數試算／Taiwan Annual Leave Calculator（V1.6 第一支 · Production Complete · HEAD：`e1d0634`）**。
 **V1.5 Search Foundation＝Production Complete／closed。** Current phase：**V1.6 Taiwan Local Tools（in progress）**。
-**特休天數試算／TALC＝Production Ready**（Desktop／Mobile／Catalog complete；**尚未 push／deploy**）。Next tool：**民國西元／年歲對照**（尚未開始）。Pet Age：deferred。V1.6 後方向：Year Progress 2.0（非 V1.6 scope）。
-origin/main production HEAD：`35dadef`；local main ahead（含 TALC）。
+**TALC＝Production Complete／Deployed**（Owner Production QA＝PASS）。Next tool：**民國西元／年歲對照**（尚未開始）。Pet Age：deferred。V1.6 後方向：Year Progress 2.0（非 V1.6 scope）。
+Repo production HEAD：`e1d0634`；`main = origin/main`。
 GA4 privacy-first Basic Consent 已在 timiva.app 驗證通過。
 V1 SEO technical closeout 已完成（Batch 1–3 production PASS；docs `c5c0a22`）。
 Home Featured 維持 4 張（Date Range → Age Calculator → Event Countdown → Year Progress；不含 DBD／BDC／DC／Hours／JEC／Lunar／TALC）。

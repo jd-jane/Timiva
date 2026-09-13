@@ -1,7 +1,7 @@
 # Timiva V1 Roadmap
 
 > Updated: 2026-09-13
-> Main changes: V1.6 第一支「特休天數試算／Taiwan Annual Leave Calculator」＝Production Ready（Desktop／Mobile／Catalog complete；尚未 push／deploy）。下一支：民國西元／年歲對照（尚未開始）。Year Progress 2.0 仍為 V1.6 之後方向。
+> Main changes: V1.6 第一支「特休天數試算／Taiwan Annual Leave Calculator」＝Production Complete／Deployed（HEAD `e1d0634`；Owner Production QA＝PASS）。下一支：民國西元／年歲對照（尚未開始）。Year Progress 2.0 仍為 V1.6 之後方向。
 
 ---
 
@@ -54,7 +54,7 @@ flowchart TD
     D --> D6[Japanese Era Converter<br/>Deployed]
     D --> D7[Lunar Date Converter<br/>Deployed]
 
-    D16 --> T1[特休試算<br/>Production Ready]
+    D16 --> T1[特休試算<br/>Deployed]
     D16 --> T2[民國西元／年歲對照<br/>Next]
 
     E --> E1[Breathing Timer]
@@ -210,7 +210,7 @@ Canonical Lunar docs：[`docs/tools/lunar-date-converter/README.md`](../tools/lu
 ## 6.1 Phase 1.6 / V1.6 — Taiwan Local Tools（2026-09 focus）
 
 ```text
-Status：in progress（第一支 Production Ready；尚未 push／deploy）
+Status：in progress（第一支 Production Complete／Deployed）
 Next tool：民國西元／年歲對照（尚未開始）
 Scope：固定兩支；不加第三支
 不含：Pet Age、Japanese Era Converter、Lunar Date Converter、Year Progress 2.0
@@ -218,7 +218,7 @@ Scope：固定兩支；不加第三支
 
 | Order | Tool | Notes |
 |---:|---|---|
-| 1 | 特休試算／Taiwan Annual Leave Calculator | **Production Ready** · Desktop／Mobile／Catalog complete |
+| 1 | 特休試算／Taiwan Annual Leave Calculator | **Production Complete／Deployed** · HEAD：`e1d0634` · Owner Production QA＝PASS |
 | 2 | 民國西元／年歲對照 | **Next** · 尚未開始 |
 
 V1.6 完成後已知方向（**非 V1.6 scope**）：
@@ -307,9 +307,9 @@ V1.5 Search Foundation: closed / Production Complete
   Age → DBD → BDC → DC → Hours → JEC → Lunar: deployed
 Pet Age Calculator: deferred
 V1.6 Taiwan Local Tools: in progress
-  1) 特休試算／TALC：Production Ready（local；尚未 push／deploy）
+  1) 特休試算／TALC：Production Complete／Deployed（HEAD：e1d0634）
   2) 民國西元／年歲對照：Next（尚未開始）
-Repo origin/main production HEAD: 35dadef（至 Owner push 前）
+Repo production HEAD: e1d0634
 V1 SEO technical closeout: complete
 ```
 
@@ -350,7 +350,7 @@ Pet Age Calculator（deferred／future candidate）
 V1.5 Search Foundation：closed／Production Complete
 Lunar Date Converter：Production Complete（HEAD：35dadef）
 Current phase：V1.6 Taiwan Local Tools（in progress）
-TALC／特休天數試算：Production Ready（Desktop／Mobile／Catalog complete；等待 Owner push／deploy）
+TALC／特休天數試算：Production Complete／Deployed（HEAD：e1d0634；Owner Production QA＝PASS）
 Next tool：民國西元／年歲對照（尚未開始）
 Pet Age：deferred
 V1.6 後方向：Year Progress 2.0（非 V1.6 scope）
