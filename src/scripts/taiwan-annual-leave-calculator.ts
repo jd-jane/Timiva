@@ -1,11 +1,13 @@
 /**
- * Taiwan Annual Leave Calculator — B2B Desktop interaction.
+ * Taiwan Annual Leave Calculator — B2B Desktop + B2C Mobile AME.
  * Math SSOT: taiwanAnnualLeaveMath（primaryDisplay／officialDays；禁用 rawDays 當主結果）.
  * Smart Date: taiwanAnnualLeaveDateInput；Calendar: shared DesktopCalendar.
+ * Mobile: shared AME live + Numeric Keypad YMD segments；reopen 保留 incomplete／invalid.
  */
-	import {
+import {
 	applySegmentInputChange,
 	emptyDateSegments,
+	formatCalendarDateCompact,
 	formatSegmentsDisplay,
 	formatSegmentsNormalized,
 	getTodayCalendarDate,
@@ -31,6 +33,23 @@ import {
 	type MathLocale,
 } from "../lib/taiwanAnnualLeaveMath.ts";
 import {
+	acceptTalcAmeNumericCandidate,
+	draftFromSegments,
+	emptyTalcAmeDraft,
+	focusTalcAmeField,
+	segmentsFromDraft,
+	syncTalcAmeSegmentUi,
+	takeTalcAmePending,
+	TALC_AME_NUMERIC_FIELDS,
+	validateTalcAmeDraft,
+	type TalcAmeDraft,
+	type TalcAmePlaceholders,
+} from "./taiwan-annual-leave-ame-adapter.ts";
+import {
+	createAdaptiveMobileEditor,
+	type AdaptiveMobileEditorController,
+} from "./adaptive-mobile-editor-controller";
+import {
 	createDesktopCalendar,
 	type DesktopCalendarApi,
 } from "./desktop-calendar-controller";
@@ -50,6 +69,7 @@ type TalcClientI18n = {
 	infoAriaLabel: string;
 	invalidHireDate: string;
 	openCalendarAriaLabel: string;
+	capsulePlaceholder: string;
 	calendarLabel: string;
 	previousMonth: string;
 	nextMonth: string;
@@ -158,15 +178,27 @@ function initRoot(root: HTMLElement): void {
 	if (!i18n) return;
 	initializedRoots.add(root);
 
-	root.setAttribute("data-talc-phase", "b2b-desktop");
-	/* B2B：talcFixture 不再影響 production live */
+	root.setAttribute("data-talc-phase", "b2c-mobile");
+	/* fixtures 不再影響 production live */
 	root.removeAttribute("data-talc-fixture");
 
 	const resultRoot = root.querySelector<HTMLElement>("[data-result-summary]");
 	const definitionEl = root.querySelector<HTMLElement>("[data-talc-definition]");
 	const infoBtn = root.querySelector<HTMLButtonElement>("[data-talc-info]");
 	const infoPanel = root.querySelector<HTMLElement>("[data-talc-info-panel]");
-	const supportEl = root.querySelector<HTMLElement>("[data-talc-support]");
+	const supportLine1 = root.querySelector<HTMLElement>('[data-talc-support-line="1"]');
+	const supportLine2 = root.querySelector<HTMLElement>('[data-talc-support-line="2"]');
+
+	const setSupportLines = (line1: string, line2: string | null = null) => {
+		setText(supportLine1, line1);
+		if (line2) {
+			setText(supportLine2, line2);
+			setHidden(supportLine2, false);
+		} else {
+			setText(supportLine2, "");
+			setHidden(supportLine2, true);
+		}
+	};
 	const tipEl = root.querySelector<HTMLElement>("[data-talc-tip]");
 	const formulaLinesEl = root.querySelector<HTMLElement>("[data-talc-formula-lines]");
 	const dateInput = root.querySelector<HTMLInputElement>("[data-talc-date-value]");
@@ -188,11 +220,30 @@ function initRoot(root: HTMLElement): void {
 		return;
 	}
 
+	const capsuleBtn = root.querySelector<HTMLButtonElement>("[data-talc-capsule]");
+	const capsuleLabel = root.querySelector<HTMLElement>("[data-talc-capsule-label]");
+	const ameRoot = document.querySelector<HTMLElement>("#talc-ame[data-ame-root]");
+	const pageContent = root.querySelector<HTMLElement>("[data-ame-page-content]");
+	const ameForm = ameRoot?.querySelector<HTMLElement>("[data-talc-ame-form]");
+	const ameAnniversaryBtn = ameRoot?.querySelector<HTMLButtonElement>(
+		'[data-talc-ame-leave="anniversary"]',
+	);
+	const ameCalendarBtn = ameRoot?.querySelector<HTMLButtonElement>(
+		'[data-talc-ame-leave="calendar-year"]',
+	);
+
 	let segments: DateSegments = emptyDateSegments();
 	let leaveSystem: LeaveSystem = "anniversary";
 	let formulaExpanded = false;
 	let calendarApi: DesktopCalendarApi | null = null;
 	let lastFormulaLines: string[] = [];
+	let ameApi: AdaptiveMobileEditorController<TalcAmeDraft> | null = null;
+
+	const amePlaceholders: TalcAmePlaceholders = {
+		year: ameForm?.getAttribute("data-talc-ymd-year-ph") || "YYYY",
+		month: ameForm?.getAttribute("data-talc-ymd-month-ph") || "MM",
+		day: ameForm?.getAttribute("data-talc-ymd-day-ph") || "DD",
+	};
 
 	const syncLeaveButtons = () => {
 		const isAnn = leaveSystem === "anniversary";
@@ -200,6 +251,42 @@ function initRoot(root: HTMLElement): void {
 		calendarBtn.classList.toggle("is-active", !isAnn);
 		anniversaryBtn.setAttribute("aria-pressed", isAnn ? "true" : "false");
 		calendarBtn.setAttribute("aria-pressed", isAnn ? "false" : "true");
+		ameAnniversaryBtn?.classList.toggle("is-active", isAnn);
+		ameCalendarBtn?.classList.toggle("is-active", !isAnn);
+		ameAnniversaryBtn?.setAttribute("aria-pressed", isAnn ? "true" : "false");
+		ameCalendarBtn?.setAttribute("aria-pressed", isAnn ? "false" : "true");
+	};
+
+	const capsuleEmptyLabel = i18n.capsulePlaceholder;
+
+	const syncCapsule = () => {
+		if (!capsuleLabel) return;
+		const status = resolveFieldStatus(segments);
+		if (status === "valid") {
+			const hire = parseDateSegments(segments);
+			capsuleLabel.textContent = hire
+				? formatCalendarDateCompact(hire)
+				: capsuleEmptyLabel;
+			return;
+		}
+		if (status === "empty") {
+			capsuleLabel.textContent = capsuleEmptyLabel;
+			return;
+		}
+		/* incomplete／invalid：保留目前 segments 顯示 */
+		const yearPart = segments.year ? segments.year.padStart(4, "0") : "————";
+		const monthPart = segments.month ? segments.month.padStart(2, "0") : "——";
+		const dayPart = segments.day ? segments.day.padStart(2, "0") : "——";
+		capsuleLabel.textContent = `${yearPart}/${monthPart}/${dayPart}`;
+	};
+
+	const syncAmeSegmentDisplay = (draft?: TalcAmeDraft) => {
+		if (!ameRoot) return;
+		syncTalcAmeSegmentUi(
+			ameRoot,
+			draft ?? draftFromSegments(segments, leaveSystem),
+			amePlaceholders,
+		);
 	};
 
 	const syncInputDisplay = (normalized = false) => {
@@ -247,12 +334,13 @@ function initRoot(root: HTMLElement): void {
 			support: null,
 		});
 		setText(definitionEl, i18n.definitionAnniversary);
-		setText(supportEl, i18n.resultInitialSupport);
+		setSupportLines(i18n.resultInitialSupport);
 		setHidden(infoBtn, true);
 		if (infoBtn) infoBtn.disabled = true;
 		setInfoPanelOpen(false);
 		renderFormulaLines([]);
 		setInvalidVisible(status === "invalid");
+		syncCapsule();
 	};
 
 	const applyValidResult = (hire: CalendarDate) => {
@@ -289,16 +377,19 @@ function initRoot(root: HTMLElement): void {
 				date: hireLabel,
 				tenure: tenureText,
 			});
-			let support = line1;
 			if (outcome.isMax) {
-				support = `${line1}\n${i18n.supportMaxReached}`;
+				setSupportLines(line1, i18n.supportMaxReached);
 			} else if (outcome.next) {
-				support = `${line1}\n${fillTemplate(i18n.supportNextStage, {
-					date: formatCivilDateSlash(outcome.next.date),
-					days: outcome.next.days,
-				})}`;
+				setSupportLines(
+					line1,
+					fillTemplate(i18n.supportNextStage, {
+						date: formatCivilDateSlash(outcome.next.date),
+						days: outcome.next.days,
+					}),
+				);
+			} else {
+				setSupportLines(line1);
 			}
-			setText(supportEl, support);
 			setHidden(infoBtn, true);
 			if (infoBtn) infoBtn.disabled = true;
 			setInfoPanelOpen(false);
@@ -317,7 +408,7 @@ function initRoot(root: HTMLElement): void {
 				year: nextYear,
 				days: nextDays,
 			});
-			setText(supportEl, `${line1}\n${line2}`);
+			setSupportLines(line1, line2);
 			if (tipEl) tipEl.textContent = i18n.calendarYearTip;
 			setHidden(infoBtn, false);
 			if (infoBtn) infoBtn.disabled = false;
@@ -326,6 +417,7 @@ function initRoot(root: HTMLElement): void {
 		}
 
 		setInvalidVisible(false);
+		syncCapsule();
 		void outcome.officialDays;
 		writeStorage(hire, leaveSystem);
 	};
@@ -443,17 +535,26 @@ function initRoot(root: HTMLElement): void {
 		if (hire) writeStorage(hire, leaveSystem);
 	};
 
-	anniversaryBtn.addEventListener("click", () => setLeaveSystem("anniversary"));
-	calendarBtn.addEventListener("click", () => setLeaveSystem("calendar-year"));
-
-	resetBtn.addEventListener("click", () => {
+	const resetAll = () => {
 		segments = emptyDateSegments();
 		leaveSystem = "anniversary";
 		setInfoPanelOpen(false);
 		clearStorage();
 		syncInputDisplay(false);
+		syncAmeSegmentDisplay(emptyTalcAmeDraft());
 		calendarApi?.close();
 		publish();
+		/* live：若 AME 開著，走 shared Reset draft path（不 rollback 語意） */
+		if (ameApi?.isOpen()) {
+			ameApi.resetDraft();
+		}
+	};
+
+	anniversaryBtn.addEventListener("click", () => setLeaveSystem("anniversary"));
+	calendarBtn.addEventListener("click", () => setLeaveSystem("calendar-year"));
+
+	resetBtn.addEventListener("click", () => {
+		resetAll();
 	});
 
 	infoBtn?.addEventListener("click", () => {
@@ -541,6 +642,95 @@ function initRoot(root: HTMLElement): void {
 		});
 	}
 
+	/* B2C：shared AME live + Numeric Keypad YMD（reopen 保留目前 segments） */
+	if (ameRoot && pageContent) {
+		/* Shared chrome Reset／Done：本地化 Reset 文案（對齊 Hours） */
+		ameRoot.querySelectorAll<HTMLElement>("[data-ame-reset]").forEach((el) => {
+			el.textContent = root.querySelector("[data-talc-reset]")?.textContent?.trim() || "Reset";
+		});
+
+		const applyDraftToPage = (draft: TalcAmeDraft) => {
+			segments = segmentsFromDraft(draft);
+			const nextLeave =
+				draft.leaveSystem === "calendar-year" ? "calendar-year" : "anniversary";
+			if (leaveSystem !== nextLeave && nextLeave === "anniversary") {
+				setInfoPanelOpen(false);
+			}
+			leaveSystem = nextLeave;
+			syncInputDisplay(false);
+			publish();
+		};
+
+		const applyPendingAdvance = () => {
+			const pending = takeTalcAmePending();
+			if (!pending || !ameRoot) return;
+			queueMicrotask(() => {
+				if (!ameApi?.isOpen()) return;
+				focusTalcAmeField(ameRoot, pending.advanceTo);
+			});
+		};
+
+		ameApi = createAdaptiveMobileEditor<TalcAmeDraft>(ameRoot, {
+			pageContent,
+			numericFields: [...TALC_AME_NUMERIC_FIELDS],
+			/* 開啟不自動 focus field → keypad 維持 closed（對齊 Hours） */
+			activateFirstNumericOnOpen: () => false,
+			adapter: {
+				lifecycle: "live",
+				getCommitted: () => draftFromSegments(segments, leaveSystem),
+				getResetDraft: () => emptyTalcAmeDraft(),
+				/* 不覆寫 createOpenDraft → open 用 getCommitted clone，保留 incomplete／invalid */
+				validate: (draft) => validateTalcAmeDraft(draft, i18n.invalidHireDate),
+				acceptNumericCandidate: ({ fieldId, currentValue, candidateValue }) =>
+					acceptTalcAmeNumericCandidate({
+						fieldId,
+						currentValue,
+						candidateValue,
+					}),
+				onCommit: (draft) => {
+					applyDraftToPage(draft);
+				},
+				onDraftChange: (draft) => {
+					syncTalcAmeSegmentUi(ameRoot, draft, amePlaceholders);
+					applyPendingAdvance();
+				},
+			},
+			onSyncUi: (draft) => {
+				syncTalcAmeSegmentUi(ameRoot, draft, amePlaceholders);
+			},
+		});
+
+		ameAnniversaryBtn?.addEventListener("click", () => {
+			ameApi?.patchDraft({ leaveSystem: "anniversary" });
+		});
+		ameCalendarBtn?.addEventListener("click", () => {
+			ameApi?.patchDraft({ leaveSystem: "calendar-year" });
+		});
+
+		/* Shared AME Reset：draft 由 controller reset；此處補 storage／calendar／info */
+		ameRoot.addEventListener(
+			"click",
+			(event) => {
+				const target = event.target;
+				if (!(target instanceof Element)) return;
+				const resetEl = target.closest<HTMLElement>("[data-ame-reset]");
+				if (!resetEl || !ameRoot.contains(resetEl)) return;
+				clearStorage();
+				setInfoPanelOpen(false);
+				calendarApi?.close();
+			},
+			true,
+		);
+
+		capsuleBtn?.addEventListener("click", () => {
+			syncLeaveButtons();
+			syncAmeSegmentDisplay();
+			ameApi?.open(capsuleBtn);
+			/* open 會 clear fieldErrors；再 patch 一次以還原 invalid field state */
+			ameApi?.patchDraft(draftFromSegments(segments, leaveSystem));
+		});
+	}
+
 	/* Restore from LocalStorage（共用 EN/ZH）；以 today 重算 */
 	const stored = readStorage();
 	if (stored) {
@@ -549,6 +739,7 @@ function initRoot(root: HTMLElement): void {
 			segments = segmentsFromCalendarDate(hire);
 			leaveSystem = stored.leaveSystem;
 			syncInputDisplay(true);
+			syncAmeSegmentDisplay();
 		}
 	}
 

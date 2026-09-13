@@ -1,6 +1,6 @@
 /**
  * Taiwan Annual Leave Calculator V2 — tool-local composition（B1B static）。
- * Owns: date pill、leave-system segmented、support／tip／info／formula、mobile-ymd preview。
+ * Owns: date pill、leave-system segmented、support／tip／info／formula、mobile AME YMD fields.
  * Does NOT own: ToolPageFrame／.tpf-*、ResultSummary internals、shared baselines。
  */
 
@@ -39,7 +39,7 @@
 	}
 }
 
-@media (max-width: 767px) and (orientation: landscape) {
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	[data-taiwan-annual-leave-calculator-v2]
 		[data-result-summary][data-rs-content="textual"],
 	[data-taiwan-annual-leave-calculator-v2]
@@ -48,7 +48,7 @@
 		[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"],
 	[data-taiwan-annual-leave-calculator-v2]
 		[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
-		--rs-textual-primary-size: 5rem;
+		--rs-textual-primary-size: 3.75rem;
 	}
 }
 
@@ -93,6 +93,22 @@
 	font-style: normal;
 	opacity: 0.92;
 	cursor: pointer;
+}
+
+/*
+ * ToolPageFrame Mobile：.tpf-result-group { pointer-events: none }。
+ * ⓘ 在 result 內，必須顯式恢復可點（對齊 Hours／Age interactive-in-result）。
+ */
+@media (max-width: 767px) {
+	[data-taiwan-annual-leave-calculator-v2] .talc-info {
+		position: relative;
+		z-index: 1;
+		pointer-events: auto;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-info-panel.is-open {
+		pointer-events: auto;
+	}
 }
 
 /* ⓘ 展開：定義下方、divider 上方；grid 0fr→1fr 柔和展開 */
@@ -164,7 +180,20 @@
 	font-size: 1rem;
 	font-weight: 400;
 	line-height: 1.45;
-	white-space: pre-line;
+	text-align: center;
+}
+
+/* Portrait／Desktop：兩行直排；join 僅 landscape 顯示 */
+[data-taiwan-annual-leave-calculator-v2] .talc-support__line {
+	display: block;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-support__line[hidden] {
+	display: none;
+}
+
+[data-taiwan-annual-leave-calculator-v2] .talc-support__join {
+	display: none;
 }
 
 [data-taiwan-annual-leave-calculator-v2] .talc-formula {
@@ -399,82 +428,327 @@
 }
 
 /* -------------------------------------------------------------------------- */
-/* Mobile YMD sheet preview（fixture only；非正式 first-screen）                */
+/* Mobile AME：Y/M/D 三格（label｜value）＋ leave；Reset／Done 用 shared chrome */
 /* -------------------------------------------------------------------------- */
 
-[data-taiwan-annual-leave-calculator-v2] .talc-ymd-preview {
+[data-taiwan-annual-leave-calculator-v2] #talc-ame .ame-portrait-header {
 	display: none;
-	box-sizing: border-box;
-	width: min(100%, 24rem);
-	margin: 1rem auto 0;
-	padding: 1rem 1rem 1.125rem;
-	border: 1px solid rgb(255 255 255 / 0.12);
-	border-radius: 1.25rem 1.25rem 0.75rem 0.75rem;
-	background: rgb(15 23 42 / 0.72);
-	backdrop-filter: blur(12px);
-	text-align: left;
 }
 
-[data-taiwan-annual-leave-calculator-v2][data-talc-fixture="mobile-ymd"]
-	.talc-ymd-preview:not([hidden]) {
-	display: block;
-}
-
-[data-taiwan-annual-leave-calculator-v2] .talc-ymd-preview__note {
-	margin: 0 0 0.5rem;
-	color: rgb(148 163 184 / 0.9);
-	font-size: 0.6875rem;
-	line-height: 1.35;
-}
-
-[data-taiwan-annual-leave-calculator-v2] .talc-ymd-preview__title {
-	margin: 0 0 0.75rem;
-	color: rgb(248 250 252);
-	font-size: 0.9375rem;
-	font-weight: 600;
-	line-height: 1.3;
-}
-
-[data-taiwan-annual-leave-calculator-v2] .talc-ymd-fields {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 0.5rem;
-}
-
-[data-taiwan-annual-leave-calculator-v2] .talc-ymd-field {
+[data-ame-root]#talc-ame .talc-ame-form {
 	display: flex;
 	flex-direction: column;
-	gap: 0.375rem;
+	gap: 0.75rem;
 	min-width: 0;
 }
 
-[data-taiwan-annual-leave-calculator-v2] .talc-ymd-field__label {
+/* 三格橫向並排（Age／MSB cols-3 visual role；非 MSB chrome） */
+[data-ame-root]#talc-ame .talc-ame-ymd {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.5rem;
+	min-width: 0;
+	width: 100%;
+}
+
+/*
+ * Focus owner = 單格 field button（整格）。
+ * persistent label 在左；value／placeholder 在右；active 高亮整格，不是只亮數字。
+ */
+[data-ame-root]#talc-ame .talc-ame-field {
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	width: 100%;
+	min-width: 0;
+	min-height: 2.75rem;
+	padding: 0.5rem 0.5rem 0.5rem 0.625rem;
+	border-radius: 0.75rem;
+	border: 1px solid rgb(255 255 255 / 0.1);
+	background: rgb(255 255 255 / 0.05);
+	color: rgb(248 250 252);
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+}
+
+[data-ame-root]#talc-ame .talc-ame-field:focus,
+[data-ame-root]#talc-ame .talc-ame-field:focus-visible,
+[data-ame-root]#talc-ame .talc-ame-field[data-ame-active="true"] {
+	outline: 2px solid rgb(165 180 252);
+	outline-offset: -2px;
+	border-color: rgb(255 255 255 / 0.2);
+	background: rgb(255 255 255 / 0.08);
+}
+
+/* active＝編輯目標；整格高亮（非只亮數字） */
+[data-ame-root]#talc-ame .talc-ame-field[data-ame-active="true"] {
+	box-shadow: inset 0 0 0 1px rgb(165 180 252 / 0.45);
+}
+
+[data-ame-root]#talc-ame .talc-ame-field-label {
+	display: inline-flex;
+	flex: 0 0 auto;
+	align-items: center;
 	color: rgb(148 163 184);
 	font-size: 0.75rem;
 	font-weight: 500;
-	line-height: 1.2;
+	line-height: 1rem;
+	white-space: nowrap;
 }
 
-[data-taiwan-annual-leave-calculator-v2] .talc-ymd-field__shell {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	box-sizing: border-box;
-	min-height: 2.75rem;
-	padding: 0.5rem 0.375rem;
-	border-radius: 0.75rem;
-	border: 1px solid rgb(255 255 255 / 0.12);
-	background: rgb(255 255 255 / 0.06);
-	color: rgb(248 250 252 / 0.92);
+[data-ame-root]#talc-ame .talc-ame-field-value {
+	flex: 1 1 auto;
+	min-width: 0;
+	color: rgb(248 250 252);
 	font-size: 0.9375rem;
 	font-weight: 500;
 	font-variant-numeric: tabular-nums;
-	opacity: 0.92;
+	letter-spacing: 0.02em;
+	line-height: 1.25rem;
+	text-align: start;
 }
 
-@media (min-width: 768px) and (hover: hover) {
-	[data-taiwan-annual-leave-calculator-v2][data-talc-fixture="mobile-ymd"]
-		.talc-ymd-preview:not([hidden]) {
-		margin-top: 1.25rem;
+[data-ame-root]#talc-ame .talc-ame-field-value.is-placeholder {
+	color: rgb(148 163 184 / 0.72);
+	font-weight: 400;
+}
+
+[data-ame-root]#talc-ame .talc-ame-field .ame-field-error-slot {
+	margin-inline-start: auto;
+}
+
+[data-ame-root]#talc-ame .talc-ame-leave {
+	margin-top: 0.125rem;
+	width: 100%;
+	max-width: 100%;
+}
+
+/*
+ * Mobile Landscape first screen（AME closed）— Age composition 邏輯：
+ * 100dvh 鎖高 + stage grid（結果 1fr／capsule auto），capsule 釘在首屏底列。
+ * 必須含 hover: none；不得以 bare landscape 誤切 Desktop。
+ * 不複製 Age Bottom Sheet。
+ */
+@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
+	[data-taiwan-annual-leave-calculator-v2] {
+		--talc-landscape-stage-controls-gap: 0.375rem;
+		--talc-landscape-controls-bottom-inset: 1rem;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .tpf-main-section,
+	[data-taiwan-annual-leave-calculator-v2] .preview-tool-main-section {
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		justify-content: stretch;
+		min-height: auto;
+		height: 100dvh;
+		max-height: 100dvh;
+		overflow: hidden;
+		padding-top: max(0.5rem, env(safe-area-inset-top));
+		padding-bottom: 0;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .tpf-first-screen,
+	[data-taiwan-annual-leave-calculator-v2] .preview-tool-first-screen {
+		box-sizing: border-box;
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		align-items: stretch;
+		justify-content: stretch;
+		min-height: 0;
+		height: 100%;
+		max-height: none;
+		padding-block-start: 0.625rem;
+		padding-block-end: 0;
+		place-items: stretch;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .tpf-stage,
+	[data-taiwan-annual-leave-calculator-v2] .preview-tool-stage {
+		display: grid;
+		grid-template-rows: minmax(0, 1fr) auto;
+		flex: 1 1 auto;
+		align-items: stretch;
+		align-content: stretch;
+		gap: var(--talc-landscape-stage-controls-gap);
+		min-height: 0;
+		height: 100%;
+		width: 100%;
+		max-width: min(100%, 480px);
+		margin-inline: auto;
+		margin-block-start: 0.375rem;
+		padding-block: 0;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .tpf-desktop-controls {
+		display: none;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .tpf-result-group,
+	[data-taiwan-annual-leave-calculator-v2] .preview-tool-result-group {
+		grid-row: 1;
+		align-self: stretch;
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		min-height: 0;
+		height: 100%;
+		width: 100%;
+		padding-inline: 1rem;
+		box-sizing: border-box;
+		pointer-events: none;
+		overflow: hidden;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .tpf-mobile-controls,
+	[data-taiwan-annual-leave-calculator-v2] .preview-tool-controls {
+		grid-row: 2;
+		position: relative;
+		align-self: end;
+		justify-self: center;
+		z-index: 25;
+		isolation: isolate;
+		display: flex;
+		width: auto;
+		max-width: 100%;
+		margin-top: 0;
+		margin-bottom: var(--talc-landscape-controls-bottom-inset);
+		padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
+		pointer-events: auto;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .tpf-mobile-capsule,
+	[data-taiwan-annual-leave-calculator-v2] .talc-mobile-capsule {
+		position: relative;
+		width: auto;
+		max-width: none;
+		margin-inline: auto;
+		pointer-events: auto;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-mobile-capsule {
+		min-height: 2rem;
+		padding: 0.375rem 0.75rem;
+		font-size: 0.75rem;
+		line-height: 1rem;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .tpf-title,
+	[data-taiwan-annual-leave-calculator-v2] .preview-tool-landscape-compact-title {
+		margin-top: 0;
+		font-size: 0.8125rem;
+		line-height: 1.125rem;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .tpf-result-block {
+		margin-top: 0.125rem;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-result-summary {
+		margin-top: 0;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-definition-row {
+		margin-top: 0.125rem;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-definition {
+		font-size: 0.6875rem;
+		line-height: 1rem;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-info {
+		position: relative;
+		z-index: 1;
+		pointer-events: auto;
+		width: 0.875rem;
+		height: 0.875rem;
+		font-size: 0.5rem;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-info-panel.is-open {
+		margin-top: 0.375rem;
+		pointer-events: auto;
+		max-width: min(100%, 28rem);
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-formula {
+		padding: 0.375rem 0.75rem 0.5rem;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-formula__heading {
+		font-size: 0.6875rem;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-formula__lines li {
+		font-size: 0.6875rem;
+		line-height: 1.3;
+		white-space: normal;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-tip {
+		margin-top: 0.25rem;
+		font-size: 0.625rem;
+	}
+
+	/*
+	 * Divider 上下距：對齊 Age landscape（等距 compact）。
+	 * 真實節點是 .tool-textual-result-support-divider::before（非 [data-rs-support]）。
+	 * meta 的 flex gap 只會加在線下方 → landscape 必須 gap:0，否則上下不對稱。
+	 */
+	[data-taiwan-annual-leave-calculator-v2] .talc-result-meta {
+		gap: 0;
+		margin-top: 0;
+		max-width: min(100%, 28rem);
+	}
+
+	[data-taiwan-annual-leave-calculator-v2]
+		.talc-result-meta.tool-textual-result-support-divider::before {
+		margin-block: 0.75rem;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-support {
+		font-size: 0.75rem;
+		line-height: 1.25;
+		max-width: min(100%, 36rem);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	/* 僅手機橫式：到職／年資 + 下一階段併成一行（「… / 下一階段…」） */
+	[data-taiwan-annual-leave-calculator-v2] .talc-support__line {
+		display: inline;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-support__line[hidden] {
+		display: none;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2] .talc-support__join {
+		display: inline;
+	}
+
+	[data-taiwan-annual-leave-calculator-v2]
+		.talc-support:has([data-talc-support-line="2"][hidden])
+		.talc-support__join {
+		display: none;
+	}
+
+	/* AME open＋keypad：三格保持可點 */
+	[data-ame-root]#talc-ame[data-ame-keypad-visible="true"] .talc-ame-field {
+		min-height: 2.5rem;
+		padding-block: 0.375rem;
+	}
+
+	[data-ame-root]#talc-ame[data-ame-keypad-visible="true"] .talc-ame-field-value {
+		font-size: 0.875rem;
 	}
 }

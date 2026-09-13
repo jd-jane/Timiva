@@ -1,8 +1,8 @@
 # Taiwan Annual Leave Calculator / 特休天數試算 — README
 
 > 建立日期：2026-09-11
-> 更新日期：2026-09-11（B2B Desktop interaction）
-> 狀態：**B2B Desktop live（local）** · B0 `8fadeb4` · B1A `9976e62` · B1B `62e1371` · B2A `5905afa` · Not Link Integrated · Not deployed
+> 更新日期：2026-09-13（B2C Landscape first-screen＋Mobile ⓘ）
+> 狀態：**B2C Mobile live（local）** · B0 `8fadeb4` · B1A `9976e62` · B1B `62e1371` · B2A `5905afa` · B2B Desktop · Not Link Integrated · Not deployed
 > Canonical product spec：`docs/tools/taiwan-annual-leave-calculator/product-spec.md`
 > Phase：V1.6 Taiwan Local Tools · 第一支
 
@@ -31,27 +31,42 @@ ZH：特休天數試算
 
 ---
 
-## 3. B2B Desktop（本輪）
+## 3. B2B Desktop
 
 - Smart Date Input（tool-local；`date-input.md`）
 - Shared DesktopCalendar（`popover-compact`）
 - 週年制／曆年制 live、Reset、info inline formula
-- LocalStorage key：`timiva:talc:v1`（EN／ZH 共用；只存 hireDate + leaveSystem）
+- LocalStorage key：`timiva:talc:v1`（EN／ZH 共用；只存 valid hireDate + leaveSystem）
 - Math SSOT：`taiwanAnnualLeaveMath.ts`（主結果 `primaryDisplay`；禁用 `rawDays`）
 - `?talcFixture=` **不再**影響 production live
 
-Mobile capsule／AME：**仍 disabled**（B2C）
+---
+
+## 4. B2C Mobile AME（本輪）
+
+- First-screen capsule → shared Adaptive Mobile Editor（`lifecycle: "live"`）
+- Tool-local AME content：三格橫向 Y／M／D（persistent label｜value）＋shared Numeric Keypad、leave segmented
+- Reset／Done 使用 shared AME chrome（不在 content 自放 Reset）
+- Focus owner＝單格 field button；active 高亮整格
+- **禁止** native `<input>`／`inputmode`／browser keyboard 取代 Numeric Keypad
+- Done／Escape／underlay → dismiss only；**不 rollback**、無 Cancel、無 restore-draft
+- Reopen 保留目前 segments（empty／valid／incomplete／invalid）
+- incomplete／invalid **不寫** LocalStorage
+- Landscape first screen（AME closed）：Age 式 `100dvh`＋stage grid（結果 `1fr`／capsule `auto`）；`hover: none`；capsule 須在初始 viewport 完整可見可點（實機 iPhone Safari 為準）
+- Mobile 曆年制 ⓘ：`.talc-info { pointer-events: auto }`（對沖 Frame `.tpf-result-group { pointer-events: none }`）
+- 不改 shared AME／ToolPageFrame／DesktopCalendar／math SSOT／Desktop Smart Date
 
 Validators：
 
 ```bash
 node --experimental-strip-types scripts/validate-taiwan-annual-leave-math.mjs
 node --experimental-strip-types scripts/validate-taiwan-annual-leave-desktop.mjs
+node --experimental-strip-types scripts/validate-taiwan-annual-leave-mobile.mjs
 ```
 
 ---
 
-## 4. 分類與站內連結
+## 5. 分類與站內連結
 
 | 項目 | 內容 |
 |---|---|
@@ -62,12 +77,12 @@ node --experimental-strip-types scripts/validate-taiwan-annual-leave-desktop.mjs
 
 ---
 
-## 5. 不做（本輪）
+## 6. 不做（本輪）
 
 ```text
-Mobile AME / Bottom Sheet / YMD live
 toolsCatalog / Home / inbound Related
 Link Integration
 shared / locked baseline 修改
+其他 V1.6 工具
 commit / push / deploy（需 Owner）
 ```

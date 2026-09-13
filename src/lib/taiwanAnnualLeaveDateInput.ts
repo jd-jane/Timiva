@@ -1095,6 +1095,70 @@ export function resolveFieldStatus(segments: DateSegments): FieldStatus {
 	return parseDateSegments(segments) ? "valid" : "invalid";
 }
 
+/** Mobile YMD per-field invalid（對齊 Age；empty／incomplete → 無 icon）。 */
+export type InvalidHireField = "year" | "month" | "day";
+
+export function resolveInvalidHireFields(
+	segments: DateSegments,
+	today: CalendarDate = getTodayCalendarDate(),
+): InvalidHireField[] {
+	if (!isSegmentsComplete(segments)) {
+		return [];
+	}
+
+	const fields: InvalidHireField[] = [];
+	const year = Number(segments.year);
+	const month = Number(segments.month);
+	const day = Number(segments.day);
+
+	const yearInvalid =
+		segments.year.length !== 4 ||
+		!Number.isInteger(year) ||
+		year < MIN_DATE_YEAR ||
+		year > today.year;
+	const monthInvalid = !Number.isInteger(month) || month < 1 || month > 12;
+	const dayOutOfRange = !Number.isInteger(day) || day < 1 || day > 31;
+
+	if (yearInvalid) {
+		fields.push("year");
+	}
+	if (monthInvalid) {
+		fields.push("month");
+	}
+	if (dayOutOfRange) {
+		fields.push("day");
+	} else if (!monthInvalid) {
+		if (!isValidCalendarDate(year, month, day)) {
+			fields.push("day");
+		} else if (
+			!yearInvalid &&
+			compareCalendarDates({ year, month, day }, today) > 0
+		) {
+			fields.push("day");
+		}
+	}
+
+	return fields;
+}
+
+/** Mobile Year auto-advance: full 4 digits. */
+export function shouldAutoAdvanceMobileYear(yearDigits: string): boolean {
+	return /^\d{4}$/.test(yearDigits);
+}
+
+/**
+ * Mobile Month auto-advance:
+ * - 2 digits → advance
+ * - single digit 2–9 → advance as one-digit month
+ * - leading 0 or 1 → wait for second digit
+ */
+export function shouldAutoAdvanceMobileMonth(monthDigits: string): boolean {
+	if (/^\d{2}$/.test(monthDigits)) {
+		return true;
+	}
+	return /^[2-9]$/.test(monthDigits);
+}
+
 /** Compact display for mobile capsule: YYYY/MM/DD */
 export function formatCalendarDateCompact(date: CalendarDate): string {
 	const y = String(date.year).padStart(4, "0");

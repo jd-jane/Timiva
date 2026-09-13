@@ -1,19 +1,21 @@
 ---
 /**
  * Taiwan Annual Leave Calculator V2 — ToolPageFrame adopter.
- * B0 shell · B1A lower · B1B static visual · B2B Desktop interaction（本輪）.
- * Mobile capsule／AME：仍 disabled（B2C）.
+ * B0–B2B Desktop · B2C Mobile AME（capsule → live YMD／leave／Reset）.
  */
 import RelatedToolRow from "../../RelatedToolRow.astro";
 import ResultSummary from "../shared/ResultSummary.astro";
 import ToolPageFrame from "../shared/ToolPageFrame.astro";
 import DesktopCalendar from "../shared/DesktopCalendar.astro";
+import AdaptiveMobileEditor from "../shared/AdaptiveMobileEditor.astro";
+import AmeFieldError from "../shared/AmeFieldError.astro";
 import { catalogIconMap } from "../../../lib/catalogIcons";
 import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getMessages } from "../../../i18n/messages";
 import { getCatalogTool, type CatalogToolId } from "../../../data/toolsCatalog";
 import "../../../styles/tools/taiwan-annual-leave-calculator-v2.css";
+import "../../../styles/tools/adaptive-mobile-editor.css";
 
 interface Props {
 	locale?: Locale;
@@ -70,6 +72,7 @@ const clientI18n = {
 	infoAriaLabel: m.infoAriaLabel,
 	invalidHireDate: m.invalidHireDate,
 	openCalendarAriaLabel: m.openCalendarAriaLabel,
+	capsulePlaceholder: m.capsulePlaceholder,
 	calendarLabel: m.calendarLabel,
 	previousMonth: m.previousMonth,
 	nextMonth: m.nextMonth,
@@ -86,7 +89,7 @@ const clientI18n = {
 <div
 	data-taiwan-annual-leave-calculator-v2
 	data-talc-locale={mathLocale}
-	data-talc-phase="b2b-desktop"
+	data-talc-phase="b2c-mobile"
 	data-talc-client-i18n={JSON.stringify(clientI18n)}
 >
 	<ToolPageFrame
@@ -123,7 +126,7 @@ const clientI18n = {
 						--rs-textual-primary-size: 13rem;
 					}
 				}
-				@media (max-width: 767px) and (orientation: landscape) {
+				@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 					[data-taiwan-annual-leave-calculator-v2]
 						[data-result-summary][data-rs-content="textual"],
 					[data-taiwan-annual-leave-calculator-v2]
@@ -132,7 +135,7 @@ const clientI18n = {
 						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"],
 					[data-taiwan-annual-leave-calculator-v2]
 						[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
-						--rs-textual-primary-size: 5rem;
+						--rs-textual-primary-size: 3.75rem;
 					}
 				}
 			</style>
@@ -187,7 +190,13 @@ const clientI18n = {
 				class="talc-result-meta tool-textual-result-support-divider"
 				data-talc-meta
 			>
-				<p class="talc-support" data-talc-support>{m.resultInitialSupport}</p>
+				<p class="talc-support" data-talc-support>
+					<span class="talc-support__line" data-talc-support-line="1"
+						>{m.resultInitialSupport}</span
+					>
+					<span class="talc-support__join" aria-hidden="true"> / </span>
+					<span class="talc-support__line" data-talc-support-line="2" hidden></span>
+				</p>
 			</div>
 		</div>
 
@@ -275,21 +284,109 @@ const clientI18n = {
 			</button>
 		</div>
 
-		{/*
-		  手機第一屏：capsule only（B2C 再啟用）。
-		  disabled baseline；非正式 YMD 常駐 first-screen。
-		*/}
 		<button
 			slot="mobilePrimaryControl"
 			type="button"
-			class="preview-tool-control-btn tool-primary-entry-capsule"
+			class="preview-tool-control-btn tool-primary-entry-capsule tool-utility-control talc-mobile-capsule"
 			data-talc-capsule
-			disabled
-			aria-disabled="true"
-			aria-label={m.mobilePrimaryControlPlaceholderAriaLabel}
+			aria-label={m.openSheetAriaLabel}
 		>
-			{m.capsulePlaceholder}
+			<span data-talc-capsule-label>{m.capsulePlaceholder}</span>
 		</button>
+
+		<AdaptiveMobileEditor
+			slot="ame"
+			id="talc-ame"
+			ariaLabel={m.sheetAriaLabel}
+			title={m.sheetTitle}
+		>
+			<div
+				slot="content"
+				class="talc-ame-form"
+				data-talc-ame-form
+				data-talc-ymd-year-ph={m.yearPlaceholder}
+				data-talc-ymd-month-ph={m.monthPlaceholder}
+				data-talc-ymd-day-ph={m.dayPlaceholder}
+			>
+				{/*
+				  Canonical mobile YMD：三格橫向並排；
+				  每格＝persistent label｜value／placeholder（Age visual role；AME button＋Numeric Keypad）。
+				*/}
+				<div
+					class="talc-ame-ymd"
+					data-talc-ame-ymd
+					role="group"
+					aria-label={m.hireDateLabel}
+				>
+					<button
+						type="button"
+						class="talc-ame-field"
+						data-ame-numeric-field="year"
+						data-ame-active="false"
+						aria-label={m.ameYearLabel}
+						aria-describedby="ame-field-error-year"
+					>
+						<span class="talc-ame-field-label">{m.ameYearLabel}</span>
+						<span class="talc-ame-field-value is-placeholder" data-talc-segment-value>
+							{m.yearPlaceholder}
+						</span>
+						<AmeFieldError fieldId="year" />
+					</button>
+					<button
+						type="button"
+						class="talc-ame-field"
+						data-ame-numeric-field="month"
+						data-ame-active="false"
+						aria-label={m.ameMonthLabel}
+						aria-describedby="ame-field-error-month"
+					>
+						<span class="talc-ame-field-label">{m.ameMonthLabel}</span>
+						<span class="talc-ame-field-value is-placeholder" data-talc-segment-value>
+							{m.monthPlaceholder}
+						</span>
+						<AmeFieldError fieldId="month" />
+					</button>
+					<button
+						type="button"
+						class="talc-ame-field"
+						data-ame-numeric-field="day"
+						data-ame-active="false"
+						aria-label={m.ameDayLabel}
+						aria-describedby="ame-field-error-day"
+					>
+						<span class="talc-ame-field-label">{m.ameDayLabel}</span>
+						<span class="talc-ame-field-value is-placeholder" data-talc-segment-value>
+							{m.dayPlaceholder}
+						</span>
+						<AmeFieldError fieldId="day" />
+					</button>
+				</div>
+
+				<div
+					class="talc-leave-system talc-ame-leave"
+					role="group"
+					aria-label={m.leaveSystemGroupAriaLabel}
+					data-talc-ame-leave-system
+				>
+					<button
+						type="button"
+						class="talc-leave-option is-active"
+						data-talc-ame-leave="anniversary"
+						aria-pressed="true"
+					>
+						{m.anniversaryLabel}
+					</button>
+					<button
+						type="button"
+						class="talc-leave-option"
+						data-talc-ame-leave="calendar-year"
+						aria-pressed="false"
+					>
+						{m.calendarYearLabel}
+					</button>
+				</div>
+			</div>
+		</AdaptiveMobileEditor>
 
 		<Fragment slot="drawerRelated">
 			{

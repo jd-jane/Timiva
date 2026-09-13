@@ -1236,8 +1236,11 @@ export const zh: Messages = {
     upperControlsAriaLabel: "特休天數試算輸入",
     resultPlaceholder: "?",
     resultAriaLabel: "特休結果",
-    mobilePrimaryControlPlaceholderAriaLabel: "輸入到職日期（尚未啟用）",
+    mobilePrimaryControlPlaceholderAriaLabel: "輸入到職日期",
     capsulePlaceholder: "輸入到職日期",
+    openSheetAriaLabel: "編輯到職日期",
+    sheetAriaLabel: "特休天數試算輸入",
+    sheetTitle: "輸入到職日期",
     hireDateLabel: "到職日期",
     hireDatePlaceholder: "YYYY / MM / DD",
     openCalendarAriaLabel: "開啟日曆",
@@ -1247,6 +1250,10 @@ export const zh: Messages = {
     nextMonth: "下個月",
     monthFieldLabel: "月",
     yearFieldLabel: "年",
+    dayFieldLabel: "日",
+    yearPlaceholder: "YYYY",
+    monthPlaceholder: "MM",
+    dayPlaceholder: "DD",
     weekdays: ["一", "二", "三", "四", "五", "六", "日"],
     leaveSystemGroupAriaLabel: "給假方式",
     anniversaryLabel: "週年制",
@@ -1267,8 +1274,7 @@ export const zh: Messages = {
     ameMonthLabel: "月",
     ameDayLabel: "日",
     mobileYmdSheetTitle: "輸入到職日期",
-    mobileYmdPreviewNote: "B1B 預覽：Bottom Sheet 內 YMD（非正式 first-screen）",
-    /* B1B fixtures — legacy visual reference only（B2B 起不影響 live） */
+    mobileYmdPreviewNote: "B1B 預覽：Bottom Sheet 內 YMD（非正式 first-screen）",    /* B1B fixtures — legacy visual reference only（B2B 起不影響 live） */
     fixtureAnniversaryPrimary: "14",
     fixtureAnniversarySupport:
       "2022/09/15 到職 · 年資 3 年 11 個月\n下一階段　2027/09/15 起為 15 天",

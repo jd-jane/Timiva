@@ -252,7 +252,7 @@ assert(astro.includes("data-talc-date-value"), "desktop date input");
 assert(astro.includes("data-talc-calendar-toggle"), "calendar toggle");
 assert(astro.includes("taiwan-annual-leave-calculator"), "script import");
 assert(!astro.includes("talcFixture"), "talcFixture removed from live Astro");
-assert(astro.includes('data-talc-phase="b2b-desktop"'), "b2b phase");
+assert(astro.includes('data-talc-phase="b2c-mobile"'), "b2c phase");
 assert(astro.includes("data-talc-info-panel"), "info panel above divider");
 assert(astro.includes("talc-info-panel__inner"), "info panel inner for grid anim");
 assert(
