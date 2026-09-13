@@ -1429,6 +1429,34 @@ body:has([data-date-calculator-v2]) header {
 		--rs-textual-primary-size: 3.75rem; /* EN landscape primary 再縮 */
 	}
 
+	/*
+	 * ZH Landscape：完整日期必須單行；weekday 固定下一行（不與日期並排）。
+	 * formatResultPrimary 的「年\\n月日」靠 nowrap 併成空白單行。
+	 * EN Landscape 維持 shared「日期 + weekday 同列」；不改 Portrait／Desktop。
+	 */
+	[data-date-calculator-v2][data-dcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+		grid-template-columns: max-content;
+		grid-template-areas:
+			"primary"
+			"weekday"
+			"support";
+		align-items: center;
+		column-gap: 0;
+	}
+
+	[data-date-calculator-v2][data-dcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"]
+		[data-rs-value="primary"] {
+		white-space: nowrap;
+	}
+
+	[data-date-calculator-v2][data-dcv2-locale="zh"]
+		[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"]
+		.rs-weekday {
+		margin-top: 0.25rem;
+	}
+
 	[data-date-calculator-v2]
 		[data-result-summary][data-rs-content="textual"]
 		[data-rs-support]::before {

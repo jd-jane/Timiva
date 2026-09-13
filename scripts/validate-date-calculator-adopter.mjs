@@ -517,5 +517,19 @@ assert(
 	"ZH ≤767 Portrait primary uses pre-line（受控兩行）",
 );
 
+/* ZH Mobile Landscape：完整日期單行；weekday 下一行（EN 維持同列） */
+assert(
+	/data-dcv2-locale="zh"[\s\S]*data-rs-layout="landscape"[\s\S]*grid-template-areas:\s*"primary"\s*"weekday"\s*"support"/.test(
+		css,
+	),
+	"ZH Landscape stacks primary → weekday → support（weekday 不並排）",
+);
+assert(
+	/data-dcv2-locale="zh"[\s\S]*data-rs-layout="landscape"[\s\S]*data-rs-value="primary"[\s\S]*white-space:\s*nowrap/.test(
+		css,
+	),
+	"ZH Landscape primary uses nowrap（完整日期單行；年\\n月日併成空白）",
+);
+
 console.log(`\nvalidate-date-calculator-adopter: ${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);
