@@ -1,9 +1,10 @@
 # 特休天數試算 Product Spec
 
 建立日期：2026-09-09\
-狀態：Owner Product Review PASS · B0 scaffold in progress · Not implemented\
+修訂：2026-09-13（Production Ready · Final Release close-out）\
+狀態：Owner Product Review PASS · **Production Ready** · Desktop／Mobile／Catalog complete · Not yet pushed／deployed\
 階段：Timiva V1.6 Taiwan Local Tools\
-工具順序：V1.6 第一支
+工具順序：V1.6 第一支（完成）
 
 ---
 

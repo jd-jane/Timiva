@@ -5,6 +5,41 @@
 
 ---
 
+## 2026-09-13 — TALC Production Ready · V1.6 第一支完成
+
+### 背景
+
+```text
+特休天數試算／Taiwan Annual Leave Calculator（V1.6 第一支）
+B2B Desktop、B2C Mobile、B2D Catalog／Link Integration 均完成並通過 Owner Review。
+Final Release checks＋四代理人 review 無 Blocking；尚未 push／deploy。
+```
+
+### 決策
+
+```text
+1. TALC＝Production Ready（local release readiness；非已 deploy 的 Production Complete）。
+2. V1.6 第一支工具完成：Desktop／Mobile／Catalog integration complete。
+3. Home Featured 維持 4 張；TALC 不加入 Featured。
+4. Outbound Related：date-range → business-days-calculator（exactly 2）。
+5. Inbound：僅 Business Days 以 TALC 替換 Hours；Date Range Related 不變。
+6. All Tools dates-events：… → Lunar → taiwan-annual-leave-calculator → Age。
+7. 下一支 V1.6 工具＝民國西元／年歲對照（尚未開始；不提前宣稱已開始）。
+8. Year Progress 2.0 順位不變（V1.6 之後；非 V1.6 scope）。
+9. push／deploy 仍需 Owner 另授權。
+```
+
+### 影響
+
+```text
+docs/project/current-status.md
+docs/project/decision-log.md
+docs/core/roadmap.md
+docs/tools/taiwan-annual-leave-calculator/
+```
+
+---
+
 ## 2026-09-06 — Lunar Production Complete · Close V1.5 · Open V1.6 Taiwan Local Tools
 
 ### 背景

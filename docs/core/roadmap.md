@@ -1,7 +1,7 @@
 # Timiva V1 Roadmap
 
-> Updated: 2026-09-06
-> Main changes: V1.5 Search Foundation closed／Production Complete（含 Lunar Date Converter HEAD `35dadef`）；Pet Age deferred；open V1.6 Taiwan Local Tools（特休試算、民國西元／年歲對照）；V1.6 後方向 Year Progress 2.0。
+> Updated: 2026-09-13
+> Main changes: V1.6 第一支「特休天數試算／Taiwan Annual Leave Calculator」＝Production Ready（Desktop／Mobile／Catalog complete；尚未 push／deploy）。下一支：民國西元／年歲對照（尚未開始）。Year Progress 2.0 仍為 V1.6 之後方向。
 
 ---
 
@@ -54,8 +54,8 @@ flowchart TD
     D --> D6[Japanese Era Converter<br/>Deployed]
     D --> D7[Lunar Date Converter<br/>Deployed]
 
-    D16 --> T1[特休試算<br/>Next]
-    D16 --> T2[民國西元／年歲對照]
+    D16 --> T1[特休試算<br/>Production Ready]
+    D16 --> T2[民國西元／年歲對照<br/>Next]
 
     E --> E1[Breathing Timer]
     E --> E2[Fasting / Recovery Timer]
@@ -210,16 +210,16 @@ Canonical Lunar docs：[`docs/tools/lunar-date-converter/README.md`](../tools/lu
 ## 6.1 Phase 1.6 / V1.6 — Taiwan Local Tools（2026-09 focus）
 
 ```text
-Status：preparation
-Next tool：特休試算
+Status：in progress（第一支 Production Ready；尚未 push／deploy）
+Next tool：民國西元／年歲對照（尚未開始）
 Scope：固定兩支；不加第三支
 不含：Pet Age、Japanese Era Converter、Lunar Date Converter、Year Progress 2.0
 ```
 
 | Order | Tool | Notes |
 |---:|---|---|
-| 1 | 特休試算 | **Next tool** · 2026-09 focus |
-| 2 | 民國西元／年歲對照 | V1.6 第二支 |
+| 1 | 特休試算／Taiwan Annual Leave Calculator | **Production Ready** · Desktop／Mobile／Catalog complete |
+| 2 | 民國西元／年歲對照 | **Next** · 尚未開始 |
 
 V1.6 完成後已知方向（**非 V1.6 scope**）：
 
@@ -306,8 +306,10 @@ V1 four tools + Year Progress: deployed on timiva.app
 V1.5 Search Foundation: closed / Production Complete
   Age → DBD → BDC → DC → Hours → JEC → Lunar: deployed
 Pet Age Calculator: deferred
-V1.6 Taiwan Local Tools: preparation（特休試算 → 民國西元／年歲對照）
-Repo production HEAD: 35dadef
+V1.6 Taiwan Local Tools: in progress
+  1) 特休試算／TALC：Production Ready（local；尚未 push／deploy）
+  2) 民國西元／年歲對照：Next（尚未開始）
+Repo origin/main production HEAD: 35dadef（至 Owner push 前）
 V1 SEO technical closeout: complete
 ```
 
@@ -347,9 +349,9 @@ Pet Age Calculator（deferred／future candidate）
 ```text
 V1.5 Search Foundation：closed／Production Complete
 Lunar Date Converter：Production Complete（HEAD：35dadef）
-Current phase：V1.6 Taiwan Local Tools preparation
-Next tool：特休試算
-V1.6 第二支：民國西元／年歲對照
+Current phase：V1.6 Taiwan Local Tools（in progress）
+TALC／特休天數試算：Production Ready（Desktop／Mobile／Catalog complete；等待 Owner push／deploy）
+Next tool：民國西元／年歲對照（尚未開始）
 Pet Age：deferred
 V1.6 後方向：Year Progress 2.0（非 V1.6 scope）
 ```

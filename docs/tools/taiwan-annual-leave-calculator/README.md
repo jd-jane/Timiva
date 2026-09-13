@@ -1,8 +1,8 @@
 # Taiwan Annual Leave Calculator / 特休天數試算 — README
 
 > 建立日期：2026-09-11
-> 更新日期：2026-09-13（B2D Catalog / Link Integration）
-> 狀態：**Site integration complete（local）** · B0 `8fadeb4` · B1A `9976e62` · B1B `62e1371` · B2A `5905afa` · B2B Desktop · B2C `99857b1` · B2D ready · Not deployed
+> 更新日期：2026-09-13（Final Release / Close-out）
+> 狀態：**Production Ready** · V1.6 第一支完成 · Desktop／Mobile／Catalog complete · Not yet pushed／deployed
 > Canonical product spec：`docs/tools/taiwan-annual-leave-calculator/product-spec.md`
 > Phase：V1.6 Taiwan Local Tools · 第一支
 
@@ -31,18 +31,42 @@ ZH：特休天數試算
 
 ---
 
-## 3. B2B Desktop
+## 3. Release status
+
+```text
+B0 scaffold → B1A content → B1B static UI → B2A math → B2B Desktop → B2C Mobile → B2D Catalog／Links
+Final Release checks：PASS（local）
+Owner Review：Desktop／Mobile／Catalog PASS
+Targeted Release Review：四代理人 PASS · Ready to Ship YES
+Push／deploy：等待 Owner
+```
+
+Key local commits（摘要）：
+
+```text
+8fadeb4 feat: scaffold Taiwan Annual Leave Calculator
+9976e62 feat: add annual leave calculator content
+62e1371 feat: add annual leave calculator static UI
+5905afa feat: add annual leave calculation engine
+77e51d4 feat: complete annual leave desktop interactions
+99857b1 feat: complete annual leave mobile interactions
+0751f42 feat: integrate taiwan annual leave catalog links
+```
+
+---
+
+## 4. Desktop
 
 - Smart Date Input（tool-local；`date-input.md`）
 - Shared DesktopCalendar（`popover-compact`）
-- 週年制／曆年制 live、Reset、info inline formula
+- 週年制／曆年制 live、Reset、info inline formula（含 1/1 說明／比例公式）
 - LocalStorage key：`timiva:talc:v1`（EN／ZH 共用；只存 valid hireDate + leaveSystem）
 - Math SSOT：`taiwanAnnualLeaveMath.ts`（主結果 `primaryDisplay`；禁用 `rawDays`）
 - `?talcFixture=` **不再**影響 production live
 
 ---
 
-## 4. B2C Mobile AME（本輪）
+## 5. Mobile AME
 
 - First-screen capsule → shared Adaptive Mobile Editor（`lifecycle: "live"`）
 - Tool-local AME content：三格橫向 Y／M／D（persistent label｜value）＋shared Numeric Keypad、leave segmented
@@ -52,9 +76,8 @@ ZH：特休天數試算
 - Done／Escape／underlay → dismiss only；**不 rollback**、無 Cancel、無 restore-draft
 - Reopen 保留目前 segments（empty／valid／incomplete／invalid）
 - incomplete／invalid **不寫** LocalStorage
-- Landscape first screen（AME closed）：Age 式 `100dvh`＋stage grid（結果 `1fr`／capsule `auto`）；`hover: none`；capsule 須在初始 viewport 完整可見可點（實機 iPhone Safari 為準）
+- Landscape first screen（AME closed）：Age 式 `100dvh`＋stage grid（結果 `1fr`／capsule `auto`）；`hover: none`
 - Mobile 曆年制 ⓘ：`.talc-info { pointer-events: auto }`（對沖 Frame `.tpf-result-group { pointer-events: none }`）
-- 不改 shared AME／ToolPageFrame／DesktopCalendar／math SSOT／Desktop Smart Date
 
 Validators：
 
@@ -66,26 +89,28 @@ node --experimental-strip-types scripts/validate-taiwan-annual-leave-mobile.mjs
 
 ---
 
-## 5. 分類與站內連結
+## 6. 分類與站內連結
 
 | 項目 | 內容 |
 |---|---|
 | Category | Important Dates／重要日子（`dates-events`） |
 | Catalog | `toolsCatalog` · `available: true` · `featured: false` |
 | Home Featured | **不加入**（維持 4 卡） |
-| All Tools | EN／ZH 由 catalog 自動接入 |
-| Outbound Related | `date-range` → `business-days-calculator`（catalog；恰 2） |
+| All Tools | EN／ZH：… → Lunar → **TALC** → Age |
+| Outbound Related | `date-range` → `business-days-calculator`（恰 2） |
 | Inbound Related | `business-days-calculator` 以 TALC 替換 `hours-calculator` |
 | `date-range` Related | **不變** |
+| SEO | canonical／hreflang／sitemap／FAQ JSON-LD |
 
 ---
 
-## 6. 不做（本輪）
+## 7. 不做（本工具收尾邊界）
 
 ```text
 Home Featured 變更
 date-range inbound Related
 shared / locked baseline 修改
-其他 V1.6 工具
+下一支 V1.6 工具（民國西元／年歲對照）— 尚未開始
+Year Progress 2.0 順位變更
 push / deploy（需 Owner）
 ```
