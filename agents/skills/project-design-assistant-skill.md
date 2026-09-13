@@ -608,6 +608,8 @@ Geometry PASS ≠ Design Assistant PASS
 
 凡 batch **新增或修改 interaction state**（含 field error、focus、mode switch、reset、result invalid），**不得**因 automated validator、implementation browser QA、或 geometry evidence 通過，就直接宣稱 **Design Assistant PASS**。Design Assistant 必須**獨立 review** 並輸出專用結論。
 
+對 **segmented numeric／date fields**：必須用 rendered evidence 確認 focus 落在**個別**完整 field shell（單格 Year／Month／Day 或同等可聚焦 control），且 active editing target 未呈現獨立 browser／tool focus ring。不得以 `:focus-within` 讓外層 YMD／欄位 group 整組一起 focus。僅存在 `:focus-visible` CSS 規則不足以 PASS。
+
 #### 必須 review 的狀態（依工具風險；Desktop date tools 至少）
 
 ```text
@@ -1005,6 +1007,12 @@ mobile portrait / mobile landscape
 Gate A：lifecycle／commit／rollback 等 interaction contract 不得與既有 live／submit canonical 衝突
 Gate B：AME picker field internal language（Label｜Value｜Chevron）不得由 adopter 自行改成上下堆疊；
   僅當 shared／canonical 已定義該 responsive internal variant，或 Owner 本輪明確新決策時，才屬合法
+Gate B（Numeric）：純數字 Mobile AME 欄位若已有 shared Numeric Keypad production pattern，
+  不得改用 native keyboard／inputmode；偏離既有 production pattern 且無 Owner 本輪決策 → BLOCK
+Gate B（Focus）：focus owner 必須是**個別**完整 field shell；segment／欄位只表示 active editing target。
+  Review 必須用 rendered evidence 確認 focus 實際落在哪個 element；
+  不得只因 CSS 存在 :focus-visible 就判 PASS；
+  外層 YMD／欄位 group 因 :focus-within 整組 focus，或 segment 上出現獨立 focus ring／browser outline → BLOCK
 Gate C：Result／picker 的 locale × mode × viewport 必要格必須有獨立 rendered evidence
 ```
 

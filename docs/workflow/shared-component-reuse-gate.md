@@ -209,6 +209,8 @@ AME 不是所有手機輸入介面的強制方案。
 多欄位 mobile edit flow
 原生 date／select 與 Numeric Field 混合
 需要 Timiva Numeric Keypad
+純數字欄位預設 reuse shared Numeric Keypad（不得自行改用 native keyboard）
+Focus owner＝**個別**完整 field shell；segment＝active target（active ≠ focus）
 Portrait Bottom Sheet＋Landscape Full-screen 同一 shell
 需要共用 focus、scroll lock、field error、Portrait background scale、Reset／Done lifecycle
 ```

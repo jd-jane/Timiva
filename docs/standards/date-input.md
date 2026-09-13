@@ -265,6 +265,27 @@ Backspace / Delete 只影響目前 segment
 
 當手機使用 Year / Month / Day 三欄時：
 
+### AME Numeric Keypad（production default）
+
+```text
+純數字 Mobile AME 欄位若已有 shared Numeric Keypad production pattern（Hours／JEC／DC duration 等），
+預設必須 reuse button segment＋Timiva Numeric Keypad。
+不得自行改用 native <input>／inputmode／browser keyboard「修補」。
+Plan／implementation 若偏離既有 production pattern，必須先回報 Owner，不得逕行另做 keypad 或 native 路徑。
+```
+
+### Focus ownership（segmented date／time）
+
+```text
+Focus owner = 當前**個別**完整 field shell／field control（例如單格 Year／Month／Day 或 Hours 列內 HH／MM 所屬可聚焦 control）。
+Field internal language 維持 persistent label 在左、value／placeholder 在右（見 mobile-sheet compact inline field）。
+Year／Month／Day（或 HH／MM）的 active 狀態表示編輯目標；active 視覺必須作用於該完整 field，不可只高亮數字字元。
+不得讓外層 YMD group 因 :focus-within 整組一起 focus。
+segment／field 不得呈現 browser default outline 以外的衝突 focus 語言；須對齊 Timiva field focus token。
+active 與 focus 相關但角色不同：active＝編輯目標；focus 視覺落在完整 field（active ≠ focus）。
+Design／QA 必須確認 rendered focus 實際落在哪個 element，不能只檢查 CSS 是否存在 :focus-visible。
+```
+
 ### Year
 
 ```text

@@ -955,6 +955,8 @@ AME root 與 [data-ame-page-content] 使用 sibling mount
 不使用 visualViewport
 Numeric Field＝button-like control＋Timiva Numeric Keypad
 不以 native numeric keyboard、inputmode 或 contenteditable 取代 AME Numeric Field
+純數字 Mobile AME 欄位若已有 shared Numeric Keypad production pattern，預設必須 reuse；偏離須先回報 Owner
+Focus owner＝**個別**完整 field shell；segment 只表示 active editing target（active ≠ focus；不得外層 group :focus-within）
 原生 date／select 可保留
 ```
 

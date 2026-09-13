@@ -596,5 +596,8 @@ Shell／underlay 可作為 programmatic focus sink（tabindex=-1）
 每頁最多一個 AME
 sibling mount；無 Portal／Registry／multi-instance／visualViewport
 Numeric Field＝button＋Timiva Numeric Keypad（非 native numeric keyboard／inputmode／contenteditable 取代）
+純數字欄位若已有 shared Numeric Keypad production pattern → 預設 reuse；不得自行改用 native keyboard
+Focus owner＝**個別**完整 field shell；segment＝active editing target（不得以 segment 當獨立 focus owner；不得外層 group :focus-within 整組 focus）
+Plan／implementation 偏離既有 production pattern → 先回報 Owner
 工具擁有 content／math／validation／reset／composition；AME 擁有 shell／focus／scroll／keypad／shared visual／lifecycle framework
 ```
