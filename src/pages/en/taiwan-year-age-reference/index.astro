@@ -1,0 +1,25 @@
+---
+import "../../../styles/tools/timiva-tokens.css";
+import "../../../styles/tools/tool-design-system.css";
+import "../../../styles/tools/tool-result-v2-baseline.css";
+import "../../../styles/tools/tool-overlay-v2-baseline.css";
+import "../../../styles/tools/tool-drawer-v2-baseline.css";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import TaiwanYearAgeReferenceV2 from "../../../components/tools/taiwan-year-age-reference-v2/TaiwanYearAgeReferenceV2.astro";
+import { getTaiwanYearAgeReferenceRouteMeta } from "../../../lib/taiwanYearAgeReferenceRouteMeta";
+import { type Locale } from "../../../i18n/config";
+
+const locale: Locale = "en";
+const routeMeta = getTaiwanYearAgeReferenceRouteMeta(locale);
+---
+
+<BaseLayout
+	title={routeMeta.title}
+	description={routeMeta.description}
+	canonicalUrl={routeMeta.canonicalUrl}
+	alternateUrls={routeMeta.alternateUrls}
+	headerVariant="inner"
+	locale={locale}
+>
+	<TaiwanYearAgeReferenceV2 locale={locale} />
+</BaseLayout>

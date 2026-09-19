@@ -65,6 +65,11 @@ export const en = {
       description:
         "Enter your start date to see how many annual leave days you have.",
     },
+    taiwanYearAgeReference: {
+      title: "Taiwan Year & Age Reference | Timiva",
+      description:
+        "Look up a year in Gregorian, Minguo, or Japanese era terms, with approximate age.",
+    },
     privacy: {
       title: "Privacy Policy — Timiva",
       description: "How Timiva handles your data and privacy.",
@@ -1421,6 +1426,17 @@ export const en = {
         },
       ],
     },
+  },
+  /* B0 scaffold only — no FAQ / calculation / input copy yet */
+  taiwanYearAgeReference: {
+    kicker: "Taiwan Year & Age Reference",
+    relatedToolsDrawerAriaLabel: "Related tools drawer",
+    toggleRelatedToolsDrawerAriaLabel: "Toggle related tools drawer",
+    relatedToolsHeading: "You may also need",
+    mobileControlsAriaLabel: "Taiwan year and age reference controls",
+    resultPlaceholder: "?",
+    resultAriaLabel: "Year and age result placeholder",
+    mobilePrimaryControlPlaceholderAriaLabel: "Primary control placeholder",
   },
 } as const;
 
