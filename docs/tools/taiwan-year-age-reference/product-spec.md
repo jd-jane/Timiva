@@ -615,11 +615,58 @@ enText
 
 ### 顯示範圍
 
-只有具有明顯歷史距離感、且已準備可靠背景文案的年份顯示。
+```text
+1862–2009：有對應 content bucket 時可顯示「那時的台灣」。
+2010–current year：不顯示。
+```
 
-近代年份可以自然不顯示。
+Mobile Landscape 未來仍不顯示此句（B2 再實作 hide／show）。
 
-具體 cutoff 與年代分段在 B1A content stage 再確認。
+正式年代 content buckets（生活感分桶，不是學術分期）：
+
+```text
+1862–1884
+ZH：清治後期、開港貿易連結世界。
+EN：Late Qing rule, when treaty ports tied Taiwan more closely to world trade.
+
+1885–1894
+ZH：建省推動新政，鐵路與新建設讓台灣近代樣貌逐漸成形。
+EN：Taiwan became a province, and new reforms, railways, and construction gradually gave the island a more modern shape.
+
+1895–1919
+ZH：政權更替後，新的制度、學校與公共設施逐步走進日常。
+EN：After a change of government, new systems, schools, and public facilities slowly entered everyday life.
+
+1920–1936
+ZH：喫茶店、戲院與新文化活動興起，城市生活有了更多新的交流方式。
+EN：Teahouses, theaters, and new cultural activities took hold, and city life found more ways to mix and meet.
+
+1937–1945
+ZH：二戰戰火波及台灣，物資短缺與空襲改變了生活。
+EN：World War II reached Taiwan; shortages and air raids changed daily life.
+
+1946–1959
+ZH：戰後生活重新起步，社會在重建中進入長期戒嚴。
+EN：Postwar life started over, and amid rebuilding Taiwan entered a long period of martial law.
+
+1960–1979
+ZH：工廠與外銷快速成長，工作機會與城市生活也跟著改變。
+EN：Factories and exports grew quickly, and jobs and city life changed with them.
+
+1980–1990
+ZH：經濟快速起飛，股市與消費熱潮讓「台灣錢淹腳目」成為時代印象。
+EN：The economy took off quickly, and a boom in stocks and spending left the impression that Taiwan was awash in money.
+
+1991–1999
+ZH：社會逐步開放，從國會改選到總統直選，民主慢慢走進日常。
+EN：Society opened up step by step, from full legislative elections to the first direct presidential election, and democracy slowly entered everyday life.
+
+2000–2009
+ZH：網路、手機與高鐵走進日常，生活的距離和節奏都開始改變。
+EN：The internet, mobile phones, and high-speed rail entered daily life, and both distance and pace began to change.
+```
+
+SSOT：`src/lib/taiwanYearAgeReferenceThenTaiwan.ts`（B1A 只建資料；B2 再接結果顯示）。
 
 ---
 
@@ -840,62 +887,84 @@ Reset
 
 ## 26. About
 
-工作文案：
+### ZH
 
-> 台灣年歲對照可以查詢西曆、民國與和曆年份，並對照約略年歲、歲次生肖，以及該年代的台灣背景。也可以用生肖與大約年齡反查可能的出生年份。
+台灣年歲對照把一個年份轉成更容易理解的時間線索。你可以查西曆、民國與和曆的對照，並看到約略年歲、歲次生肖，以及較早年份的一句台灣時代背景。若只記得生肖和大約年齡，也可以反查最接近的可能出生年份。
 
-正式 EN / ZH 文案在 B1A 再 polish。
+### EN
+
+Taiwan Year & Age Reference turns a year into time cues that are easier to grasp. You can look up Gregorian, Minguo, and Japanese era years together, see an approximate age and the year’s zodiac, and—for earlier years—a short line about Taiwan then. If you only remember a zodiac and an approximate age, you can also find the closest likely birth year.
+
+標題：關於台灣年歲對照／About Taiwan Year & Age Reference
 
 ---
 
 ## 27. How to use
 
-工作文案：
+### ZH
 
-> 選擇西曆、民國或和曆並輸入年份，即可查看對應結果。若不確定年份，也可以用生肖和大約年齡找出最接近的可能年份。
+選擇西曆、民國或和曆並輸入年份，即可查看對應的年代、約略年歲與歲次生肖。若不確定年份，也可以用生肖和大約年齡找出最接近的可能年份。
+
+### EN
+
+Choose Gregorian, Minguo, or Japanese era and enter a year to see the matching era, approximate age, and zodiac. If you are not sure of the year, you can also use a zodiac and an approximate age to find the closest likely year.
+
+標題：如何使用台灣年歲對照／How to use Taiwan Year & Age Reference
 
 ---
 
 ## 28. Common Uses
 
-暫定 4 個：
+正式 4 個（不增加「台灣歷史」）：
 
 ```text
-民國西元對照
-和曆年份查詢
-長輩年歲估算
-生肖出生年反查
+ZH：民國西元對照 · 和曆年份查詢 · 長輩年歲估算 · 生肖出生年反查
+EN：Minguo–Gregorian lookup · Japanese era year lookup · Estimate an elder’s age · Birth year from zodiac
 ```
-
-不使用「台灣歷史」作為 tag，避免讓工具看起來像歷史資料服務。
 
 ---
 
 ## 29. FAQ
 
-暫定 5 題：
+標題：台灣年歲對照 FAQ／Taiwan Year & Age Reference FAQ
 
-```text
-1. 台灣年歲對照可以查什麼？
-2. 為什麼年歲會顯示「約」幾歲？
-3. 生肖是怎麼對應年份的？
-4. 為什麼有些年份會顯示和曆，有些不會？
-5. 可以用生肖和大約年齡反查出生年份嗎？
-```
+正式 5 題（不增加第六題）。JSON-LD 與頁面 FAQ 同一資料。
 
-FAQ 需補充：
+### Q1 台灣年歲對照可以查什麼？
 
-```text
-生肖是年份層級參考
-歷史交界年份採整年簡化
-年歲不是精確周歲
-```
+ZH：可以用西曆、民國或和曆查詢年份，查看其他年份表示、約略年歲與歲次生肖；較早年份還會補上一句「那時的台灣」。如果不確定年份，也可以用生肖與大約年齡反查可能的出生年份。
+
+EN：You can look up a year in Gregorian, Minguo, or Japanese era terms to see the other year forms, an approximate age, and the year’s zodiac. Earlier years also include a short line about Taiwan then. If you are not sure of the year, you can also use a zodiac and an approximate age to find a likely birth year.
+
+### Q2 為什麼年歲會顯示「約」幾歲？
+
+ZH：工具只以今年減去查詢年份估算，不判斷生日是否已過，因此顯示「約 X 歲」。若要計算精確年齡，可以使用 Age Calculator。
+
+EN：The tool only subtracts the looked-up year from the current year. It does not check whether a birthday has passed, so it shows “about X years old.” For an exact age, you can use Age Calculator.
+
+### Q3 生肖是怎麼對應年份的？
+
+ZH：生肖依該年份的歲次顯示，作為年份層級的參考。實際個人的生肖可能因出生日期與農曆新年交界而不同。
+
+EN：The zodiac is shown as a year-level reference based on that year’s traditional zodiac cycle. A person’s actual zodiac can differ around Lunar New Year, depending on their date of birth.
+
+### Q4 為什麼有些年份會顯示和曆，有些不會？
+
+ZH：和曆可以作為查詢方式，但從西曆或民國查詢時，只有與台灣歷史脈絡相關的年份會主動顯示和曆。年份對照以整年為單位，歷史交界年份不細分月份與日期。
+
+EN：Japanese era can be used to look a year up. When you start from Gregorian or Minguo, the Japanese era appears in the result only for years that sit in Taiwan’s historical context. Year lookup is by whole year; transition years are not split by month or day.
+
+### Q5 可以用生肖和大約年齡反查出生年份嗎？
+
+ZH：可以。輸入生肖與大約年齡後，工具會在支援範圍內找出最接近的可能年份，並可查看前後一輪同生肖的年份。這是估算結果，不代表確切出生年份。
+
+EN：Yes. After you enter a zodiac and an approximate age, the tool finds the closest likely year in range and lets you check the previous and next same-zodiac years. This is an estimate, not an exact birth year.
 
 ---
 
 ## 30. Related Tools
 
-Outbound Related：
+Outbound Related（B1A 頁內 tool-local；不寫入 toolsCatalog）：
 
 ```text
 1. Japanese Era Converter / 日本年號換算
@@ -923,36 +992,19 @@ Inbound Related 留到 Post-tool Link Integration Gate 再決定。
 
 ```text
 台灣年歲對照
-```
-
-### EN
-
-```text
 Taiwan Year & Age Reference
 ```
 
-搜尋相關字詞可自然出現在：
+### Meta
 
 ```text
-Meta title
-Meta description
-About
-How to use
-FAQ
+ZH title：台灣年歲對照｜Timiva
+EN title：Taiwan Year & Age Reference | Timiva
+ZH description：查詢西曆、民國與和曆年份對照，快速了解約略年歲、歲次生肖與那時的台灣；也可用生肖與大約年齡反查可能出生年份。
+EN description：Look up Gregorian, Minguo, and Japanese era years to see approximate age, the year’s zodiac, and a glimpse of Taiwan then. You can also estimate a likely birth year from zodiac and approximate age.
 ```
 
-例如：
-
-```text
-民國西元對照
-民國年換算西元
-西元民國換算
-昭和幾年
-和曆換算
-出生年份
-年歲對照
-```
-
+搜尋相關字詞可自然出現在 Meta、About、How to use、FAQ。
 ---
 
 ## 32. 不做項目
@@ -988,20 +1040,20 @@ LocalStorage
 
 ---
 
-## 33. B1A 待確認項目
+## 33. B1A content status
 
-以下不需要在 B0 前鎖死：
+B1A 已確認並落地：
 
 ```text
-1. 「那時的台灣」實際年代分段
-2. 每個年代的一句正式 EN / ZH 文案
-3. 近代停止顯示「那時的台灣」的 cutoff
-4. About / How to use 最終 wording
-5. FAQ 正式答案
-6. Meta title / description
+「那時的台灣」10 個 range + 2010+ 不顯示
+About / How to use 正式 EN／ZH
+FAQ 5 題正式答案 + JSON-LD
+Common Uses 4 tags
+正式 meta title / description
+Outbound Related 三列（頁內 tool-local）
 ```
 
-歷史文案正式撰寫時再進行資料查核。
+歷史文案 SSOT：`src/lib/taiwanYearAgeReferenceThenTaiwan.ts`。B2 再接結果顯示與 landscape hide。
 
 ---
 

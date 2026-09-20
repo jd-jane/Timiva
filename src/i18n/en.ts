@@ -68,7 +68,7 @@ export const en = {
     taiwanYearAgeReference: {
       title: "Taiwan Year & Age Reference | Timiva",
       description:
-        "Look up a year in Gregorian, Minguo, or Japanese era terms, with approximate age.",
+        "Look up Gregorian, Minguo, and Japanese era years to see approximate age, the year’s zodiac, and a glimpse of Taiwan then. You can also estimate a likely birth year from zodiac and approximate age.",
     },
     privacy: {
       title: "Privacy Policy — Timiva",
@@ -1427,7 +1427,6 @@ export const en = {
       ],
     },
   },
-  /* B0 scaffold only — no FAQ / calculation / input copy yet */
   taiwanYearAgeReference: {
     kicker: "Taiwan Year & Age Reference",
     relatedToolsDrawerAriaLabel: "Related tools drawer",
@@ -1437,6 +1436,53 @@ export const en = {
     resultPlaceholder: "?",
     resultAriaLabel: "Year and age result placeholder",
     mobilePrimaryControlPlaceholderAriaLabel: "Primary control placeholder",
+    about: {
+      heading: "About Taiwan Year & Age Reference",
+      body: "Taiwan Year & Age Reference turns a year into time cues that are easier to grasp. You can look up Gregorian, Minguo, and Japanese era years together, see an approximate age and the year’s zodiac, and—for earlier years—a short line about Taiwan then. If you only remember a zodiac and an approximate age, you can also find the closest likely birth year.",
+    },
+    howTo: {
+      heading: "How to use Taiwan Year & Age Reference",
+      body: "Choose Gregorian, Minguo, or Japanese era and enter a year to see the matching era, approximate age, and zodiac. If you are not sure of the year, you can also use a zodiac and an approximate age to find the closest likely year.",
+    },
+    commonUses: {
+      heading: "Common uses",
+      items: [
+        "Minguo–Gregorian lookup",
+        "Japanese era year lookup",
+        "Estimate an elder’s age",
+        "Birth year from zodiac",
+      ],
+    },
+    faq: {
+      heading: "Taiwan Year & Age Reference FAQ",
+      items: [
+        {
+          question: "What can Taiwan Year & Age Reference look up?",
+          answer:
+            "You can look up a year in Gregorian, Minguo, or Japanese era terms to see the other year forms, an approximate age, and the year’s zodiac. Earlier years also include a short line about Taiwan then. If you are not sure of the year, you can also use a zodiac and an approximate age to find a likely birth year.",
+        },
+        {
+          question: "Why does age say “about” X years old?",
+          answer:
+            "The tool only subtracts the looked-up year from the current year. It does not check whether a birthday has passed, so it shows “about X years old.” For an exact age, you can use Age Calculator.",
+        },
+        {
+          question: "How does the zodiac map to a year?",
+          answer:
+            "The zodiac is shown as a year-level reference based on that year’s traditional zodiac cycle. A person’s actual zodiac can differ around Lunar New Year, depending on their date of birth.",
+        },
+        {
+          question: "Why do some years show a Japanese era and others do not?",
+          answer:
+            "Japanese era can be used to look a year up. When you start from Gregorian or Minguo, the Japanese era appears in the result only for years that sit in Taiwan’s historical context. Year lookup is by whole year; transition years are not split by month or day.",
+        },
+        {
+          question: "Can I reverse-find a birth year from zodiac and approximate age?",
+          answer:
+            "Yes. After you enter a zodiac and an approximate age, the tool finds the closest likely year in range and lets you check the previous and next same-zodiac years. This is an estimate, not an exact birth year.",
+        },
+      ],
+    },
   },
 } as const;
 

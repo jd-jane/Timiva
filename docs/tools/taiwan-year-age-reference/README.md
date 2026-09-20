@@ -1,7 +1,8 @@
 # Taiwan Year & Age Reference / 台灣年歲對照 — README
 
 > 建立日期：2026-09-19
-> 狀態：**B0 scaffold** · Owner Plan Review APPROVE WITH 2 MINOR REVISIONS · Not Link Integrated · Not deployed
+> 更新日期：2026-09-19（B1A）
+> 狀態：**B1A lower content** · Not Link Integrated · Not deployed
 > Canonical product spec：`docs/tools/taiwan-year-age-reference/product-spec.md`
 > Phase：V1.6 Taiwan Local Tools · 第二支
 
@@ -29,44 +30,43 @@ ZH：台灣年歲對照
 
 ---
 
-## 3. 分類與站內連結（B0）
+## 3. 分類與站內連結
 
 | 項目 | 內容 |
 |---|---|
 | Category | Important Dates／重要日子（`dates-events`） |
-| Suggested catalog ID | `taiwan-year-age-reference`（**B0 未寫入** `toolsCatalog`） |
+| Suggested catalog ID | `taiwan-year-age-reference`（**未寫入** `toolsCatalog`） |
 | Catalog | 未註冊 · `available` 未設定 |
-| Home Featured | 不含（B0） |
-| All Tools | 未加入（B0；Link Integration 另批） |
+| Home Featured | 不含 |
+| All Tools | 未加入（Link Integration 另批） |
 | ToolAdSlot | disabled |
-| Related Tools | 容器結構 only；正式內容 → B1A |
-| Sitemap whitelist | **N/A for B0** · Deferred to Link Integration / public integration |
+| Outbound Related（頁內 tool-local） | Japanese Era Converter → Age Calculator → Lunar Date Converter |
+| Inbound Related | 未做（Link Integration 另批） |
+| Sitemap whitelist | **N/A** · Deferred to Link Integration / public integration |
 
 ---
 
 ## 4. 目前批次狀態
 
-### B0 — V2 Tool Page Scaffold（本輪）
+### B0 — V2 Tool Page Scaffold
+
+完成（checkpoint `6bd3b57`）。
+
+### B1A — Lower content（本輪）
 
 ```text
-EN／ZH routes
-ToolPageFrame production shell
-first-screen／stage 基礎結構（H1；無 short description）
-result 結構 placeholder「?」（非正式結果視覺）
-mobile primary capsule：disabled baseline（非 enabled no-op）
-lower content 容器（空）
-drawer／Related 容器（空）
-ToolAdSlot disabled
-Header／Footer via BaseLayout
-docs README＋canonical product-spec.md
+About／How to use／Common uses／FAQ
+FAQ JSON-LD（與可見 FAQ 同一資料）
+Related Tools：drawer + mobile lower rows（exactly 3）
+正式 meta title／description
+「那時的台灣」content baseline（tool-local data；不 render）
 ```
 
 ### 尚未開始
 
 ```text
-B1A — About／How to／FAQ／Related 正式內容／drawer 基礎互動補強
 B1B — 上方工具靜態畫面
-B2+ — 西曆／民國／和曆查詢、年歲、生肖、反查、Reset、Bottom Sheet
+B2+ — 西曆／民國／和曆查詢、年歲、生肖、反查、Reset、Bottom Sheet、「那時的台灣」結果顯示
 Link Integration
 ```
 
@@ -77,9 +77,9 @@ Link Integration
 ```text
 不修改 Header／Footer／BaseLayout／global background／preview baseline
 不修改 ToolPageFrame 或 shared Frame CSS
-不修改 toolsCatalog（B0）
-不修改 validate-sitemap.mjs（B0 N/A）
-不修改既有工具
-不做年份換算／生肖／年歲邏輯
+不修改 toolsCatalog
+不修改 validate-sitemap.mjs
+不修改既有工具 inbound Related
+不做年份換算／生肖／年歲 lookup／結果渲染
 不 commit／push／deploy 除非 Owner 明示
 ```
