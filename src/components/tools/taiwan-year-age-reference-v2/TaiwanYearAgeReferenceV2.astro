@@ -8,6 +8,7 @@ import RelatedToolRow from "../../RelatedToolRow.astro";
 import ResultSummary from "../shared/ResultSummary.astro";
 import ToolPageFrame from "../shared/ToolPageFrame.astro";
 import AdaptiveMobileEditor from "../shared/AdaptiveMobileEditor.astro";
+import AmeFieldError from "../shared/AmeFieldError.astro";
 import { catalogIconMap } from "../../../lib/catalogIcons";
 import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
@@ -414,18 +415,6 @@ const modeSwitchIconHtml =
 			<span hidden></span>
 			<div slot="content" class="tyar-ame-form" data-tyar-ame-form>
 				<div class="tyar-ame-panel" data-tyar-ame-panel="year">
-					<button
-						type="button"
-						class="tool-mode-switch"
-						data-tyar-ame-query-switch="zodiac"
-						disabled
-						aria-disabled="true"
-						tabindex="-1"
-					>
-						<Fragment set:html={modeSwitchIconHtml} />
-						<span>{m.switchToZodiacLookup}</span>
-					</button>
-
 					<div
 						class="tyar-mode-group"
 						role="group"
@@ -464,85 +453,105 @@ const modeSwitchIconHtml =
 						</button>
 					</div>
 
-					<div class="tyar-field-wrap" data-tyar-ame-field="gregorian">
-						<div class="tyar-field-shell">
-							<span class="tyar-field-prefix">{m.gregorianPrefix}</span>
-							<span class="tyar-field-divider" aria-hidden="true"></span>
-							<input
-								type="text"
-								class="tyar-year-input"
-								data-tyar-ame-gregorian-year
-								inputmode="numeric"
-								disabled
-								readonly
-								tabindex="-1"
-								aria-label={m.gregorianYearAriaLabel}
-								placeholder={m.gregorianYearPlaceholder}
-								value=""
-							/>
-						</div>
+					{/* 年份欄：JEC／Lunar AME setting-row，非 Desktop compound field */}
+					<div class="tyar-ame-field-block" data-tyar-ame-field="gregorian">
+						<button
+							type="button"
+							class="ame-setting-row ame-numeric-field tyar-ame-year-row"
+							data-ame-numeric-field="gregorianYear"
+							data-ame-active="false"
+							disabled
+							aria-disabled="true"
+							tabindex="-1"
+							aria-label={m.gregorianYearAriaLabel}
+							aria-invalid="false"
+							aria-describedby="ame-field-error-gregorianYear"
+						>
+							<span class="ame-setting-label ame-numeric-label">{m.gregorianPrefix}</span>
+							<span class="ame-setting-control">
+								<span
+									class="ame-numeric-value ame-numeric-value--placeholder"
+									data-ame-numeric-value
+									data-tyar-ame-gregorian-year
+									data-placeholder={m.gregorianYearPlaceholder}
+								>
+									{m.gregorianYearPlaceholder}
+								</span>
+								<AmeFieldError fieldId="gregorianYear" />
+							</span>
+						</button>
 					</div>
-					<div class="tyar-field-wrap" data-tyar-ame-field="minguo" hidden>
-						<div class="tyar-field-shell">
-							<span class="tyar-field-prefix">{m.minguoPrefix}</span>
-							<span class="tyar-field-divider" aria-hidden="true"></span>
-							<input
-								type="text"
-								class="tyar-year-input"
-								data-tyar-ame-minguo-year
-								inputmode="numeric"
-								disabled
-								readonly
-								tabindex="-1"
-								aria-label={m.minguoYearAriaLabel}
-								placeholder={m.minguoYearPlaceholder}
-								value=""
-							/>
-						</div>
+					<div class="tyar-ame-field-block" data-tyar-ame-field="minguo" hidden>
+						<button
+							type="button"
+							class="ame-setting-row ame-numeric-field tyar-ame-year-row"
+							data-ame-numeric-field="minguoYear"
+							data-ame-active="false"
+							disabled
+							aria-disabled="true"
+							tabindex="-1"
+							aria-label={m.minguoYearAriaLabel}
+							aria-invalid="false"
+							aria-describedby="ame-field-error-minguoYear"
+						>
+							<span class="ame-setting-label ame-numeric-label">{m.minguoPrefix}</span>
+							<span class="ame-setting-control">
+								<span
+									class="ame-numeric-value ame-numeric-value--placeholder"
+									data-ame-numeric-value
+									data-tyar-ame-minguo-year
+									data-placeholder={m.minguoYearPlaceholder}
+								>
+									{m.minguoYearPlaceholder}
+								</span>
+								<AmeFieldError fieldId="minguoYear" />
+							</span>
+						</button>
 					</div>
-					<div class="tyar-field-wrap" data-tyar-ame-field="era" hidden>
-						<div class="tyar-field-shell">
-							<button
-								type="button"
-								class="tyar-era-prefix"
-								disabled
-								aria-disabled="true"
-								tabindex="-1"
-								aria-label={m.eraSelectorAriaLabel}
-							>
-								<span data-tyar-ame-era-label>{m.eraShowA}</span>
-								<Fragment set:html={eraCaret} />
-							</button>
-							<span class="tyar-field-divider" aria-hidden="true"></span>
-							<input
-								type="text"
-								class="tyar-year-input"
-								data-tyar-ame-era-year
-								inputmode="numeric"
-								disabled
-								readonly
-								tabindex="-1"
-								aria-label={m.eraYearAriaLabel}
-								placeholder={m.eraYearPlaceholder}
-								value=""
-							/>
-						</div>
+					<div class="tyar-ame-field-block" data-tyar-ame-field="era" hidden>
+						<button
+							type="button"
+							class="ame-setting-row ame-numeric-field tyar-ame-year-row"
+							data-ame-numeric-field="eraYear"
+							data-ame-active="false"
+							disabled
+							aria-disabled="true"
+							tabindex="-1"
+							aria-label={m.eraYearAriaLabel}
+							aria-invalid="false"
+							aria-describedby="ame-field-error-eraYear"
+						>
+							<span class="ame-setting-label ame-numeric-label" data-tyar-ame-era-label>
+								{m.eraShowA}
+							</span>
+							<span class="ame-setting-control">
+								<span
+									class="ame-numeric-value ame-numeric-value--placeholder"
+									data-ame-numeric-value
+									data-tyar-ame-era-year
+									data-placeholder={m.eraYearPlaceholder}
+								>
+									{m.eraYearPlaceholder}
+								</span>
+								<AmeFieldError fieldId="eraYear" />
+							</span>
+						</button>
 					</div>
-				</div>
 
-				<div class="tyar-ame-panel" data-tyar-ame-panel="zodiac" hidden>
 					<button
 						type="button"
 						class="tool-mode-switch"
-						data-tyar-ame-query-switch="year"
+						data-tyar-ame-query-switch="zodiac"
 						disabled
 						aria-disabled="true"
 						tabindex="-1"
 					>
 						<Fragment set:html={modeSwitchIconHtml} />
-						<span>{m.switchToYearLookup}</span>
+						<span>{m.switchToZodiacLookup}</span>
 					</button>
+				</div>
 
+				<div class="tyar-ame-panel" data-tyar-ame-panel="zodiac" hidden>
 					<div class="tyar-ame-pair">
 						<div class="tyar-ame-field">
 							<span class="tyar-ame-field-label">{m.zodiacLabel}</span>
@@ -557,6 +566,18 @@ const modeSwitchIconHtml =
 							<span class="tyar-ame-field-value is-placeholder" data-tyar-ame-age></span>
 						</div>
 					</div>
+
+					<button
+						type="button"
+						class="tool-mode-switch"
+						data-tyar-ame-query-switch="year"
+						disabled
+						aria-disabled="true"
+						tabindex="-1"
+					>
+						<Fragment set:html={modeSwitchIconHtml} />
+						<span>{m.switchToYearLookup}</span>
+					</button>
 				</div>
 			</div>
 		</AdaptiveMobileEditor>
@@ -737,7 +758,29 @@ const modeSwitchIconHtml =
 			}
 
 			function setPrimary(text) {
-				if (primaryEl) primaryEl.textContent = text;
+				if (!primaryEl) {
+					refreshLive();
+					return;
+				}
+				/* Desktop 維持「甲｜乙」；Portrait 用 span 在 ｜ 處分成兩行並藏分隔符 */
+				var sep = text.indexOf("｜") !== -1 ? "｜" : text.indexOf(" | ") !== -1 ? " | " : "";
+				var parts = sep ? text.split(sep) : [];
+				if (parts.length === 2 && parts[0].trim() && parts[1].trim()) {
+					primaryEl.replaceChildren();
+					var first = document.createElement("span");
+					first.className = "tyar-primary-line";
+					first.textContent = parts[0].trim();
+					var divider = document.createElement("span");
+					divider.className = "tyar-primary-sep";
+					divider.setAttribute("aria-hidden", "true");
+					divider.textContent = sep;
+					var second = document.createElement("span");
+					second.className = "tyar-primary-line";
+					second.textContent = parts[1].trim();
+					primaryEl.append(first, divider, second);
+				} else {
+					primaryEl.textContent = text;
+				}
 				refreshLive();
 			}
 
@@ -781,13 +824,21 @@ const modeSwitchIconHtml =
 				setHidden(navEl, !showReverse);
 			}
 
+			function setAmeNumeric(el, value) {
+				if (!el) return;
+				var filled = Boolean(value);
+				var placeholder = el.getAttribute("data-placeholder") || "";
+				el.textContent = filled ? value : placeholder;
+				el.classList.toggle("ame-numeric-value--placeholder", !filled);
+			}
+
 			function setYearInputs(gregorian, minguo, era) {
 				if (gregorianInput) gregorianInput.value = gregorian;
 				if (minguoInput) minguoInput.value = minguo;
 				if (eraInput) eraInput.value = era;
-				if (ameGregorian) ameGregorian.value = gregorian;
-				if (ameMinguo) ameMinguo.value = minguo;
-				if (ameEra) ameEra.value = era;
+				setAmeNumeric(ameGregorian, gregorian);
+				setAmeNumeric(ameMinguo, minguo);
+				setAmeNumeric(ameEra, era);
 			}
 
 			function setZodiacAge(zodiac, age) {

@@ -63,6 +63,19 @@
 }
 
 /*
+ * Mobile Portrait 中文：兩行後放大主結果。
+ * 不改 Desktop／Landscape；EN 長句維持原字級以免溢出。
+ */
+@media (max-width: 767px) and (orientation: portrait) {
+	[data-taiwan-year-age-reference-v2][data-tyar-locale="zh"]:not(
+			[data-tyar-fixture="initial"]
+		)
+		[data-result-summary][data-rs-content="textual"] {
+		--rs-textual-primary-size: clamp(3.25rem, 13.5vw, 4.25rem);
+	}
+}
+
+/*
  * Desktop 主結果跟 result host／stage 寬走（Hours／DC cqi pattern）。
  * 10cqi＠640px = 4rem；stage 維持 640 時字級不變，真正變窄才微縮。
  * 不改 Mobile ≤767／layout=landscape。
@@ -150,8 +163,33 @@
 [data-taiwan-year-age-reference-v2] .tyar-year-mode[hidden],
 [data-taiwan-year-age-reference-v2] .tyar-zodiac-mode[hidden],
 [data-taiwan-year-age-reference-v2] .tyar-field-wrap[hidden],
+[data-taiwan-year-age-reference-v2] .tyar-ame-field-block[hidden],
 [data-taiwan-year-age-reference-v2] .tool-mode-switch[hidden] {
 	display: none;
+}
+
+/* Desktop／Landscape：主結果維持單行「甲｜乙」 */
+[data-taiwan-year-age-reference-v2] .tyar-primary-line,
+[data-taiwan-year-age-reference-v2] .tyar-primary-sep {
+	display: inline;
+}
+
+/*
+ * Mobile Portrait：在 ｜ 處刻意兩行，不顯示分隔符。
+ * 不改 Desktop（768+hover）與 Mobile Landscape。
+ */
+@media (max-width: 767px) and (orientation: portrait) {
+	[data-taiwan-year-age-reference-v2] .tyar-primary-sep {
+		display: none;
+	}
+
+	[data-taiwan-year-age-reference-v2] .tyar-primary-line {
+		display: block;
+		font-size: inherit;
+		font-weight: inherit;
+		line-height: 1.05;
+		white-space: nowrap;
+	}
 }
 
 [data-taiwan-year-age-reference-v2] .tyar-reverse-nav {
@@ -202,6 +240,14 @@
 @media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
 	[data-taiwan-year-age-reference-v2] .tyar-then-taiwan {
 		display: none;
+	}
+
+	/* 手機橫式拿掉分隔線；Portrait／Desktop 仍走 shared recipe */
+	[data-taiwan-year-age-reference-v2]
+		.tyar-result-meta.tool-textual-result-support-divider::before {
+		display: none;
+		content: none;
+		margin-block: 0;
 	}
 
 	[data-taiwan-year-age-reference-v2][data-tyar-fixture="reverse"] .tyar-primary-row,
@@ -482,18 +528,21 @@
 /* Mobile AME 內層（chrome 仍屬 AdaptiveMobileEditor）                          */
 /* -------------------------------------------------------------------------- */
 
-[data-ame-root]#tyar-ame .tyar-ame-form {
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-	min-width: 0;
+/*
+ * Portrait：隱藏可見標題（對齊 JEC／Hours／DC；dialog aria-label 仍在）。
+ * Landscape topbar 標題不改。
+ */
+[data-taiwan-year-age-reference-v2] [data-ame-root] .ame-portrait-header {
+	display: none;
 }
 
+[data-ame-root]#tyar-ame .tyar-ame-form,
 [data-ame-root]#tyar-ame .tyar-ame-panel {
 	display: flex;
 	flex-direction: column;
 	gap: 0.75rem;
 	min-width: 0;
+	width: 100%;
 }
 
 [data-ame-root]#tyar-ame .tyar-ame-panel[hidden] {
@@ -509,9 +558,69 @@
 	opacity: 1;
 }
 
+/* Portrait sheet：西元／民國／和曆 100% 等寬；Desktop segmented 仍走 max-content */
 [data-ame-root]#tyar-ame .tyar-mode-group {
+	align-self: stretch;
+	width: 100%;
 	max-width: 100%;
-	align-self: center;
+	grid-auto-columns: minmax(0, 1fr);
+}
+
+[data-ame-root]#tyar-ame .tyar-ame-field-block {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	min-width: 0;
+	width: 100%;
+}
+
+/*
+ * 對齊 JEC year-row：AME Mixed／keypad 會把 .ame-setting-row 設成 subgrid，
+ * 表單不是 .ame-setting-stack，必須鎖回 100% flex row。
+ */
+[data-ame-root]#tyar-ame .tyar-ame-year-row.ame-setting-row,
+[data-ame-root]#tyar-ame[data-ame-density="mixed"] .tyar-ame-year-row.ame-setting-row,
+[data-ame-root]#tyar-ame[data-ame-keypad-visible="true"] .tyar-ame-year-row.ame-setting-row,
+[data-ame-root]#tyar-ame[data-ame-keypad-visible="true"][data-ame-density="mixed"]
+	.tyar-ame-year-row.ame-setting-row {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: row;
+	grid-column: auto;
+	grid-template-columns: none;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 0.75rem;
+	margin: 0;
+	min-width: 0;
+	width: 100%;
+	max-width: 100%;
+}
+
+[data-ame-root]#tyar-ame .tyar-ame-year-row .ame-setting-label {
+	flex: 0 0 auto;
+	width: auto;
+	max-width: none;
+}
+
+[data-ame-root]#tyar-ame .tyar-ame-year-row .ame-setting-control {
+	flex: 1 1 auto;
+	min-width: 0;
+	justify-content: flex-start;
+	gap: 0.25rem;
+}
+
+/* 年份值對齊 TALC year／Desktop year（0.9375rem），不走 keypad 1.25rem */
+[data-ame-root]#tyar-ame .tyar-ame-year-row .ame-numeric-value {
+	min-width: 4ch;
+	min-height: 1.25rem;
+	font-size: 0.9375rem;
+	line-height: 1.25rem;
+}
+
+[data-ame-root]#tyar-ame .tyar-ame-year-row:disabled {
+	cursor: default;
+	opacity: 1;
 }
 
 [data-ame-root]#tyar-ame .tyar-ame-pair {
