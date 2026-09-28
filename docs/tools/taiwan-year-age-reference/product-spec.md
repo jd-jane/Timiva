@@ -156,17 +156,15 @@ Important Dates / 重要日子
 
 分隔線
 
-從一個年份開始，看看它的年代對照、
-年歲與那時的台灣。支援 1862 年至今年。
+從一個年份開始，看看年歲與那時的台灣（支援 1862 年至今年）。
 ```
 
 ### 初始輸入狀態
 
 ```text
-預設模式：西曆
+預設 query mode：Year lookup
+預設曆法：西曆
 年份：空白
-生肖：未選
-大約年齡：空白
 結果：？
 ```
 
@@ -244,24 +242,42 @@ invalid
 
 ---
 
-## 8. Desktop 模糊反查
+## 8. 查詢模式
 
-主要年份輸入下方放一組輕量 disclosure：
+兩個互斥 query modes，一次只顯示一套輸入。
 
-```text
-不確定年份？用生肖與大約年齡找找看　＋
-```
+### 8.1 Year lookup mode（default）
 
-整組皆可點擊，不只 `＋` icon 可點。
-
-### 展開後
-
-Desktop 使用並排輸入：
+顯示：
 
 ```text
-生肖         大約幾歲
-[ 鼠 ▾ ]    [ 90 ]
+西元｜民國｜和曆
+對應年份 input
+切換為生肖反查
 ```
+
+不顯示生肖、大約幾歲。
+
+### 8.2 Zodiac lookup mode
+
+顯示：
+
+```text
+生肖
+大約幾歲
+切換為年份查詢
+```
+
+不顯示西元／民國／和曆 segmented control、年份 input。
+
+Switch copy：
+
+```text
+ZH：切換為生肖反查／切換為年份查詢
+EN：Switch to zodiac lookup／Switch to year lookup
+```
+
+視覺沿用國曆農曆轉換「切換為……輸入」Conversion／Mode Switch recipe。
 
 生肖下拉固定十二生肖：
 
@@ -300,34 +316,22 @@ Mobile 不把完整輸入表單直接放在第一屏。
 查詢年份
 ```
 
-點擊後開啟 Bottom Sheet。
+點擊後開啟 Bottom Sheet。一次只顯示一套輸入。
 
-### 9.1 Mobile Bottom Sheet 第一區
-
-主要年份：
+### 9.1 Year lookup mode（default）
 
 ```text
-西曆｜民國｜和曆
-
+西元｜民國｜和曆
 對應年份輸入
+切換為生肖反查
 ```
 
-### 9.2 Mobile Bottom Sheet 第二區
-
-標題：
-
-```text
-不確定年份？
-```
-
-下方直接顯示：
+### 9.2 Zodiac lookup mode
 
 ```text
 生肖          大約幾歲
-[ 鼠 ▾ ]     [ 90 ]
+切換為年份查詢
 ```
-
-不需要另外展開。
 
 ### 9.3 Sheet 底部
 
@@ -402,7 +406,7 @@ valid → invalid 時：
 次要資訊：
 
 ```text
-庚午・馬年｜今年約 96 歲
+庚午・馬年・今年約 96 歲
 ```
 
 第三層：
@@ -439,7 +443,7 @@ valid → invalid 時：
 次要資訊：
 
 ```text
-丙寅・虎年｜今年約 40 歲
+丙寅・虎年・今年約 40 歲
 ```
 
 不因為版面需要而硬補：
@@ -518,7 +522,7 @@ FAQ 補充：
 次要結果格式：
 
 ```text
-庚午・馬年｜今年約 96 歲
+庚午・馬年・今年約 96 歲
 ```
 
 不另外加：
@@ -1058,6 +1062,8 @@ Outbound Related 三列（頁內 tool-local）
 ---
 
 ## 34. B1B 待確認項目
+
+B1B static visual 已落地，交 Owner Visual Review。年代背景在 Desktop／Portrait **只顯示一句文案，不加「那時的台灣」標題**；Mobile Landscape 整段隱藏。下列項目仍不鎖死：
 
 以下屬靜態視覺階段：
 

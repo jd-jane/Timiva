@@ -1,17 +1,20 @@
 ---
 /**
  * Taiwan Year & Age Reference V2 — ToolPageFrame adopter.
- * B0: shell scaffold.
- * B1A: lower content + Related Tools + FAQ JSON-LD.
- * 不做 B1B 靜態畫面、B2 互動／計算。
+ * B0: shell · B1A: lower content · B1B: 上方靜態畫面／query fixture。
+ * 不做 B2 計算／interaction。
  */
 import RelatedToolRow from "../../RelatedToolRow.astro";
+import ResultSummary from "../shared/ResultSummary.astro";
 import ToolPageFrame from "../shared/ToolPageFrame.astro";
+import AdaptiveMobileEditor from "../shared/AdaptiveMobileEditor.astro";
 import { catalogIconMap } from "../../../lib/catalogIcons";
 import { buildFaqPageJsonLd } from "../../../lib/buildFaqPageJsonLd";
 import { getLocalizedPath, type Locale } from "../../../i18n/config";
 import { getMessages } from "../../../i18n/messages";
 import { getCatalogTool, type CatalogToolId } from "../../../data/toolsCatalog";
+import "../../../styles/tools/taiwan-year-age-reference-v2.css";
+import "../../../styles/tools/adaptive-mobile-editor.css";
 
 interface Props {
 	locale?: Locale;
@@ -50,12 +53,42 @@ const relatedToolItems = declaredRelatedIds
 			icon: catalogIconMap[tool.id],
 		};
 	});
+
+const rsPrimary = {
+	text: m.resultPlaceholder,
+	ariaLabel: m.resultsLabel,
+};
+
+const eraCaret = `<svg class="tyar-era-caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.25 6 7.75l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
+const modeSwitchIconHtml =
+	'<svg class="tool-mode-switch-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M5 2.75v10.5M5 13.25 2.6 10.85M5 13.25l2.4-2.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path><path d="M11 13.25V2.75M11 2.75 8.6 5.15M11 2.75l2.4 2.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
 ---
 
 <div
 	data-taiwan-year-age-reference-v2
 	data-tyar-locale={locale === "zh" ? "zh" : "en"}
-	data-tyar-phase="b1a-lower-content"
+	data-tyar-phase="b1b-static-visual"
+	data-tyar-fixture="initial"
+	data-tyar-query-mode="year"
+	data-tyar-fx-year-primary={m.fixtureYear1930Primary}
+	data-tyar-fx-year-secondary={m.fixtureYear1930Secondary}
+	data-tyar-fx-then-taiwan={m.fixtureThenTaiwan}
+	data-tyar-fx-reverse-primary={m.fixtureReversePrimary}
+	data-tyar-fx-reverse-secondary={m.fixtureReverseSecondary}
+	data-tyar-fx-gregorian-year={m.fixtureGregorianYear}
+	data-tyar-fx-minguo-year={m.fixtureMinguoYear}
+	data-tyar-fx-era-year={m.fixtureEraYear}
+	data-tyar-fx-reverse-gregorian-year={m.fixtureReverseGregorianYear}
+	data-tyar-fx-reverse-prev={m.fixtureReversePrevYear}
+	data-tyar-fx-reverse-next={m.fixtureReverseNextYear}
+	data-tyar-fx-zodiac={m.fixtureZodiacValue}
+	data-tyar-fx-age={m.fixtureAgeValue}
+	data-tyar-fx-gregorian-1895-primary={m.fixtureGregorian1895Primary}
+	data-tyar-fx-minguo-1-primary={m.fixtureMinguo1Primary}
+	data-tyar-fx-era-meiji-45-primary={m.fixtureEraMeiji45Primary}
+	data-tyar-copy-placeholder={m.resultPlaceholder}
+	data-tyar-copy-reset={m.resetLabel}
+	data-tyar-copy-done={m.doneLabel}
 >
 	<ToolPageFrame
 		locale={locale}
@@ -67,29 +100,466 @@ const relatedToolItems = declaredRelatedIds
 		{/* 第一屏 H1：不放 short description */}
 		<Fragment slot="title">{m.kicker}</Fragment>
 
-		{/* 結果區結構 placeholder：非正式 ResultSummary／正式視覺（B1B） */}
+		<div slot="result" class="tyar-result-host">
+			{/*
+			  Initial「？」字級：blocking inline 對齊 TALC empty-result，
+			  避免 shared textual 5rem 先 paint。
+			*/}
+			<style is:inline>
+				[data-taiwan-year-age-reference-v2][data-tyar-fixture="initial"]
+					[data-result-summary][data-rs-content="textual"],
+				[data-taiwan-year-age-reference-v2][data-tyar-fixture="initial"]
+					[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+				[data-taiwan-year-age-reference-v2][data-tyar-fixture="initial"]
+					[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+					--rs-textual-primary-size: clamp(7.5rem, 38vw, 10.5rem);
+				}
+				@media (min-width: 768px) {
+					[data-taiwan-year-age-reference-v2][data-tyar-fixture="initial"]
+						[data-result-summary][data-rs-content="textual"],
+					[data-taiwan-year-age-reference-v2][data-tyar-fixture="initial"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+					[data-taiwan-year-age-reference-v2][data-tyar-fixture="initial"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"] {
+						--rs-textual-primary-size: 13rem;
+					}
+				}
+				@media (orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
+					[data-taiwan-year-age-reference-v2][data-tyar-fixture="initial"]
+						[data-result-summary][data-rs-content="textual"],
+					[data-taiwan-year-age-reference-v2][data-tyar-fixture="initial"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="desktop"],
+					[data-taiwan-year-age-reference-v2][data-tyar-fixture="initial"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="portrait"],
+					[data-taiwan-year-age-reference-v2][data-tyar-fixture="initial"]
+						[data-result-summary][data-rs-content="textual"][data-rs-layout="landscape"] {
+						--rs-textual-primary-size: 3.75rem;
+					}
+				}
+			</style>
+
+			<div class="tyar-primary-row">
+				<button
+					type="button"
+					class="tyar-year-chip tyar-landscape-nav"
+					data-tyar-chip="prev"
+					disabled
+					tabindex="-1"
+				>
+					← {m.fixtureReversePrevYear}
+				</button>
+				<ResultSummary
+					content="textual"
+					layout="desktop"
+					variant="spacious"
+					ariaLabel={m.resultsLabel}
+					primary={rsPrimary}
+					weekday={null}
+					support={null}
+					class="tyar-result-summary"
+				/>
+				<button
+					type="button"
+					class="tyar-year-chip tyar-landscape-nav"
+					data-tyar-chip="next"
+					disabled
+					tabindex="-1"
+				>
+					{m.fixtureReverseNextYear} →
+				</button>
+			</div>
+
+			<div class="tyar-result-meta tool-textual-result-support-divider">
+				<p class="tyar-lead" data-tyar-lead>{m.resultInitialSupport}</p>
+				<p class="tyar-then-taiwan" data-tyar-then-taiwan hidden></p>
+				<div class="tyar-reverse-nav" data-tyar-reverse-nav hidden>
+					<button
+						type="button"
+						class="tyar-year-chip"
+						data-tyar-chip="prev"
+						disabled
+						tabindex="-1"
+					>
+						← {m.fixtureReversePrevYear}
+					</button>
+					<p class="tyar-reverse-closest">{m.reverseClosest}</p>
+					<button
+						type="button"
+						class="tyar-year-chip"
+						data-tyar-chip="next"
+						disabled
+						tabindex="-1"
+					>
+						{m.fixtureReverseNextYear} →
+					</button>
+				</div>
+			</div>
+		</div>
+
+		{/* Desktop：Year lookup 或 Zodiac lookup（互斥 static）；Reset 維持原位 */}
 		<div
-			slot="result"
-			class="tyar-result-placeholder"
-			role="status"
-			aria-label={m.resultAriaLabel}
+			slot="desktopControls"
+			class="tyar-desktop-cluster tool-standard-pill-field-cluster"
+			aria-label={m.upperControlsAriaLabel}
 		>
-			<span class="tyar-result-placeholder__value">{m.resultPlaceholder}</span>
+			<div class="tyar-year-mode" data-tyar-year-mode>
+				<button
+					type="button"
+					class="tool-mode-switch"
+					data-tyar-query-switch="zodiac"
+					disabled
+					aria-disabled="true"
+					tabindex="-1"
+				>
+					<Fragment set:html={modeSwitchIconHtml} />
+					<span>{m.switchToZodiacLookup}</span>
+				</button>
+
+				<div class="tyar-mode-group" role="group" aria-label={m.modeGroupAriaLabel} data-tyar-mode-group>
+					<button
+						type="button"
+						class="tyar-mode-option is-active"
+						data-tyar-mode="gregorian"
+						disabled
+						aria-disabled="true"
+						aria-pressed="true"
+					>
+						{m.modeGregorian}
+					</button>
+					<button
+						type="button"
+						class="tyar-mode-option"
+						data-tyar-mode="minguo"
+						disabled
+						aria-disabled="true"
+						aria-pressed="false"
+					>
+						{m.modeMinguo}
+					</button>
+					<button
+						type="button"
+						class="tyar-mode-option"
+						data-tyar-mode="era"
+						disabled
+						aria-disabled="true"
+						aria-pressed="false"
+					>
+						{m.modeEra}
+					</button>
+				</div>
+
+				<div class="tyar-field-wrap" data-tyar-field="gregorian">
+					<div class="tyar-field-shell">
+						<span class="tyar-field-prefix">{m.gregorianPrefix}</span>
+						<span class="tyar-field-divider" aria-hidden="true"></span>
+						<input
+							type="text"
+							class="tyar-year-input"
+							data-tyar-gregorian-year
+							inputmode="numeric"
+							autocomplete="off"
+							spellcheck="false"
+							maxlength="4"
+							aria-label={m.gregorianYearAriaLabel}
+							placeholder={m.gregorianYearPlaceholder}
+							disabled
+							readonly
+							tabindex="-1"
+							value=""
+						/>
+					</div>
+				</div>
+
+				<div class="tyar-field-wrap" data-tyar-field="minguo" hidden>
+					<div class="tyar-field-shell">
+						<span class="tyar-field-prefix">{m.minguoPrefix}</span>
+						<span class="tyar-field-divider" aria-hidden="true"></span>
+						<input
+							type="text"
+							class="tyar-year-input"
+							data-tyar-minguo-year
+							inputmode="numeric"
+							autocomplete="off"
+							spellcheck="false"
+							maxlength="3"
+							aria-label={m.minguoYearAriaLabel}
+							placeholder={m.minguoYearPlaceholder}
+							disabled
+							readonly
+							tabindex="-1"
+							value=""
+						/>
+					</div>
+				</div>
+
+				<div class="tyar-field-wrap" data-tyar-field="era" hidden>
+					<div class="tyar-field-shell">
+						<button
+							type="button"
+							class="tyar-era-prefix"
+							disabled
+							aria-disabled="true"
+							aria-label={m.eraSelectorAriaLabel}
+							tabindex="-1"
+						>
+							<span data-tyar-era-label>{m.eraShowA}</span>
+							<Fragment set:html={eraCaret} />
+						</button>
+						<span class="tyar-field-divider" aria-hidden="true"></span>
+						<input
+							type="text"
+							class="tyar-year-input"
+							data-tyar-era-year
+							inputmode="numeric"
+							autocomplete="off"
+							spellcheck="false"
+							maxlength="2"
+							aria-label={m.eraYearAriaLabel}
+							placeholder={m.eraYearPlaceholder}
+							disabled
+							readonly
+							tabindex="-1"
+							value=""
+						/>
+					</div>
+				</div>
+			</div>
+
+			<div class="tyar-zodiac-mode" data-tyar-zodiac-mode hidden>
+				<button
+					type="button"
+					class="tool-mode-switch"
+					data-tyar-query-switch="year"
+					disabled
+					aria-disabled="true"
+					tabindex="-1"
+				>
+					<Fragment set:html={modeSwitchIconHtml} />
+					<span>{m.switchToYearLookup}</span>
+				</button>
+
+				<div class="tyar-zodiac-row">
+					<div class="tyar-mini-field">
+						<div class="tyar-field-shell">
+							<select
+								class="tyar-zodiac-select is-placeholder"
+								data-tyar-zodiac
+								disabled
+								aria-label={m.zodiacLabel}
+								tabindex="-1"
+							>
+								<option value="">{m.zodiacPlaceholder}</option>
+								{m.zodiacOptions.map((item) => <option value={item}>{item}</option>)}
+							</select>
+							<span class="tyar-select-caret" aria-hidden="true">
+								<Fragment set:html={eraCaret} />
+							</span>
+						</div>
+					</div>
+					<div class="tyar-mini-field">
+						<div class="tyar-field-shell">
+							<input
+								type="text"
+								class="tyar-age-input"
+								data-tyar-age
+								inputmode="numeric"
+								autocomplete="off"
+								spellcheck="false"
+								aria-label={m.ageLabel}
+								placeholder={m.agePlaceholder}
+								disabled
+								readonly
+								tabindex="-1"
+								value=""
+							/>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<button
+				type="button"
+				class="tool-text-action--muted tyar-reset"
+				disabled
+				aria-disabled="true"
+				tabindex="-1"
+			>
+				{m.resetLabel}
+			</button>
 		</div>
 
 		{/*
-		  Frame adopter contract 需要 mobilePrimaryControl。
-		  維持 B0 disabled baseline（非 enabled no-op）。
+		  手機第一屏：capsule only。
+		  填「查詢年份」文案，維持 disabled（不開 sheet）。
 		*/}
 		<button
 			slot="mobilePrimaryControl"
 			type="button"
 			class="preview-tool-control-btn tool-primary-entry-capsule"
+			data-tyar-capsule
 			disabled
 			aria-disabled="true"
-			aria-label={m.mobilePrimaryControlPlaceholderAriaLabel}
+			aria-label={m.capsuleLabel}
 		>
+			{m.capsuleLabel}
 		</button>
+
+		<AdaptiveMobileEditor
+			slot="ame"
+			id="tyar-ame"
+			ariaLabel={m.sheetAriaLabel}
+			title={m.sheetTitle}
+		>
+			{/* 蓋掉 AME 預設 lab fixture 文案 */}
+			<span hidden></span>
+			<div slot="content" class="tyar-ame-form" data-tyar-ame-form>
+				<div class="tyar-ame-panel" data-tyar-ame-panel="year">
+					<button
+						type="button"
+						class="tool-mode-switch"
+						data-tyar-ame-query-switch="zodiac"
+						disabled
+						aria-disabled="true"
+						tabindex="-1"
+					>
+						<Fragment set:html={modeSwitchIconHtml} />
+						<span>{m.switchToZodiacLookup}</span>
+					</button>
+
+					<div
+						class="tyar-mode-group"
+						role="group"
+						aria-label={m.modeGroupAriaLabel}
+						data-tyar-ame-mode-group
+					>
+						<button
+							type="button"
+							class="tyar-mode-option is-active"
+							data-tyar-ame-mode="gregorian"
+							disabled
+							aria-disabled="true"
+							aria-pressed="true"
+						>
+							{m.modeGregorian}
+						</button>
+						<button
+							type="button"
+							class="tyar-mode-option"
+							data-tyar-ame-mode="minguo"
+							disabled
+							aria-disabled="true"
+							aria-pressed="false"
+						>
+							{m.modeMinguo}
+						</button>
+						<button
+							type="button"
+							class="tyar-mode-option"
+							data-tyar-ame-mode="era"
+							disabled
+							aria-disabled="true"
+							aria-pressed="false"
+						>
+							{m.modeEra}
+						</button>
+					</div>
+
+					<div class="tyar-field-wrap" data-tyar-ame-field="gregorian">
+						<div class="tyar-field-shell">
+							<span class="tyar-field-prefix">{m.gregorianPrefix}</span>
+							<span class="tyar-field-divider" aria-hidden="true"></span>
+							<input
+								type="text"
+								class="tyar-year-input"
+								data-tyar-ame-gregorian-year
+								inputmode="numeric"
+								disabled
+								readonly
+								tabindex="-1"
+								aria-label={m.gregorianYearAriaLabel}
+								placeholder={m.gregorianYearPlaceholder}
+								value=""
+							/>
+						</div>
+					</div>
+					<div class="tyar-field-wrap" data-tyar-ame-field="minguo" hidden>
+						<div class="tyar-field-shell">
+							<span class="tyar-field-prefix">{m.minguoPrefix}</span>
+							<span class="tyar-field-divider" aria-hidden="true"></span>
+							<input
+								type="text"
+								class="tyar-year-input"
+								data-tyar-ame-minguo-year
+								inputmode="numeric"
+								disabled
+								readonly
+								tabindex="-1"
+								aria-label={m.minguoYearAriaLabel}
+								placeholder={m.minguoYearPlaceholder}
+								value=""
+							/>
+						</div>
+					</div>
+					<div class="tyar-field-wrap" data-tyar-ame-field="era" hidden>
+						<div class="tyar-field-shell">
+							<button
+								type="button"
+								class="tyar-era-prefix"
+								disabled
+								aria-disabled="true"
+								tabindex="-1"
+								aria-label={m.eraSelectorAriaLabel}
+							>
+								<span data-tyar-ame-era-label>{m.eraShowA}</span>
+								<Fragment set:html={eraCaret} />
+							</button>
+							<span class="tyar-field-divider" aria-hidden="true"></span>
+							<input
+								type="text"
+								class="tyar-year-input"
+								data-tyar-ame-era-year
+								inputmode="numeric"
+								disabled
+								readonly
+								tabindex="-1"
+								aria-label={m.eraYearAriaLabel}
+								placeholder={m.eraYearPlaceholder}
+								value=""
+							/>
+						</div>
+					</div>
+				</div>
+
+				<div class="tyar-ame-panel" data-tyar-ame-panel="zodiac" hidden>
+					<button
+						type="button"
+						class="tool-mode-switch"
+						data-tyar-ame-query-switch="year"
+						disabled
+						aria-disabled="true"
+						tabindex="-1"
+					>
+						<Fragment set:html={modeSwitchIconHtml} />
+						<span>{m.switchToYearLookup}</span>
+					</button>
+
+					<div class="tyar-ame-pair">
+						<div class="tyar-ame-field">
+							<span class="tyar-ame-field-label">{m.zodiacLabel}</span>
+							<span
+								class="tyar-ame-field-value is-placeholder"
+								data-tyar-ame-zodiac
+								data-placeholder={m.zodiacPlaceholder}>{m.zodiacPlaceholder}</span
+							>
+						</div>
+						<div class="tyar-ame-field">
+							<span class="tyar-ame-field-label">{m.ageLabel}</span>
+							<span class="tyar-ame-field-value is-placeholder" data-tyar-ame-age></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</AdaptiveMobileEditor>
 
 		<Fragment slot="drawerRelated">
 			{
@@ -192,6 +662,243 @@ const relatedToolItems = declaredRelatedIds
 			</section>
 		</Fragment>
 	</ToolPageFrame>
+
+	{/*
+	  Fixture bootstrap 必須在 ToolPageFrame 之後：
+	  靜態建置下 Astro.url 常無 query；Owner review 以 ?tyarFixture= / ?tyarSheet=open 切態。
+	*/}
+	<script is:inline>
+		(function () {
+			var root = document.querySelector("[data-taiwan-year-age-reference-v2]");
+			if (!root) return;
+
+			var allowed = {
+				initial: true,
+				"year-1930": true,
+				"minguo-1930": true,
+				"era-1930": true,
+				reverse: true,
+				"reverse-expanded": true,
+				"gregorian-1895": true,
+				"minguo-1": true,
+				"era-meiji-45": true,
+			};
+
+			var fixture = "initial";
+			var sheetOpen = false;
+			try {
+				var params = new URLSearchParams(location.search);
+				var raw = params.get("tyarFixture") || "initial";
+				if (allowed[raw]) fixture = raw;
+				sheetOpen = params.get("tyarSheet") === "open";
+			} catch (_) {}
+
+			root.setAttribute("data-tyar-fixture", fixture);
+
+			var attr = function (name) {
+				return root.getAttribute(name) || "";
+			};
+
+			var primaryEl = root.querySelector('[data-rs-value="primary"]');
+			var liveEl = root.querySelector("[data-result-summary] [aria-live]");
+			var leadEl = root.querySelector("[data-tyar-lead]");
+			var weekdayEl = root.querySelector("[data-rs-weekday]");
+			var thenEl = root.querySelector("[data-tyar-then-taiwan]");
+			var navEl = root.querySelector("[data-tyar-reverse-nav]");
+			var gregorianInput = root.querySelector("[data-tyar-gregorian-year]");
+			var minguoInput = root.querySelector("[data-tyar-minguo-year]");
+			var eraInput = root.querySelector("[data-tyar-era-year]");
+			var ameGregorian = root.querySelector("[data-tyar-ame-gregorian-year]");
+			var ameMinguo = root.querySelector("[data-tyar-ame-minguo-year]");
+			var ameEra = root.querySelector("[data-tyar-ame-era-year]");
+			var zodiacSelect = root.querySelector("[data-tyar-zodiac]");
+			var ageInput = root.querySelector("[data-tyar-age]");
+			var ameZodiac = root.querySelector("[data-tyar-ame-zodiac]");
+			var ameAge = root.querySelector("[data-tyar-ame-age]");
+			var yearMode = root.querySelector("[data-tyar-year-mode]");
+			var zodiacMode = root.querySelector("[data-tyar-zodiac-mode]");
+			var ameYearPanel = root.querySelector('[data-tyar-ame-panel="year"]');
+			var ameZodiacPanel = root.querySelector('[data-tyar-ame-panel="zodiac"]');
+			var ameRoot = document.getElementById("tyar-ame");
+
+			function setHidden(el, hidden) {
+				if (!el) return;
+				el.hidden = hidden;
+			}
+
+			function refreshLive() {
+				if (!liveEl) return;
+				var parts = [];
+				if (primaryEl && primaryEl.textContent) parts.push(primaryEl.textContent);
+				if (weekdayEl && !weekdayEl.hidden && weekdayEl.textContent) {
+					parts.push(weekdayEl.textContent);
+				}
+				liveEl.textContent = parts.join(" ");
+			}
+
+			function setPrimary(text) {
+				if (primaryEl) primaryEl.textContent = text;
+				refreshLive();
+			}
+
+			function setWeekday(text) {
+				if (!weekdayEl) return;
+				weekdayEl.textContent = text || "";
+				weekdayEl.hidden = !text;
+				refreshLive();
+			}
+
+			function setMode(mode) {
+				root.querySelectorAll("[data-tyar-mode], [data-tyar-ame-mode]").forEach(function (btn) {
+					var key = btn.getAttribute("data-tyar-mode") || btn.getAttribute("data-tyar-ame-mode");
+					var on = key === mode;
+					btn.classList.toggle("is-active", on);
+					btn.setAttribute("aria-pressed", on ? "true" : "false");
+				});
+				root.querySelectorAll("[data-tyar-field], [data-tyar-ame-field]").forEach(function (wrap) {
+					var key = wrap.getAttribute("data-tyar-field") || wrap.getAttribute("data-tyar-ame-field");
+					wrap.hidden = key !== mode;
+				});
+			}
+
+			function setQueryMode(mode) {
+				var isZodiac = mode === "zodiac";
+				root.setAttribute("data-tyar-query-mode", isZodiac ? "zodiac" : "year");
+				setHidden(yearMode, isZodiac);
+				setHidden(zodiacMode, !isZodiac);
+				setHidden(ameYearPanel, isZodiac);
+				setHidden(ameZodiacPanel, !isZodiac);
+			}
+
+			function setFilledMeta(secondary, thenTaiwan, showReverse) {
+				setHidden(leadEl, true);
+				setWeekday(secondary);
+				if (thenEl) {
+					thenEl.textContent = thenTaiwan;
+					/* reverse：藏年代句，保留 result-meta 既有 divider */
+					setHidden(thenEl, showReverse || !thenTaiwan);
+				}
+				setHidden(navEl, !showReverse);
+			}
+
+			function setYearInputs(gregorian, minguo, era) {
+				if (gregorianInput) gregorianInput.value = gregorian;
+				if (minguoInput) minguoInput.value = minguo;
+				if (eraInput) eraInput.value = era;
+				if (ameGregorian) ameGregorian.value = gregorian;
+				if (ameMinguo) ameMinguo.value = minguo;
+				if (ameEra) ameEra.value = era;
+			}
+
+			function setZodiacAge(zodiac, age) {
+				if (zodiacSelect) {
+					zodiacSelect.value = zodiac || "";
+					zodiacSelect.classList.toggle("is-placeholder", !zodiac);
+				}
+				if (ageInput) ageInput.value = age || "";
+				if (ameZodiac) {
+					ameZodiac.textContent = zodiac || ameZodiac.getAttribute("data-placeholder") || "";
+					ameZodiac.classList.toggle("is-placeholder", !zodiac);
+				}
+				if (ameAge) {
+					ameAge.textContent = age || "";
+					ameAge.classList.toggle("is-placeholder", !age);
+				}
+			}
+
+			var placeholder = attr("data-tyar-copy-placeholder") || "?";
+			var yearPrimary = attr("data-tyar-fx-year-primary");
+			var yearSecondary = attr("data-tyar-fx-year-secondary");
+			var thenTaiwan = attr("data-tyar-fx-then-taiwan");
+			var reversePrimary = attr("data-tyar-fx-reverse-primary");
+			var reverseSecondary = attr("data-tyar-fx-reverse-secondary");
+			var gYear = attr("data-tyar-fx-gregorian-year");
+			var mYear = attr("data-tyar-fx-minguo-year");
+			var eYear = attr("data-tyar-fx-era-year");
+
+			setQueryMode("year");
+			setZodiacAge("", "");
+			setYearInputs("", "", "");
+			setMode("gregorian");
+			setHidden(leadEl, false);
+			setWeekday("");
+			setHidden(thenEl, true);
+			setHidden(navEl, true);
+			setPrimary(placeholder);
+
+			if (fixture === "year-1930") {
+				setPrimary(yearPrimary);
+				setFilledMeta(yearSecondary, thenTaiwan, false);
+				setYearInputs(gYear, mYear, eYear);
+				setMode("gregorian");
+				setQueryMode("year");
+			} else if (fixture === "minguo-1930") {
+				setPrimary(yearPrimary);
+				setFilledMeta(yearSecondary, thenTaiwan, false);
+				setYearInputs(gYear, mYear, eYear);
+				setMode("minguo");
+				setQueryMode("year");
+			} else if (fixture === "era-1930") {
+				setPrimary(yearPrimary);
+				setFilledMeta(yearSecondary, thenTaiwan, false);
+				setYearInputs(gYear, mYear, eYear);
+				setMode("era");
+				setQueryMode("year");
+			} else if (fixture === "reverse" || fixture === "reverse-expanded") {
+				setPrimary(reversePrimary);
+				setFilledMeta(reverseSecondary, thenTaiwan, true);
+				setYearInputs("", "", "");
+				setMode("gregorian");
+				setQueryMode("zodiac");
+			} else if (fixture === "gregorian-1895") {
+				setPrimary(attr("data-tyar-fx-gregorian-1895-primary"));
+				setFilledMeta(yearSecondary, thenTaiwan, false);
+				setYearInputs("1895", "", "");
+				setMode("gregorian");
+				setQueryMode("year");
+			} else if (fixture === "minguo-1") {
+				setPrimary(attr("data-tyar-fx-minguo-1-primary"));
+				setFilledMeta(yearSecondary, thenTaiwan, false);
+				setYearInputs("", "1", "");
+				setMode("minguo");
+				setQueryMode("year");
+			} else if (fixture === "era-meiji-45") {
+				setPrimary(attr("data-tyar-fx-era-meiji-45-primary"));
+				setFilledMeta(yearSecondary, thenTaiwan, false);
+				setYearInputs("", "", "45");
+				setMode("era");
+				setQueryMode("year");
+			}
+
+			if (fixture === "gregorian-1895") {
+				root.setAttribute("data-tyar-primary-tier", "long");
+			} else {
+				root.removeAttribute("data-tyar-primary-tier");
+			}
+
+			var resetLabel = attr("data-tyar-copy-reset");
+			var doneLabel = attr("data-tyar-copy-done");
+			if (ameRoot) {
+				if (resetLabel) {
+					ameRoot.querySelectorAll("[data-ame-reset]").forEach(function (el) {
+						el.textContent = resetLabel;
+					});
+				}
+				if (doneLabel) {
+					ameRoot.querySelectorAll("[data-ame-submit]").forEach(function (el) {
+						el.textContent = doneLabel;
+					});
+				}
+				if (sheetOpen) {
+					ameRoot.hidden = false;
+					ameRoot.setAttribute("data-ame-open", "true");
+					ameRoot.setAttribute("aria-hidden", "false");
+					var shell = ameRoot.querySelector("[data-ame-shell]");
+					if (shell) shell.setAttribute("aria-hidden", "false");
+				}
+			}
+		})();
+	</script>
 
 	<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 </div>

@@ -1,8 +1,8 @@
 # Taiwan Year & Age Reference / 台灣年歲對照 — README
 
 > 建立日期：2026-09-19
-> 更新日期：2026-09-19（B1A）
-> 狀態：**B1A lower content** · Not Link Integrated · Not deployed
+> 更新日期：2026-09-20（B1B）
+> 狀態：**B1B static visual · Owner Visual Review** · Not Link Integrated · Not deployed
 > Canonical product spec：`docs/tools/taiwan-year-age-reference/product-spec.md`
 > Phase：V1.6 Taiwan Local Tools · 第二支
 
@@ -52,21 +52,24 @@ ZH：台灣年歲對照
 
 完成（checkpoint `6bd3b57`）。
 
-### B1A — Lower content（本輪）
+### B1A — Lower content
+
+完成（checkpoint `9652396`）。
+
+### B1B — 上方靜態畫面（本輪）
 
 ```text
-About／How to use／Common uses／FAQ
-FAQ JSON-LD（與可見 FAQ 同一資料）
-Related Tools：drawer + mobile lower rows（exactly 3）
-正式 meta title／description
-「那時的台灣」content baseline（tool-local data；不 render）
+ResultSummary textual（initial「？」沿用 TALC empty-result）
+Desktop cluster：Year lookup 或 Zodiac lookup（互斥；Lunar mode switch recipe）＋Reset
+Mobile capsule「查詢年份」＋ AME 靜態 sheet
+query fixture：?tyarFixture= / ?tyarSheet=open
+年代背景只顯示一句文案，無標題
 ```
 
 ### 尚未開始
 
 ```text
-B1B — 上方工具靜態畫面
-B2+ — 西曆／民國／和曆查詢、年歲、生肖、反查、Reset、Bottom Sheet、「那時的台灣」結果顯示
+B2+ — 西曆／民國／和曆查詢、年歲、生肖、反查、Reset、Bottom Sheet interaction、「那時的台灣」lookup
 Link Integration
 ```
 
