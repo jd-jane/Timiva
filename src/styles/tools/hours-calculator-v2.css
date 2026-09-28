@@ -31,6 +31,14 @@ body:has([data-hours-calculator-v2]) header {
 	backdrop-filter: blur(4px) saturate(150%);
 }
 
+/*
+ * General stage：fluid max 640（對齊 Frame）。
+ * 不因 768／900 切 448／512 階。不改共用 .preview-tool-stage 定義。
+ */
+[data-hours-calculator-v2] .hcv2-tool-stage.preview-tool-stage {
+	max-width: 640px;
+}
+
 /* 第一屏：沿用 V2 result-first baseline */
 [data-hours-calculator-v2] .preview-tool-main-section {
 	--preview-header-height: 3.75rem;
@@ -471,16 +479,6 @@ body:has([data-hours-calculator-v2]) header {
 }
 
 /*
- * 大型桌機（對齊 DC／Timiva desktop layout gate）：
- * stage 640px。不改共用 .preview-tool-stage 定義。
- */
-@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
-	[data-hours-calculator-v2] .hcv2-tool-stage.preview-tool-stage {
-		max-width: 640px;
-	}
-}
-
-/*
  * Desktop／中等桌機：主結果強制單行；僅當超出結果容器寬度時以 cqi 等比微縮（對齊 DC）。
  * - EN 最大 7rem；ZH 最大 5.5rem
  * - 公開 token＋data-rs-value；不改 shared ResultSummary
@@ -667,6 +665,11 @@ body:has([data-hours-calculator-v2]) header {
 		min-height: 0;
 		height: auto;
 		padding-block: 0;
+	}
+
+	/* L2：capability-scoped compact cap。不是 general 512 tier。 */
+	[data-hours-calculator-v2] .hcv2-tool-stage.preview-tool-stage {
+		max-width: min(100%, 32rem);
 	}
 
 	[data-hours-calculator-v2] .preview-tool-result-group {

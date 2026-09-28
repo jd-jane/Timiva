@@ -69,6 +69,8 @@ body:has([data-tool-page-frame]) footer {
 	flex-direction: column;
 	align-items: center;
 	width: 100%;
+	/* General stage：fluid max 640。不因 768／900 切 448／512 階。 */
+	max-width: 640px;
 }
 
 [data-tool-page-frame] .tpf-result-group {
@@ -122,13 +124,6 @@ body:has([data-tool-page-frame]) footer {
 
 	[data-tool-page-frame] .tpf-mobile-controls {
 		display: none;
-	}
-}
-
-/* 大型桌機 gate：stage 640px。不得套到 lower-content */
-@media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
-	[data-tool-page-frame] .tpf-stage.preview-tool-stage {
-		max-width: 640px;
 	}
 }
 
@@ -208,6 +203,8 @@ body:has([data-tool-page-frame]) footer {
 		align-items: center;
 		gap: 0.75rem;
 		min-height: 0;
+		/* L2：capability-scoped compact cap。不是 general 512 tier。 */
+		max-width: min(100%, 32rem);
 	}
 
 	[data-tool-page-frame] .tpf-desktop-controls {

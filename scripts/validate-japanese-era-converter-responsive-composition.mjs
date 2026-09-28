@@ -78,10 +78,30 @@ assert(
 	"JEC Desktop continuity toggles desktop cluster + mobile controls",
 );
 
-/* —— Spacious Desktop gate remains separate —— */
+/* —— General stage fluid 640；L2 landscape 32rem；not 768／900／height —— */
 assert(
-	css.includes("@media (min-width: 900px) and (min-height: 700px) and (hover: hover)"),
-	"JEC Spacious Desktop gate (900×700+hover) remains for stage 640 only",
+	/\[data-japanese-era-converter-v2\]\s+\.jecv2-tool-stage\.preview-tool-stage\s*\{[^}]*max-width:\s*640px/s.test(
+		css,
+	),
+	"JEC general stage is fluid max-width 640px",
+);
+assert(
+	!/max-w-md|md:max-w-lg/.test(astro),
+	"JEC stage markup has no general 448／512 Tailwind tier",
+);
+assert(
+	!/@media\s*\(\s*min-width:\s*900px\s*\)[^{]*\{[^}]*max-width:\s*640px/.test(css),
+	"JEC must not gate stage 640px behind min-width 900",
+);
+assert(
+	!/@media\s*\(\s*min-width:\s*900px\s*\)\s+and\s*\(\s*min-height:\s*700px\s*\)\s+and\s*\(\s*hover:\s*hover\s*\)\s*\{[^}]*max-width:\s*640px/.test(
+		css,
+	),
+	"JEC must not couple stage 640px to min-height:700",
+);
+assert(
+	/max-width:\s*min\(100%,\s*32rem\)/.test(css),
+	"JEC Mobile Landscape compact stage cap is 32rem",
 );
 
 /* —— Mobile Landscape full gate —— */

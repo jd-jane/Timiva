@@ -368,7 +368,7 @@ portrait 1fr / auto composition
 mobile primary-control placement
 capsule geometry（Frame 包一層保證，不依賴工具自己記得補尺寸）
 landscape compact composition（僅 Mobile Landscape gate；見 layout-system §6.0.3）
-desktop 640px Spacious gate（900×700+hover；≠ Desktop／Mobile composition）
+desktop 640px fluid max stage（≠ composition；不依賴 min-height:700；不因 768／900 切階）
 lower-content max-w-3xl
 first-screen → lower-content spacing
 drawer placement／chrome

@@ -86,10 +86,14 @@ assert(
 	"Lunar Desktop continuity shows desktop input cluster",
 );
 
-/* —— Spacious Desktop gate remains separate —— */
+/* —— Spacious Desktop gate remains separate（cqi typography only；stage 640 is Frame） —— */
 assert(
 	css.includes("@media (min-width: 900px) and (min-height: 700px) and (hover: hover)"),
 	"Lunar Spacious Desktop gate (900×700+hover) remains for result cqi polish only",
+);
+assert(
+	!/max-width:\s*640px/.test(css.replace(/\/\*[\s\S]*?\*\//g, "")),
+	"Lunar CSS does not duplicate Frame stage 640px",
 );
 
 /* —— Mobile Landscape full gate —— */

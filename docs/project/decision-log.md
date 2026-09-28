@@ -5,6 +5,88 @@
 
 ---
 
+## 2026-09-27 — Shared stage geometry 改為 fluid max-640
+
+### 背景
+
+```text
+Foundation Investigation 確認 general 448（max-w-md）與 512（md:max-w-lg）
+沒有獨立產品理由，是 Tailwind scaffold 延續。640 才是正式 Desktop 主 stage。
+三階造成 900→899（640→512）與 768→767（512→448）geometry jump。
+768 仍是 composition boundary，不應同時切 stage。
+```
+
+### 決策（最終結果）
+
+```text
+1. General stage = width:100% + max-width:640px。
+   外層 px-6（24+24）下：viewport ≥688 → 640；不足才縮小。
+2. 移除 general 448／512 stage tier。
+3. 768 + hover:hover composition KEEP（Desktop controls／capsule）。
+   stage geometry 不再跟 768 綁定。
+4. 640 max KEEP。stage 寬度仍不依賴 min-height:700。
+5. 本決策取代 2026-09-20 第 2–3 點的「640 = 900+hover」與「768–899 走 512 fallback」。
+   height 與 horizontal 拆分仍然有效。
+6. Mobile Landscape L2：僅完整 capability gate
+   （landscape + max-height:700 + max-width:1200 + hover:none）
+   使用 compact cap max-width:min(100%, 32rem)＝512px。
+   這是 landscape compact cap，不是 general 512 tier、不是 768 fallback。
+7. TALC／Age／DBD／Date Range 等 tool-local landscape 480 繼續優先。
+8. Child width 自管（420 cluster、20rem capsule、DC duration 512）。
+9. TYAR B1B 維持暫停；不在本輪改 TYAR typography／landscape result。
+```
+
+### 影響
+
+```text
+Canonical：layout-system.md §6.0.2／§6.0.3 signal roles。
+Shared：ToolPageFrame markup／CSS。
+Hours／JEC／DC duplicate stage 最小對齊。
+Validators 改鎖產品 contract，不再鎖 max-w-md／md:max-w-lg／900+hover 640。
+```
+
+---
+
+## 2026-09-20 — Desktop horizontal stage 640 與 vertical spacious polish 拆分
+
+### 背景
+
+```text
+TYAR B1B Visual Review 發現：相同 Desktop 寬度下，viewport height 掉到 700px 以下，
+ToolPageFrame stage 從 640px 退回 md:max-w-lg（512px）。
+這不是 Mobile Landscape 誤判（Desktop controls 仍在；hover:none gate 未觸發）。
+根因：horizontal stage 640 與 spacious vertical polish 綁在同一條 900×700+hover gate。
+```
+
+### 決策（最終結果）
+
+```text
+1. Desktop 就是 Desktop。有足夠水平空間時，不得只因 height 變矮就把 stage 從 640 縮成 512。
+2. Desktop horizontal stage 640px = min-width:900px AND hover:hover。
+   不再要求 min-height:700。
+3. 768–899 Desktop 保留既有較窄 fallback（markup md:max-w-lg＝512px）。
+4. Spacious Desktop vertical polish 可繼續用 900×700+hover
+  （vertical padding／gaps／first-screen vertical rhythm／spacious typography）。
+   但不得控制 horizontal stage max-width。
+5. Mobile Landscape capability gate 不變
+  （Mobile-style + landscape + max-height:700 + max-width:1200 + hover:none）。
+6. hover:none 裝置不得因本修正誤拿 Desktop 640 geometry。
+7. 釐清 2026-08-26 決策第 6 點：900×700+hover 仍是 vertical spacious polish／ResultSummary；
+   不再把 stage 640 算進同一條不可拆的 rule。
+```
+
+### 影響
+
+```text
+Canonical：layout-system.md §6.0.2／§6.0.3 signal roles。
+Shared：tool-page-frame.css Desktop 640 MQ。
+Pre-Frame production copies（Hours／JEC／DC stage 640）同步 horizontal gate。
+Frame adopters（Lunar／TALC／TYAR）吃 shared Frame，不另建 640 duplicate。
+Lunar／DC／DRC 等既有 900×700 vertical／typography polish 維持原 gate。
+```
+
+---
+
 ## 2026-09-13 — TALC Production Complete／Deployed · V1.6 第一支上線
 
 ### 背景

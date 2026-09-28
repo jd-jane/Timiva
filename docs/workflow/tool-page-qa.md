@@ -422,7 +422,7 @@ Desktop / portrait / landscape / lower content / capsule / drawer / stage
 ```text
 768px mobile／desktop 切換（Desktop continuity：min-width 768 + hover:hover）
 capsule 20rem／portrait 56px（3.5rem）
-desktop 640px Spacious gate（900×700+hover；≠ composition gate）
+desktop 640px fluid max stage（≠ composition；不依賴 min-height:700；不因 768／900 切階）
 portrait 1fr / auto 沉底
 lower-content max-w-3xl
 drawer 300px chrome／placement

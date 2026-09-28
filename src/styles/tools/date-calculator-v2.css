@@ -33,6 +33,14 @@ body:has([data-date-calculator-v2]) header {
 	backdrop-filter: blur(4px) saturate(150%);
 }
 
+/*
+ * General stage：fluid max 640（對齊 Frame）。
+ * 不因 768／900 切 448／512 階。不改共用 .preview-tool-stage 定義。
+ */
+[data-date-calculator-v2] .dcv2-tool-stage.preview-tool-stage {
+	max-width: 640px;
+}
+
 /* 第一屏：沿用 V2 result-first baseline */
 [data-date-calculator-v2] .preview-tool-main-section {
 	--preview-header-height: 3.75rem;
@@ -1106,14 +1114,10 @@ body:has([data-date-calculator-v2]) header {
 }
 
 /*
- * 大型桌機（對齊 Timiva desktop layout gate）：
- * stage 640px；controls group 512px 置中。不改共用 .preview-tool-stage 定義。
+ * 大型桌機 spacious vertical／control polish（900×700+hover）：
+ * controls group 512px 置中。不改 stage 640 橫向 geometry。
  */
 @media (min-width: 900px) and (min-height: 700px) and (hover: hover) {
-	[data-date-calculator-v2] .dcv2-tool-stage.preview-tool-stage {
-		max-width: 640px;
-	}
-
 	[data-date-calculator-v2] .dcv2-input-cluster--desktop {
 		max-width: min(100%, 512px);
 		/* 三列間距：Start date → 方向 → duration */
@@ -1371,6 +1375,11 @@ body:has([data-date-calculator-v2]) header {
 		grid-template-rows: none;
 		min-height: 0;
 		height: auto;
+	}
+
+	/* L2：capability-scoped compact cap。不是 general 512 tier。 */
+	[data-date-calculator-v2] .dcv2-tool-stage.preview-tool-stage {
+		max-width: min(100%, 32rem);
 	}
 
 	[data-date-calculator-v2] .preview-tool-result-group {

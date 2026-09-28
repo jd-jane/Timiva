@@ -73,7 +73,7 @@ Implementation Plan 必須先做 Reuse Review，再進入實作。
 | 層級 | 擁有 | 不得做 |
 |---|---|---|
 | Shared component | DOM、typography、grid／gap、digits、a11y、`rs:update`／controller | 讀 viewport／orientation 自行判斷 layout |
-| ToolPageFrame | first-screen／stage／capsule geometry／drawer chrome／640px gate／lower-content 寬度 | 擁有 Header／Footer；擁有 result UI 或 desktop 輸入內容 |
+| ToolPageFrame | first-screen／stage／capsule geometry／drawer chrome／fluid max-640 stage／landscape compact 32rem／lower-content 寬度 | 擁有 Header／Footer；擁有 result UI 或 desktop 輸入內容 |
 | Tool layout contract | `data-rs-layout`（或同等）首次 paint＋正式 gate | 寫 `data-rs-digits`、更新 live status、dispatch 結果更新 |
 | Tool CSS | desktop 輸入、result tokens、capsule 內容、AME 內容、tool-specific controls | 選內部 class（`.rs-*`／`.sdc-*`／`.tpf-*`）；重建 Frame 骨架 |
 | Tool script | 計算完成後 dispatch 正式事件／呼叫正式 `update()` | temporary adapter、本地 digit bucket |
@@ -283,7 +283,7 @@ portrait 1fr / auto composition
 mobile primary-control placement
 capsule geometry（Frame 包一層保證）
 landscape compact composition（僅 Mobile Landscape gate）
-desktop 640px Spacious gate（900×700+hover；≠ composition）
+desktop 640px fluid max stage（≠ composition；不依賴 min-height:700；不因 768／900 切階）
 lower-content max-w-3xl
 first-screen → lower-content spacing
 drawer placement / chrome

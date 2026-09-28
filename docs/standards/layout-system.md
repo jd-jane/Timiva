@@ -244,13 +244,48 @@ Lunar（popover-compact）不符合此例外，必須使用 standard gap。
 ### 6.0.2 Desktop geometry（新 ToolPageFrame adopter）
 
 ```text
-Desktop result stage：640px（Frame Spacious Desktop / layout polish gate）
+General stage：fluid
+  width: 100%
+  max-width: 640px
+  由外層 horizontal padding 決定何時小於 640
+  在 first-screen px-6（24+24）下：viewport ≥688 → 640；687 → 639
+  不再有 general 448／512 stage tier
+  不因 768 composition 或 900 breakpoint 切階
+  寬度不依賴 min-height:700
 Standard Desktop form cluster：420px（Standard Pill Field／converter 類）
-512px 目前僅 DC duration-specific，不升成 general tier
+512px 目前僅 DC duration-specific child，不升成 general stage tier
+Mobile Landscape compact stage cap：min(100%, 32rem)＝512px
+  僅完整 capability gate（landscape + max-height:700 + max-width:1200 + hover:none）
+  不是 general 512 tier，也不是 768 fallback
+  tool-local 480（TALC／Age／DBD／Date Range 等）繼續優先
 舊工具 480／560／36rem 等 layout 不因本 baseline migration
 ```
 
-`900×700 + hover` 是 **Spacious Desktop** layout polish（stage 640、ResultSummary／spacious typography 等），**不是** Desktop／Mobile composition gate。Composition 見 §6.0.3。
+**Horizontal geometry 與 vertical polish 分開：**
+
+```text
+General horizontal stage
+  = width 100% + max-width 640px
+  viewport height 變矮不得把已達可用寬度的 stage 縮成 512／448
+  900 不再是 horizontal stage gate
+
+Spacious Desktop vertical polish
+  = min-width: 900px AND min-height: 700px AND hover: hover
+  可影響 vertical padding／gaps／first-screen vertical rhythm／spacious typography
+  不得控制 horizontal stage max-width
+```
+
+兩者都**不是** Desktop／Mobile composition gate。Composition 見 §6.0.3。
+
+**五層分開命名：**
+
+```text
+1. Composition（768 + hover:hover）
+2. Stage geometry（fluid max 640）
+3. Child width（420 cluster、20rem capsule、DC 512 duration…）
+4. Vertical spacious polish（900×700 + hover）
+5. Mobile Landscape compact geometry（capability-scoped 32rem；tool-local 480 可覆寫）
+```
 
 ### 6.0.3 Responsive Composition Contract（canonical）
 
@@ -289,6 +324,8 @@ Canonical Desktop input composition：
 
 只要 `width ≥ 768` 且 `hover: hover`，維持 Desktop composition。即使 viewport 很矮、`width < 900`、或 viewport ratio 為 landscape，也**不得**因此切成 Mobile Landscape。
 
+Desktop **stage geometry** 與 composition 分開：general stage 為 `width: 100%` + `max-width: 640px`，**不**因 768 或 900 切成 512／448。寬度不依賴 `min-height: 700`。vertical spacious polish 見 §6.0.2。
+
 **Mobile Landscape interaction gate（Layer 2 opt-in；正式 shared）**
 
 必須**同時**滿足：
@@ -315,7 +352,7 @@ Canonical Desktop input composition：
 | `390×844 + hover:none` | Mobile Default / Portrait-style |
 | `700×500 + hover:hover` | Mobile Default / Portrait-style（Mobile-style；**不得**套 Mobile Landscape compact；AME presentation 見 **AME Presentation Policy**） |
 
-原則：**viewport 變窄 ≠ 手機橫式。**
+原則：**viewport 變窄 ≠ 手機橫式。** `900×650`／`1280×650`／`1920×650` + `hover:hover` 的 Desktop stage 為 640px；`899×650` + `hover:hover` 仍為 Desktop，stage 同樣 640px（fluid max）。`844×390 + hover:none` 為 Mobile Landscape，shared compact cap 512px。
 
 **AME Presentation Policy（獨立於 Page Composition；CSS-only）**
 
@@ -348,10 +385,12 @@ B. Constrained Viewport Full-screen
 
 | Signal | 角色 |
 |---|---|
-| width `768` | Desktop input continuity boundary |
-| width `900` + height `700` + `hover` | Spacious Desktop layout polish（非 composition） |
+| width `768` | Desktop input continuity boundary（不控制 stage tier） |
+| general stage | fluid `width:100%` + `max-width:640px`（非 composition） |
+| width `900` + height `700` + `hover` | Spacious Desktop **vertical** polish（非 composition；不控制 stage 寬） |
+| Mobile Landscape compact stage | `min(100%, 32rem)`；僅完整 capability gate；不是 general 512 tier |
 | `orientation` | 只區分 Mobile 子狀態 |
-| height | 可影響 geometry／compactness；不得把 Desktop 改判成 Mobile |
+| height | 可影響 vertical compactness；不得把 Desktop 改判成 Mobile；不得縮窄已達 900px 的 Desktop stage |
 | `hover: none` | Mobile Landscape **必要** interaction evidence |
 | `pointer: coarse` | **不**納入 shared baseline；特殊工具可另有更嚴 exception |
 
@@ -360,8 +399,10 @@ B. Constrained Viewport Full-screen
 ```text
 768–899 intermediate composition
 「<900 = mobile」composition
+把 900／768 當 general stage workaround 加回 512／448
 bare orientation: landscape 觸發 mobile-landscape UI
 把 823／824–899 升格成 shared composition breakpoint
+把 Mobile Landscape 32rem compact cap 當成 general 512 stage tier
 ```
 
 **Legacy／exceptions**

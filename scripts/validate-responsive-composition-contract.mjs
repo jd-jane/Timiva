@@ -68,12 +68,36 @@ assert(
 	"TPF Desktop continuity references mobile controls hide",
 );
 
-/* —— Spacious ≠ composition —— */
+/* —— General stage fluid 640 ≠ composition；≠ vertical spacious —— */
 assert(
-	frameCss.includes(
+	/\[data-tool-page-frame\]\s+\.tpf-stage\s*\{[^}]*max-width:\s*640px/s.test(frameCss),
+	"TPF general stage is fluid max-width 640px",
+);
+assert(
+	!/@media\s*\(\s*min-width:\s*900px\s*\)[^{]*\{[^}]*max-width:\s*640px/.test(frameCss),
+	"TPF must not gate stage 640px behind min-width 900",
+);
+assert(
+	!/@media\s*\(\s*min-width:\s*768px\s*\)[^{]*\{[^}]*max-width:\s*640px/.test(frameCss),
+	"TPF must not bind stage 640px to 768 composition",
+);
+assert(
+	!/@media\s*\(\s*min-width:\s*900px\s*\)\s+and\s*\(\s*min-height:\s*700px\s*\)\s+and\s*\(\s*hover:\s*hover\s*\)\s*\{[^}]*max-width:\s*640px/.test(
+		frameCss,
+	),
+	"TPF must not couple stage 640px to min-height:700",
+);
+assert(
+	/max-width:\s*min\(100%,\s*32rem\)/.test(frameCss),
+	"TPF Mobile Landscape compact stage cap is 32rem",
+);
+
+const resultBaseline = stripComments(read("src/styles/tools/tool-result-v2-baseline.css"));
+assert(
+	resultBaseline.includes(
 		"@media (min-width: 900px) and (min-height: 700px) and (hover: hover)",
 	),
-	"TPF Spacious Desktop gate (900×700+hover) remains separate",
+	"Shared result baseline keeps 900×700+hover for vertical spacious polish",
 );
 
 /* —— Mobile Landscape full gate —— */
@@ -134,6 +158,16 @@ assert(
 assert(
 	layoutDoc.includes("hover: none") || layoutDoc.includes("hover:none"),
 	"layout-system requires hover: none for Mobile Landscape",
+);
+assert(
+	layoutDoc.includes("不依賴 min-height:700") ||
+		layoutDoc.includes("不依賴 min-height: 700"),
+	"layout-system documents 640 horizontal geometry without min-height:700",
+);
+assert(
+	layoutDoc.includes("Spacious Desktop vertical polish") ||
+		layoutDoc.includes("vertical polish"),
+	"layout-system splits vertical spacious polish from horizontal stage",
 );
 
 /* —— AME shared Full-screen triggers（presentation；≠ Page composition） —— */

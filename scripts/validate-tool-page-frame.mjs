@@ -47,6 +47,23 @@ function stripComments(source) {
 	return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
 }
 
+function mediaQueriesOwningDeclaration(css, declaration) {
+	const stripped = stripComments(css);
+	const results = [];
+	let from = 0;
+	while (true) {
+		const pos = stripped.indexOf(declaration, from);
+		if (pos === -1) break;
+		const before = stripped.slice(0, pos);
+		const matches = [...before.matchAll(/@media\s*([^{]+)\{/g)];
+		if (matches.length) {
+			results.push(matches[matches.length - 1][1].replace(/\s+/g, " ").trim());
+		}
+		from = pos + declaration.length;
+	}
+	return results;
+}
+
 function extractRuleSelectors(css) {
 	const text = stripComments(css);
 	const selectors = [];
@@ -178,7 +195,14 @@ assert(frameAstro.includes("ToolAdSlot"), "Frame places ToolAdSlot");
 assert(frameAstro.includes('state="is-disabled"'), "Frame ToolAdSlot stays is-disabled");
 assert(frameAstro.includes('variant="sidebar"') && frameAstro.includes('variant="main"'), "Frame places sidebar and main ad slots");
 assert(frameAstro.includes("max-w-3xl"), "Frame lower-content uses max-w-3xl");
-assert(frameAstro.includes("max-w-md"), "Frame stage uses max-w-md / md:max-w-lg");
+assert(
+	!/tpf-stage[^>]*max-w-md/.test(frameAstro.replaceAll("\n", " ")),
+	"Frame stage does not use general 448 max-w-md tier",
+);
+assert(
+	!/tpf-stage[^>]*md:max-w-lg/.test(frameAstro.replaceAll("\n", " ")),
+	"Frame stage does not use general 512 md:max-w-lg tier",
+);
 assert(
 	!/tpf-stage[^>]*(max-w-3xl)|tool-lower-content[^>]*(max-w-md)/.test(frameAstro.replaceAll("\n", " ")),
 	"Frame does not mix stage and lower-content width classes on the same node",
@@ -240,14 +264,41 @@ assert(
 	"Frame CSS must not use bare landscape+700+1200 without hover: none",
 );
 assert(
-	frameCss.includes("@media (min-width: 900px) and (min-height: 700px) and (hover: hover)"),
-	"Frame CSS has desktop 640px Spacious gate media query",
+	/\[data-tool-page-frame\]\s+\.tpf-stage\s*\{[^}]*max-width:\s*640px/s.test(frameCss),
+	"Frame CSS general stage is fluid max-width 640px",
 );
+{
+	const queries = mediaQueriesOwningDeclaration(frameCss, "max-width: 640px;");
+	assert(
+		queries.length === 0,
+		"Frame CSS general 640px is not gated by a breakpoint media query",
+	);
+}
 assert(
-	frameCss.includes("[data-tool-page-frame] .tpf-stage.preview-tool-stage") &&
-		frameCss.includes("max-width: 640px"),
-	"Desktop 640px gate targets stage, not lower-content",
+	!/@media\s*\(\s*min-width:\s*900px\s*\)\s+and\s*\(\s*min-height:\s*700px\s*\)\s+and\s*\(\s*hover:\s*hover\s*\)\s*\{[^}]*max-width:\s*640px/.test(
+		frameCss.replace(/\/\*[\s\S]*?\*\//g, ""),
+	),
+	"Frame CSS must not couple stage 640px to min-height:700",
 );
+{
+	const landscapeCaps = mediaQueriesOwningDeclaration(
+		frameCss,
+		"max-width: min(100%, 32rem);",
+	);
+	assert(
+		landscapeCaps.length > 0,
+		"Frame CSS has Mobile Landscape compact stage cap 32rem",
+	);
+	for (const query of landscapeCaps) {
+		assert(
+			/orientation:\s*landscape/.test(query) &&
+				/max-height:\s*700px/.test(query) &&
+				/max-width:\s*1200px/.test(query) &&
+				/hover:\s*none/.test(query),
+			`Frame 32rem stage cap must stay inside Mobile Landscape gate (${query})`,
+		);
+	}
+}
 assert(
 	frameCss.includes("max-width: min(100%, 20rem)"),
 	"Frame CSS guarantees capsule max-width 20rem",
@@ -289,6 +340,20 @@ for (const fullPath of toolCssFiles) {
 	const css = readFileSync(fullPath, "utf8");
 	assert(!css.includes("tool-preview-first-screen.css") || rel.includes("preview/"), `${rel} must not import preview CSS as production Frame`);
 	assert(!/\.tpf-/.test(stripComments(css)), `${rel} must not override .tpf-*`);
+	for (const query of mediaQueriesOwningDeclaration(css, "max-width: 640px;")) {
+		assert(
+			!/min-height:\s*700px/.test(query) &&
+				!/min-width:\s*900px/.test(query) &&
+				!/min-width:\s*768px/.test(query),
+			`${rel} must not couple stage 640px to 768／900／min-height:700 (${query})`,
+		);
+	}
+	assert(
+		!/@media\s*\(\s*min-width:\s*768px\s*\)\s+and\s*\(\s*hover:\s*hover\s*\)\s+and\s*\(\s*max-height:\s*699px\s*\)/.test(
+			stripComments(css),
+		),
+		`${rel} must not restore Desktop short-height max-height:699 workaround`,
+	);
 }
 
 const previewCss = exists(previewCssPath) ? read(previewCssPath) : "";
