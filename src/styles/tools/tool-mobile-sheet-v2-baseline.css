@@ -200,6 +200,7 @@ body.msb-scroll-lock {
 	color: var(--msb-value-color);
 	font: inherit;
 	font-size: 1rem;
+	font-weight: 500;
 	line-height: 1.25rem;
 }
 
@@ -392,6 +393,7 @@ body.msb-scroll-lock {
 
 	[data-mobile-sheet-baseline] .msb-input {
 		font-size: 1rem;
+		font-weight: 500;
 		line-height: 1.25rem;
 	}
 

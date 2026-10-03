@@ -121,6 +121,12 @@ ok(/adapter\.validate/.test(ctrlSrc) && /adapter\.onCommit/.test(ctrlSrc), "subm
 ok(/function dismissChrome|dismissChrome\(/.test(ctrlSrc), "Dismiss chrome helper separates UI teardown");
 ok(/data-ame-submit/.test(compSrc), "Done controls use data-ame-submit");
 ok(!/data-ame-close="done"/.test(compSrc), "Shell Done no longer uses data-ame-close=done");
+ok(/getMessages/.test(compSrc) && /ameChrome/.test(compSrc), "Chrome copy from shared ameChrome i18n");
+ok(/resetLabel\?:/.test(compSrc), "Optional resetLabel prop for Hours exception");
+ok(
+	!/>Reset</.test(compSrc) && !/>Done</.test(compSrc),
+	"No hardcoded English Reset／Done in AME chrome markup",
+);
 
 /* B8.2 lifecycle */
 ok(/AmeLifecycle\s*=\s*"submit"\s*\|\s*"live"/.test(ctrlSrc), "Contract：AmeLifecycle submit｜live only");
@@ -261,7 +267,7 @@ ok(!read("src/data/toolsCatalog.ts").includes("adaptive-mobile-editor"), "AME La
 ok(/Tool Component Lab · Active/.test(labSrc), "Contract：AME Lab is Active reference");
 ok(!labSrc.includes("MobileBottomSheet"), "Contract：AME Lab does not import Legacy MSB component");
 
-/* Protected non-AME／Legacy MSB surfaces — tracked fixture＋HEAD blobs */
+/* Protected non-AME／Legacy MSB surfaces — tracked fixture＋working-tree files */
 const protectedBaseline = loadProtectedBaseline();
 if (protectedBaseline) {
 	let hashMismatches = 0;
@@ -274,21 +280,21 @@ if (protectedBaseline) {
 			failed += 1;
 			continue;
 		}
-		const actual = sha256HeadBlob(rel);
+		const actual = exists(rel) ? sha256Buffer(fs.readFileSync(path.join(root, rel))) : sha256HeadBlob(rel);
 		if (actual === null) {
 			hashMismatches += 1;
-			console.log(`  FAIL  Protected missing from HEAD: ${rel}`);
+			console.log(`  FAIL  Protected file missing: ${rel}`);
 			failed += 1;
 			continue;
 		}
 		if (actual !== expected) {
 			hashMismatches += 1;
-			console.log(`  FAIL  Protected HEAD hash changed: ${rel}`);
+			console.log(`  FAIL  Protected hash changed: ${rel}`);
 			failed += 1;
 		}
 	}
 	if (hashMismatches === 0) {
-		ok(true, "Protected non-AME／Legacy MSB HEAD blobs match tracked baseline");
+		ok(true, "Protected non-AME／Legacy MSB files match tracked baseline");
 	}
 }
 

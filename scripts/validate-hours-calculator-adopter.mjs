@@ -130,8 +130,8 @@ assert(
 	"Clear／Reset uses HOURS_AME_RESET_DEFAULTS",
 );
 assert(
-	/data-ame-reset/.test(ameShell) && /data-hcv2-clear-times-label/.test(astro),
-	"Clear uses shared data-ame-reset＋Hours label",
+	/data-ame-reset/.test(ameShell) && /resetLabel=\{m\.clearTimesLabel\}/.test(astro),
+	"Clear uses shared data-ame-reset＋resetLabel prop",
 );
 assert(
 	/function resetDraftInternal\(\)[\s\S]{0,800}applyLiveSyncFromDraft\(\)/.test(

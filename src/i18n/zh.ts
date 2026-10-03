@@ -95,6 +95,10 @@ export const zh: Messages = {
     english: "English",
     chinese: "中文",
   },
+  ameChrome: {
+    reset: "重設",
+    done: "完成",
+  },
   home: {
     heroTitle: "讓時間被看見，也更好計算",
     heroLead: "簡單、舒服、手機好用的時間與生活節奏工具。",

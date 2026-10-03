@@ -1,9 +1,9 @@
 {
   "label": "adaptive-mobile-editor-protected-baseline",
   "version": 1,
-  "note": "Tracked HEAD hashes for non-AME production surfaces and Legacy MSB Lab. AME validators compare against git HEAD blobs so parallel dirty work does not false-fail. Update hashes only when Owner authorizes intentional production/MSB changes.",
+  "note": "Tracked hashes for non-AME production surfaces and Legacy MSB Lab. Compare the current working-tree file so Owner-authorized uncommitted baseline updates can Gate. Update hashes only when Owner authorizes intentional production/MSB changes. Do not rebuild this map wholesale.",
   "files": {
-    "src/styles/tools/tool-mobile-sheet-v2-baseline.css": "9ff3cf42a86e0db22a106a76c7d4e84ae8c6b2032dc922860787a2a9c3c4b5eb",
+    "src/styles/tools/tool-mobile-sheet-v2-baseline.css": "896afd8bfe8c70a4fb8ed50b40554ceb161bf34d55f5762ec64a2840343398f7",
     "src/components/tools/age-calculator-v2/AgeCalculatorV2.astro": "e9f1e9fdfc7cd3bb4a64687f86394ca4539de7cbecf1190aad37b3569a12d843",
     "src/components/tools/days-between-dates-v2/DaysBetweenDatesV2.astro": "e3e3a673dd5b92eeb2d7eb4f9c776a575473be27ef33a78b664fe810794d6f41",
     "src/components/tools/business-days-calculator-v2/BusinessDaysCalculatorV2.astro": "a97846153dba68976b3802b57db544912105884187db6ce18e5fb3d72a9dc6ac",

@@ -1,6 +1,6 @@
 ﻿# Timiva Mobile Sheet／Mobile Editor Spec
 
-Date: 2026-06-14 (Created) · Last updated: 2026-08-02（B9.1：AME scoped canonical＋legacy MSB 邊界）
+Date: 2026-06-14 (Created) · Last updated: 2026-09-28（Mobile field typography＋AME footer chrome）
 Owner: Jane / Timiva
 Status: **Active** · AME＝適用範圍內的 canonical interactive Mobile Editor foundation · Legacy tool-local sheets＋`tool-mobile-sheet-v2-baseline.css`／`msb-*` 仍為 production dependency · Option D（刪除全部 D1／MSB）已否決
 
@@ -600,4 +600,78 @@ Numeric Field＝button＋Timiva Numeric Keypad（非 native numeric keyboard／i
 Focus owner＝**個別**完整 field shell；segment＝active editing target（不得以 segment 當獨立 focus owner；不得外層 group :focus-within 整組 focus）
 Plan／implementation 偏離既有 production pattern → 先回報 Owner
 工具擁有 content／math／validation／reset／composition；AME 擁有 shell／focus／scroll／keypad／shared visual／lifecycle framework
+```
+
+---
+
+## 18. Shared Mobile field typography＋AME footer（2026-09-28）
+
+Mobile Bottom Sheet／AME／legacy MSB **field** 字級全站同一套。Field role 只影響 geometry、排列與 interaction，不影響 value 的視覺層級。
+
+### 18.1 Label／value baseline
+
+```text
+Field label：12px / 500 / 16px（0.75rem / 500 / 1rem）
+Field value：16px / 500 / 20px（1rem / 500 / 1.25rem）
+```
+
+套用範圍：
+
+```text
+AME .ame-setting-label／.ame-numeric-label
+AME .ame-numeric-value（含 keypad 顯示中的欄位值）
+AME .ame-native-control（select／date）
+MSB .msb-input-prefix／.msb-input
+Hours AME row label／HH·MM 顯示值
+TALC AME YMD 顯示值
+```
+
+```text
+input／select／keypad 顯示值／年／月／生肖 → 同一套 value typography
+control type 不得改變 field value 字級
+keypad 開啟時不得把欄位值縮字
+```
+
+### 18.2 Keypad keys ≠ field value
+
+```text
+.ame-key／.ame-key--action 可保留獨立 typography
+不得把按鍵字級套到欄位內顯示值
+不得把欄位值字級套到按鍵
+```
+
+### 18.3 Desktop compound 禁止進 Mobile sheet
+
+```text
+Desktop compound field（prefix｜divider｜native input pill，例如
+.tyar-field-shell／.jecv2-field-shell／.hcv2-field-shell）
+不得出現在 Mobile Bottom Sheet／AME 內層
+Mobile 用 AME setting-row／MSB field，不搬 Desktop pill
+Standard Pill Field 是 Desktop-only Expected
+```
+
+### 18.4 AME footer chrome
+
+```text
+ZH：重設 / 完成
+EN：Reset / Done
+從 shared AdaptiveMobileEditor ＋ i18n ameChrome 解決
+禁止各工具 querySelector 改 [data-ame-reset]／[data-ame-submit] 文案
+```
+
+產品語意例外（須標註）：
+
+```text
+Hours Reset 文案＝清除（ZH）／Clear（EN）；Done 仍為 完成／Done
+實作：AME optional resetLabel prop，不是 tool-local DOM patch
+Age 使用 legacy MSB、沒有 AME footer → 不強加
+```
+
+### 18.5 Tool-local typography override
+
+```text
+tool-local 對 field label／value 的 font-size／weight／line-height override
+必須有明確 Owner 決策（decision-log）
+沒有決策 → 不允許（validator／Design Assistant BLOCK）
+geometry（min-width、flex、row lock）可 tool-local，不得順便改字級
 ```

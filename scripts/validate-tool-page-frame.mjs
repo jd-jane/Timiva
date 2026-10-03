@@ -459,6 +459,7 @@ const frozen = gitDiffNames([...legacyProduction, ...lockedChrome]);
 const hoursBatch3aAllowed = new Set([
 	"src/components/tools/hours-calculator-v2/HoursCalculatorV2.astro",
 	"src/styles/tools/hours-calculator-v2.css",
+	"src/scripts/hours-calculator.ts",
 	"public/scripts/hours-calculator-layout-contract.js",
 ]);
 const dcBatch3bAllowed = new Set([

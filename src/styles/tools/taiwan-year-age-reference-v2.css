@@ -610,12 +610,10 @@
 	gap: 0.25rem;
 }
 
-/* 年份值對齊 TALC year／Desktop year（0.9375rem），不走 keypad 1.25rem */
+/* 年份值吃 shared 16px field value；min-width 鎖四位數不撐破列 */
 [data-ame-root]#tyar-ame .tyar-ame-year-row .ame-numeric-value {
 	min-width: 4ch;
 	min-height: 1.25rem;
-	font-size: 0.9375rem;
-	line-height: 1.25rem;
 }
 
 [data-ame-root]#tyar-ame .tyar-ame-year-row:disabled {

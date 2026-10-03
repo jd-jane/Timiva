@@ -591,12 +591,7 @@ body:has([data-date-calculator-v2]) header {
 	text-overflow: clip;
 	text-align: left;
 	white-space: nowrap;
-	font-size: 1.0625rem;
 	letter-spacing: 0;
-}
-
-[data-ame-root] .dcv2-ame-duration-field[data-ame-active="true"] .ame-numeric-value {
-	font-size: 1rem;
 }
 
 /* ＋／－ segmented */

@@ -644,11 +644,6 @@ function initRoot(root: HTMLElement): void {
 
 	/* B2C：shared AME live + Numeric Keypad YMD（reopen 保留目前 segments） */
 	if (ameRoot && pageContent) {
-		/* Shared chrome Reset／Done：本地化 Reset 文案（對齊 Hours） */
-		ameRoot.querySelectorAll<HTMLElement>("[data-ame-reset]").forEach((el) => {
-			el.textContent = root.querySelector("[data-talc-reset]")?.textContent?.trim() || "Reset";
-		});
-
 		const applyDraftToPage = (draft: TalcAmeDraft) => {
 			segments = segmentsFromDraft(draft);
 			const nextLeave =

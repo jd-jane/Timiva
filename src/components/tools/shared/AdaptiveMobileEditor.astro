@@ -4,16 +4,31 @@
  * Same DOM／state for Portrait sheet + Landscape full-screen.
  * Slots: default fixtures · content region · error region.
  * Selector boundary: [data-ame-root]／.ame-*／--ame-* only.
+ * Chrome Reset／Done 走 shared ameChrome i18n；Hours 可傳 resetLabel 覆寫 Reset 文案。
  */
 import AmeFieldError from "./AmeFieldError.astro";
+import type { Locale } from "../../../i18n/config";
+import { getMessages } from "../../../i18n/messages";
 
 interface Props {
 	ariaLabel: string;
 	title?: string;
 	id?: string;
+	locale?: Locale;
+	/** 產品語意例外（Hours「清除」）；未傳則用 ameChrome.reset */
+	resetLabel?: string;
 }
 
-const { ariaLabel, title = "Adaptive Mobile Editor", id } = Astro.props;
+const {
+	ariaLabel,
+	title = "Adaptive Mobile Editor",
+	id,
+	locale = "en",
+	resetLabel,
+} = Astro.props;
+const ameChrome = getMessages(locale).ameChrome;
+const resetText = resetLabel ?? ameChrome.reset;
+const doneText = ameChrome.done;
 ---
 
 <div
@@ -58,11 +73,13 @@ const { ariaLabel, title = "Adaptive Mobile Editor", id } = Astro.props;
 				<button type="button" class="ame-topbar-btn" data-ame-close="cancel" data-ame-cancel>
 					Cancel
 				</button>
-				<button type="button" class="ame-topbar-btn ame-topbar-btn--reset" data-ame-reset>Reset</button>
+				<button type="button" class="ame-topbar-btn ame-topbar-btn--reset" data-ame-reset>
+					{resetText}
+				</button>
 			</div>
 			<p class="ame-topbar-title" data-ame-title>{title}</p>
 			<button type="button" class="ame-topbar-btn ame-topbar-btn--done" data-ame-submit>
-				Done
+				{doneText}
 			</button>
 		</header>
 
@@ -425,8 +442,8 @@ const { ariaLabel, title = "Adaptive Mobile Editor", id } = Astro.props;
 
 		<!-- Portrait only: Reset（left）＋ Done（right） -->
 		<div class="ame-action-row" data-ame-action-row>
-			<button type="button" class="ame-action-reset" data-ame-reset>Reset</button>
-			<button type="button" class="ame-action-done" data-ame-submit>Done</button>
+			<button type="button" class="ame-action-reset" data-ame-reset>{resetText}</button>
+			<button type="button" class="ame-action-done" data-ame-submit>{doneText}</button>
 		</div>
 	</div>
 </div>

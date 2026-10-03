@@ -70,7 +70,6 @@ const ameRows = [
 	data-hcv2-locale={locale === "zh" ? "zh" : "en"}
 	data-hcv2-fixture="initial"
 	data-hcv2-break-open="false"
-	data-hcv2-clear-times-label={m.clearTimesLabel}
 	data-hcv2-capsule-empty={m.capsuleEmptyLabel}
 	data-hcv2-capsule-nextday-label={m.capsuleNextDayLabel}
 	data-hcv2-seg-hh-ph={m.segmentHoursPlaceholder}
@@ -485,6 +484,8 @@ const ameRows = [
 	{/* AME sibling：Portrait sheet／Landscape panel；B2B 6 numeric segments＋keypad */}
 	<AdaptiveMobileEditor
 		id="hcv2-ame"
+		locale={locale}
+		resetLabel={m.clearTimesLabel}
 		ariaLabel={m.sheetAriaLabel}
 		title={m.sheetTitle}
 	>

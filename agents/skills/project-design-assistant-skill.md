@@ -297,7 +297,7 @@ task 卻要求 submit／Done commit／Cancel rollback
 **適用時機：**
 
 ```text
-Adaptive Mobile Editor／field shell／Standard Pill Field／Mode Switch／Primary Capsule／
+Adaptive Mobile Editor／field shell／Standard Pill Field（Desktop-only）／Mode Switch／Primary Capsule／
 DesktopCalendar／ResultSummary／其他已有 baseline 或 shared pattern 的元件
 ```
 
@@ -964,7 +964,7 @@ Primary Result typography（design-system.md §9；B3 textual primary）
 Date-type primary · ZH Mobile Landscape（date-input.md §14；design-system.md §10.2.1）
 Supporting Result Text
 Textual Result Support Divider
-Standard Pill Field
+Standard Pill Field（Desktop-only；不得當 Mobile Bottom Sheet／AME Expected）
 field geometry
 semantic colors（design-system.md semantic contract）
 Error Pattern A / Pattern B
@@ -974,6 +974,10 @@ Conversion / Mode Switch
 Utility Capsule responsibility
 EN / ZH visual drift
 spacing / alignment
+Mobile field label／value typography（mobile-sheet.md §18；rendered computed）
+AME／MSB 內不得出現 Desktop compound field（mobile-sheet.md §18.3）
+ZH AME footer 不得混用 Reset／Done（Hours「清除」例外；mobile-sheet.md §18.4）
+tool-local field font-size override 無 Owner 決策 → BLOCK（mobile-sheet.md §18.5）
 transitional pattern 被誤當 new-tool default
 canonical recipe 被 tool-local implementation 重做
 ```
@@ -1022,6 +1026,13 @@ Gate B：AME picker field internal language（Label｜Value｜Chevron）不得�
   僅當 shared／canonical 已定義該 responsive internal variant，或 Owner 本輪明確新決策時，才屬合法
 Gate B（Numeric）：純數字 Mobile AME 欄位若已有 shared Numeric Keypad production pattern，
   不得改用 native keyboard／inputmode；偏離既有 production pattern 且無 Owner 本輪決策 → BLOCK
+Gate B（Mobile field typography）：rendered label／value 必須符合 mobile-sheet.md §18；
+  control type 不得改 field value 字級；keypad keys ≠ field value；
+  新增 tool-local field font-size 且無 Owner 決策 → BLOCK
+Gate B（Mobile compound）：AME／MSB 內不得出現 Desktop compound field
+  （Standard Pill Field 是 Desktop-only Expected）
+Gate B（AME footer）：ZH 必須為 重設／完成，不得出現 Reset／Done
+  （Hours 清除例外；Age 無 AME footer）
 Gate B（Focus）：focus owner 必須是**個別**完整 field shell；segment／欄位只表示 active editing target。
   Review 必須用 rendered evidence 確認 focus 實際落在哪個 element；
   不得只因 CSS 存在 :focus-visible 就判 PASS；

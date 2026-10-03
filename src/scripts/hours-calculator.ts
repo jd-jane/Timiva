@@ -273,15 +273,9 @@ function initAme(root: HTMLElement): void {
 	const triggers = [
 		...root.querySelectorAll<HTMLElement>("[data-hcv2-sheet-trigger]"),
 	];
-	const clearLabel = root.getAttribute("data-hcv2-clear-times-label") || "Clear";
-
 	if (!pageContent || !ameRoot) {
 		return;
 	}
-
-	ameRoot.querySelectorAll<HTMLElement>("[data-ame-reset]").forEach((el) => {
-		el.textContent = clearLabel;
-	});
 
 	const getCommittedDraft = (): HoursAmeDraft =>
 		cloneHoursAmeDraft(ameCommitted.get(root) ?? draftFromDesktop(root));

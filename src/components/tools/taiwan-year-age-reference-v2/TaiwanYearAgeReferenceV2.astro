@@ -88,8 +88,6 @@ const modeSwitchIconHtml =
 	data-tyar-fx-minguo-1-primary={m.fixtureMinguo1Primary}
 	data-tyar-fx-era-meiji-45-primary={m.fixtureEraMeiji45Primary}
 	data-tyar-copy-placeholder={m.resultPlaceholder}
-	data-tyar-copy-reset={m.resetLabel}
-	data-tyar-copy-done={m.doneLabel}
 >
 	<ToolPageFrame
 		locale={locale}
@@ -408,6 +406,7 @@ const modeSwitchIconHtml =
 		<AdaptiveMobileEditor
 			slot="ame"
 			id="tyar-ame"
+			locale={locale}
 			ariaLabel={m.sheetAriaLabel}
 			title={m.sheetTitle}
 		>
@@ -927,19 +926,7 @@ const modeSwitchIconHtml =
 				root.removeAttribute("data-tyar-primary-tier");
 			}
 
-			var resetLabel = attr("data-tyar-copy-reset");
-			var doneLabel = attr("data-tyar-copy-done");
 			if (ameRoot) {
-				if (resetLabel) {
-					ameRoot.querySelectorAll("[data-ame-reset]").forEach(function (el) {
-						el.textContent = resetLabel;
-					});
-				}
-				if (doneLabel) {
-					ameRoot.querySelectorAll("[data-ame-submit]").forEach(function (el) {
-						el.textContent = doneLabel;
-					});
-				}
 				if (sheetOpen) {
 					ameRoot.hidden = false;
 					ameRoot.setAttribute("data-ame-open", "true");

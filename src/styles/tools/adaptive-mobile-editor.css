@@ -339,6 +339,7 @@ button.ame-setting-row {
 	flex: 0 0 auto;
 	width: var(--ame-numeric-label-width);
 	margin: 0;
+	/* Mobile field label baseline：12px / 500 / 16px */
 	font-size: 0.75rem;
 	font-weight: 500;
 	line-height: 1rem;
@@ -374,9 +375,10 @@ button.ame-setting-row {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	text-align: left;
-	font-size: 1.25rem;
+	/* Mobile field value baseline：16px / 500 / 20px；control type 不得另開字級 */
+	font-size: 1rem;
 	font-weight: 500;
-	line-height: 1.5rem;
+	line-height: 1.25rem;
 	letter-spacing: 0.02em;
 	font-variant-numeric: tabular-nums;
 }
@@ -398,7 +400,10 @@ button.ame-setting-row {
 	background: transparent;
 	color: var(--ame-text);
 	font: inherit;
-	font-size: 0.875rem;
+	/* 與 numeric value 同一套 field value baseline；select／date 不得較小 */
+	font-size: 1rem;
+	font-weight: 500;
+	line-height: 1.25rem;
 	text-align: left;
 	color-scheme: dark;
 }

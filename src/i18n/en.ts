@@ -96,6 +96,10 @@ export const en = {
     english: "English",
     chinese: "中文",
   },
+  ameChrome: {
+    reset: "Reset",
+    done: "Done",
+  },
   home: {
     heroTitle: "Make time visible, simple, and easier to use",
     heroLead:

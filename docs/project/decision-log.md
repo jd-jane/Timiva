@@ -5,6 +5,46 @@
 
 ---
 
+## 2026-09-28 — Mobile Bottom Sheet Visual Baseline
+
+### 背景
+
+```text
+AME／MSB production 的 field value 字級分裂（20／17／16／15／14px），
+label 也有 Hours 15px drift。AME chrome 寫死英文 Reset／Done，
+部分工具再用 querySelector 改字，造成 ZH footer 中英混用。
+```
+
+### 決策（最終結果）
+
+```text
+1. Mobile field label 全站 12px / 500 / 16px。
+2. Mobile field value 全站 16px / 500 / 20px。
+   input／select／keypad 顯示值／年／月／生肖同一套。
+   不以 control type 或欄位角色另開 value 字級。
+3. Numeric keypad 按鍵 typography 獨立；不等於 field value。
+4. ZH AME footer＝重設／完成；EN＝Reset／Done。
+   從 shared AME chrome／i18n 解決，禁止各工具 DOM patch。
+5. Hours「清除」／Clear 為 Reset 文案產品例外（resetLabel prop）。
+   Age 無 AME footer，不加。
+6. Desktop compound field 不得進 Mobile Bottom Sheet／AME。
+   Standard Pill Field 是 Desktop-only。
+7. tool-local field typography override 必須有 Owner 決策，否則不允許。
+8. 不遷移 Age 到 AME。不改 TYAR Landscape／Foundation geometry／AME DOM。
+```
+
+### 影響
+
+```text
+Canonical：docs/standards/mobile-sheet.md §18。
+Shared：adaptive-mobile-editor.css、tool-mobile-sheet-v2-baseline.css、
+AdaptiveMobileEditor.astro、i18n ameChrome。
+Validators：scripts/validate-mobile-sheet-visual-baseline.mjs。
+Design Assistant：B1B／Gate B 引用 §18，不複製數值到 skill。
+```
+
+---
+
 ## 2026-09-27 — Shared stage geometry 改為 fluid max-640
 
 ### 背景
