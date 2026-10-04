@@ -1413,7 +1413,7 @@ export const zh: Messages = {
       "狗",
       "豬",
     ],
-    reverseClosest: "最接近 1936 年",
+    fixtureReverseEraLine: "民國 25 年・昭和 11 年",
     capsuleLabel: "查詢年份",
     sheetAriaLabel: "查詢年份",
     sheetTitle: "查詢年份",
@@ -1422,7 +1422,7 @@ export const zh: Messages = {
     fixtureYear1930Secondary: "庚午・馬年・今年約 96 歲",
     fixtureThenTaiwan:
       "喫茶店、戲院與新文化活動興起，城市生活有了更多新的交流方式。",
-    fixtureReversePrimary: "民國 25 年｜昭和 11 年",
+    fixtureReversePrimary: "最接近 1936 年",
     fixtureReverseSecondary: "丙子・鼠年・今年約 90 歲",
     fixtureGregorianYear: "1930",
     fixtureMinguoYear: "19",

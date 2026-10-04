@@ -1480,7 +1480,7 @@ export const en = {
       "Dog",
       "Pig",
     ],
-    reverseClosest: "Closest year: 1936",
+    fixtureReverseEraLine: "Minguo 25 · Showa 11",
     capsuleLabel: "Look up a year",
     sheetAriaLabel: "Look up a year",
     sheetTitle: "Look up a year",
@@ -1489,7 +1489,7 @@ export const en = {
     fixtureYear1930Secondary: "Geng-wu · Year of the Horse · about 96 this year",
     fixtureThenTaiwan:
       "Teahouses, theaters, and new cultural activities took hold, and city life found more ways to mix and meet.",
-    fixtureReversePrimary: "Minguo 25 | Showa 11",
+    fixtureReversePrimary: "Closest to 1936",
     fixtureReverseSecondary: "Bing-zi · Year of the Rat · about 90 this year",
     fixtureGregorianYear: "1930",
     fixtureMinguoYear: "19",

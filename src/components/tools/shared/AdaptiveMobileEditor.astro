@@ -17,6 +17,8 @@ interface Props {
 	locale?: Locale;
 	/** 產品語意例外（Hours「清除」）；未傳則用 ameChrome.reset */
 	resetLabel?: string;
+	/** Landscape topbar Cancel；預設 true。TYAR 不需要可見 Cancel */
+	showCancel?: boolean;
 }
 
 const {
@@ -25,6 +27,7 @@ const {
 	id,
 	locale = "en",
 	resetLabel,
+	showCancel = true,
 } = Astro.props;
 const ameChrome = getMessages(locale).ameChrome;
 const resetText = resetLabel ?? ameChrome.reset;
@@ -36,6 +39,7 @@ const doneText = ameChrome.done;
 	data-ame-open="false"
 	data-ame-density="mixed"
 	data-ame-keypad-visible="false"
+	data-ame-show-cancel={showCancel ? "true" : "false"}
 	hidden
 	aria-hidden="true"
 	id={id}
@@ -70,9 +74,13 @@ const doneText = ameChrome.done;
 		<!-- Landscape only: Cancel＋Reset | Title（absolute center） | Done（live：Cancel hidden） -->
 		<header class="ame-topbar" data-ame-topbar>
 			<div class="ame-topbar-leading" data-ame-topbar-leading>
-				<button type="button" class="ame-topbar-btn" data-ame-close="cancel" data-ame-cancel>
-					Cancel
-				</button>
+				{
+					showCancel ? (
+						<button type="button" class="ame-topbar-btn" data-ame-close="cancel" data-ame-cancel>
+							Cancel
+						</button>
+					) : null
+				}
 				<button type="button" class="ame-topbar-btn ame-topbar-btn--reset" data-ame-reset>
 					{resetText}
 				</button>

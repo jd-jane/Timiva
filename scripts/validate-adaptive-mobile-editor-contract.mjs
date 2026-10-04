@@ -123,6 +123,8 @@ ok(/data-ame-submit/.test(compSrc), "Done controls use data-ame-submit");
 ok(!/data-ame-close="done"/.test(compSrc), "Shell Done no longer uses data-ame-close=done");
 ok(/getMessages/.test(compSrc) && /ameChrome/.test(compSrc), "Chrome copy from shared ameChrome i18n");
 ok(/resetLabel\?:/.test(compSrc), "Optional resetLabel prop for Hours exception");
+ok(/showCancel\?:/.test(compSrc), "Optional showCancel prop hides landscape Cancel chrome");
+ok(/showCancel = true/.test(compSrc), "showCancel defaults to true");
 ok(
 	!/>Reset</.test(compSrc) && !/>Done</.test(compSrc),
 	"No hardcoded English Reset／Done in AME chrome markup",
@@ -155,6 +157,26 @@ ok(
 		cssSrc,
 	),
 	"Contract：live CSS hides Cancel without removing submit Cancel markup",
+);
+ok(
+	/\[data-ame-root\]\[data-ame-show-cancel="false"\]\s*\[data-ame-cancel\][\s\S]{0,40}display:\s*none/.test(
+		cssSrc,
+	),
+	"Contract：showCancel=false CSS hides Cancel chrome",
+);
+ok(
+	/showCancel=\{false\}/.test(read("src/components/tools/taiwan-year-age-reference-v2/TaiwanYearAgeReferenceV2.astro")),
+	"TYAR opts out of landscape Cancel via showCancel={false}",
+);
+ok(
+	![
+		"src/components/tools/hours-calculator-v2/HoursCalculatorV2.astro",
+		"src/components/tools/date-calculator-v2/DateCalculatorV2.astro",
+		"src/components/tools/japanese-era-converter-v2/JapaneseEraConverterV2.astro",
+		"src/components/tools/lunar-date-converter-v2/LunarDateConverterV2.astro",
+		"src/components/tools/taiwan-annual-leave-calculator-v2/TaiwanAnnualLeaveCalculatorV2.astro",
+	].some((rel) => /showCancel=\{false\}/.test(read(rel))),
+	"Other AME adopters keep default Cancel chrome",
 );
 ok(
 	!/date-calculator|dateCalculator|toolSlug|toolName/.test(

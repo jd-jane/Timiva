@@ -75,6 +75,7 @@ const modeSwitchIconHtml =
 	data-tyar-fx-year-secondary={m.fixtureYear1930Secondary}
 	data-tyar-fx-then-taiwan={m.fixtureThenTaiwan}
 	data-tyar-fx-reverse-primary={m.fixtureReversePrimary}
+	data-tyar-fx-reverse-era={m.fixtureReverseEraLine}
 	data-tyar-fx-reverse-secondary={m.fixtureReverseSecondary}
 	data-tyar-fx-gregorian-year={m.fixtureGregorianYear}
 	data-tyar-fx-minguo-year={m.fixtureMinguoYear}
@@ -142,6 +143,7 @@ const modeSwitchIconHtml =
 					type="button"
 					class="tyar-year-chip tyar-landscape-nav"
 					data-tyar-chip="prev"
+					hidden
 					disabled
 					tabindex="-1"
 				>
@@ -161,6 +163,7 @@ const modeSwitchIconHtml =
 					type="button"
 					class="tyar-year-chip tyar-landscape-nav"
 					data-tyar-chip="next"
+					hidden
 					disabled
 					tabindex="-1"
 				>
@@ -171,6 +174,7 @@ const modeSwitchIconHtml =
 			<div class="tyar-result-meta tool-textual-result-support-divider">
 				<p class="tyar-lead" data-tyar-lead>{m.resultInitialSupport}</p>
 				<p class="tyar-then-taiwan" data-tyar-then-taiwan hidden></p>
+				{/* Desktop／Portrait Reverse：置中 compact pair。Landscape Reverse 改走左右 chips。 */}
 				<div class="tyar-reverse-nav" data-tyar-reverse-nav hidden>
 					<button
 						type="button"
@@ -181,7 +185,6 @@ const modeSwitchIconHtml =
 					>
 						← {m.fixtureReversePrevYear}
 					</button>
-					<p class="tyar-reverse-closest">{m.reverseClosest}</p>
 					<button
 						type="button"
 						class="tyar-year-chip"
@@ -409,6 +412,7 @@ const modeSwitchIconHtml =
 			locale={locale}
 			ariaLabel={m.sheetAriaLabel}
 			title={m.sheetTitle}
+			showCancel={false}
 		>
 			{/* 蓋掉 AME 預設 lab fixture 文案 */}
 			<span hidden></span>
@@ -725,6 +729,7 @@ const modeSwitchIconHtml =
 			var weekdayEl = root.querySelector("[data-rs-weekday]");
 			var thenEl = root.querySelector("[data-tyar-then-taiwan]");
 			var navEl = root.querySelector("[data-tyar-reverse-nav]");
+			var landscapeNav = root.querySelectorAll(".tyar-landscape-nav");
 			var gregorianInput = root.querySelector("[data-tyar-gregorian-year]");
 			var minguoInput = root.querySelector("[data-tyar-minguo-year]");
 			var eraInput = root.querySelector("[data-tyar-era-year]");
@@ -784,9 +789,30 @@ const modeSwitchIconHtml =
 			}
 
 			function setWeekday(text) {
+				setWeekdayLines(text ? [text] : []);
+			}
+
+			/* Reverse secondary：兩行同等層級；exact year 仍走單行 textContent */
+			function setWeekdayLines(lines) {
 				if (!weekdayEl) return;
-				weekdayEl.textContent = text || "";
-				weekdayEl.hidden = !text;
+				if (!lines.length) {
+					weekdayEl.textContent = "";
+					weekdayEl.hidden = true;
+					refreshLive();
+					return;
+				}
+				if (lines.length === 1) {
+					weekdayEl.textContent = lines[0];
+				} else {
+					weekdayEl.replaceChildren();
+					lines.forEach(function (line) {
+						var p = document.createElement("p");
+						p.className = "tyar-reverse-line";
+						p.textContent = line;
+						weekdayEl.appendChild(p);
+					});
+				}
+				weekdayEl.hidden = false;
 				refreshLive();
 			}
 
@@ -812,15 +838,22 @@ const modeSwitchIconHtml =
 				setHidden(ameZodiacPanel, !isZodiac);
 			}
 
-			function setFilledMeta(secondary, thenTaiwan, showReverse) {
+			function setFilledMeta(secondary, thenTaiwan, showReverse, reverseEra) {
 				setHidden(leadEl, true);
-				setWeekday(secondary);
+				if (showReverse && reverseEra) {
+					setWeekdayLines([reverseEra, secondary]);
+				} else {
+					setWeekday(secondary);
+				}
 				if (thenEl) {
 					thenEl.textContent = thenTaiwan;
 					/* reverse：藏年代句，保留 result-meta 既有 divider */
 					setHidden(thenEl, showReverse || !thenTaiwan);
 				}
 				setHidden(navEl, !showReverse);
+				landscapeNav.forEach(function (el) {
+					setHidden(el, !showReverse);
+				});
 			}
 
 			function setAmeNumeric(el, value) {
@@ -861,6 +894,7 @@ const modeSwitchIconHtml =
 			var yearSecondary = attr("data-tyar-fx-year-secondary");
 			var thenTaiwan = attr("data-tyar-fx-then-taiwan");
 			var reversePrimary = attr("data-tyar-fx-reverse-primary");
+			var reverseEra = attr("data-tyar-fx-reverse-era");
 			var reverseSecondary = attr("data-tyar-fx-reverse-secondary");
 			var gYear = attr("data-tyar-fx-gregorian-year");
 			var mYear = attr("data-tyar-fx-minguo-year");
@@ -874,6 +908,9 @@ const modeSwitchIconHtml =
 			setWeekday("");
 			setHidden(thenEl, true);
 			setHidden(navEl, true);
+			landscapeNav.forEach(function (el) {
+				setHidden(el, true);
+			});
 			setPrimary(placeholder);
 
 			if (fixture === "year-1930") {
@@ -896,7 +933,7 @@ const modeSwitchIconHtml =
 				setQueryMode("year");
 			} else if (fixture === "reverse" || fixture === "reverse-expanded") {
 				setPrimary(reversePrimary);
-				setFilledMeta(reverseSecondary, thenTaiwan, true);
+				setFilledMeta(reverseSecondary, thenTaiwan, true, reverseEra);
 				setYearInputs("", "", "");
 				setMode("gregorian");
 				setQueryMode("zodiac");

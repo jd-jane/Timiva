@@ -183,6 +183,11 @@ body.ame-scroll-lock {
 	display: none;
 }
 
+/* Optional hide：TYAR 等不需要可見 Cancel；underlay dismiss 仍在 */
+[data-ame-root][data-ame-show-cancel="false"] [data-ame-cancel] {
+	display: none;
+}
+
 /* Workspace: Body＋contextual Keypad dock */
 .ame-workspace {
 	box-sizing: border-box;
