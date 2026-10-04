@@ -122,12 +122,13 @@ ok(/function dismissChrome|dismissChrome\(/.test(ctrlSrc), "Dismiss chrome helpe
 ok(/data-ame-submit/.test(compSrc), "Done controls use data-ame-submit");
 ok(!/data-ame-close="done"/.test(compSrc), "Shell Done no longer uses data-ame-close=done");
 ok(/getMessages/.test(compSrc) && /ameChrome/.test(compSrc), "Chrome copy from shared ameChrome i18n");
+ok(/ameChrome\.cancel/.test(compSrc), "Cancel copy from shared ameChrome");
 ok(/resetLabel\?:/.test(compSrc), "Optional resetLabel prop for Hours exception");
 ok(/showCancel\?:/.test(compSrc), "Optional showCancel prop hides landscape Cancel chrome");
 ok(/showCancel = true/.test(compSrc), "showCancel defaults to true");
 ok(
-	!/>Reset</.test(compSrc) && !/>Done</.test(compSrc),
-	"No hardcoded English Reset／Done in AME chrome markup",
+	!/>Reset</.test(compSrc) && !/>Done</.test(compSrc) && !/>Cancel</.test(compSrc),
+	"No hardcoded English Cancel／Reset／Done in AME chrome markup",
 );
 
 /* B8.2 lifecycle */

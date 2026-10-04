@@ -4,7 +4,7 @@
  * Same DOM／state for Portrait sheet + Landscape full-screen.
  * Slots: default fixtures · content region · error region.
  * Selector boundary: [data-ame-root]／.ame-*／--ame-* only.
- * Chrome Reset／Done 走 shared ameChrome i18n；Hours 可傳 resetLabel 覆寫 Reset 文案。
+ * Chrome Cancel／Reset／Done 走 shared ameChrome i18n；Hours 可傳 resetLabel 覆寫 Reset 文案。
  */
 import AmeFieldError from "./AmeFieldError.astro";
 import type { Locale } from "../../../i18n/config";
@@ -30,6 +30,7 @@ const {
 	showCancel = true,
 } = Astro.props;
 const ameChrome = getMessages(locale).ameChrome;
+const cancelText = ameChrome.cancel;
 const resetText = resetLabel ?? ameChrome.reset;
 const doneText = ameChrome.done;
 ---
@@ -77,7 +78,7 @@ const doneText = ameChrome.done;
 				{
 					showCancel ? (
 						<button type="button" class="ame-topbar-btn" data-ame-close="cancel" data-ame-cancel>
-							Cancel
+							{cancelText}
 						</button>
 					) : null
 				}

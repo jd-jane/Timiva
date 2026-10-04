@@ -97,6 +97,7 @@ export const en = {
     chinese: "中文",
   },
   ameChrome: {
+    cancel: "Cancel",
     reset: "Reset",
     done: "Done",
   },

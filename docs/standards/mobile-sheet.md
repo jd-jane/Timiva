@@ -1,6 +1,6 @@
 ﻿# Timiva Mobile Sheet／Mobile Editor Spec
 
-Date: 2026-06-14 (Created) · Last updated: 2026-09-28（Mobile field typography＋AME footer chrome）
+Date: 2026-06-14 (Created) · Last updated: 2026-10-04（AME Cancel localization）
 Owner: Jane / Timiva
 Status: **Active** · AME＝適用範圍內的 canonical interactive Mobile Editor foundation · Legacy tool-local sheets＋`tool-mobile-sheet-v2-baseline.css`／`msb-*` 仍為 production dependency · Option D（刪除全部 D1／MSB）已否決
 
@@ -653,10 +653,11 @@ Standard Pill Field 是 Desktop-only Expected
 ### 18.4 AME footer chrome
 
 ```text
-ZH：重設 / 完成
-EN：Reset / Done
+ZH：取消 / 重設 / 完成
+EN：Cancel / Reset / Done
 從 shared AdaptiveMobileEditor ＋ i18n ameChrome 解決
-禁止各工具 querySelector 改 [data-ame-reset]／[data-ame-submit] 文案
+禁止各工具 querySelector 改 [data-ame-cancel]／[data-ame-reset]／[data-ame-submit] 文案
+Cancel 只出現在 Landscape topbar；live lifecycle 與 showCancel={false} 不顯示
 ```
 
 產品語意例外（須標註）：

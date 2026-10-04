@@ -96,6 +96,7 @@ export const zh: Messages = {
     chinese: "中文",
   },
   ameChrome: {
+    cancel: "取消",
     reset: "重設",
     done: "完成",
   },

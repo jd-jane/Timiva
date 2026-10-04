@@ -180,12 +180,12 @@ ok(
 ok(/ameChrome/.test(ameAstro) && /getMessages/.test(ameAstro), "AME chrome uses shared ameChrome i18n");
 ok(/resetLabel\?:/.test(ameAstro), "AME exposes optional resetLabel");
 ok(
-	/ameChrome:\s*\{[\s\S]*?reset:\s*"Reset"[\s\S]*?done:\s*"Done"/.test(enSrc),
-	"EN ameChrome = Reset / Done",
+	/ameChrome:\s*\{[\s\S]*?cancel:\s*"Cancel"[\s\S]*?reset:\s*"Reset"[\s\S]*?done:\s*"Done"/.test(enSrc),
+	"EN ameChrome = Cancel / Reset / Done",
 );
 ok(
-	/ameChrome:\s*\{[\s\S]*?reset:\s*"重設"[\s\S]*?done:\s*"完成"/.test(zhSrc),
-	"ZH ameChrome = 重設 / 完成",
+	/ameChrome:\s*\{[\s\S]*?cancel:\s*"取消"[\s\S]*?reset:\s*"重設"[\s\S]*?done:\s*"完成"/.test(zhSrc),
+	"ZH ameChrome = 取消 / 重設 / 完成",
 );
 
 const hoursAstro = read(hoursAstroRel);
