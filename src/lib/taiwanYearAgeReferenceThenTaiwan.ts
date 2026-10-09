@@ -1,7 +1,7 @@
 /**
  * Taiwan Year & Age Reference —「那時的台灣」content buckets（B1A SSOT）。
- * 生活感年代文案，不是學術分期。純資料、無 DOM、無 year lookup。
- * 2010 起不顯示（無 bucket）。B2 再接結果區。
+ * 生活感年代文案，不是學術分期。純資料、無 DOM。
+ * 2010 起不顯示（無 bucket）。B2A：lookupThenTaiwan；render／Landscape hide 屬 B2B。
  */
 
 export type ThenTaiwanBucket = {
@@ -87,3 +87,19 @@ export const THEN_TAIWAN_BUCKETS: readonly ThenTaiwanBucket[] = [
 			"The internet, mobile phones, and high-speed rail entered daily life, and both distance and pace began to change.",
 	},
 ];
+
+export type ThenTaiwanLocale = "en" | "zh";
+
+/** 有桶則回該 locale 一句；2010+／範圍外／無桶 → null。不改桶文案。 */
+export function lookupThenTaiwan(year: number, locale: ThenTaiwanLocale): string | null {
+	if (!Number.isInteger(year) || year < 1862 || year > THEN_TAIWAN_DISPLAY_UNTIL) {
+		return null;
+	}
+
+	const bucket = THEN_TAIWAN_BUCKETS.find((row) => year >= row.startYear && year <= row.endYear);
+	if (!bucket) {
+		return null;
+	}
+
+	return locale === "zh" ? bucket.zhText : bucket.enText;
+}
