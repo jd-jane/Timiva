@@ -1447,6 +1447,7 @@ export const zh: Messages = {
     formatPrimaryJoin: "｜",
     formatSecondaryJoin: "・",
     formatEraLineJoin: "・",
+    errorEraYearRange: "{era}年份請輸入 {min} 至 {max}",
     fixtureReverseEraLine: "民國 25 年・昭和 11 年",
     capsuleLabel: "查詢年份",
     sheetAriaLabel: "查詢年份",

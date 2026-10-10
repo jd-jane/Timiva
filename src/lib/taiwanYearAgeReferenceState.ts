@@ -50,6 +50,47 @@ export function capTyarInput(raw: string, maxDigits: number): string {
 	return raw.length <= maxDigits ? raw : raw.slice(0, maxDigits);
 }
 
+/** 鍵盤／paste：只截長度，不改寫成合法年份。 */
+export function applyTyarInputInsert(
+	current: string,
+	insert: string,
+	selectionStart: number,
+	selectionEnd: number,
+	maxDigits: number,
+): string {
+	const start = Math.max(0, Math.min(selectionStart, current.length));
+	const end = Math.max(start, Math.min(selectionEnd, current.length));
+	const room = maxDigits - (current.length - (end - start));
+	if (room <= 0) {
+		return current;
+	}
+	return `${current.slice(0, start)}${insert.slice(0, room)}${current.slice(end)}`;
+}
+
+export function isTyarQaFixture(value: string): value is TyarQaFixture {
+	return (
+		value === "initial" ||
+		value === "year-1930" ||
+		value === "minguo-1930" ||
+		value === "era-1930" ||
+		value === "reverse" ||
+		value === "gregorian-1895" ||
+		value === "minguo-1" ||
+		value === "era-meiji-45"
+	);
+}
+
+/** `?tyarFixture=` → PageState fixture；reverse-expanded 視為 reverse（closest）。 */
+export function parseTyarQaFixtureParam(raw: string | null): TyarQaFixture | null {
+	if (!raw) {
+		return null;
+	}
+	if (raw === "reverse-expanded") {
+		return "reverse";
+	}
+	return isTyarQaFixture(raw) ? raw : null;
+}
+
 export function createInitialTyarState(): TyarPageState {
 	return {
 		queryMode: "year",

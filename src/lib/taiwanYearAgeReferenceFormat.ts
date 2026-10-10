@@ -3,14 +3,17 @@
  * 只選 i18n key、組結構、插入數值。禁止第二份 EN／ZH 文案。
  */
 import type { EraId } from "./japaneseEraConverterData.ts";
-import type {
-	TyarEraRef,
-	TyarEvaluation,
-	TyarExactResult,
-	TyarMinguoRef,
-	TyarReverseResult,
-	TyarReverseView,
-	TyarYearFacts,
+import {
+	getTyarCurrentYear,
+	tyarEraYearMax,
+	tyarEraYearMin,
+	type TyarEraRef,
+	type TyarEvaluation,
+	type TyarExactResult,
+	type TyarMinguoRef,
+	type TyarReverseResult,
+	type TyarReverseView,
+	type TyarYearFacts,
 } from "./taiwanYearAgeReferenceMath.ts";
 import { lookupThenTaiwan, type ThenTaiwanLocale } from "./taiwanYearAgeReferenceThenTaiwan.ts";
 
@@ -30,6 +33,7 @@ export type TyarFormatCopy = {
 	formatPrimaryJoin: string;
 	formatSecondaryJoin: string;
 	formatEraLineJoin: string;
+	errorEraYearRange: string;
 };
 
 export type TyarFormatLocale = ThenTaiwanLocale;
@@ -73,6 +77,19 @@ function formatEra(ref: TyarEraRef, copy: TyarFormatCopy): string {
 	return fillTyarTemplate(copy.formatEraYear, {
 		era: copy.eraNames[ref.eraId],
 		n: ref.eraYear,
+	});
+}
+
+/** 僅 Japanese era year 超出該年號範圍時使用；句尾 ! 由 UI icon 另外放。 */
+export function formatTyarEraYearRangeHint(
+	eraId: EraId,
+	copy: TyarFormatCopy,
+	nowYear = getTyarCurrentYear(),
+): string {
+	return fillTyarTemplate(copy.errorEraYearRange, {
+		era: copy.eraNames[eraId],
+		min: tyarEraYearMin(eraId),
+		max: tyarEraYearMax(eraId, nowYear),
 	});
 }
 

@@ -1514,6 +1514,7 @@ export const en = {
     formatPrimaryJoin: " | ",
     formatSecondaryJoin: " · ",
     formatEraLineJoin: " · ",
+    errorEraYearRange: "{era} year: {min}–{max}",
     fixtureReverseEraLine: "Minguo 25 · Showa 11",
     capsuleLabel: "Look up a year",
     sheetAriaLabel: "Look up a year",

@@ -118,6 +118,39 @@
 		[data-result-summary][data-rs-content="textual"] {
 		--rs-textual-primary-size: clamp(2.75rem, 10cqi, 3.75rem);
 	}
+
+	/*
+	 * Exact 單一 primary：依實際 nowrap 寬度分 short／long，不 hardcode locale／年份。
+	 * short＝短內容較大份量；long＝長字串收到約 2 行，仍高於 composite 64px。
+	 */
+	[data-taiwan-year-age-reference-v2][data-tyar-primary-tier="single-short"]:not(
+			[data-tyar-fixture="initial"]
+		)
+		[data-result-summary][data-rs-content="textual"] {
+		--rs-textual-primary-size: clamp(4.5rem, 16cqi, 6.5rem);
+	}
+
+	[data-taiwan-year-age-reference-v2][data-tyar-primary-tier="single-long"]:not(
+			[data-tyar-fixture="initial"]
+		)
+		[data-result-summary][data-rs-content="textual"] {
+		--rs-textual-primary-size: clamp(3.75rem, 12cqi, 4.875rem);
+	}
+
+	/*
+	 * Reverse primary 獨立 typography role，不沿用 Exact 4rem。
+	 * closest＝長句（最接近 YYYY 年／Closest to YYYY）；short＝alternative 年份。
+	 * 只動 Desktop；Portrait／Landscape Reverse 既有 token 不變。
+	 */
+	[data-taiwan-year-age-reference-v2][data-tyar-reverse-primary="closest"]
+		[data-result-summary][data-rs-content="textual"] {
+		--rs-textual-primary-size: clamp(3.5rem, 12.5cqi, 5rem);
+	}
+
+	[data-taiwan-year-age-reference-v2][data-tyar-reverse-primary="short"]
+		[data-result-summary][data-rs-content="textual"] {
+		--rs-textual-primary-size: clamp(5.5rem, 21cqi, 8.5rem);
+	}
 }
 
 /* 次要資訊走 ResultSummary weekday 槽；尺寸對齊 Lunar weekday 公開 token */
@@ -181,6 +214,7 @@
 [data-taiwan-year-age-reference-v2] .tyar-then-taiwan[hidden],
 [data-taiwan-year-age-reference-v2] .tyar-reverse-nav[hidden],
 [data-taiwan-year-age-reference-v2] .tyar-landscape-nav[hidden],
+[data-taiwan-year-age-reference-v2] .tyar-year-chip[hidden],
 [data-taiwan-year-age-reference-v2] .tyar-year-mode[hidden],
 [data-taiwan-year-age-reference-v2] .tyar-zodiac-mode[hidden],
 [data-taiwan-year-age-reference-v2] .tyar-field-wrap[hidden],
@@ -260,6 +294,36 @@
 	line-height: 1;
 	white-space: nowrap;
 	opacity: 0.92;
+	cursor: pointer;
+}
+
+/* previous／next view 的 current chip：沿用 muted text-action 色，不改 chrome */
+[data-taiwan-year-age-reference-v2] .tyar-year-chip[data-tyar-chip-state="current"],
+[data-taiwan-year-age-reference-v2] .tyar-year-chip:disabled {
+	color: rgb(148 163 184 / 0.72);
+	opacity: 0.72;
+	cursor: default;
+	pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	[data-taiwan-year-age-reference-v2]
+		.tyar-year-chip:not([data-tyar-chip-state="current"]):not(:disabled):hover {
+		background: rgb(255 255 255 / 0.1);
+		border-color: rgb(255 255 255 / 0.2);
+	}
+}
+
+[data-taiwan-year-age-reference-v2]
+	.tyar-year-chip:not([data-tyar-chip-state="current"]):not(:disabled):focus-visible {
+	outline: none;
+	background: rgb(255 255 255 / 0.1);
+	border-color: rgb(255 255 255 / 0.22);
+}
+
+[data-taiwan-year-age-reference-v2]
+	.tyar-year-chip:not([data-tyar-chip-state="current"]):not(:disabled):active {
+	background: rgb(255 255 255 / 0.08);
 }
 
 /* Reverse-only：hidden 必須蓋過 .tyar-year-chip display，避免 first paint 閃現 */
@@ -506,6 +570,12 @@
 	opacity: 1;
 }
 
+[data-taiwan-year-age-reference-v2] .tyar-field-wrap {
+	position: relative;
+	width: 100%;
+	min-width: 0;
+}
+
 /* JEC field-shell recipe（tool-local copy of visual recipe，非複製 component） */
 [data-taiwan-year-age-reference-v2] .tyar-field-shell {
 	display: flex;
@@ -678,6 +748,147 @@
 [data-taiwan-year-age-reference-v2] .tyar-reset:disabled {
 	opacity: 1;
 	cursor: default;
+}
+
+/* Desktop inline invalid：JEC field-error recipe（tool-local） */
+[data-taiwan-year-age-reference-v2] .tyar-inline-error {
+	display: inline-flex;
+	flex: 1 1 auto;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 0.3rem;
+	min-width: 0;
+	max-width: none;
+	margin: 0;
+	padding: 0 0.9rem 0 0.35rem;
+	color: rgb(148 163 184 / 0.68);
+	font-size: 0.6875rem;
+	font-weight: 400;
+	line-height: 1.25;
+	letter-spacing: 0;
+	text-align: end;
+	white-space: nowrap;
+}
+
+[data-taiwan-year-age-reference-v2] .tyar-inline-error[hidden] {
+	display: none;
+}
+
+/* Era range copy 完整顯示：對齊 JEC production（input size=2 讓出空間），不用 ellipsis */
+[data-taiwan-year-age-reference-v2] .tyar-inline-error [data-tyar-era-error-text] {
+	flex: 0 0 auto;
+	min-width: min-content;
+	overflow: visible;
+	text-overflow: unset;
+}
+
+[data-taiwan-year-age-reference-v2] .tyar-inline-error [data-tyar-era-error-text]:empty {
+	display: none;
+}
+
+[data-taiwan-year-age-reference-v2] .tyar-inline-error-mark {
+	display: inline-flex;
+	flex-shrink: 0;
+	align-items: center;
+	justify-content: center;
+	width: 0.875rem;
+	height: 0.875rem;
+	color: rgb(203 213 225 / 0.76);
+}
+
+[data-taiwan-year-age-reference-v2] .tyar-inline-error-mark svg {
+	width: 0.875rem;
+	height: 0.875rem;
+}
+
+[data-taiwan-year-age-reference-v2] .tyar-field-wrap.is-invalid .tyar-year-input,
+[data-taiwan-year-age-reference-v2] .tyar-mini-field.is-invalid .tyar-year-input,
+[data-taiwan-year-age-reference-v2] .tyar-mini-field.is-invalid .tyar-age-input,
+[data-taiwan-year-age-reference-v2] .tyar-mini-field.is-invalid .tyar-zodiac-select {
+	flex: 0 0 auto;
+	width: auto;
+	min-width: 4.5ch;
+	padding-right: 0.35rem;
+}
+
+/* Desktop era popover：tool-owned compact panel */
+[data-taiwan-year-age-reference-v2] .tyar-era-popover {
+	position: absolute;
+	left: 0.35rem;
+	z-index: 80;
+	box-sizing: border-box;
+	min-width: 9rem;
+	padding: 0.375rem;
+	border-radius: 14px;
+	border: 1px solid rgb(255 255 255 / 0.08);
+	background: linear-gradient(
+		165deg,
+		rgb(120 108 210 / 0.22),
+		rgb(78 96 170 / 0.18)
+	);
+	box-shadow: 0 18px 48px rgb(0 0 0 / 0.42);
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+}
+
+[data-taiwan-year-age-reference-v2] .tyar-era-popover[hidden] {
+	display: none;
+}
+
+[data-taiwan-year-age-reference-v2] .tyar-era-popover[data-placement="below"] {
+	top: calc(100% + 0.5rem);
+}
+
+[data-taiwan-year-age-reference-v2] .tyar-era-popover[data-placement="above"] {
+	bottom: calc(100% + 0.5rem);
+	top: auto;
+}
+
+[data-taiwan-year-age-reference-v2] .tyar-era-option {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	width: 100%;
+	min-height: 2.125rem;
+	margin: 0;
+	padding: 0.375rem 0.75rem;
+	border: 0;
+	border-radius: 0.5rem;
+	background: transparent;
+	color: rgb(226 232 240 / 0.92);
+	font: inherit;
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.2;
+	text-align: start;
+}
+
+[data-taiwan-year-age-reference-v2] .tyar-era-option[aria-selected="true"] {
+	background: rgb(255 255 255 / 0.08);
+	color: rgb(248 250 252);
+}
+
+[data-taiwan-year-age-reference-v2] .tyar-era-option:focus-visible {
+	outline: none;
+	background: rgb(255 255 255 / 0.1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	[data-taiwan-year-age-reference-v2] .tyar-era-option:hover {
+		background: rgb(255 255 255 / 0.08);
+	}
+}
+
+[data-taiwan-year-age-reference-v2] .tyar-era-option-check {
+	width: 0.875rem;
+	height: 0.875rem;
+	flex-shrink: 0;
+	opacity: 0;
+}
+
+[data-taiwan-year-age-reference-v2] .tyar-era-option[aria-selected="true"] .tyar-era-option-check {
+	opacity: 0.85;
 }
 
 /* -------------------------------------------------------------------------- */
