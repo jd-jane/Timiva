@@ -16,5 +16,6 @@ export const catalogIconMap: Record<
 	"japanese-era-converter": "calendar",
 	"lunar-date-converter": "calendar",
 	"taiwan-annual-leave-calculator": "calendar",
+	"taiwan-year-age-reference": "calendar",
 	"life-progress": "progress",
 };

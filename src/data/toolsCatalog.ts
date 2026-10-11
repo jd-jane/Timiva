@@ -22,6 +22,7 @@ export type CatalogToolId =
   | "japanese-era-converter"
   | "lunar-date-converter"
   | "taiwan-annual-leave-calculator"
+  | "taiwan-year-age-reference"
   | "life-progress";
 
 export interface CatalogTool {
@@ -108,7 +109,7 @@ export const catalogTools: CatalogTool[] = [
     available: true,
     featured: false,
     icon: "calendar",
-    relatedIds: ["date-calculator", "age-calculator", "lunar-date-converter"],
+    relatedIds: ["taiwan-year-age-reference", "age-calculator", "lunar-date-converter"],
   },
   {
     id: "lunar-date-converter",
@@ -117,7 +118,7 @@ export const catalogTools: CatalogTool[] = [
     available: true,
     featured: false,
     icon: "calendar",
-    relatedIds: ["japanese-era-converter", "age-calculator"],
+    relatedIds: ["japanese-era-converter", "age-calculator", "taiwan-year-age-reference"],
   },
   {
     id: "taiwan-annual-leave-calculator",
@@ -127,6 +128,19 @@ export const catalogTools: CatalogTool[] = [
     featured: false,
     icon: "calendar",
     relatedIds: ["date-range", "business-days-calculator"],
+  },
+  {
+    id: "taiwan-year-age-reference",
+    slug: "taiwan-year-age-reference",
+    categoryId: "dates-events",
+    available: true,
+    featured: false,
+    icon: "calendar",
+    relatedIds: [
+      "japanese-era-converter",
+      "age-calculator",
+      "lunar-date-converter",
+    ],
   },
   {
     id: "countdown-timer",

@@ -28,34 +28,39 @@ const messages = getMessages(locale);
 const m = messages.taiwanYearAgeReference;
 const faqSchema = buildFaqPageJsonLd(m.faq.items);
 
-/** Tool-local outbound only — exactly 3；不改 toolsCatalog、無 featured padding。 */
-const declaredRelatedIds = [
-	"japanese-era-converter",
-	"age-calculator",
-	"lunar-date-converter",
-] as const satisfies readonly CatalogToolId[];
+/** Catalog-declared outbound only — no getRelatedTools featured padding. */
+const tyarCatalog = getCatalogTool("taiwan-year-age-reference");
+const declaredRelatedIds = (tyarCatalog?.relatedIds ?? []) as CatalogToolId[];
 
 const toolCopy: Record<
-	(typeof declaredRelatedIds)[number],
+	CatalogToolId,
 	{ title: string; relatedDescription: string }
 > = {
-	"japanese-era-converter": messages.tools.japaneseEraConverter,
+	"event-countdown": messages.tools.eventCountdown,
+	"date-range": messages.tools.dateRange,
+	"countdown-timer": messages.tools.countdownTimer,
+	"year-progress": messages.tools.yearProgress,
 	"age-calculator": messages.tools.ageCalculator,
+	"days-between-dates": messages.tools.daysBetweenDates,
+	"business-days-calculator": messages.tools.businessDaysCalculator,
+	"life-progress": messages.tools.lifeProgress,
+	"date-calculator": messages.tools.dateCalculator,
+	"hours-calculator": messages.tools.hoursCalculator,
+	"japanese-era-converter": messages.tools.japaneseEraConverter,
 	"lunar-date-converter": messages.tools.lunarDateConverter,
+	"taiwan-annual-leave-calculator": messages.tools.taiwanAnnualLeaveCalculator,
+	"taiwan-year-age-reference": messages.tools.taiwanYearAgeReference,
 };
 
 const relatedToolItems = declaredRelatedIds
 	.map((id) => getCatalogTool(id))
 	.filter((tool): tool is NonNullable<typeof tool> => Boolean(tool?.available))
-	.map((tool) => {
-		const id = tool.id as (typeof declaredRelatedIds)[number];
-		return {
-			href: getLocalizedPath(locale, `/${tool.slug}/`),
-			name: toolCopy[id].title,
-			description: toolCopy[id].relatedDescription,
-			icon: catalogIconMap[tool.id],
-		};
-	});
+	.map((tool) => ({
+		href: getLocalizedPath(locale, `/${tool.slug}/`),
+		name: toolCopy[tool.id].title,
+		description: toolCopy[tool.id].relatedDescription,
+		icon: catalogIconMap[tool.id],
+	}));
 
 const rsPrimary = {
 	text: m.resultPlaceholder,

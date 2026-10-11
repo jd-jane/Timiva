@@ -289,6 +289,13 @@ export const zh: Messages = {
       compactDescription: "試算法定特休天數。",
       relatedDescription: "依到職日期試算特休。",
     },
+    taiwanYearAgeReference: {
+      title: "台灣年歲對照",
+      description:
+        "用西曆、民國或和曆查年份，查看約略年歲、歲次生肖，以及那時的台灣。",
+      compactDescription: "查年歲與那時的台灣。",
+      relatedDescription: "查看年歲與那時的台灣。",
+    },
     lifeProgress: {
       title: "人生進度條",
       description: "把一年、人生或目標期限變成清楚的時間進度。",

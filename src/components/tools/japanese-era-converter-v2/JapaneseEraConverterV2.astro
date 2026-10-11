@@ -41,16 +41,10 @@ const toolCopy: Record<
 	"japanese-era-converter": messages.tools.japaneseEraConverter,
 	"lunar-date-converter": messages.tools.lunarDateConverter,
 	"taiwan-annual-leave-calculator": messages.tools.taiwanAnnualLeaveCalculator,
+	"taiwan-year-age-reference": messages.tools.taiwanYearAgeReference,
 };
 
-const relatedToolItems = relatedTools
-	.filter(
-		(tool) =>
-			tool.id === "date-calculator" ||
-			tool.id === "age-calculator" ||
-			tool.id === "lunar-date-converter",
-	)
-	.map((tool) => ({
+const relatedToolItems = relatedTools.map((tool) => ({
 	href: getLocalizedPath(locale, `/${tool.slug}/`),
 	name: toolCopy[tool.id].title,
 	description: toolCopy[tool.id].relatedDescription,

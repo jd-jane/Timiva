@@ -310,6 +310,13 @@ export const en = {
       compactDescription: "Estimate statutory annual leave.",
       relatedDescription: "Estimate annual leave from hire date.",
     },
+    taiwanYearAgeReference: {
+      title: "Taiwan Year & Age Reference",
+      description:
+        "Look up Gregorian, Minguo, and Japanese era years to see approximate age, the year’s zodiac, and a glimpse of Taiwan then.",
+      compactDescription: "Look up year, age, and zodiac.",
+      relatedDescription: "Look up year, age, and Taiwan then.",
+    },
     lifeProgress: {
       title: "Life Progress Bar",
       description:
