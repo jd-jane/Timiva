@@ -5,6 +5,70 @@
 
 ---
 
+## 2026-10-11 — TYAR Production Complete／Deployed · Close V1.6
+
+### 背景
+
+```text
+台灣年歲對照／Taiwan Year & Age Reference（V1.6 第二支）
+已 push 至 origin/main（47f3c3d）並完成 Cloudflare Pages auto-deploy。
+Owner Production Smoke QA＝PASS。
+V1.6 固定兩支均已 deployed。
+```
+
+### 決策
+
+```text
+1. TYAR＝Production Complete／Deployed。
+   Production verified HEAD：47f3c3d
+   Link Integration commit：c84cc81
+   Routes：/en/taiwan-year-age-reference/ · /zh/taiwan-year-age-reference/
+   Owner Production Smoke QA：PASS
+     EN／ZH routes · Desktop Exact 1930 · Reverse zodiac
+     Reverse 前後年份可點 · Portrait／Landscape AME
+     All Tools · Related · Home Featured · canonical／hreflang
+   Cloudflare Pages auto-deploy；無 manual deploy。
+2. Home Featured 維持原本 4 張；TYAR 不加入 Featured。
+3. All Tools dates-events：… → JEC → Lunar → TALC → TYAR → Age。
+4. Related final：
+   TYAR outbound：JEC → Age → Lunar
+   JEC：TYAR → Age → Lunar
+   Lunar：JEC → Age → TYAR
+   Age／TALC inbound 不變
+   Related Tools 原則仍是最多 3 個，不要求湊滿。
+5. V1.6 Taiwan Local Tools＝closed／Production Complete。
+   1) 特休天數試算／TALC
+   2) 台灣年歲對照／TYAR
+   不再有「V1.6 in progress」「TYAR＝Next／尚未開始」。
+6. 下一步不是新工具，也不是立刻開始 Year Progress 2.0。
+   Current Next Action：
+     1. Timiva Search／Index 全站總檢
+     2. Search Strategy Decision Gate（WAIT／OPTIMIZE／REPOSITION／RETHINK）
+     3. Year Progress 2.0
+     4. 首頁動態
+     5. 作品集
+     6. 下一階段工具
+7. Search／Index 總檢驗證 V1.5 Search Foundation 實際結果
+   （impressions／clicks、query 意圖、ranking、EN／ZH、未起來的頁、
+    title／description、internal links、sitemap／indexed 異常、
+    Google 是否理解各工具搜尋意圖）。本輪不開始 audit、不改 SEO。
+8. AME contract 既有 7 個 protected-hash known failures 保留紀錄，本輪不處理。
+9. main＝origin/main＝47f3c3d。
+```
+
+### 影響
+
+```text
+docs/project/current-status.md
+docs/project/decision-log.md
+docs/core/roadmap.md
+docs/core/product-architecture.md
+docs/tools/taiwan-year-age-reference/README.md
+docs/README.md
+```
+
+---
+
 ## 2026-09-28 — Mobile Bottom Sheet Visual Baseline
 
 ### 背景

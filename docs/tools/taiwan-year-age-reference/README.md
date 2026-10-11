@@ -1,8 +1,8 @@
 # Taiwan Year & Age Reference / 台灣年歲對照 — README
 
 > 建立日期：2026-09-19
-> 更新日期：2026-09-20（B1B）
-> 狀態：**B1B static visual · Owner Visual Review** · Not Link Integrated · Not deployed
+> 更新日期：2026-10-11（Production Complete／Deployed）
+> 狀態：**Production Complete／Deployed** · V1.6 第二支上線 · Owner Production QA＝PASS · HEAD：`47f3c3d`
 > Canonical product spec：`docs/tools/taiwan-year-age-reference/product-spec.md`
 > Phase：V1.6 Taiwan Local Tools · 第二支
 
@@ -30,59 +30,88 @@ ZH：台灣年歲對照
 
 ---
 
-## 3. 分類與站內連結
+## 3. Release status
+
+```text
+B0 → B1A → B1B → Independent Responsive Foundation → Desktop／Portrait visuals
+→ B2A math → B2B Desktop → B2C Mobile／AME → Link Integration
+Owner Production Smoke QA：PASS
+Push：47f3c3d → origin/main
+Deploy：Cloudflare Pages auto-deploy（無 manual deploy）
+Production verified HEAD：47f3c3d
+Link Integration commit：c84cc81
+```
+
+Key commits（摘要）：
+
+```text
+6bd3b57 feat: scaffold Taiwan Year & Age Reference
+9652396 feat: add Taiwan Year & Age Reference lower content
+58e93fd fix: make tool stage geometry fluid
+33d1162 feat: establish Taiwan Year & Age Reference desktop visuals
+77c0d13 feat: establish Taiwan Year & Age Reference mobile portrait
+23aa911 feat: unify mobile bottom sheet visual baseline
+51680c5 feat: finalize Taiwan Year & Age Reference static visuals
+eced377 fix: localize adaptive mobile editor cancel
+833f473 feat: add Taiwan Year & Age Reference calculation core
+8c61c73 feat: wire Taiwan Year & Age Reference desktop interactions
+80f17fd feat: wire Taiwan Year & Age Reference mobile interactions
+c84cc81 feat: integrate Taiwan Year & Age Reference across site links
+47f3c3d docs: mark Taiwan Year & Age Reference ready to push
+```
+
+---
+
+## 4. Desktop
+
+- Year lookup：西曆／民國／和曆（互斥）
+- Reverse lookup：生肖＋大約年齡；前後同生肖年份可點
+- Shared ResultSummary textual
+- Reset
+- Math SSOT：`taiwanYearAgeReferenceMath.ts`／`taiwanYearAgeReferenceState.ts`／`taiwanYearAgeReferenceFormat.ts`
+- `?tyarFixture=`／`?tyarSheet=open` 僅 QA fixture
+
+---
+
+## 5. Mobile AME
+
+- First-screen capsule「查詢年份／Look up a year」→ shared Adaptive Mobile Editor（`lifecycle: "live"`）
+- Portrait Bottom Sheet／Landscape Full-screen
+- `showCancel={false}`（landscape Cancel 關閉）
+- Reverse chips：`pointer-events: auto`（對沖 Frame `.tpf-result-group { pointer-events: none }`）
+
+Validators：
+
+```bash
+node scripts/validate-taiwan-year-age-reference-math.mjs
+node scripts/validate-taiwan-year-age-reference-adopter.mjs
+```
+
+AME contract 既有 7 個 protected-hash known failures（Age／DBD／BDC／Countdown／DRC／Event Countdown／Year Progress）保留紀錄，不在本工具 closeout 處理。
+
+---
+
+## 6. 分類與站內連結
 
 | 項目 | 內容 |
 |---|---|
 | Category | Important Dates／重要日子（`dates-events`） |
-| Suggested catalog ID | `taiwan-year-age-reference`（**未寫入** `toolsCatalog`） |
-| Catalog | 未註冊 · `available` 未設定 |
-| Home Featured | 不含 |
-| All Tools | 未加入（Link Integration 另批） |
-| ToolAdSlot | disabled |
-| Outbound Related（頁內 tool-local） | Japanese Era Converter → Age Calculator → Lunar Date Converter |
-| Inbound Related | 未做（Link Integration 另批） |
-| Sitemap whitelist | **N/A** · Deferred to Link Integration / public integration |
+| Catalog | `toolsCatalog` · id／slug：`taiwan-year-age-reference` · `available: true` · `featured: false` · icon：`calendar` |
+| Home Featured | **不加入**（維持 4 張） |
+| All Tools | EN／ZH：… → JEC → Lunar → TALC → **TYAR** → Age |
+| Outbound Related | Japanese Era Converter → Age Calculator → Lunar Date Converter（恰 3） |
+| Inbound Related | JEC：TYAR → Age → Lunar；Lunar：JEC → Age → TYAR；Age／TALC **不變** |
+| Related 原則 | 每頁最多 3 個，不要求湊滿 |
+| SEO | canonical／hreflang／sitemap／FAQ JSON-LD |
 
 ---
 
-## 4. 目前批次狀態
-
-### B0 — V2 Tool Page Scaffold
-
-完成（checkpoint `6bd3b57`）。
-
-### B1A — Lower content
-
-完成（checkpoint `9652396`）。
-
-### B1B — 上方靜態畫面（本輪）
+## 7. 邊界
 
 ```text
-ResultSummary textual（initial「？」沿用 TALC empty-result）
-Desktop cluster：Year lookup 或 Zodiac lookup（互斥；Lunar mode switch recipe）＋Reset
-Mobile capsule「查詢年份」＋ AME 靜態 sheet
-query fixture：?tyarFixture= / ?tyarSheet=open
-年代背景只顯示一句文案，無標題
-```
-
-### 尚未開始
-
-```text
-B2+ — 西曆／民國／和曆查詢、年歲、生肖、反查、Reset、Bottom Sheet interaction、「那時的台灣」lookup
-Link Integration
-```
-
----
-
-## 5. Protected boundary
-
-```text
-不修改 Header／Footer／BaseLayout／global background／preview baseline
-不修改 ToolPageFrame 或 shared Frame CSS
-不修改 toolsCatalog
-不修改 validate-sitemap.mjs
-不修改既有工具 inbound Related
-不做年份換算／生肖／年歲 lookup／結果渲染
-不 commit／push／deploy 除非 Owner 明示
+Home Featured 不變
+Age／TALC inbound Related 不變
+V1.6：closed／Production Complete
+下一步：Timiva Search／Index 全站總檢 → Search Strategy Decision Gate
+Year Progress 2.0 排在 Decision Gate 之後（非立刻開始）
 ```

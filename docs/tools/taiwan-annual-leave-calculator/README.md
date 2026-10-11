@@ -120,6 +120,8 @@ node --experimental-strip-types scripts/validate-taiwan-annual-leave-mobile.mjs
 ```text
 Home Featured 不變
 date-range inbound Related 不變
-下一支 V1.6 工具（民國西元／年歲對照）— 尚未開始
-Year Progress 2.0 順位不變（V1.6 後）
+台灣年歲對照／TYAR：Production Complete／Deployed（HEAD：47f3c3d）
+V1.6：closed／Production Complete
+下一步：Timiva Search／Index 全站總檢 → Search Strategy Decision Gate
+Year Progress 2.0 排在 Decision Gate 之後
 ```

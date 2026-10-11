@@ -1,8 +1,8 @@
 # Timiva Product Architecture V4
 
-> Updated: 2026-09-06
+> Updated: 2026-10-11
 > Replaces the planning assumptions in V3 where Life Progress Bar was the V1 fourth tool.
-> V1.5 Search Foundation＝closed／Production Complete。Current phase：V1.6 Taiwan Local Tools。
+> V1.5 Search Foundation＝closed／Production Complete。V1.6 Taiwan Local Tools＝closed／Production Complete。下一步：Timiva Search／Index 全站總檢 → Search Strategy Decision Gate。
 
 ## 文件目的
 
@@ -51,8 +51,9 @@ Simple tools for important dates, focus, daily rhythm, and life progress.
 V1.5 Search Foundation is a priority strategy, not a category change.
 V1.5 是搜尋鋪路期的開發優先順序，不改變 Timiva 四大分類。
 2026-09-06：V1.5＝closed／Production Complete（含 Lunar Date Converter）。
-Current phase：V1.6 Taiwan Local Tools preparation。
-Daily Rhythm / Timers & Focus / Life Progress 的完整補齊延後至 V2（Year Progress 2.0 在 V1.6 之後）。
+2026-10-11：V1.6＝closed／Production Complete（TALC＋TYAR deployed）。
+下一步：Timiva Search／Index 全站總檢 → Search Strategy Decision Gate。
+Daily Rhythm / Timers & Focus / Life Progress 的完整補齊延後至 V2（Year Progress 2.0 在 Search Decision Gate 之後）。
 ```
 
 ---
@@ -77,6 +78,8 @@ flowchart TD
     C --> C7[Hours Calculator<br/>Deployed]
     C --> C8[Japanese Era Converter<br/>Deployed]
     C --> C9[Lunar Date Converter<br/>Deployed]
+    C --> C10[Taiwan Annual Leave Calculator<br/>Deployed]
+    C --> C11[Taiwan Year & Age Reference<br/>Deployed]
 
     D --> D1[Countdown Timer]
     D --> D2[Stopwatch]
@@ -161,8 +164,8 @@ Days Between Dates 為 Timiva **第六個工具**，已正式上線於 `https://
 | P1 | Hours Calculator | 時數計算 | 時數／時間差計算 | Low — **已部署 · V1.5 Search Foundation** · Production HEAD：`fd2ed68` |
 | P1 | Japanese Era Converter | 日本年號換算 | 明治／大正／昭和／平成／令和等現代年號 | Low — **已部署 · Timiva 第十** · Production HEAD：`43796cb`；不做大型歷史年號資料庫 |
 | P1 | Lunar Date Converter | 國曆農曆轉換 | 公曆／農曆日期雙向換算 | Low — **已部署 · Production Complete** · HEAD：`35dadef`；「換日期，不解讀日期」 |
-| P2 | 特休試算 | 特休試算 | 台灣特休試算 | Low — **V1.6 next tool** |
-| P2 | 民國西元／年歲對照 | 民國西元／年歲對照 | 民國／西元與年歲對照 | Low — **V1.6 第二支** |
+| P2 | 特休試算 | 特休天數試算 | 台灣特休試算 | Low — **已部署 · V1.6 第一支 · Production Complete** · HEAD：`e1d0634` |
+| P2 | 台灣年歲對照 | 台灣年歲對照 | 年份／年歲／時代感對照 | Low — **已部署 · V1.6 第二支 · Production Complete** · HEAD：`47f3c3d` |
 | P3 | Pet Age Calculator | 寵物年齡換算 | 年齡換算參考 | Low — **deferred／future candidate**；不做健康／醫療建議 |
 | P2 | Birthday Countdown | 生日倒數 | 生日情境倒數 | Low |
 | P3 | Holiday Countdown | 節日倒數 | 長尾節日情境 | Medium |
@@ -177,7 +180,7 @@ Business Days Calculator MVP：排除週末即可，不做國定假日資料庫
 Lunar Date Converter：換日期，不解讀日期；不做農民曆、宜忌、吉日、沖煞
 Pet Age Calculator：deferred；若未來做，只做年齡換算參考，不做健康、醫療、照護建議
 Japanese Era Converter：只做現代年號換算，不做大型歷史年號資料庫
-V1.6：只規劃特休試算、民國西元／年歲對照兩支
+V1.6：固定兩支（特休天數試算、台灣年歲對照）皆已 deployed；階段 closed／Production Complete
 ```
 
 ---
@@ -309,13 +312,13 @@ Pet Age Calculator — deferred／future candidate（不屬於 V1.5）
 
 V1.5 是優先順序策略，不是分類變更。Daily Rhythm 不在此階段前段優先開發。
 
-### Phase 1.6 / V1.6 — Taiwan Local Tools（preparation · 2026-09）
+### Phase 1.6 / V1.6 — Taiwan Local Tools（closed／Production Complete）
 
 ```text
-1. 特休試算 — next tool
-2. 民國西元／年歲對照
+1. 特休天數試算／TALC — Production Complete／Deployed · HEAD：e1d0634
+2. 台灣年歲對照／TYAR — Production Complete／Deployed · HEAD：47f3c3d
 不含：Pet Age、Japanese Era、Lunar、Year Progress 2.0
-V1.6 後已知方向：Year Progress 2.0（非 V1.6 scope）
+下一步：Timiva Search／Index 全站總檢 → Search Strategy Decision Gate → Year Progress 2.0
 ```
 
 ### Phase 2 / V2 — Category completion and brand differentiation

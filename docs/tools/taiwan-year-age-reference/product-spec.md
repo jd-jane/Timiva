@@ -1,8 +1,9 @@
 # Timiva 台灣年歲對照 產品規格草案
 
-建立日期：2026-09-18  
-狀態：Product discussion complete · Pre-B0  
-階段：V1.6 Taiwan Local Tools 第二支工具
+建立日期：2026-09-18\
+修訂：2026-10-11（Production Complete／Deployed）\
+狀態：Production Complete／Deployed · Owner Production QA＝PASS · HEAD：`47f3c3d`\
+階段：V1.6 Taiwan Local Tools 第二支（完成）
 
 ---
 

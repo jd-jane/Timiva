@@ -303,14 +303,15 @@ timiva/
 | Hours Calculator | **已部署** · Production HEAD：`fd2ed68` |
 | Japanese Era Converter | **已部署** · Production HEAD：`43796cb` |
 | Lunar Date Converter | **Production Complete** · HEAD：`35dadef` · V1.5 closed |
+| Taiwan Annual Leave Calculator | **Production Complete／Deployed** · HEAD：`e1d0634` · V1.6 第一支 |
+| Taiwan Year & Age Reference | **Production Complete／Deployed** · HEAD：`47f3c3d` · V1.6 第二支 |
 | Pet Age Calculator | **deferred**（不屬於 V1.5／不移入 V1.6） |
 
-**Current phase：** V1.6 Taiwan Local Tools preparation
-**Next tool：** 特休試算（第二支：民國西元／年歲對照）
-**V1.6 後方向：** Year Progress 2.0（非 V1.6 scope）
+**V1.6 Taiwan Local Tools：** closed／Production Complete（TALC＋TYAR deployed）
+**Current Next Action：** Timiva Search／Index 全站總檢 → Search Strategy Decision Gate → Year Progress 2.0（非立刻開始）
 
 Canonical docs：`docs/tools/<tool>/README.md`、`docs/tools/<tool>/product-spec.md`
-（含 `lunar-date-converter`、`japanese-era-converter`、`hours-calculator`、`date-calculator`、`age-calculator` 等）
+（含 `taiwan-year-age-reference`、`taiwan-annual-leave-calculator`、`lunar-date-converter`、`japanese-era-converter`、`hours-calculator`、`date-calculator`、`age-calculator` 等）
 
 ---
 

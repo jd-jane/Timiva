@@ -1,7 +1,7 @@
 # Timiva V1 Roadmap
 
-> Updated: 2026-09-13
-> Main changes: V1.6 第一支「特休天數試算／Taiwan Annual Leave Calculator」＝Production Complete／Deployed（HEAD `e1d0634`；Owner Production QA＝PASS）。下一支：民國西元／年歲對照（尚未開始）。Year Progress 2.0 仍為 V1.6 之後方向。
+> Updated: 2026-10-11
+> Main changes: V1.6 Taiwan Local Tools＝closed／Production Complete。TALC＝Deployed（HEAD `e1d0634`）。TYAR／台灣年歲對照＝Production Complete／Deployed（HEAD `47f3c3d`；Owner Production Smoke QA＝PASS）。下一步：Timiva Search／Index 全站總檢 → Search Strategy Decision Gate → Year Progress 2.0（非立刻開始）。
 
 ---
 
@@ -55,7 +55,7 @@ flowchart TD
     D --> D7[Lunar Date Converter<br/>Deployed]
 
     D16 --> T1[特休試算<br/>Deployed]
-    D16 --> T2[民國西元／年歲對照<br/>Next]
+    D16 --> T2[台灣年歲對照<br/>Deployed]
 
     E --> E1[Breathing Timer]
     E --> E2[Fasting / Recovery Timer]
@@ -63,7 +63,7 @@ flowchart TD
     E --> E4[Fullscreen Timer]
     E --> E5[Pomodoro Timer]
     E --> E6[Month / Milestone / Goal]
-    E --> E7[Year Progress 2.0<br/>after V1.6]
+    E --> E7[Year Progress 2.0<br/>after Search Decision Gate]
 ```
 
 ---
@@ -114,7 +114,7 @@ Link integration: Complete
 Production: Deployed on timiva.app
 ```
 
-Year Progress 2.0 為 **V1.6 之後**已知方向，**不屬 V1.6 scope**。
+Year Progress 2.0 排在 Search Strategy Decision Gate 之後，**不屬 V1.6 scope**，也不是現在立刻開始。
 
 ---
 
@@ -207,24 +207,28 @@ Canonical Lunar docs：[`docs/tools/lunar-date-converter/README.md`](../tools/lu
 
 ---
 
-## 6.1 Phase 1.6 / V1.6 — Taiwan Local Tools（2026-09 focus）
+## 6.1 Phase 1.6 / V1.6 — Taiwan Local Tools（closed／Production Complete）
 
 ```text
-Status：in progress（第一支 Production Complete／Deployed）
-Next tool：民國西元／年歲對照（尚未開始）
-Scope：固定兩支；不加第三支
+Status：closed／Production Complete
+Scope：固定兩支；皆已 deployed
 不含：Pet Age、Japanese Era Converter、Lunar Date Converter、Year Progress 2.0
 ```
 
 | Order | Tool | Notes |
 |---:|---|---|
 | 1 | 特休試算／Taiwan Annual Leave Calculator | **Production Complete／Deployed** · HEAD：`e1d0634` · Owner Production QA＝PASS |
-| 2 | 民國西元／年歲對照 | **Next** · 尚未開始 |
+| 2 | 台灣年歲對照／Taiwan Year & Age Reference | **Production Complete／Deployed** · HEAD：`47f3c3d` · Link Integration：`c84cc81` · Owner Production Smoke QA＝PASS |
 
-V1.6 完成後已知方向（**非 V1.6 scope**）：
+V1.6 完成後正式順序（**非立刻開始 Year Progress 2.0**）：
 
 ```text
-Year Progress 2.0
+1. Timiva Search／Index 全站總檢
+2. Search Strategy Decision Gate（WAIT／OPTIMIZE／REPOSITION／RETHINK）
+3. Year Progress 2.0
+4. 首頁動態
+5. 作品集
+6. 下一階段工具
 ```
 
 ---
@@ -235,7 +239,7 @@ Year Progress 2.0
 
 | Order | Tool | Category | Purpose |
 |---:|---|---|---|
-| — | Year Progress 2.0 | Life Progress | After V1.6 · known next direction（非 V1.6） |
+| — | Year Progress 2.0 | Life Progress | After Search Strategy Decision Gate（非立刻開始） |
 | 13 | Breathing Timer | Daily Rhythm | Calm rhythm / rest use case |
 | 14 | Fasting / Recovery Timer | Daily Rhythm | Time tracking only; no health advice |
 | 15 | Stopwatch | Timers & Focus | Complete basic timer line |
@@ -306,11 +310,12 @@ V1 four tools + Year Progress: deployed on timiva.app
 V1.5 Search Foundation: closed / Production Complete
   Age → DBD → BDC → DC → Hours → JEC → Lunar: deployed
 Pet Age Calculator: deferred
-V1.6 Taiwan Local Tools: in progress
+V1.6 Taiwan Local Tools: closed / Production Complete
   1) 特休試算／TALC：Production Complete／Deployed（HEAD：e1d0634）
-  2) 民國西元／年歲對照：Next（尚未開始）
-Repo production HEAD: e1d0634
+  2) 台灣年歲對照／TYAR：Production Complete／Deployed（HEAD：47f3c3d）
+Repo production HEAD: 47f3c3d
 V1 SEO technical closeout: complete
+Current Next Action: Timiva Search／Index 全站總檢 → Search Strategy Decision Gate
 ```
 
 Post–Year Progress optional follow-up:
@@ -348,10 +353,16 @@ Pet Age Calculator（deferred／future candidate）
 
 ```text
 V1.5 Search Foundation：closed／Production Complete
-Lunar Date Converter：Production Complete（HEAD：35dadef）
-Current phase：V1.6 Taiwan Local Tools（in progress）
-TALC／特休天數試算：Production Complete／Deployed（HEAD：e1d0634；Owner Production QA＝PASS）
-Next tool：民國西元／年歲對照（尚未開始）
+V1.6 Taiwan Local Tools：closed／Production Complete
+TALC／特休天數試算：Production Complete／Deployed（HEAD：e1d0634）
+TYAR／台灣年歲對照：Production Complete／Deployed（HEAD：47f3c3d）
 Pet Age：deferred
-V1.6 後方向：Year Progress 2.0（非 V1.6 scope）
+Current Next Action：
+  1. Timiva Search／Index 全站總檢
+  2. Search Strategy Decision Gate（WAIT／OPTIMIZE／REPOSITION／RETHINK）
+  3. Year Progress 2.0
+  4. 首頁動態
+  5. 作品集
+  6. 下一階段工具
+本輪只記錄順序，不開始 Search audit，也不開始 Year Progress 2.0。
 ```
