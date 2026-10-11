@@ -1,7 +1,7 @@
 /**
- * Taiwan Year & Age Reference — B2B Desktop controller.
- * 資料流：Desktop events → PageState → B2A evaluate → format(i18n) → renderResult()。
- * 不接 AME／Mobile（B2C）。不在 handler 裡重寫換算或 Reverse algorithm。
+ * Taiwan Year & Age Reference — B2B Desktop + B2C AME controller.
+ * 資料流：Desktop／AME events → PageState → B2A evaluate → format(i18n) → renderResult()。
+ * 不在 handler／adapter 裡重寫換算或 Reverse algorithm。
  */
 import { getMessages } from "../i18n/messages.ts";
 import type { Locale } from "../i18n/config.ts";
@@ -35,7 +35,20 @@ import {
 	type TyarPageState,
 } from "../lib/taiwanYearAgeReferenceState.ts";
 import type { TyarCalendarMode, TyarEvaluation } from "../lib/taiwanYearAgeReferenceMath.ts";
+import { createAdaptiveMobileEditor } from "./adaptive-mobile-editor-controller";
 import { init as initResultSummary, update as updateResultSummary } from "./result-summary-controller.ts";
+import {
+	acceptTyarAmeNumericCandidate,
+	bindTyarAmeInteractions,
+	cloneTyarAmeDraft,
+	draftFromState,
+	stateFromDraft,
+	syncTyarAmeUi,
+	TYAR_AME_NUMERIC_FIELDS,
+	tyarAmeResetDraft,
+	validateTyarAmeDraft,
+	type TyarAmeDraft,
+} from "./taiwan-year-age-reference-ame-adapter.ts";
 
 type InvalidField = {
 	wrap: HTMLElement | null;
@@ -247,12 +260,21 @@ function setChip(
 		button.tabIndex = -1;
 		button.removeAttribute("data-tyar-chip-state");
 		button.removeAttribute("data-tyar-chip-view");
+		button.removeAttribute("aria-label");
 		return;
 	}
 
+	const yearLabel = String(options.year);
+	const yearEl = button.querySelector<HTMLElement>("[data-tyar-chip-year]");
+	if (yearEl) {
+		yearEl.textContent = yearLabel;
+	} else {
+		button.textContent = yearLabel;
+	}
+
 	button.hidden = false;
-	button.textContent = options.label;
 	button.setAttribute("data-tyar-chip-view", options.view ?? "");
+	button.setAttribute("aria-label", yearLabel);
 	if (options.current) {
 		button.disabled = true;
 		button.tabIndex = -1;
@@ -266,7 +288,10 @@ function setChip(
 	}
 }
 
-function initDesktopInteraction(root: HTMLElement): void {
+function initDesktopInteraction(root: HTMLElement): {
+	getState: () => TyarPageState;
+	applyState: (next: TyarPageState) => void;
+} {
 	const gregorianInput = root.querySelector<HTMLInputElement>("[data-tyar-gregorian-year]");
 	const minguoInput = root.querySelector<HTMLInputElement>("[data-tyar-minguo-year]");
 	const eraInput = root.querySelector<HTMLInputElement>("[data-tyar-era-year]");
@@ -541,7 +566,7 @@ function initDesktopInteraction(root: HTMLElement): void {
 			setChip(desktopPrev, {
 				hidden: previousYear === null,
 				year: previousYear,
-				label: previousYear === null ? "" : `← ${previousYear}`,
+				label: previousYear === null ? "" : String(previousYear),
 				current: false,
 				view: "previous",
 			});
@@ -555,21 +580,21 @@ function initDesktopInteraction(root: HTMLElement): void {
 			setChip(desktopNext, {
 				hidden: nextYear === null,
 				year: nextYear,
-				label: nextYear === null ? "" : `${nextYear} →`,
+				label: nextYear === null ? "" : String(nextYear),
 				current: false,
 				view: "next",
 			});
 			setChip(landscapePrev, {
 				hidden: previousYear === null,
 				year: previousYear,
-				label: previousYear === null ? "" : `← ${previousYear}`,
+				label: previousYear === null ? "" : String(previousYear),
 				current: false,
 				view: "previous",
 			});
 			setChip(landscapeNext, {
 				hidden: nextYear === null,
 				year: nextYear,
-				label: nextYear === null ? "" : `${nextYear} →`,
+				label: nextYear === null ? "" : String(nextYear),
 				current: false,
 				view: "next",
 			});
@@ -594,7 +619,7 @@ function initDesktopInteraction(root: HTMLElement): void {
 			setChip(desktopNext, {
 				hidden: nextYear === null,
 				year: nextYear,
-				label: nextYear === null ? "" : `${nextYear} →`,
+				label: nextYear === null ? "" : String(nextYear),
 				current: false,
 				view: "next",
 			});
@@ -618,7 +643,7 @@ function initDesktopInteraction(root: HTMLElement): void {
 		setChip(desktopPrev, {
 			hidden: previousYear === null,
 			year: previousYear,
-			label: previousYear === null ? "" : `← ${previousYear}`,
+			label: previousYear === null ? "" : String(previousYear),
 			current: false,
 			view: "previous",
 		});
@@ -874,14 +899,109 @@ function initDesktopInteraction(root: HTMLElement): void {
 		}
 	});
 
+	const applyState = (next: TyarPageState): void => {
+		state = next;
+		renderResult();
+	};
+
 	renderResult();
+
+	return {
+		getState: () => state,
+		applyState,
+	};
+}
+
+const ameSessions = new WeakMap<HTMLElement, { destroy: () => void }>();
+
+/**
+ * B2C AME live：共用 B2A evaluate／format 與同一 renderResult()。
+ * Reset 保持 Editor 開啟；Done／Escape／underlay 不 rollback。
+ */
+function initAme(
+	root: HTMLElement,
+	session: {
+		getState: () => TyarPageState;
+		applyState: (next: TyarPageState) => void;
+	},
+): void {
+	const pageContent = root.querySelector<HTMLElement>("[data-ame-page-content]");
+	const ameRoot = root.querySelector<HTMLElement>("[data-ame-root]");
+	const trigger = root.querySelector<HTMLElement>("[data-tyar-capsule]");
+
+	if (!pageContent || !ameRoot || ameSessions.has(root)) {
+		return;
+	}
+
+	const locale = () => readLocale(root);
+	const copy = () => formatCopy(locale());
+
+	const ameApi = createAdaptiveMobileEditor<TyarAmeDraft>(ameRoot, {
+		pageContent,
+		numericFields: TYAR_AME_NUMERIC_FIELDS,
+		adapter: {
+			lifecycle: "live",
+			getCommitted: () => cloneTyarAmeDraft(draftFromState(session.getState())),
+			createOpenDraft: (committed) => cloneTyarAmeDraft(committed),
+			getResetDraft: () => cloneTyarAmeDraft(tyarAmeResetDraft()),
+			validate: (draft) => validateTyarAmeDraft(draft, copy(), session.getState()),
+			acceptNumericCandidate: ({ fieldId, candidateValue, draft }) =>
+				acceptTyarAmeNumericCandidate({ fieldId, candidateValue, draft }),
+			onCommit: (committed) => {
+				session.applyState(stateFromDraft(committed, session.getState()));
+			},
+			onDraftChange: (draft) => {
+				syncTyarAmeUi(root, draft, copy(), session.getState());
+			},
+		},
+		onSyncUi: (draft) => {
+			syncTyarAmeUi(root, draft, copy(), session.getState());
+		},
+	});
+
+	const unbindInteractions = bindTyarAmeInteractions(ameRoot, {
+		getDraft: () => ameApi.getDraft(),
+		patchDraft: (partial) => ameApi.patchDraft(partial),
+		clearActiveField: () => ameApi.clearActiveField(),
+		isOpen: () => ameApi.isOpen(),
+	});
+
+	trigger?.addEventListener("click", (event) => {
+		event.preventDefault();
+		ameApi.open(trigger);
+	});
+
+	ameSessions.set(root, {
+		destroy: () => {
+			unbindInteractions();
+			ameApi.destroy();
+			ameSessions.delete(root);
+		},
+	});
+
+	window.addEventListener(
+		"pagehide",
+		() => {
+			ameSessions.get(root)?.destroy();
+		},
+		{ once: true },
+	);
+
+	if (new URLSearchParams(window.location.search).get("tyarSheet") === "open") {
+		ameApi.open(trigger ?? undefined);
+	}
+}
+
+function initRoot(root: HTMLElement): void {
+	const session = initDesktopInteraction(root);
+	initAme(root, session);
 }
 
 function boot(): void {
 	initResultSummary();
 	document
 		.querySelectorAll<HTMLElement>("[data-taiwan-year-age-reference-v2]")
-		.forEach((root) => initDesktopInteraction(root));
+		.forEach((root) => initRoot(root));
 }
 
 if (document.readyState === "loading") {

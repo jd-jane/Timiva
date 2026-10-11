@@ -1,8 +1,8 @@
 /**
  * Taiwan Year & Age Reference — B2B Desktop adopter validator.
  *
- * Scope：Desktop controller 走 B2A math／state／format；fixture hydrate 同一 evaluate；
- * 無 fake painter、無 LocalStorage、不接 AME、不改 shared components。
+ * Scope：Desktop／AME 共用 B2A math／state／format；fixture／manual／AME 同一 evaluate；
+ * 無 fake painter、無 LocalStorage、不改 shared components。
  *
  * Run: node scripts/validate-taiwan-year-age-reference-adopter.mjs
  */
@@ -24,6 +24,13 @@ import {
 	stateFromTyarQaFixture,
 	switchTyarCalendarMode,
 } from "../src/lib/taiwanYearAgeReferenceState.ts";
+import {
+	draftFromState,
+	stateFromDraft,
+	tyarAmeInvalidPresentation,
+	tyarAmeResetDraft,
+	TYAR_AME_ICON_ONLY,
+} from "../src/scripts/taiwan-year-age-reference-ame-adapter.ts";
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (path) => readFileSync(join(rootDir, path), "utf8");
@@ -33,6 +40,9 @@ const astro = read(
 	"src/components/tools/taiwan-year-age-reference-v2/TaiwanYearAgeReferenceV2.astro",
 );
 const script = read("src/scripts/taiwan-year-age-reference.ts");
+const ameAdapter = exists("src/scripts/taiwan-year-age-reference-ame-adapter.ts")
+	? read("src/scripts/taiwan-year-age-reference-ame-adapter.ts")
+	: "";
 const css = read("src/styles/tools/taiwan-year-age-reference-v2.css");
 const math = read("src/lib/taiwanYearAgeReferenceMath.ts");
 const state = read("src/lib/taiwanYearAgeReferenceState.ts");
@@ -65,7 +75,7 @@ const NOW = 2026;
 const OPT = { nowYear: NOW };
 const zhCopy = zh.taiwanYearAgeReference;
 
-console.log("validate-taiwan-year-age-reference-adopter（B2B Desktop）\n");
+console.log("validate-taiwan-year-age-reference-adopter（B2B Desktop + B2C AME）\n");
 
 /* -------------------------------------------------------------------------- */
 /* Foundation                                                                  */
@@ -91,15 +101,15 @@ assert(
 	/import ["']\.\.\/\.\.\/\.\.\/scripts\/taiwan-year-age-reference\.ts["']/.test(astro),
 	"Astro boots Desktop controller",
 );
-assert(/data-tyar-phase="b2b-desktop"/.test(astro), "Phase is b2b-desktop");
+assert(/data-tyar-phase="b2c-ame"/.test(astro), "Phase is b2c-ame");
 
 /* -------------------------------------------------------------------------- */
 /* No second math / Reverse algorithm                                          */
 /* -------------------------------------------------------------------------- */
-assert(!/function evaluateReverseTriplet/.test(executableScript), "No second Reverse triplet");
-assert(!/function evaluateGregorianYear/.test(executableScript), "No second Gregorian evaluate");
-assert(!/function canonicalEraForGregorian/.test(executableScript), "No second canonical era");
-assert(!/function minguoYearToGregorian/.test(executableScript), "No second Minguo math");
+assert(!/function evaluateReverseTriplet/.test(executableScript + ameAdapter), "No second Reverse triplet");
+assert(!/function evaluateGregorianYear/.test(executableScript + ameAdapter), "No second Gregorian evaluate");
+assert(!/function canonicalEraForGregorian/.test(executableScript + ameAdapter), "No second canonical era");
+assert(!/function minguoYearToGregorian/.test(executableScript + ameAdapter), "No second Minguo math");
 assert(
 	/evaluateReverseTriplet/.test(math) && /evaluateTyarState/.test(state),
 	"B2A math／state remain SSOT",
@@ -169,19 +179,34 @@ assert(
 }
 
 /* -------------------------------------------------------------------------- */
-/* Desktop controls / no AME / no LocalStorage                                 */
+/* Desktop controls / AME live / no LocalStorage                               */
 /* -------------------------------------------------------------------------- */
 assert(/data-tyar-reset/.test(astro), "Desktop Reset wired");
 assert(/data-tyar-era-popover/.test(astro), "Era popover present");
 assert(/data-tyar-chip="current"/.test(astro), "Current reverse chip slot present");
 assert(/showCancel=\{false\}/.test(astro), "showCancel={false} remains");
-assert(!/createAdaptiveMobileEditor/.test(executableScript), "Does not boot AME");
-assert(!/taiwan-year-age-reference-ame-adapter/.test(script), "No AME adapter");
+assert(exists("src/scripts/taiwan-year-age-reference-ame-adapter.ts"), "AME adapter tracked");
+assert(/createAdaptiveMobileEditor/.test(script), "Page script boots shared AME");
+assert(/lifecycle:\s*"live"/.test(script), "AME lifecycle is live");
+assert(/taiwan-year-age-reference-ame-adapter/.test(script), "Page script uses AME adapter");
+assert(/evaluateTyarState/.test(ameAdapter), "Adapter evaluates via B2A evaluateTyarState");
+assert(!/evaluateReverseTriplet/.test(ameAdapter), "Adapter does not recompute Reverse triplet");
+assert(!/closestYear\s*[+\-]\s*12/.test(ameAdapter), "Adapter does not recompute ±12");
+assert(/stateFromDraft/.test(ameAdapter), "Adapter maps draft → PageState");
+assert(/draftFromState/.test(ameAdapter), "Adapter maps PageState → draft");
+assert(/tyarSheet/.test(script), "QA can open AME via tyarSheet");
 assert(
-	/slot="mobilePrimaryControl"[\s\S]*?\bdisabled\b/.test(astro),
-	"Mobile capsule stays disabled",
+	/slot="mobilePrimaryControl"[\s\S]*?data-tyar-capsule/.test(astro) &&
+		!/data-tyar-capsule[\s\S]{0,80}\bdisabled\b/.test(astro),
+	"Mobile capsule is enabled",
 );
-assert(!/localStorage/.test(executableScript + executableAstro), "No LocalStorage");
+assert(/data-tyar-ame-era-select/.test(astro), "AME era uses native select");
+assert(/data-ame-numeric-field="age"/.test(astro), "AME age uses numeric keypad field");
+assert(/data-tyar-ame-error="eraYear"/.test(astro), "AME era range has visible copy slot");
+assert(!/data-tyar-ame-error="gregorianYear"/.test(astro), "AME Gregorian stays icon-only");
+assert(!/data-tyar-ame-error="minguoYear"/.test(astro), "AME Minguo stays icon-only");
+assert(!/data-tyar-ame-error="age"/.test(astro), "AME Reverse age stays icon-only");
+assert(!/localStorage/.test(executableScript + executableAstro + ameAdapter), "No LocalStorage");
 assert(
 	!/history\.(pushState|replaceState)/.test(executableScript),
 	"No URL state writes",
@@ -255,6 +280,10 @@ assert(
 assert(/data-tyar-reverse-primary="closest"/.test(css), "Reverse closest primary tier");
 assert(/data-tyar-reverse-primary="short"/.test(css), "Reverse short primary tier");
 assert(
+	/\[data-tyar-locale="zh"\]\[data-tyar-reverse-primary="closest"\]/.test(css.replace(/\s+/g, "")),
+	"Portrait ZH Reverse closest has its own size tier",
+);
+assert(
 	/data-tyar-reverse-primary/.test(script),
 	"Controller writes Reverse primary tier attr",
 );
@@ -274,6 +303,81 @@ assert(
 	),
 	"Clickable chip has active",
 );
+assert(
+	/tyar-year-chip\[hidden\]/.test(css.replace(/\s+/g, "")) ||
+		/\.tyar-year-chip\[hidden\]/.test(css),
+	"first-paint hidden still covers chips",
+);
+assert(/setChip\(landscapePrev/.test(script) && /setChip\(landscapeNext/.test(script), "Landscape reverse uses existing two slots");
+assert(/data-tyar-chip-year/.test(astro) && /tyar-chip-arrow/.test(astro), "Reverse chips use SVG arrows + year span");
+assert(!/`← \$\{/.test(script) && !/`\$\{[^}]+\} →`/.test(script), "Controller no longer paints Unicode arrows");
+assert(!/pinClosestPrimary/.test(script), "Reverse result still follows reverseView");
+assert(
+	/tpf-result-group \{ pointer-events: none \}/.test(css) &&
+		/\.tyar-year-chip:not\(\[data-tyar-chip-state="current"\]\):not\(:disabled\)/.test(
+			css.replace(/\s+/g, ""),
+		) &&
+		/pointer-events:\s*auto/.test(css),
+	"Mobile reverse chips restore pointer-events over Frame result-group",
+);
+assert(
+	!/\.tyar-landscape-nav\[data-tyar-chip="current"\]/.test(astro),
+	"Landscape has no third current chip",
+);
+
+{
+	const ame1930 = stateFromDraft(
+		draftFromState(stateFromTyarQaFixture("year-1930")),
+		resetTyarState(),
+	);
+	assert(
+		JSON.stringify(evaluateTyarState(ame1930, OPT)) ===
+			JSON.stringify(evaluateTyarState(stateFromTyarQaFixture("year-1930"), OPT)),
+		"AME draft／fixture／manual share year-1930 evaluate",
+	);
+
+	const previous = {
+		...setTyarQueryMode(resetTyarState(), "zodiac"),
+		zodiacId: "rat",
+		ageRaw: "90",
+		reverseView: "previous",
+	};
+	const sameDraft = draftFromState(previous);
+	assert(
+		stateFromDraft(sameDraft, previous).reverseView === "previous",
+		"AME reopen preserves reverseView when zodiac／age unchanged",
+	);
+	assert(
+		stateFromDraft({ ...sameDraft, age: "80" }, previous).reverseView === "closest",
+		"Changing age resets reverseView to closest",
+	);
+
+	const eraInvalid = tyarAmeInvalidPresentation(
+		{
+			...tyarAmeResetDraft(),
+			calendarMode: "era",
+			eraId: "meiji",
+			eraYear: "99",
+		},
+		zhCopy,
+		resetTyarState(),
+	);
+	assert(
+		eraInvalid.eraYear === "明治年份請輸入 1 至 45",
+		"AME era-year-invalid shows range copy",
+	);
+
+	const gregorianInvalid = tyarAmeInvalidPresentation(
+		{ ...tyarAmeResetDraft(), gregorianYear: "1800" },
+		zhCopy,
+		resetTyarState(),
+	);
+	assert(
+		gregorianInvalid.gregorianYear === TYAR_AME_ICON_ONLY &&
+			gregorianInvalid.eraYear === null,
+		"AME Gregorian invalid stays icon-only",
+	);
+}
 
 console.log(`\npassed=${passed} failed=${failed}`);
 if (failed > 0) {

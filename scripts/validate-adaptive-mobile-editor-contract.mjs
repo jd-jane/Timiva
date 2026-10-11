@@ -347,6 +347,10 @@ ok(!/\*:focus\s*\{/.test(cssSrc), "Contract：no global *:focus outline kill");
 
 /* B8.2 Lab remains submit default（DC live adopter checked elsewhere） */
 ok(!/lifecycle:\s*"live"/.test(mixedSrc), "Contract：Lab remains submit（re-check）");
+ok(
+	/lifecycle:\s*"live"/.test(read("src/scripts/taiwan-year-age-reference.ts")),
+	"TYAR AME adopter uses live lifecycle",
+);
 
 console.log(`\nvalidate-adaptive-mobile-editor-contract: ${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);

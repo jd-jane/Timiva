@@ -63,26 +63,36 @@
 }
 
 /*
- * Mobile Portrait 中文：兩行後放大主結果。
- * 不改 Desktop／Landscape／Reverse；EN 長句維持原字級以免溢出。
+ * Mobile Portrait 主結果：composite 維持；single／Reverse short 放大；
+ * ZH Reverse closest 收成單行。不改 Desktop／Landscape、weekday、chip、capsule。
  */
 @media (max-width: 767px) and (orientation: portrait) {
-	[data-taiwan-year-age-reference-v2][data-tyar-locale="zh"]:not(
-			[data-tyar-fixture="initial"]
-		):not([data-tyar-fixture="reverse"]):not([data-tyar-fixture="reverse-expanded"])
+	[data-taiwan-year-age-reference-v2]:not([data-tyar-fixture="initial"])
 		[data-result-summary][data-rs-content="textual"] {
-		--rs-textual-primary-size: clamp(3.25rem, 13.5vw, 4.25rem);
+		--rs-textual-primary-size: clamp(3.625rem, 15.4vw, 3.875rem);
 	}
 
-	/*
-	 * Portrait Reverse 主結果微放大（最接近 1936 年／Closest to 1936）。
-	 * 不改 Desktop、Landscape、Exact year、weekday、candidate。
-	 */
-	[data-taiwan-year-age-reference-v2][data-tyar-fixture="reverse"]
+	[data-taiwan-year-age-reference-v2][data-tyar-primary-tier="single-short"]:not(
+			[data-tyar-fixture="initial"]
+		)
 		[data-result-summary][data-rs-content="textual"],
-	[data-taiwan-year-age-reference-v2][data-tyar-fixture="reverse-expanded"]
+	[data-taiwan-year-age-reference-v2][data-tyar-primary-tier="single-long"]:not(
+			[data-tyar-fixture="initial"]
+		)
+		[data-result-summary][data-rs-content="textual"],
+	[data-taiwan-year-age-reference-v2][data-tyar-reverse-primary="short"]
 		[data-result-summary][data-rs-content="textual"] {
-		--rs-textual-primary-size: clamp(2.75rem, 11.5vw, 3.5rem);
+		--rs-textual-primary-size: clamp(4.75rem, 20vw, 5rem);
+	}
+
+	[data-taiwan-year-age-reference-v2][data-tyar-reverse-primary="closest"]
+		[data-result-summary][data-rs-content="textual"] {
+		--rs-textual-primary-size: clamp(3.375rem, 14.4vw, 3.625rem);
+	}
+
+	[data-taiwan-year-age-reference-v2][data-tyar-locale="zh"][data-tyar-reverse-primary="closest"]
+		[data-result-summary][data-rs-content="textual"] {
+		--rs-textual-primary-size: clamp(3rem, 12.6vw, 3.125rem);
 	}
 }
 
@@ -295,6 +305,35 @@
 	white-space: nowrap;
 	opacity: 0.92;
 	cursor: pointer;
+}
+
+[data-taiwan-year-age-reference-v2] .tyar-chip-arrow {
+	display: block;
+	flex-shrink: 0;
+	width: 0.75rem;
+	height: 0.75rem;
+}
+
+[data-taiwan-year-age-reference-v2] [data-tyar-chip="prev"] .tyar-chip-arrow {
+	margin-inline-end: 0.25rem;
+}
+
+[data-taiwan-year-age-reference-v2] [data-tyar-chip="next"] .tyar-chip-arrow {
+	margin-inline-start: 0.25rem;
+}
+
+/*
+ * ToolPageFrame Mobile：.tpf-result-group { pointer-events: none }。
+ * Reverse chip 在 result 內，必須顯式恢復可點（對齊 TALC／Hours interactive-in-result）。
+ * 不改 shared Frame；current／disabled 仍走下方 pointer-events: none。
+ */
+@media (max-width: 767px),
+	(orientation: landscape) and (max-height: 700px) and (max-width: 1200px) and (hover: none) {
+	[data-taiwan-year-age-reference-v2] .tyar-reverse-nav,
+	[data-taiwan-year-age-reference-v2] .tyar-year-chip:not([data-tyar-chip-state="current"]):not(:disabled) {
+		position: relative;
+		pointer-events: auto;
+	}
 }
 
 /* previous／next view 的 current chip：沿用 muted text-action 色，不改 chrome */
@@ -933,12 +972,17 @@
 	grid-auto-columns: minmax(0, 1fr);
 }
 
-[data-ame-root]#tyar-ame .tyar-ame-field-block {
+[data-ame-root]#tyar-ame .tyar-ame-field-block,
+[data-ame-root]#tyar-ame .tyar-ame-era-stack {
 	display: flex;
 	flex-direction: column;
 	gap: 0.35rem;
 	min-width: 0;
 	width: 100%;
+}
+
+[data-ame-root]#tyar-ame .tyar-ame-era-stack {
+	gap: 0.75rem;
 }
 
 /*
@@ -983,9 +1027,59 @@
 	min-height: 1.25rem;
 }
 
+[data-ame-root]#tyar-ame .tyar-ame-year-row .ame-field-error-slot {
+	margin-inline-start: auto;
+}
+
 [data-ame-root]#tyar-ame .tyar-ame-year-row:disabled {
 	cursor: default;
 	opacity: 1;
+}
+
+[data-ame-root]#tyar-ame .tyar-ame-select-row.ame-setting-row,
+[data-ame-root]#tyar-ame[data-ame-density="mixed"] .tyar-ame-select-row.ame-setting-row,
+[data-ame-root]#tyar-ame[data-ame-keypad-visible="true"] .tyar-ame-select-row.ame-setting-row,
+[data-ame-root]#tyar-ame[data-ame-keypad-visible="true"][data-ame-density="mixed"]
+	.tyar-ame-select-row.ame-setting-row {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: row;
+	grid-column: auto;
+	grid-template-columns: none;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 0.75rem;
+	margin: 0;
+	min-width: 0;
+	width: 100%;
+	max-width: 100%;
+}
+
+[data-ame-root]#tyar-ame .tyar-ame-select-row .ame-setting-label {
+	flex: 0 0 auto;
+	width: auto;
+	max-width: none;
+}
+
+[data-ame-root]#tyar-ame .tyar-ame-select-row .ame-setting-control {
+	flex: 1 1 auto;
+	min-width: 0;
+	justify-content: flex-start;
+}
+
+[data-ame-root]#tyar-ame .tyar-ame-error-message {
+	margin: 0;
+	max-width: 100%;
+	min-width: 0;
+	overflow-wrap: anywhere;
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1.3;
+	color: rgb(148 163 184 / 0.92);
+}
+
+[data-ame-root]#tyar-ame .tyar-ame-error-message[hidden] {
+	display: none;
 }
 
 [data-ame-root]#tyar-ame .tyar-ame-pair {

@@ -1,8 +1,8 @@
 ---
 /**
  * Taiwan Year & Age Reference V2 — ToolPageFrame adopter.
- * B0: shell · B1A: lower content · B1B: 上方靜態畫面 · B2B: Desktop interaction。
- * 不接 AME／Mobile（B2C）。
+ * B0: shell · B1A: lower content · B1B: 上方靜態畫面 · B2B: Desktop · B2C: AME／Mobile。
+ * Desktop／AME／fixture 共用同一 PageState／evaluate／renderResult。
  */
 import RelatedToolRow from "../../RelatedToolRow.astro";
 import ResultSummary from "../shared/ResultSummary.astro";
@@ -72,7 +72,7 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 <div
 	data-taiwan-year-age-reference-v2
 	data-tyar-locale={locale === "zh" ? "zh" : "en"}
-	data-tyar-phase="b2b-desktop"
+	data-tyar-phase="b2c-ame"
 	data-tyar-fixture="initial"
 	data-tyar-query-mode="year"
 >
@@ -133,6 +133,21 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 					disabled
 					tabindex="-1"
 				>
+					<svg
+						class="tyar-chip-arrow"
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="none"
+						aria-hidden="true"
+					>
+						<path
+							d="M10 3L5 8l5 5"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
+					<span data-tyar-chip-year></span>
 				</button>
 				<ResultSummary
 					content="textual"
@@ -152,6 +167,21 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 					disabled
 					tabindex="-1"
 				>
+					<span data-tyar-chip-year></span>
+					<svg
+						class="tyar-chip-arrow"
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 16 16"
+						fill="none"
+						aria-hidden="true"
+					>
+						<path
+							d="M6 3l5 5-5 5"
+							stroke="currentColor"
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"></path>
+					</svg>
 				</button>
 			</div>
 
@@ -168,6 +198,21 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 						disabled
 						tabindex="-1"
 					>
+						<svg
+							class="tyar-chip-arrow"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 16 16"
+							fill="none"
+							aria-hidden="true"
+						>
+							<path
+								d="M10 3L5 8l5 5"
+								stroke="currentColor"
+								stroke-width="1.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"></path>
+						</svg>
+						<span data-tyar-chip-year></span>
 					</button>
 					<button
 						type="button"
@@ -177,6 +222,7 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 						disabled
 						tabindex="-1"
 					>
+						<span data-tyar-chip-year></span>
 					</button>
 					<button
 						type="button"
@@ -186,6 +232,21 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 						disabled
 						tabindex="-1"
 					>
+						<span data-tyar-chip-year></span>
+						<svg
+							class="tyar-chip-arrow"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 16 16"
+							fill="none"
+							aria-hidden="true"
+						>
+							<path
+								d="M6 3l5 5-5 5"
+								stroke="currentColor"
+								stroke-width="1.5"
+								stroke-linecap="round"
+								stroke-linejoin="round"></path>
+						</svg>
 					</button>
 				</div>
 			</div>
@@ -435,17 +496,11 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 			</button>
 		</div>
 
-		{/*
-		  手機第一屏：capsule only。
-		  填「查詢年份」文案，維持 disabled（不開 sheet）。
-		*/}
 		<button
 			slot="mobilePrimaryControl"
 			type="button"
 			class="preview-tool-control-btn tool-primary-entry-capsule"
 			data-tyar-capsule
-			disabled
-			aria-disabled="true"
 			aria-label={m.capsuleLabel}
 		>
 			{m.capsuleLabel}
@@ -473,8 +528,6 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 							type="button"
 							class="tyar-mode-option is-active"
 							data-tyar-ame-mode="gregorian"
-							disabled
-							aria-disabled="true"
 							aria-pressed="true"
 						>
 							{m.modeGregorian}
@@ -483,8 +536,6 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 							type="button"
 							class="tyar-mode-option"
 							data-tyar-ame-mode="minguo"
-							disabled
-							aria-disabled="true"
 							aria-pressed="false"
 						>
 							{m.modeMinguo}
@@ -493,8 +544,6 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 							type="button"
 							class="tyar-mode-option"
 							data-tyar-ame-mode="era"
-							disabled
-							aria-disabled="true"
 							aria-pressed="false"
 						>
 							{m.modeEra}
@@ -508,9 +557,6 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 							class="ame-setting-row ame-numeric-field tyar-ame-year-row"
 							data-ame-numeric-field="gregorianYear"
 							data-ame-active="false"
-							disabled
-							aria-disabled="true"
-							tabindex="-1"
 							aria-label={m.gregorianYearAriaLabel}
 							aria-invalid="false"
 							aria-describedby="ame-field-error-gregorianYear"
@@ -521,10 +567,7 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 									class="ame-numeric-value ame-numeric-value--placeholder"
 									data-ame-numeric-value
 									data-tyar-ame-gregorian-year
-									data-placeholder={m.gregorianYearPlaceholder}
-								>
-									{m.gregorianYearPlaceholder}
-								</span>
+								></span>
 								<AmeFieldError fieldId="gregorianYear" />
 							</span>
 						</button>
@@ -535,9 +578,6 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 							class="ame-setting-row ame-numeric-field tyar-ame-year-row"
 							data-ame-numeric-field="minguoYear"
 							data-ame-active="false"
-							disabled
-							aria-disabled="true"
-							tabindex="-1"
 							aria-label={m.minguoYearAriaLabel}
 							aria-invalid="false"
 							aria-describedby="ame-field-error-minguoYear"
@@ -548,51 +588,66 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 									class="ame-numeric-value ame-numeric-value--placeholder"
 									data-ame-numeric-value
 									data-tyar-ame-minguo-year
-									data-placeholder={m.minguoYearPlaceholder}
-								>
-									{m.minguoYearPlaceholder}
-								</span>
+								></span>
 								<AmeFieldError fieldId="minguoYear" />
 							</span>
 						</button>
 					</div>
-					<div class="tyar-ame-field-block" data-tyar-ame-field="era" hidden>
-						<button
-							type="button"
-							class="ame-setting-row ame-numeric-field tyar-ame-year-row"
-							data-ame-numeric-field="eraYear"
-							data-ame-active="false"
-							disabled
-							aria-disabled="true"
-							tabindex="-1"
-							aria-label={m.eraYearAriaLabel}
-							aria-invalid="false"
-							aria-describedby="ame-field-error-eraYear"
-						>
-							<span class="ame-setting-label ame-numeric-label" data-tyar-ame-era-label>
-								{m.eraShowA}
-							</span>
+					<div class="tyar-ame-era-stack" data-tyar-ame-field="era" hidden>
+						<label class="ame-setting-row ame-setting-row--select tyar-ame-select-row">
+							<span class="ame-setting-label">{m.eraSelectorAriaLabel}</span>
 							<span class="ame-setting-control">
-								<span
-									class="ame-numeric-value ame-numeric-value--placeholder"
-									data-ame-numeric-value
-									data-tyar-ame-era-year
-									data-placeholder={m.eraYearPlaceholder}
+								<select
+									class="ame-native-control"
+									data-tyar-ame-era-select
+									aria-label={m.eraSelectorAriaLabel}
 								>
-									{m.eraYearPlaceholder}
-								</span>
-								<AmeFieldError fieldId="eraYear" />
+									{
+										ERAS.map((era) =>
+											era.id === "reiwa" ? (
+												<option value={era.id} selected>
+													{m.eraNames[era.id]}
+												</option>
+											) : (
+												<option value={era.id}>{m.eraNames[era.id]}</option>
+											),
+										)
+									}
+								</select>
 							</span>
-						</button>
+						</label>
+						<div class="tyar-ame-field-block">
+							<button
+								type="button"
+								class="ame-setting-row ame-numeric-field tyar-ame-year-row"
+								data-ame-numeric-field="eraYear"
+								data-ame-active="false"
+								aria-label={m.eraYearAriaLabel}
+								aria-invalid="false"
+								aria-describedby="ame-field-error-eraYear"
+							>
+								<span class="ame-setting-label ame-numeric-label">{m.eraYearAriaLabel}</span>
+								<span class="ame-setting-control">
+									<span
+										class="ame-numeric-value ame-numeric-value--placeholder"
+										data-ame-numeric-value
+										data-tyar-ame-era-year
+									></span>
+									<AmeFieldError fieldId="eraYear" />
+								</span>
+							</button>
+							<p
+								class="tyar-ame-error-message"
+								data-tyar-ame-error="eraYear"
+								hidden
+								aria-hidden="true"></p>
+						</div>
 					</div>
 
 					<button
 						type="button"
 						class="tool-mode-switch"
 						data-tyar-ame-query-switch="zodiac"
-						disabled
-						aria-disabled="true"
-						tabindex="-1"
 					>
 						<Fragment set:html={modeSwitchIconHtml} />
 						<span>{m.switchToZodiacLookup}</span>
@@ -600,28 +655,49 @@ const eraOptionCheck = `<svg class="tyar-era-option-check" viewBox="0 0 16 16" a
 				</div>
 
 				<div class="tyar-ame-panel" data-tyar-ame-panel="zodiac" hidden>
-					<div class="tyar-ame-pair">
-						<div class="tyar-ame-field">
-							<span class="tyar-ame-field-label">{m.zodiacLabel}</span>
-							<span
-								class="tyar-ame-field-value is-placeholder"
-								data-tyar-ame-zodiac
-								data-placeholder={m.zodiacPlaceholder}>{m.zodiacPlaceholder}</span
+					<label class="ame-setting-row ame-setting-row--select tyar-ame-select-row">
+						<span class="ame-setting-label">{m.zodiacLabel}</span>
+						<span class="ame-setting-control">
+							<select
+								class="ame-native-control"
+								data-tyar-ame-zodiac-select
+								aria-label={m.zodiacLabel}
 							>
-						</div>
-						<div class="tyar-ame-field">
-							<span class="tyar-ame-field-label">{m.ageLabel}</span>
-							<span class="tyar-ame-field-value is-placeholder" data-tyar-ame-age></span>
-						</div>
+								<option value="">{m.zodiacPlaceholder}</option>
+								{
+									TYAR_ZODIAC_IDS.map((id) => (
+										<option value={id}>{m.zodiacNames[id]}</option>
+									))
+								}
+							</select>
+						</span>
+					</label>
+					<div class="tyar-ame-field-block">
+						<button
+							type="button"
+							class="ame-setting-row ame-numeric-field tyar-ame-year-row"
+							data-ame-numeric-field="age"
+							data-ame-active="false"
+							aria-label={m.ageLabel}
+							aria-invalid="false"
+							aria-describedby="ame-field-error-age"
+						>
+							<span class="ame-setting-label ame-numeric-label">{m.ageLabel}</span>
+							<span class="ame-setting-control">
+								<span
+									class="ame-numeric-value ame-numeric-value--placeholder"
+									data-ame-numeric-value
+									data-tyar-ame-age
+								></span>
+								<AmeFieldError fieldId="age" />
+							</span>
+						</button>
 					</div>
 
 					<button
 						type="button"
 						class="tool-mode-switch"
 						data-tyar-ame-query-switch="year"
-						disabled
-						aria-disabled="true"
-						tabindex="-1"
 					>
 						<Fragment set:html={modeSwitchIconHtml} />
 						<span>{m.switchToYearLookup}</span>
